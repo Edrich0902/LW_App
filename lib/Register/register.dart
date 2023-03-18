@@ -1,28 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:lw_app/Register/register.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
   bool _isLoading = false;
   bool _isRedirecting = false;
   bool _showPassword = false;
-  final _loginFormKey = GlobalKey<FormState>();
+  final _registerFormKey = GlobalKey<FormState>();
   late final TextEditingController _emailController;
   late final TextEditingController _passwordController;
   // late final StreamSubscription<AuthState> _authStateSubscription; //TODO: add with supabase
 
-  Future<void> signIn() async {
+  Future<void> signUp() async {
     setState(() {
       _isLoading = true;
     });
 
+    print(_emailController.text);
     //TODO: add sign in logic with supabase
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
@@ -55,24 +59,17 @@ class _LoginPageState extends State<LoginPage> {
     final theme = Theme.of(context);
 
     return Scaffold(
+      appBar: AppBar(),
       body: SafeArea(
         child: Center(
           child: Form(
-            key: _loginFormKey,
+            key: _registerFormKey,
             child: ListView(
               shrinkWrap: true,
               padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(24.0),
-                  child: Image.network(
-                    "https://yt3.googleusercontent.com/ytc/AL5GRJUbsh7ILjzuEQAZTot_kkV2GohZR75CjoWM9NSI9Q=s900-c-k-c0x00ffffff-no-rj",
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                const SizedBox(height: 32),
                 Text(
-                  "Sign In",
+                  "Register",
                   style: theme.textTheme.headline4,
                 ),
                 const SizedBox(height: 16),
@@ -110,7 +107,7 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () =>
-                      {if (_loginFormKey.currentState!.validate()) signIn()},
+                      {if (_registerFormKey.currentState!.validate()) signUp()},
                   child: _isLoading
                       ? SizedBox(
                           width: 20,
@@ -119,15 +116,8 @@ class _LoginPageState extends State<LoginPage> {
                             backgroundColor: Colors.white,
                           ),
                         )
-                      : const Text("Sign In"),
+                      : const Text("Sign Up"),
                 ),
-                const SizedBox(height: 4),
-                TextButton(
-                    onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const RegisterPage())),
-                    child: const Text("Don't have an account? Register Here")),
               ],
             ),
           ),
