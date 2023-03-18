@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lw_app/Register/register.dart';
+import 'package:lw_app/Dashboard/dashboard.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -22,6 +23,17 @@ class _LoginPageState extends State<LoginPage> {
       _isLoading = true;
     });
 
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const DashPage()),
+    );
+
+    setState(() {
+      _isLoading = false;
+      // Clear field values
+      _emailController.text = "";
+      _passwordController.text = "";
+    });
     //TODO: add sign in logic with supabase
   }
 
