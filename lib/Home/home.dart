@@ -39,6 +39,13 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headline4,
             ),
+            const TextField(
+              decoration: InputDecoration(label: const Text("Test")),
+            ),
+            ElevatedButton(
+              onPressed: () => {},
+              child: const Text("test button"),
+            ),
           ],
         ),
       ),
