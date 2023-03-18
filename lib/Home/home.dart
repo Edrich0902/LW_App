@@ -1,58 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:lw_app/Login/login.dart';
 
 //TODO: check user session and either route to login or dashboard
 
 //TODO: setup Supabase
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _HomePageState extends State<HomePage> {
+  bool _redirectCalled = false;
+  final session = null;
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _redirect();
+  }
+
+  Future<void> _redirect() async {
+    await Future.delayed(Duration.zero);
+    if (_redirectCalled || !mounted) return;
+
+    _redirectCalled = true;
+    if (session == null) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginPage())
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
+    return const Scaffold(
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-            const TextField(
-              decoration: InputDecoration(label: const Text("Test")),
-            ),
-            ElevatedButton(
-              onPressed: () => {},
-              child: const Text("test button"),
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+        child: CircularProgressIndicator(),
       ),
     );
   }

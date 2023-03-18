@@ -20,7 +20,7 @@ class App extends StatelessWidget {
       home: EasySplashScreen(
         durationInSeconds: 3,
         logo: Image.network("https://yt3.googleusercontent.com/ytc/AL5GRJUbsh7ILjzuEQAZTot_kkV2GohZR75CjoWM9NSI9Q=s900-c-k-c0x00ffffff-no-rj"), //TODO: update logo url -> make asset
-        navigator: const MyHomePage(title: 'Home'),
+        navigator: const HomePage(),
       ),
     );
   }
