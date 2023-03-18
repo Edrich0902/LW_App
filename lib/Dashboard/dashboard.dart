@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lw_app/Utils/environment.dart';
 
 class DashPage extends StatelessWidget {
   const DashPage({super.key});
@@ -8,7 +9,7 @@ class DashPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(),
       body: Center(
-        child: Text("Welcome!"),
+        child: Text(Environment.fileName),
       ),
     );
   }

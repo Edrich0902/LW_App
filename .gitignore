@@ -3,6 +3,9 @@
 *.log
 *.pyc
 *.swp
+*.env
+*.env.production
+*.env.development
 .DS_Store
 .atom/
 .buildlog/

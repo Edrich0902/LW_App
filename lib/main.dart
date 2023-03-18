@@ -2,8 +2,11 @@ import 'package:easy_splash_screen/easy_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:lw_app/Home/home.dart';
 import 'package:lw_app/Themes/custom_theme.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:lw_app/Utils/environment.dart';
 
-void main() {
+Future<void> main() async {
+  await dotenv.load(fileName: Environment.fileName);
   runApp(const App());
 }
 
