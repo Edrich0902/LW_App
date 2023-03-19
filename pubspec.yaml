@@ -38,6 +38,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   #environment variables
   flutter_dotenv: ^5.0.2
+  #supabase
+  supabase_flutter: ^1.5.0
   #splash screen library
   easy_splash_screen:
 

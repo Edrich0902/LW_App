@@ -1,12 +1,24 @@
 import 'package:easy_splash_screen/easy_splash_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:lw_app/Home/home.dart';
 import 'package:lw_app/Themes/custom_theme.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:lw_app/Utils/environment.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Load environment variables
   await dotenv.load(fileName: Environment.fileName);
+
+  // Init supabase
+  await Supabase.initialize(
+    url: Environment.supabaseUrl,
+    anonKey: Environment.supabaseKey
+  );
+
+  // Start app
   runApp(const App());
 }
 
@@ -22,7 +34,8 @@ class App extends StatelessWidget {
       themeMode: ThemeMode.system,
       home: EasySplashScreen(
         durationInSeconds: 3,
-        logo: Image.network("https://yt3.googleusercontent.com/ytc/AL5GRJUbsh7ILjzuEQAZTot_kkV2GohZR75CjoWM9NSI9Q=s900-c-k-c0x00ffffff-no-rj"), //TODO: update logo url -> make asset
+        logo: Image.network(
+            "https://yt3.googleusercontent.com/ytc/AL5GRJUbsh7ILjzuEQAZTot_kkV2GohZR75CjoWM9NSI9Q=s900-c-k-c0x00ffffff-no-rj"), //TODO: update logo url -> make asset
         navigator: const HomePage(),
       ),
     );
