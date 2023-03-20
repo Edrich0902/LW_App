@@ -46,6 +46,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     AuthBloc authBloc = BlocProvider.of<AuthBloc>(context);
+    //TODO: add bloc listener here to fix login bug
 
     return Scaffold(
       body: SafeArea(
