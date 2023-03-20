@@ -43,16 +43,15 @@ class AppTheme {
       color: LightColors.primary,
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: LightColors.primary,
-        foregroundColor: Colors.white,
+      backgroundColor: LightColors.primary,
+      foregroundColor: Colors.white,
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ButtonStyle(
         shape: MaterialStateProperty.all<RoundedRectangleBorder>(
             RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(24.0),
-            )
-        ),
+          borderRadius: BorderRadius.circular(24.0),
+        )),
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(
@@ -61,6 +60,25 @@ class AppTheme {
       ),
       isDense: true,
       filled: true,
+    ),
+    snackBarTheme: SnackBarThemeData(
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: LightColors.primary,
+      actionTextColor: Colors.white,
+      contentTextStyle: TextStyle(
+        color: Colors.white,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24.0),
+      ),
+      elevation: 6.0,
+    ),
+    drawerTheme: DrawerThemeData(
+      elevation: 6.0,
+      backgroundColor: LightColors.background,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24.0),
+      ),
     ),
   );
 
@@ -83,10 +101,9 @@ class AppTheme {
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ButtonStyle(
         shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-          RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24.0),
-          )
-        ),
+            RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24.0),
+        )),
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(
@@ -95,6 +112,25 @@ class AppTheme {
       ),
       isDense: true,
       filled: true,
+    ),
+    snackBarTheme: SnackBarThemeData(
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: LightColors.primary,
+      actionTextColor: Colors.white,
+      contentTextStyle: TextStyle(
+        color: Colors.white,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24.0),
+      ),
+      elevation: 6.0,
+    ),
+    drawerTheme: DrawerThemeData(
+      elevation: 6.0,
+      backgroundColor: DarkColors.background,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24.0),
+      ),
     ),
   );
 }

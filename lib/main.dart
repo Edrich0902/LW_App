@@ -1,10 +1,12 @@
 import 'package:easy_splash_screen/easy_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:lw_app/Home/home.dart';
+import 'package:lw_app/Screens/Home/home.dart';
 import 'package:lw_app/Themes/custom_theme.dart';
 import 'package:lw_app/Utils/environment.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lw_app/Blocs/Auth/auth_bloc.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,11 +17,20 @@ Future<void> main() async {
   // Init supabase
   await Supabase.initialize(
     url: Environment.supabaseUrl,
-    anonKey: Environment.supabaseKey
+    anonKey: Environment.supabaseKey,
   );
 
   // Start app
-  runApp(const App());
+  runApp(
+    MultiBlocProvider(
+      providers: [
+        BlocProvider<AuthBloc>(
+          create: (_) => AuthBloc(),
+        ),
+      ],
+      child: const App(),
+    ),
+  );
 }
 
 class App extends StatelessWidget {

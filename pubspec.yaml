@@ -40,6 +40,9 @@ dependencies:
   flutter_dotenv: ^5.0.2
   #supabase
   supabase_flutter: ^1.5.0
+  #state management packages
+  equatable: ^2.0.5
+  flutter_bloc: ^8.0.0
   #splash screen library
   easy_splash_screen:
 
