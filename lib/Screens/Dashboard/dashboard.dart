@@ -5,13 +5,14 @@ import 'package:lw_app/Screens/Auth/login.dart';
 import 'package:lw_app/Utils/environment.dart';
 import 'package:lw_app/Utils/snackbar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as SB;
+import 'package:lw_app/Widgets/AppDrawer/drawer.dart';
 
 class DashPage extends StatelessWidget {
   const DashPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    ThemeData theme = Theme.of(context);
     AuthBloc authBloc = BlocProvider.of<AuthBloc>(context);
 
     return BlocListener<AuthBloc, AuthState>(
@@ -28,27 +29,7 @@ class DashPage extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(),
-        drawer: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              DrawerHeader(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(24.0),
-                  ),
-                  color: theme.primaryColor,
-                ),
-                child: Text('Header'),
-              ),
-              ListTile(
-                  title: const Text("Sign Out"),
-                  onTap: () {
-                    authBloc.add(SignOutEvent());
-                  }),
-            ],
-          ),
-        ),
+        drawer: AppDrawer(),
         body: Center(
           child: Text(
             SB.Supabase.instance.client.auth.currentUser?.email ?? "No email",
