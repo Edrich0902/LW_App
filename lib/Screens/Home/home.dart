@@ -26,11 +26,10 @@ class _HomePageState extends State<HomePage> {
 
     SB.Session? session = SB.Supabase.instance.client.auth.currentSession;
     if (session != null) {
-      print('session not null');
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => const DashPage()),
-            (route) => false,
+        (route) => false,
       );
     }
   }
@@ -39,11 +38,16 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
-        print(state);
         if (state is AuthSuccessState) {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const DashPage()),
+          );
+        } else if (state is UnAuthedState) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const LoginPage()),
+            (route) => false,
           );
         } else if (state is AuthErrorState) {
           SnackBarHelper.showErrorSnack(context, 'Login Failed');
