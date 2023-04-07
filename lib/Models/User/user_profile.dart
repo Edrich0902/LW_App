@@ -1,0 +1,31 @@
+import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
+
+class UserProfile extends Equatable {
+  final String? id;
+  final String firstName;
+  final String lastName;
+  final String? updatedAt;
+  final String? createdAt;
+
+  UserProfile({
+    this.id,
+    required this.firstName,
+    required this.lastName,
+    this.updatedAt,
+    this.createdAt,
+  });
+
+  @override
+  List<Object?> get props => [id, firstName, lastName, updatedAt, createdAt];
+
+  factory UserProfile.fromJson(Map<String, dynamic> json) {
+    return UserProfile(
+      id: json['id'] ?? '',
+      firstName: json['first_name'] ?? '',
+      lastName: json['last_name'] ?? '',
+      updatedAt: json['updated_at'] ?? '',
+      createdAt: json['created_at'] ?? '',
+    );
+  }
+}

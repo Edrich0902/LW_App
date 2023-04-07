@@ -5,6 +5,7 @@ import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
 import 'package:lw_app/Services/Profile/profile_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:lw_app/Models/User/user_profile.dart';
 
 part 'user_event.dart';
 part 'user_state.dart';
@@ -16,7 +17,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<LoadUser>((event, emit) async {
       emit(UserLoading());
       try {
-        User? user = _profileService.getUser();
+        UserProfile user = await _profileService.getUserProfile();
         emit(UserSuccess(user: user));
       } catch (error) {
         emit(UserError(error.toString()));
@@ -27,10 +28,13 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<UpdateUser>((event, emit) async {
       emit(UserLoading());
       try {
-        User user = await _profileService.updateUser(
+        await _profileService.updateUser(
           firstName: event.firstName,
           lastName: event.lastName,
         );
+
+        UserProfile user = await _profileService.getUserProfile();
+        emit(UserUpdateSuccess());
         emit(UserSuccess(user: user));
       } catch (error) {
         emit(UserError(error.toString()));

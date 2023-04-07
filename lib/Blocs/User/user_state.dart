@@ -15,12 +15,17 @@ class UserLoading extends UserState {
 }
 
 class UserSuccess extends UserState {
-  final User? user;
+  final UserProfile user;
 
   const UserSuccess({required this.user});
 
   @override
   List<Object?> get props => [user];
+}
+
+class UserUpdateSuccess extends UserState {
+  @override
+  List<Object> get props => [];
 }
 
 class UserError extends UserState {
