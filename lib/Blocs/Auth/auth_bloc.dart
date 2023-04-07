@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:lw_app/Services/Auth/auth_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -15,10 +16,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<EmailSignUpEvent>((event, emit) async {
       emit(AuthLoadingState());
       try {
-        await _authService.signUpWithEmail(
+        final AuthResponse response = await _authService.signUpWithEmail(
           email: event.email,
           password: event.password
         );
+
+        // Creates the initial user profile linked with this auth profile
+        await _authService.createInitialProfile(userId: response?.user?.id);
 
         emit(AuthSuccessState());
       } catch (error) {

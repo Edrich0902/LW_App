@@ -2,16 +2,17 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthService {
   final GoTrueClient _auth = Supabase.instance.client.auth;
+  final SupabaseClient supabase = Supabase.instance.client;
 
   AuthService();
 
-  Future<void> signUpWithEmail({
+  Future<AuthResponse> signUpWithEmail({
     required String email,
     required String password,
-    Map<String, dynamic>? data
+    Map<String, dynamic>? data,
   }) async {
     try {
-      await _auth.signUp(password: password, email: email, data: data);
+      return await _auth.signUp(password: password, email: email, data: data);
     } catch (error) {
       throw error.toString();
     }
@@ -23,6 +24,18 @@ class AuthService {
   }) async {
     try {
       await _auth.signInWithPassword(password: password, email: email);
+    } catch (error) {
+      throw error.toString();
+    }
+  }
+
+  Future<void> createInitialProfile({
+    required String? userId,
+  }) async {
+    try {
+      await supabase.from("user_profile").insert({
+        'id': userId,
+      });
     } catch (error) {
       throw error.toString();
     }

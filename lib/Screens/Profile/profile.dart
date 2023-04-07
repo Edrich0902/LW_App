@@ -13,8 +13,10 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   // User? user = Supabase.instance.client.auth.currentUser;
   final _profileFormKey = GlobalKey<FormState>();
-  late final TextEditingController _firstNameController = TextEditingController();
-  late final TextEditingController _lastNameController = TextEditingController();
+  late final TextEditingController _firstNameController =
+      TextEditingController();
+  late final TextEditingController _lastNameController =
+      TextEditingController();
 
   @override
   void initState() {
@@ -50,78 +52,81 @@ class _ProfilePageState extends State<ProfilePage> {
                   return CircularProgressIndicator();
                 } else if (state is UserSuccess) {
                   initForm(state);
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      SizedBox(height: 16),
-                      //TODO: add profile photo functionality
-                      CircleAvatar(
-                        radius: 100,
-                        //TODO: update with actual user image and add placeholder
-                        backgroundImage: NetworkImage(
-                            "https://yt3.googleusercontent.com/ytc/AL5GRJUbsh7ILjzuEQAZTot_kkV2GohZR75CjoWM9NSI9Q=s900-c-k-c0x00ffffff-no-rj"),
-                      ),
-                      SizedBox(height: 16),
-                      TextFormField(
-                        initialValue: state.user?.email,
-                        enabled: false,
-                        decoration: InputDecoration(
-                          labelText: 'Email',
-                          suffixIcon: Icon(Icons.email),
+                  return Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        SizedBox(height: 16),
+                        //TODO: add profile photo functionality
+                        CircleAvatar(
+                          radius: 100,
+                          //TODO: update with actual user image and add placeholder
+                          backgroundImage: NetworkImage(
+                              "https://yt3.googleusercontent.com/ytc/AL5GRJUbsh7ILjzuEQAZTot_kkV2GohZR75CjoWM9NSI9Q=s900-c-k-c0x00ffffff-no-rj"),
                         ),
-                      ),
-                      SizedBox(height: 16),
-                      TextFormField(
-                        // initialValue: state.user?.userMetadata?['firstName'],
-                        controller: _firstNameController,
-                        validator: (firstName) {
-                          if (firstName == null || firstName.isEmpty)
-                            return 'First Name is required';
-                          return null;
-                        },
-                        decoration: InputDecoration(
-                          labelText: 'First Name',
-                          suffixIcon: Icon(Icons.account_circle),
+                        SizedBox(height: 16),
+                        TextFormField(
+                          initialValue: state.user?.email,
+                          enabled: false,
+                          decoration: InputDecoration(
+                            labelText: 'Email',
+                            suffixIcon: Icon(Icons.email),
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 16),
-                      TextFormField(
-                        // initialValue: state.user?.userMetadata?['lastName'],
-                        controller: _lastNameController,
-                        validator: (lastName) {
-                          if (lastName == null || lastName.isEmpty)
-                            return 'Last Name is required';
-                          return null;
-                        },
-                        decoration: InputDecoration(
-                          labelText: 'Last Name',
-                          suffixIcon: Icon(Icons.account_circle),
+                        SizedBox(height: 16),
+                        TextFormField(
+                          // initialValue: state.user?.userMetadata?['firstName'],
+                          controller: _firstNameController,
+                          validator: (firstName) {
+                            if (firstName == null || firstName.isEmpty)
+                              return 'First Name is required';
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                            labelText: 'First Name',
+                            suffixIcon: Icon(Icons.account_circle),
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () => {
-                          if (_profileFormKey.currentState!.validate())
-                            {
-                              userBloc.add(
-                                UpdateUser(
-                                  _firstNameController.text,
-                                  _lastNameController.text,
-                                ),
-                              )
-                            },
-                        },
-                        child: state is UserLoading
-                            ? SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  backgroundColor: Colors.white,
-                                ),
-                              )
-                            : const Text("Update Profile"),
-                      ),
-                    ],
+                        SizedBox(height: 16),
+                        TextFormField(
+                          // initialValue: state.user?.userMetadata?['lastName'],
+                          controller: _lastNameController,
+                          validator: (lastName) {
+                            if (lastName == null || lastName.isEmpty)
+                              return 'Last Name is required';
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                            labelText: 'Last Name',
+                            suffixIcon: Icon(Icons.account_circle),
+                          ),
+                        ),
+                        SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: () => {
+                            if (_profileFormKey.currentState!.validate())
+                              {
+                                userBloc.add(
+                                  UpdateUser(
+                                    _firstNameController.text,
+                                    _lastNameController.text,
+                                  ),
+                                )
+                              },
+                          },
+                          child: state is UserLoading
+                              ? SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    backgroundColor: Colors.white,
+                                  ),
+                                )
+                              : const Text("Update Profile"),
+                        ),
+                      ],
+                    ),
                   );
                 } else {
                   return const Text("Something went wrong!");
