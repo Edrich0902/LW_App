@@ -7,6 +7,7 @@ class UserProfile extends Equatable {
   final String lastName;
   final String? updatedAt;
   final String? createdAt;
+  final String? role;
 
   UserProfile({
     this.id,
@@ -14,10 +15,11 @@ class UserProfile extends Equatable {
     required this.lastName,
     this.updatedAt,
     this.createdAt,
+    this.role,
   });
 
   @override
-  List<Object?> get props => [id, firstName, lastName, updatedAt, createdAt];
+  List<Object?> get props => [id, firstName, lastName, updatedAt, createdAt, role];
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
     return UserProfile(
@@ -26,6 +28,7 @@ class UserProfile extends Equatable {
       lastName: json['last_name'] ?? '',
       updatedAt: json['updated_at'] ?? '',
       createdAt: json['created_at'] ?? '',
+      role: json['role'] ?? '',
     );
   }
 }

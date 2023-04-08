@@ -27,7 +27,7 @@ class ProfileService {
     try {
       final User? currentUser = _auth.currentUser;
       final response = await supabase
-          .from('user_profile')
+          .from('user_profile_view')
           .select('*')
           .eq('id', currentUser?.id)
           .single();
