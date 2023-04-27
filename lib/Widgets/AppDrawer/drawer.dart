@@ -91,11 +91,17 @@ class _AppDrawerState extends State<AppDrawer> {
                       "https://yt3.googleusercontent.com/ytc/AL5GRJUbsh7ILjzuEQAZTot_kkV2GohZR75CjoWM9NSI9Q=s900-c-k-c0x00ffffff-no-rj"),
                 ),
                 const SizedBox(height: 8),
-                Text("${state.user.firstName} ${state.user.lastName}"),
+                Text(
+                  "${state.user.firstName} ${state.user.lastName}",
+                  style: const TextStyle(
+                      color: Colors.white //This color will always be white
+                      ),
+                ),
                 const SizedBox(height: 8),
                 Text(
                   user?.email ?? "",
                   style: const TextStyle(
+                    color: Colors.white, //This color will always be white
                     fontSize: 11.0,
                     fontWeight: FontWeight.w200,
                   ),
