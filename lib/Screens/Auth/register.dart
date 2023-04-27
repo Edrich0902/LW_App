@@ -58,11 +58,12 @@ class _RegisterPageState extends State<RegisterPage> {
                 TextFormField(
                   controller: _emailController,
                   validator: (email) {
-                    if (email == null || email.isEmpty)
+                    if (email == null || email.isEmpty) {
                       return 'Email is required';
+                    }
                     return null;
                   },
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: "Email",
                     suffixIcon: Icon(Icons.email),
                   ),
@@ -71,10 +72,12 @@ class _RegisterPageState extends State<RegisterPage> {
                 TextFormField(
                   controller: _passwordController,
                   validator: (password) {
-                    if (password == null || password.isEmpty)
+                    if (password == null || password.isEmpty) {
                       return 'Password is required';
-                    if (password.length < 6)
+                    }
+                    if (password.length < 6) {
                       return 'Password must be at least 6 characters';
+                    }
                     return null;
                   },
                   obscureText: !_showPassword,
@@ -102,7 +105,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           }
                       },
                       child: state is AuthLoadingState
-                          ? SizedBox(
+                          ? const SizedBox(
                               width: 20,
                               height: 20,
                               child: CircularProgressIndicator(

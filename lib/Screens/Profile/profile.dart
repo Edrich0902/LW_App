@@ -21,7 +21,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   void initState() {
-    context.read<UserBloc>().add(LoadUser());
+    context.read<UserBloc>().add(const LoadUser());
     super.initState();
   }
 
@@ -33,8 +33,8 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void initForm(UserSuccess state) {
-    _firstNameController.text = state.user.firstName ?? 'N/A';
-    _lastNameController.text = state.user.lastName ?? 'N/A';
+    _firstNameController.text = state.user.firstName;
+    _lastNameController.text = state.user.lastName;
   }
 
   @override
@@ -56,7 +56,7 @@ class _ProfilePageState extends State<ProfilePage> {
               child: BlocBuilder<UserBloc, UserState>(
                 builder: (context, state) {
                   if (state is UserLoading) {
-                    return CircularProgressIndicator();
+                    return const CircularProgressIndicator();
                   } else if (state is UserSuccess) {
                     initForm(state);
                     return Padding(
@@ -64,52 +64,54 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           //TODO: add profile photo functionality
-                          CircleAvatar(
+                          const CircleAvatar(
                             radius: 100,
                             //TODO: update with actual user image and add placeholder
                             backgroundImage: NetworkImage(
                                 "https://yt3.googleusercontent.com/ytc/AL5GRJUbsh7ILjzuEQAZTot_kkV2GohZR75CjoWM9NSI9Q=s900-c-k-c0x00ffffff-no-rj"),
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           TextFormField(
                             initialValue: user?.email ?? 'N/A',
                             enabled: false,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               labelText: 'Email',
                               suffixIcon: Icon(Icons.email),
                             ),
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           TextFormField(
                             // initialValue: state.user?.userMetadata?['firstName'],
                             controller: _firstNameController,
                             validator: (firstName) {
-                              if (firstName == null || firstName.isEmpty)
+                              if (firstName == null || firstName.isEmpty) {
                                 return 'First Name is required';
+                              }
                               return null;
                             },
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               labelText: 'First Name',
                               suffixIcon: Icon(Icons.account_circle),
                             ),
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           TextFormField(
                             // initialValue: state.user?.userMetadata?['lastName'],
                             controller: _lastNameController,
                             validator: (lastName) {
-                              if (lastName == null || lastName.isEmpty)
+                              if (lastName == null || lastName.isEmpty) {
                                 return 'Last Name is required';
+                              }
                               return null;
                             },
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               labelText: 'Last Name',
                               suffixIcon: Icon(Icons.account_circle),
                             ),
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           ElevatedButton(
                             onPressed: () => {
                               if (_profileFormKey.currentState!.validate())
@@ -123,7 +125,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 },
                             },
                             child: state is UserLoading
-                                ? SizedBox(
+                                ? const SizedBox(
                                     width: 20,
                                     height: 20,
                                     child: CircularProgressIndicator(

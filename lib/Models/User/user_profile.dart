@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 
 class UserProfile extends Equatable {
   final String? id;
@@ -9,7 +8,7 @@ class UserProfile extends Equatable {
   final String? createdAt;
   final String? role;
 
-  UserProfile({
+  const UserProfile({
     this.id,
     required this.firstName,
     required this.lastName,

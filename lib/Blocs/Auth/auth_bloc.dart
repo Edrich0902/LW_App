@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:lw_app/Services/Auth/auth_service.dart';
@@ -22,7 +20,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         );
 
         // Creates the initial user profile linked with this auth profile
-        await _authService.createInitialProfile(userId: response?.user?.id);
+        await _authService.createInitialProfile(userId: response.user?.id);
 
         emit(AuthSuccessState());
       } catch (error) {
@@ -49,7 +47,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<SignOutEvent>((event, emit) async {
       try {
         await _authService.signOut();
-        emit(UnAuthedState());
+        emit(const UnAuthedState());
       } catch (error) {
         emit(AuthErrorState(error.toString()));
       }

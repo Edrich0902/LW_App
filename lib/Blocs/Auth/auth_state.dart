@@ -21,13 +21,13 @@ class AuthSuccessState extends AuthState {
 
 class AuthErrorState extends AuthState {
   final String error;
-  AuthErrorState(this.error);
+  const AuthErrorState(this.error);
   @override
   List<Object> get props => [];
 }
 
 class UnAuthedState extends AuthState {
-  UnAuthedState();
+  const UnAuthedState();
   @override
   List<Object> get props => [];
 }

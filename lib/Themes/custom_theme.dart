@@ -65,7 +65,7 @@ class AppTheme {
       behavior: SnackBarBehavior.floating,
       backgroundColor: LightColors.primary,
       actionTextColor: Colors.white,
-      contentTextStyle: TextStyle(
+      contentTextStyle: const TextStyle(
         color: Colors.white,
       ),
       shape: RoundedRectangleBorder(
@@ -117,7 +117,7 @@ class AppTheme {
       behavior: SnackBarBehavior.floating,
       backgroundColor: LightColors.primary,
       actionTextColor: Colors.white,
-      contentTextStyle: TextStyle(
+      contentTextStyle: const TextStyle(
         color: Colors.white,
       ),
       shape: RoundedRectangleBorder(

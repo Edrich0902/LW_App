@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lw_app/Screens/Auth/register.dart';
-import 'package:lw_app/Screens/Dashboard/dashboard.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/Auth/auth_bloc.dart';
 
@@ -12,7 +11,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  bool _isLoading = false;
   bool _isRedirecting = false;
   bool _showPassword = false;
   final _loginFormKey = GlobalKey<FormState>();
@@ -73,11 +71,12 @@ class _LoginPageState extends State<LoginPage> {
                 TextFormField(
                   controller: _emailController,
                   validator: (email) {
-                    if (email == null || email.isEmpty)
+                    if (email == null || email.isEmpty) {
                       return 'Email is required';
+                    }
                     return null;
                   },
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: "Email",
                     suffixIcon: Icon(Icons.email),
                   ),
@@ -86,10 +85,12 @@ class _LoginPageState extends State<LoginPage> {
                 TextFormField(
                   controller: _passwordController,
                   validator: (password) {
-                    if (password == null || password.isEmpty)
+                    if (password == null || password.isEmpty) {
                       return 'Password is required';
-                    if (password.length < 6)
+                    }
+                    if (password.length < 6) {
                       return 'Password must be at least 6 characters';
+                    }
                     return null;
                   },
                   obscureText: !_showPassword,
@@ -117,7 +118,7 @@ class _LoginPageState extends State<LoginPage> {
                           }
                       },
                       child: state is AuthLoadingState
-                          ? SizedBox(
+                          ? const SizedBox(
                               width: 20,
                               height: 20,
                               child: CircularProgressIndicator(

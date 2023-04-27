@@ -18,7 +18,7 @@ class _AppDrawerState extends State<AppDrawer> {
 
   @override
   void initState() {
-    context.read<UserBloc>().add(LoadUser());
+    context.read<UserBloc>().add(const LoadUser());
     super.initState();
   }
 
@@ -36,7 +36,7 @@ class _AppDrawerState extends State<AppDrawer> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ProfilePage()),
+                MaterialPageRoute(builder: (context) => const ProfilePage()),
               );
             },
           ),
@@ -46,18 +46,18 @@ class _AppDrawerState extends State<AppDrawer> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => DashPage()),
+                MaterialPageRoute(builder: (context) => const DashPage()),
               );
             },
           ),
           _createDrawerItem(theme: theme, label: 'Communities'),
           _createDrawerItem(theme: theme, label: 'My Bible'),
-          Divider(),
+          const Divider(),
           _createDrawerItem(
             theme: theme,
             label: 'Sign Out',
             onTap: () {
-              authBloc.add(SignOutEvent());
+              authBloc.add(const SignOutEvent());
             },
           ),
           // _createFooter(), //TODO: add footer item later
@@ -69,7 +69,7 @@ class _AppDrawerState extends State<AppDrawer> {
   Widget _createHeader({required ThemeData theme, GestureTapCallback? onTap}) {
     return DrawerHeader(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
           topRight: Radius.circular(24.0),
         ),
         color: theme.primaryColor,
@@ -78,24 +78,24 @@ class _AppDrawerState extends State<AppDrawer> {
         onTap: onTap,
         child: BlocBuilder<UserBloc, UserState>(builder: (context, state) {
           if (state is UserLoading) {
-            return CircularProgressIndicator.adaptive();
+            return const CircularProgressIndicator.adaptive();
           } else if (state is UserSuccess) {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                CircleAvatar(
+                const CircleAvatar(
                   radius: 45,
                   //TODO: update with actual user image and add placeholder
                   backgroundImage: NetworkImage(
                       "https://yt3.googleusercontent.com/ytc/AL5GRJUbsh7ILjzuEQAZTot_kkV2GohZR75CjoWM9NSI9Q=s900-c-k-c0x00ffffff-no-rj"),
                 ),
-                SizedBox(height: 8),
-                Text("${state.user.firstName} ${state.user.lastName}" ?? ""),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
+                Text("${state.user.firstName} ${state.user.lastName}"),
+                const SizedBox(height: 8),
                 Text(
                   user?.email ?? "",
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 11.0,
                     fontWeight: FontWeight.w200,
                   ),
@@ -103,7 +103,7 @@ class _AppDrawerState extends State<AppDrawer> {
               ],
             );
           } else {
-            return Text('Could not load Profile');
+            return const Text('Could not load Profile');
           }
         }),
       ),

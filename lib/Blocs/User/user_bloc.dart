@@ -1,10 +1,6 @@
-import 'dart:async';
-
 import 'package:bloc/bloc.dart';
-import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
 import 'package:lw_app/Services/Profile/profile_service.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:lw_app/Models/User/user_profile.dart';
 
 part 'user_event.dart';
