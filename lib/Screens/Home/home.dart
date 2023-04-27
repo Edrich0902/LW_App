@@ -4,7 +4,7 @@ import 'package:lw_app/Screens/Dashboard/dashboard.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/Auth/auth_bloc.dart';
 import 'package:lw_app/Utils/snackbar.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' as SB;
+import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -24,7 +24,7 @@ class _HomePageState extends State<HomePage> {
     await Future.delayed(Duration.zero);
     if (!mounted) return;
 
-    SB.Session? session = SB.Supabase.instance.client.auth.currentSession;
+    sb.Session? session = sb.Supabase.instance.client.auth.currentSession;
     if (session != null) {
       Navigator.pushAndRemoveUntil(
         context,

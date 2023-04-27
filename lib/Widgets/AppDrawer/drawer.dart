@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' as SB;
+import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 import 'package:lw_app/Blocs/Auth/auth_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Screens/Profile/profile.dart';
@@ -14,7 +14,7 @@ class AppDrawer extends StatefulWidget {
 }
 
 class _AppDrawerState extends State<AppDrawer> {
-  SB.User? user = SB.Supabase.instance.client.auth.currentUser;
+  sb.User? user = sb.Supabase.instance.client.auth.currentUser;
 
   @override
   void initState() {
