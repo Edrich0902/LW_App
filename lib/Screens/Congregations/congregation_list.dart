@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lw_app/Blocs/Congregations/congregation_list_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lw_app/Models/Congregation/congregation.dart';
 
 class CongregationList extends StatefulWidget {
   const CongregationList({super.key});
@@ -23,6 +24,7 @@ class _CongregationListState extends State<CongregationList> {
 
   @override
   Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
     CongregationListBloc congregationListBloc =
         BlocProvider.of<CongregationListBloc>(context);
 
@@ -54,8 +56,9 @@ class _CongregationListState extends State<CongregationList> {
                       title: Text(state.congregations.first.name),
                     ),
                     itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(state.congregations[index].name),
+                      return _congregationItem(
+                        theme: theme,
+                        congregation: state.congregations[index],
                       );
                     },
                   );
@@ -66,6 +69,28 @@ class _CongregationListState extends State<CongregationList> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _congregationItem({
+    required ThemeData theme,
+    required Congregation congregation,
+    GestureTapCallback? onTap,
+  }) {
+    return ListTile(
+      leading: CircleAvatar(
+        backgroundImage: NetworkImage(
+            "https://yt3.googleusercontent.com/ytc/AL5GRJUbsh7ILjzuEQAZTot_kkV2GohZR75CjoWM9NSI9Q=s900-c-k-c0x00ffffff-no-rj"),
+      ),
+      title: Text(congregation.name),
+      subtitle: Text(congregation.location ?? ''),
+      trailing: IconButton(
+        icon: Icon(Icons.star_border),
+        onPressed: () {
+          //TODO: add favourite/subscribe functionality
+          //TODO: change icon based on favourite status
+        },
       ),
     );
   }
