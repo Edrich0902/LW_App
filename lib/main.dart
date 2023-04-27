@@ -8,6 +8,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/Auth/auth_bloc.dart';
 import 'package:lw_app/Blocs/User/user_bloc.dart';
+import 'package:lw_app/Blocs/Congregations/congregation_list_bloc.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,6 +32,9 @@ Future<void> main() async {
         BlocProvider<UserBloc>(
           create: (_) => UserBloc(),
         ),
+        BlocProvider<CongregationListBloc>(
+          create: (_) => CongregationListBloc(),
+        )
       ],
       child: const App(),
     ),
