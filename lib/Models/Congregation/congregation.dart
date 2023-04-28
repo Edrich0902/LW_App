@@ -7,7 +7,7 @@ class Congregation extends Equatable {
   final String location;
   final String? streetAddress;
   final String? serviceStart;
-  final dynamic? servicesOffered;
+  final List<dynamic>? servicesOffered;
   final String? createdAt;
   final String? updatedAt;
 
@@ -44,7 +44,7 @@ class Congregation extends Equatable {
       location: json['location'] ?? '',
       streetAddress: json['streetAddress'] ?? '',
       serviceStart: json['serviceStart'] ?? '',
-      servicesOffered: json['servicesOffered'] ?? '',
+      servicesOffered: json['servicesOffered'] ?? [],
       createdAt: json['created_at'] ?? '',
       updatedAt: json['updated_at'] ?? '',
     );

@@ -43,6 +43,8 @@ dependencies:
   #state management packages
   equatable: ^2.0.5
   flutter_bloc: ^8.0.0
+  #date handling
+  intl: ^0.18.1
   #splash screen library
   easy_splash_screen:
 
