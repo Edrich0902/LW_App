@@ -3,6 +3,8 @@ import 'package:lw_app/Blocs/Congregations/congregation_list_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Models/Congregation/congregation.dart';
 import 'package:lw_app/Screens/CongregationDetail/congregation_detail.dart';
+import 'package:lw_app/Utils/snackbar.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CongregationList extends StatefulWidget {
   const CongregationList({super.key});
@@ -12,6 +14,7 @@ class CongregationList extends StatefulWidget {
 }
 
 class _CongregationListState extends State<CongregationList> {
+  User? user = Supabase.instance.client.auth.currentUser;
   @override
   void initState() {
     context.read<CongregationListBloc>().add(const LoadCongregations());
@@ -31,7 +34,13 @@ class _CongregationListState extends State<CongregationList> {
 
     return BlocListener<CongregationListBloc, CongregationListState>(
       listener: (context, state) {
-        //TODO: handle any listeners here
+        if (state is CongregationFavouriteSuccess) {
+          SnackBarHelper.showSuccessSnack(context, state.message);
+        }
+
+        if (state is CongregationFavouriteError) {
+          SnackBarHelper.showErrorSnack(context, 'Error adding Congregation to Favourites');
+        }
       },
       child: Scaffold(
         appBar: AppBar(),
@@ -69,7 +78,16 @@ class _CongregationListState extends State<CongregationList> {
                               ),
                             ),
                           );
-                        }
+                        },
+                        onPressed: () {
+                          congregationListBloc.add(
+                            FavouriteCongregation(
+                              congregationId: state.congregations[index]?.id ?? '',
+                              userId: user?.id ?? '',
+                              isFavourite: state.congregations[index]?.isFavourite,
+                            ),
+                          );
+                        },
                       );
                     },
                   );
@@ -88,6 +106,7 @@ class _CongregationListState extends State<CongregationList> {
     required ThemeData theme,
     required Congregation congregation,
     GestureTapCallback? onTap,
+    GestureTapCallback? onPressed,
   }) {
     return ListTile(
       leading: CircleAvatar(
@@ -97,11 +116,11 @@ class _CongregationListState extends State<CongregationList> {
       title: Text(congregation.name),
       subtitle: Text(congregation.location ?? ''),
       trailing: IconButton(
-        icon: Icon(Icons.star_border),
-        onPressed: () {
-          //TODO: add favourite/subscribe functionality
-          //TODO: change icon based on favourite status
-        },
+        icon: Icon(
+          congregation?.isFavourite == true ? Icons.star : Icons.star_border,
+          color: Colors.yellowAccent,
+        ),
+        onPressed: onPressed,
       ),
       onTap: onTap,
     );

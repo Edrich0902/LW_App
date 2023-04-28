@@ -10,6 +10,7 @@ class Congregation extends Equatable {
   final List<dynamic>? servicesOffered;
   final String? createdAt;
   final String? updatedAt;
+  final bool? isFavourite;
 
   const Congregation({
     this.id,
@@ -21,6 +22,7 @@ class Congregation extends Equatable {
     this.servicesOffered,
     this.createdAt,
     this.updatedAt,
+    this.isFavourite,
   });
 
   @override
@@ -33,20 +35,22 @@ class Congregation extends Equatable {
     serviceStart,
     servicesOffered,
     createdAt,
-    updatedAt
+    updatedAt,
+    isFavourite,
   ];
 
   factory Congregation.fromJson(Map<String, dynamic> json) {
     return Congregation(
       id: json['id'] ?? '',
       name: json['name'] ?? '',
-      shortName: json['shortName'] ?? '',
+      shortName: json['short_name'] ?? '',
       location: json['location'] ?? '',
-      streetAddress: json['streetAddress'] ?? '',
-      serviceStart: json['serviceStart'] ?? '',
-      servicesOffered: json['servicesOffered'] ?? [],
+      streetAddress: json['street_address'] ?? '',
+      serviceStart: json['service_start'] ?? '',
+      servicesOffered: json['services_offered'] ?? [],
       createdAt: json['created_at'] ?? '',
       updatedAt: json['updated_at'] ?? '',
+      isFavourite: json['is_favourite'] ?? false,
     );
   }
 }

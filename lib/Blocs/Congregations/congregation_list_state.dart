@@ -32,3 +32,21 @@ class CongregationListError extends CongregationListState {
   @override
   List<Object> get props => [error];
 }
+
+class CongregationFavouriteError extends CongregationListState {
+  final String error;
+
+  const CongregationFavouriteError(this.error);
+
+  @override
+  List<Object> get props => [error];
+}
+
+class CongregationFavouriteSuccess extends CongregationListState {
+  final String message;
+
+  const CongregationFavouriteSuccess(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
