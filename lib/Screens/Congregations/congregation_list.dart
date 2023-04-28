@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lw_app/Blocs/Congregations/congregation_list_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Models/Congregation/congregation.dart';
+import 'package:lw_app/Screens/CongregationDetail/congregation_detail.dart';
 
 class CongregationList extends StatefulWidget {
   const CongregationList({super.key});
@@ -59,6 +60,16 @@ class _CongregationListState extends State<CongregationList> {
                       return _congregationItem(
                         theme: theme,
                         congregation: state.congregations[index],
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CongregationDetail(
+                                congregation: state.congregations[index],
+                              ),
+                            ),
+                          );
+                        }
                       );
                     },
                   );
@@ -92,6 +103,7 @@ class _CongregationListState extends State<CongregationList> {
           //TODO: change icon based on favourite status
         },
       ),
+      onTap: onTap,
     );
   }
 }
