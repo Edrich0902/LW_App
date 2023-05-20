@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:lw_app/Blocs/Note/note_list_bloc.dart';
 import 'package:lw_app/Models/Note/note.dart';
+import 'package:lw_app/Screens/AddNote/add_note.dart';
 
 class NotesList extends StatefulWidget {
   const NotesList({super.key});
@@ -39,7 +40,16 @@ class _NotesListState extends State<NotesList> {
         appBar: AppBar(title: Text('Notes')),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            //TODO: open add dialog form
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return AddNote(
+                    userId: user?.id,
+                  );
+                },
+              ),
+            );
           },
           child: const Icon(Icons.add),
         ),
@@ -68,6 +78,19 @@ class _NotesListState extends State<NotesList> {
                         return _noteItem(
                           theme: theme,
                           note: state.notes[index],
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return AddNote(
+                                    noteId: state.notes[index].id,
+                                    userId: user?.id,
+                                  );
+                                },
+                              ),
+                            );
+                          },
                         );
                       },
                     ),
@@ -90,31 +113,32 @@ class _NotesListState extends State<NotesList> {
     GestureTapCallback? onPressed,
   }) {
     return Card(
-      //TODO: handle card tap
-      //TODO: handle note delete
-      child: SizedBox(
-        child: Padding(
-          padding: EdgeInsets.only(top: 8.0, bottom: 8.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ListTile(
-                title: Text(note?.title ?? 'No Title'),
-                subtitle: Text(note?.note ?? 'No Content'),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  IconButton(
-                    onPressed: onPressed,
-                    icon: Icon(
-                      Icons.delete,
-                      color: Colors.redAccent,
+      child: InkWell(
+        onTap: onTap,
+        child: SizedBox(
+          child: Padding(
+            padding: EdgeInsets.only(top: 8.0, bottom: 8.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                ListTile(
+                  title: Text(note?.title ?? 'No Title'),
+                  subtitle: Text(note?.note ?? 'No Content'),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    IconButton(
+                      onPressed: onPressed,
+                      icon: Icon(
+                        Icons.delete,
+                        color: Colors.redAccent,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
