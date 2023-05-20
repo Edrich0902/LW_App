@@ -37,6 +37,12 @@ class _NotesListState extends State<NotesList> {
       },
       child: Scaffold(
         appBar: AppBar(title: Text('Notes')),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            //TODO: open add dialog form
+          },
+          child: const Icon(Icons.add),
+        ),
         body: SafeArea(
           child: Center(
             child: BlocBuilder<NoteListBloc, NoteListState>(
@@ -50,18 +56,21 @@ class _NotesListState extends State<NotesList> {
                 }
 
                 if (state is NoteListSuccess) {
-                  return ListView.builder(
-                    itemCount: state.notes.length,
-                    prototypeItem: _noteItem(
-                      theme: theme,
-                      note: state.notes.first
+                  return Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: ListView.builder(
+                      itemCount: state.notes.length,
+                      prototypeItem: _noteItem(
+                          theme: theme,
+                          note: state.notes.first
+                      ),
+                      itemBuilder: (context, index) {
+                        return _noteItem(
+                          theme: theme,
+                          note: state.notes[index],
+                        );
+                      },
                     ),
-                    itemBuilder: (context, index) {
-                      return _noteItem(
-                        theme: theme,
-                        note: state.notes[index],
-                      );
-                    },
                   );
                 } else {
                   return Text('Something went wrong.');
