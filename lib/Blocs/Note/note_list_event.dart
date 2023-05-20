@@ -9,8 +9,10 @@ abstract class NoteListEvent extends Equatable {
 }
 
 class LoadNotes extends NoteListEvent {
-  const LoadNotes();
+  final String userId;
+
+  const LoadNotes({required this.userId});
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [userId];
 }

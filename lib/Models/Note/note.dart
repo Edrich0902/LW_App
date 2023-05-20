@@ -18,14 +18,14 @@ class Note extends Equatable {
   });
 
   @override
-  List<Object?> get props => {
+  List<Object?> get props => [
     id,
     title,
     note,
     userId,
     createdAt,
     updatedAt,
-  };
+  ];
 
   factory Note.fromJson(Map<String, dynamic> json) {
     return Note(
