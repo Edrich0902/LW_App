@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Screens/Profile/profile.dart';
 import 'package:lw_app/Screens/Dashboard/dashboard.dart';
 import 'package:lw_app/Screens/Congregations/congregation_list.dart';
+import 'package:lw_app/Screens/Notes/notes_list.dart';
 import 'package:lw_app/Blocs/User/user_bloc.dart';
 
 class AppDrawer extends StatefulWidget {
@@ -59,6 +60,18 @@ class _AppDrawerState extends State<AppDrawer> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => const CongregationList(),
+                ),
+              );
+            },
+          ),
+          _createDrawerItem(
+            theme: theme,
+            label: 'My Notes',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const NotesList(),
                 ),
               );
             },

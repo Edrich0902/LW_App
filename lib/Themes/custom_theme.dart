@@ -12,6 +12,7 @@ class DarkColors {
   static const secondary = Color(0xFFde4030);
   static const accent = Color(0xFF996619);
   static const background = Color(0xFF11181d);
+  static const tertiary = Color(0xFF222f38);
 }
 
 MaterialColor mainColor = const MaterialColor(0xFF22628c, <int, Color>{
@@ -80,6 +81,14 @@ class AppTheme {
         borderRadius: BorderRadius.circular(24.0),
       ),
     ),
+    cardTheme: CardTheme(
+      color: LightColors.background,
+      elevation: 4.0,
+      shadowColor: DarkColors.background,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24.0),
+      ),
+    ),
   );
 
   static ThemeData darkTheme = ThemeData(
@@ -128,6 +137,14 @@ class AppTheme {
     drawerTheme: DrawerThemeData(
       elevation: 6.0,
       backgroundColor: DarkColors.background,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24.0),
+      ),
+    ),
+    cardTheme: CardTheme(
+      color: DarkColors.tertiary,
+      elevation: 4.0,
+      shadowColor: DarkColors.background,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24.0),
       ),
