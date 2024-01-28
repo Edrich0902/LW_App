@@ -4,6 +4,7 @@ import 'package:lw_app/Blocs/Auth/auth_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Screens/Profile/profile.dart';
 import 'package:lw_app/Screens/Dashboard/dashboard.dart';
+import 'package:lw_app/Screens/VisionMission/visionMission.dart';
 import 'package:lw_app/Blocs/User/user_bloc.dart';
 
 class AppDrawer extends StatefulWidget {
@@ -49,6 +50,16 @@ class _AppDrawerState extends State<AppDrawer> {
                 MaterialPageRoute(builder: (context) => const DashPage()),
               );
             },
+          ),
+          _createDrawerItem(
+            theme: theme,
+            label: 'Vision & Mission',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const VisionMissionPage()),
+              );
+            }
           ),
           _createDrawerItem(theme: theme, label: 'My Bible'),
           const Divider(),
