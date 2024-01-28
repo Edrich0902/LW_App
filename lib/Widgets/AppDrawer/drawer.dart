@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 import 'package:lw_app/Blocs/Auth/auth_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lw_app/Blocs/User/user_bloc.dart';
+
+// Screens
 import 'package:lw_app/Screens/Profile/profile.dart';
 import 'package:lw_app/Screens/Dashboard/dashboard.dart';
 import 'package:lw_app/Screens/VisionMission/visionMission.dart';
-import 'package:lw_app/Blocs/User/user_bloc.dart';
+import 'package:lw_app/Screens/Notes/notes.dart';
 
 class AppDrawer extends StatefulWidget {
   const AppDrawer({super.key});
@@ -50,6 +53,16 @@ class _AppDrawerState extends State<AppDrawer> {
                 MaterialPageRoute(builder: (context) => const DashPage()),
               );
             },
+          ),
+          _createDrawerItem(
+              theme: theme,
+              label: 'Notes',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const NotesPage()),
+                );
+              }
           ),
           _createDrawerItem(
             theme: theme,

@@ -29,7 +29,9 @@ class _VisionMissionPageState extends State<VisionMissionPage> {
         // Listen to state updates and execute logic here
       },
       child: Scaffold(
-        appBar: AppBar(),
+        appBar: AppBar(
+          title: Text('Vision & Mission'),
+        ),
         body: SafeArea(
           child: BlocBuilder<VisionMissionBloc, VisionMissionState>(
             builder: (context, state) {
