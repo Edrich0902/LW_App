@@ -15,7 +15,9 @@ class MetaDataService {
 
       // TODO: make response handler for list responses
       List<dynamic> listResponse = response;
-      List<MetaData> data = listResponse.map((item) => MetaData.fromJson(Map<String, dynamic>.from(item))).toList();
+      List<MetaData> data = listResponse
+          .map((item) => MetaData.fromJson(Map<String, dynamic>.from(item)))
+          .toList();
 
       return Future.value(data);
     } catch (error) {
