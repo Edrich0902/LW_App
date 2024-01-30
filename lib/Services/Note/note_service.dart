@@ -12,7 +12,7 @@ class NoteService {
       final response = await supabase
           .from('notes')
           .select('*')
-          .filter('user_id', _auth.currentUser.id);
+          .eq('user_id', _auth.currentUser?.id);
 
       // TODO: make response handler for list responses
       List<dynamic> listResponse = response;
@@ -31,7 +31,7 @@ class NoteService {
   }) async {
     try {
       await supabase.from('notes').insert({
-        'user_id': _auth.currentUser.id,
+        'user_id': _auth.currentUser?.id,
         'title': note.title,
         'content': note.content,
       });
@@ -48,7 +48,7 @@ class NoteService {
       await supabase.from('notes').update({
         'title': updatedNote.title,
         'content': updatedNote.content,
-      }).eq('id', noteId)
+      }).eq('id', noteId);
     } catch (error) {
       throw error.toString();
     }
