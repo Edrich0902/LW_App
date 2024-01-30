@@ -91,6 +91,13 @@ class AppTheme {
         borderRadius: BorderRadius.circular(24.0),
       ),
     ),
+    dialogTheme: DialogTheme(
+      elevation: 6.0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24.0),
+      ),
+      backgroundColor: LightColors.background,
+    ),
   );
 
   static ThemeData darkTheme = ThemeData(
@@ -150,6 +157,13 @@ class AppTheme {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24.0),
       ),
+    ),
+    dialogTheme: DialogTheme(
+      elevation: 6.0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24.0),
+      ),
+      backgroundColor: DarkColors.background,
     ),
   );
 }
