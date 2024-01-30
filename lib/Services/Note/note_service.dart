@@ -41,7 +41,7 @@ class NoteService {
   }
 
   Future<void> updateNote({
-    required String noteId,
+    required String? noteId,
     required Note updatedNote
   }) async {
     try {

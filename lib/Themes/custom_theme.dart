@@ -31,6 +31,8 @@ MaterialColor mainColor = const MaterialColor(0xFF22628c, <int, Color>{
 class AppTheme {
   AppTheme._();
 
+  // TODO: add dialog theme for light and dark mode
+
   static ThemeData lightTheme = ThemeData(
     primarySwatch: mainColor,
     primaryColor: LightColors.primary,

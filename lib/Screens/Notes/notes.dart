@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lw_app/Blocs/Notes/notes_bloc.dart';
+import 'package:lw_app/Utils/snackbar.dart';
+import 'package:lw_app/Models/Note/note.dart';
 
 class NotesPage extends StatefulWidget {
   const NotesPage({super.key});
@@ -10,62 +15,77 @@ class NotesPage extends StatefulWidget {
 class _NotesPageState extends State<NotesPage> {
   @override
   void initState() {
-    //TODO: add block init here
+    context.read<NotesBloc>().add(const LoadNotes());
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    //TODO: add bloc def here
+    NotesBloc notesBloc = BlocProvider.of<NotesBloc>(context);
 
-    //TODO: add block listener
-    List<Map<String, dynamic>> list = [
-      {'title': 'Test Note 1', 'content': 'Testing a note content'},
-      {'title': 'Test Note 2', 'content': 'Testing a note content'},
-      {'title': 'Test Note 3', 'content': 'Testing a note content'},
-      {'title': 'Test Note 4', 'content': 'Testing a note content'},
-      {'title': 'Test Note 1', 'content': 'Testing a note content'},
-      {'title': 'Test Note 2', 'content': 'Testing a note content'},
-      {'title': 'Test Note 3', 'content': 'Testing a note content'},
-      {'title': 'Test Note 4', 'content': 'Testing a note content'},
-      {'title': 'Test Note 1', 'content': 'Testing a note content'},
-      {'title': 'Test Note 2', 'content': 'Testing a note content'},
-      {'title': 'Test Note 3', 'content': 'Testing a note content'},
-      {'title': 'Test Note 4', 'content': 'Testing a note content'},
-      {'title': 'Test Note 1', 'content': 'Testing a note content'},
-      {'title': 'Test Note 2', 'content': 'Testing a note content'},
-      {'title': 'Test Note 3', 'content': 'Testing a note content'},
-      {'title': 'Test Note 4', 'content': 'Testing a note content'},
-      {'title': 'Test Note 1', 'content': 'Testing a note content'},
-      {'title': 'Test Note 2', 'content': 'Testing a note content'},
-      {'title': 'Test Note 3', 'content': 'Testing a note content'},
-      {'title': 'Test Note 4', 'content': 'Testing a note content'},
-      {'title': 'Test Note 1', 'content': 'Testing a note content'},
-      {'title': 'Test Note 2', 'content': 'Testing a note content'},
-      {'title': 'Test Note 3', 'content': 'Testing a note content'},
-      {'title': 'Test Note 4', 'content': 'Testing a note content'},
-    ];
+    return BlocListener<NotesBloc, NotesState>(
+      listener: (context, state) {
+        if (state is NotesCreateSuccess) {
+          SnackBarHelper.showSuccessSnack(context, 'Note Created');
+        }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Notes'),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {/* TODO: implement onPressed to add note */},
-        child: Icon(Icons.add),
-      ),
-      body: SafeArea(
-        child: ListView.builder(
-          itemCount: list.length,
-          itemBuilder: (context, index) {
-            return _createNoteCard(list[index]);
-          },
+        if (state is NotesDeleteSuccess) {
+          SnackBarHelper.showSuccessSnack(context, 'Note Deleted');
+        }
+
+        if (state is NotesUpdateSuccess) {
+          SnackBarHelper.showSuccessSnack(context, 'Note Updated');
+        }
+
+        if (state is NotesError) {
+          SnackBarHelper.showErrorSnack(context, 'Something went wrong.');
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Notes'),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {/* TODO: implement onPressed to add note */},
+          child: Icon(Icons.add),
+        ),
+        body: SafeArea(
+          child: BlocBuilder<NotesBloc, NotesState>(
+            builder: (context, state) {
+              if (state is NotesLoading) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              } else if (state is NotesSuccess) {
+                return ListView.builder(
+                  itemCount: state.data.length,
+                  itemBuilder: (context, index) {
+                    return _createNoteCard(
+                      state.data.elementAt(index),
+                      () {
+                        notesBloc.add(
+                          DeleteNote(noteId: state.data.elementAt(index).id ?? ''),
+                        );
+                      },
+                      () {
+                        print('test edit');
+                      },
+                    );
+                  },
+                );
+              } else {
+                return const Center(
+                  child: Text('Something went wrong.'),
+                );
+              }
+            },
+          ),
         ),
       ),
     );
   }
 
-  Widget _createNoteCard(Map<String, dynamic> note) {
+  Widget _createNoteCard(Note note, VoidCallback delete, VoidCallback edit) {
     return Card(
       child: Padding(
         padding: EdgeInsets.all(8),
@@ -76,11 +96,11 @@ class _NotesPageState extends State<NotesPage> {
             ListTile(
               leading: Icon(Icons.note),
               title: Text(
-                note['title'],
+                note.title ?? '',
                 overflow: TextOverflow.ellipsis,
               ),
               subtitle: Text(
-                note['content'],
+                note.content ?? '',
                 overflow: TextOverflow.ellipsis,
                 maxLines: 2,
               ),
@@ -89,11 +109,17 @@ class _NotesPageState extends State<NotesPage> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
                 IconButton(
-                  onPressed: () {/* TODO: add onPressed as param */},
+                  onPressed: () {
+                    confirmationDialog(
+                      context,
+                      'Are you sure you want to delete this note?',
+                      delete,
+                    );
+                  },
                   icon: Icon(Icons.delete, color: Colors.red),
                 ),
                 IconButton(
-                  onPressed: () {/* TODO: add onPressed as param */},
+                  onPressed: edit,
                   icon: Icon(Icons.edit),
                 ),
               ],
@@ -101,6 +127,40 @@ class _NotesPageState extends State<NotesPage> {
           ],
         ),
       ),
+    );
+  }
+
+  // TODO: extract and make generic and reusable
+  void confirmationDialog(BuildContext context, String message, VoidCallback confirm) {
+    Widget cancelButton = ElevatedButton(
+      onPressed: () {
+        Navigator.of(context, rootNavigator: true).pop();
+      },
+      child: Text('Cancel'),
+    );
+
+    Widget confirmButton = ElevatedButton(
+      onPressed: () {
+        Navigator.of(context, rootNavigator: true).pop();
+        confirm();
+      },
+      child: Text('Confirm'),
+    );
+
+    AlertDialog dialog = AlertDialog(
+      title: Text('Delete Note'),
+      content: Text(message),
+      actions: [
+        cancelButton,
+        confirmButton
+      ],
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return dialog;
+      },
     );
   }
 }
