@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/Notes/notes_bloc.dart';
 import 'package:lw_app/Utils/snackbar.dart';
 import 'package:lw_app/Models/Note/note.dart';
+import 'package:lw_app/Screens/NotesEdit/notes_edit.dart';
 
 class NotesPage extends StatefulWidget {
   const NotesPage({super.key});
@@ -25,16 +26,8 @@ class _NotesPageState extends State<NotesPage> {
 
     return BlocListener<NotesBloc, NotesState>(
       listener: (context, state) {
-        if (state is NotesCreateSuccess) {
-          SnackBarHelper.showSuccessSnack(context, 'Note Created');
-        }
-
         if (state is NotesDeleteSuccess) {
           SnackBarHelper.showSuccessSnack(context, 'Note Deleted');
-        }
-
-        if (state is NotesUpdateSuccess) {
-          SnackBarHelper.showSuccessSnack(context, 'Note Updated');
         }
 
         if (state is NotesError) {
@@ -46,7 +39,14 @@ class _NotesPageState extends State<NotesPage> {
           title: Text('Notes'),
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () {/* TODO: implement onPressed to add note */},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => NotesEditPage(),
+              ),
+            );
+          },
           child: Icon(Icons.add),
         ),
         body: SafeArea(
@@ -68,7 +68,14 @@ class _NotesPageState extends State<NotesPage> {
                         );
                       },
                       () {
-                        print('test edit');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => NotesEditPage(
+                              noteId: state.data.elementAt(index).id ?? '',
+                            ),
+                          ),
+                        );
                       },
                     );
                   },

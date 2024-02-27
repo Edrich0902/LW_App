@@ -26,6 +26,21 @@ class NoteService {
     }
   }
 
+  Future<Note> getNote(String noteId) async {
+    try {
+      final response = await supabase
+          .from('notes')
+          .select('*')
+          .eq('id', noteId)
+          .single();
+
+      Note note = Note.fromJson(Map<String, dynamic>.from(response));
+      return Future.value(note);
+    } catch (error) {
+      throw error.toString();
+    }
+  }
+
   Future<void> createNote({
     required Note note
   }) async {

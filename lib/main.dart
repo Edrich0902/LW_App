@@ -10,6 +10,7 @@ import 'package:lw_app/Blocs/Auth/auth_bloc.dart';
 import 'package:lw_app/Blocs/User/user_bloc.dart';
 import 'package:lw_app/Blocs/VisionMission/vision_mission_bloc.dart';
 import 'package:lw_app/Blocs/Notes/notes_bloc.dart';
+import 'package:lw_app/Blocs/NoteEdit/note_edit_bloc.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,6 +40,9 @@ Future<void> main() async {
         BlocProvider<NotesBloc>(
           create: (_) => NotesBloc(),
         ),
+        BlocProvider<NoteEditBloc>(
+          create: (_) => NoteEditBloc(),
+        )
       ],
       child: const App(),
     ),

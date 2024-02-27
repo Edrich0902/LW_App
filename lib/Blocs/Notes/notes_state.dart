@@ -23,34 +23,6 @@ class NotesSuccess extends NotesState {
   List<Object?> get props => [data];
 }
 
-class NotesCreate extends NotesState {
-  final Note note;
-
-  const NotesCreate({required this.note});
-
-  @override
-  List<Object?> get props => [note];
-}
-
-class NotesCreateSuccess extends NotesState {
-  @override
-  List<Object?> get props => [];
-}
-
-class NotesUpdate extends NotesState {
-  final Note note;
-
-  const NotesUpdate({required this.note});
-
-  @override
-  List<Object?> get props => [note];
-}
-
-class NotesUpdateSuccess extends NotesState {
-  @override
-  List<Object?> get props => [];
-}
-
 class NotesDelete extends NotesState {
   final String noteId;
 

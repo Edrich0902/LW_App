@@ -14,25 +14,6 @@ class LoadNotes extends NotesEvent {
   List<Object> get props => [];
 }
 
-class CreateNote extends NotesEvent {
-  final String title;
-  final String content;
-
-  const CreateNote(this.title, this.content);
-
-  @override
-  List<Object> get props => [title, content];
-}
-
-class UpdateNote extends NotesEvent {
-  final Note note;
-
-  const UpdateNote({required this.note});
-
-  @override
-  List<Object> get props => [note];
-}
-
 class DeleteNote extends NotesEvent {
   final String noteId;
 
