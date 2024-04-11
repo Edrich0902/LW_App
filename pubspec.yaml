@@ -1,5 +1,5 @@
 name: lw_app
-description: LW App
+description: Lewende Woord Paarl
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -47,6 +47,12 @@ dependencies:
   intl: ^0.18.1
   #splash screen library
   easy_splash_screen:
+  flutter_launcher_icons: ^0.12.0
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icons/icon.png"
 
 dev_dependencies:
   flutter_test:
@@ -73,6 +79,7 @@ flutter:
   assets:
     - .env.development
     - .env.production
+    - assets/
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
