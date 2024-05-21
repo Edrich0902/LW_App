@@ -19,8 +19,8 @@ class _NotesEditPageState extends State<NotesEditPage> {
   bool isEdit = false;
 
   final _noteFormKey = GlobalKey<FormState>();
-  late final TextEditingController _titleController = TextEditingController();
-  late final TextEditingController _contentController = TextEditingController();
+  late final TextEditingController _titleController = TextEditingController(text: '');
+  late final TextEditingController _contentController = TextEditingController(text: '');
 
   @override
   void initState() {
@@ -42,9 +42,9 @@ class _NotesEditPageState extends State<NotesEditPage> {
     super.dispose();
   }
 
-  void initForm(NoteSuccess state) {
-    _titleController.text = state.note.title ?? '';
-    _contentController.text = state.note.content ?? '';
+  void initForm({Note note = const Note()}) {
+    _titleController.text = note.title ?? '';
+    _contentController.text = note.content ?? '';
   }
 
   @override
@@ -79,9 +79,10 @@ class _NotesEditPageState extends State<NotesEditPage> {
                   child: CircularProgressIndicator(),
                 );
               } else if (state is NoteSuccess) {
-                initForm(state);
+                initForm(note: state.note);
                 return _noteForm(noteEditBloc: noteEditBloc, note: state.note);
               } else if (state is NoteEditInitial) {
+                initForm();
                 return _noteForm(noteEditBloc: noteEditBloc);
               } else {
                 return Center(
