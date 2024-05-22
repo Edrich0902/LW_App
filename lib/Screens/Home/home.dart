@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:lw_app/Screens/Auth/login.dart';
-import 'package:lw_app/Screens/Dashboard/dashboard.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/Auth/auth_bloc.dart';
 import 'package:lw_app/Utils/snackbar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
+
+// Screens
+import 'package:lw_app/Screens/Auth/login.dart';
+import 'package:lw_app/Screens/Container/container.dart';
+import 'package:lw_app/Screens/Dashboard/dashboard.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -26,10 +29,9 @@ class _HomePageState extends State<HomePage> {
 
     sb.Session? session = sb.Supabase.instance.client.auth.currentSession;
     if (session != null) {
-      Navigator.pushAndRemoveUntil(
+      Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const DashPage()),
-        (route) => false,
+        MaterialPageRoute(builder: (context) => const ContainerPage()),
       );
     }
   }
@@ -39,15 +41,14 @@ class _HomePageState extends State<HomePage> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthSuccessState) {
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const DashPage()),
+            MaterialPageRoute(builder: (context) => const ContainerPage()),
           );
         } else if (state is UnAuthedState) {
-          Navigator.pushAndRemoveUntil(
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const LoginPage()),
-            (route) => false,
           );
         } else if (state is AuthErrorState) {
           SnackBarHelper.showErrorSnack(context, 'Login Failed');

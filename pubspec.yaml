@@ -48,6 +48,7 @@ dependencies:
   #splash screen library
   easy_splash_screen:
   flutter_launcher_icons: ^0.12.0
+  google_nav_bar: ^5.0.6
 
 flutter_icons:
   android: "launcher_icon"

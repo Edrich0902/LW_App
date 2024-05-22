@@ -4,7 +4,6 @@ import 'package:lw_app/Blocs/Auth/auth_bloc.dart';
 import 'package:lw_app/Screens/Auth/login.dart';
 import 'package:lw_app/Utils/snackbar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
-import 'package:lw_app/Widgets/AppDrawer/drawer.dart';
 
 class DashPage extends StatelessWidget {
   const DashPage({super.key});
@@ -25,8 +24,9 @@ class DashPage extends StatelessWidget {
         }
       },
       child: Scaffold(
-        appBar: AppBar(),
-        drawer: const AppDrawer(),
+        appBar: AppBar(
+          title: Text('Dashboard'),
+        ),
         body: Center(
           child: Text(
             sb.Supabase.instance.client.auth.currentUser?.email ?? "No email",
