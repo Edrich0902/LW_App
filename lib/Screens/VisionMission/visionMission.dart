@@ -46,12 +46,14 @@ class _VisionMissionPageState extends State<VisionMissionPage> {
                   content.add(_createDataItem(data: item));
                 }
                 // Return list content
-                return Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Center(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: content,
+                return SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Center(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: content,
+                      ),
                     ),
                   ),
                 );

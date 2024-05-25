@@ -5,6 +5,7 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:lw_app/Screens/Dashboard/dashboard.dart';
 import 'package:lw_app/Screens/Notes/notes.dart';
 import 'package:lw_app/Screens/Profile/profile.dart';
+import 'package:lw_app/Screens/VisionMission/visionMission.dart';
 
 class ContainerPage extends StatefulWidget {
   const ContainerPage({super.key});
@@ -47,7 +48,7 @@ class _ContainerPageState extends State<ContainerPage> {
           // TODO: add other pages to the page view here
           DashPage(),
           DashPage(),
-          ProfilePage(),
+          VisionMissionPage(),
           ProfilePage(),
         ],
         onPageChanged: (index) => pageChanged(index),
@@ -80,7 +81,7 @@ class _ContainerPageState extends State<ContainerPage> {
               ),
               GButton(
                 icon: Icons.info_outline,
-                text: 'More Info',
+                text: 'Vision & Mission',
               ),
               GButton(
                 icon: Icons.person,
