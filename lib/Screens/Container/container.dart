@@ -3,8 +3,8 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 
 // Screens
 import 'package:lw_app/Screens/Dashboard/dashboard.dart';
-import 'package:lw_app/Screens/Profile/profile_edit.dart';
 import 'package:lw_app/Screens/Notes/notes.dart';
+import 'package:lw_app/Screens/Profile/profile.dart';
 
 class ContainerPage extends StatefulWidget {
   const ContainerPage({super.key});
@@ -46,7 +46,7 @@ class _ContainerPageState extends State<ContainerPage> {
         children: <Widget>[
           // TODO: add other pages to the page view here
           DashPage(),
-          NotesPage(),
+          DashPage(),
           ProfilePage(),
           ProfilePage(),
         ],
@@ -75,8 +75,8 @@ class _ContainerPageState extends State<ContainerPage> {
                 text: 'Home',
               ),
               GButton(
-                icon: Icons.notes,
-                text: 'Notes',
+                icon: Icons.calendar_month,
+                text: 'Calendar',
               ),
               GButton(
                 icon: Icons.info_outline,

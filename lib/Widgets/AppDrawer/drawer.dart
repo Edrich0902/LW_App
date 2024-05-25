@@ -1,3 +1,5 @@
+// FIXME: This class and page will be removed -> just keeping for reference
+
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 import 'package:lw_app/Blocs/Auth/auth_bloc.dart';
@@ -5,7 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/User/user_bloc.dart';
 
 // Screens
-import 'package:lw_app/Screens/Profile/profile_edit.dart';
+import 'package:lw_app/Screens/ProfileEdit/profile_edit.dart';
 import 'package:lw_app/Screens/Dashboard/dashboard.dart';
 import 'package:lw_app/Screens/VisionMission/visionMission.dart';
 import 'package:lw_app/Screens/Notes/notes.dart';
@@ -40,7 +42,7 @@ class _AppDrawerState extends State<AppDrawer> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const ProfilePage()),
+                MaterialPageRoute(builder: (context) => const ProfileEditPage()),
               );
             },
           ),

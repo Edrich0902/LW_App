@@ -4,16 +4,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/User/user_bloc.dart';
 import 'package:lw_app/Utils/snackbar.dart';
 
-class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+class ProfileEditPage extends StatefulWidget {
+  const ProfileEditPage({super.key});
 
   @override
-  State<ProfilePage> createState() => _ProfilePageState();
+  State<ProfileEditPage> createState() => _ProfileEditPageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _ProfileEditPageState extends State<ProfileEditPage> {
   User? user = Supabase.instance.client.auth.currentUser;
-  final _profileFormKey = GlobalKey<FormState>();
+  final _profileEditFormKey = GlobalKey<FormState>();
   late final TextEditingController _firstNameController =
       TextEditingController();
   late final TextEditingController _lastNameController =
@@ -52,7 +52,7 @@ class _ProfilePageState extends State<ProfilePage> {
         body: SafeArea(
           child: Center(
             child: Form(
-              key: _profileFormKey,
+              key: _profileEditFormKey,
               child: BlocBuilder<UserBloc, UserState>(
                 builder: (context, state) {
                   if (state is UserLoading) {
@@ -114,7 +114,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           const SizedBox(height: 16),
                           ElevatedButton(
                             onPressed: () => {
-                              if (_profileFormKey.currentState!.validate())
+                              if (_profileEditFormKey.currentState!.validate())
                                 {
                                   userBloc.add(
                                     UpdateUser(
