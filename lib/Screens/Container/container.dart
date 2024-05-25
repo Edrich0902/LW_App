@@ -3,7 +3,7 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 
 // Screens
 import 'package:lw_app/Screens/Dashboard/dashboard.dart';
-import 'package:lw_app/Screens/Profile/profile.dart';
+import 'package:lw_app/Screens/Profile/profile_edit.dart';
 import 'package:lw_app/Screens/Notes/notes.dart';
 
 class ContainerPage extends StatefulWidget {

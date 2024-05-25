@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/User/user_bloc.dart';
 
 // Screens
-import 'package:lw_app/Screens/Profile/profile.dart';
+import 'package:lw_app/Screens/Profile/profile_edit.dart';
 import 'package:lw_app/Screens/Dashboard/dashboard.dart';
 import 'package:lw_app/Screens/VisionMission/visionMission.dart';
 import 'package:lw_app/Screens/Notes/notes.dart';
