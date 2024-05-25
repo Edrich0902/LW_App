@@ -58,6 +58,7 @@ class _NotesPageState extends State<NotesPage> {
                 );
               } else if (state is NotesSuccess) {
                 return ListView.builder(
+                  padding: EdgeInsets.all(8.0),
                   itemCount: state.data.length,
                   itemBuilder: (context, index) {
                     return _createNoteCard(
