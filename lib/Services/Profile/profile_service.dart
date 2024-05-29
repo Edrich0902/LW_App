@@ -10,12 +10,18 @@ class ProfileService {
   Future<void> updateUser({
     required String firstName,
     required String lastName,
+    String? address,
+    bool? isMember,
+    bool? isBaptized
   }) async {
     try {
       final User? currentUser = _auth.currentUser;
       await supabase.from('user_profile').update({
         'first_name': firstName,
         'last_name': lastName,
+        'address': address ?? null,
+        'is_member': isMember ?? null,
+        'is_baptized': isBaptized ?? null,
       }).eq('id', currentUser?.id);
     } catch (error) {
       throw error.toString();

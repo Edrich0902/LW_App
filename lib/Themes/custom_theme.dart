@@ -98,6 +98,10 @@ class AppTheme {
       ),
       backgroundColor: LightColors.background,
     ),
+    checkboxTheme: CheckboxThemeData(
+      fillColor: MaterialStateProperty.all<Color>(LightColors.primary),
+      checkColor: MaterialStateProperty.all<Color>(Colors.white),
+    ),
   );
 
   static ThemeData darkTheme = ThemeData(
@@ -164,6 +168,10 @@ class AppTheme {
         borderRadius: BorderRadius.circular(24.0),
       ),
       backgroundColor: DarkColors.background,
+    ),
+    checkboxTheme: CheckboxThemeData(
+      fillColor: MaterialStateProperty.all<Color>(DarkColors.primary),
+      checkColor: MaterialStateProperty.all<Color>(Colors.white),
     ),
   );
 }

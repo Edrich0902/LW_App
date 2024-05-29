@@ -27,6 +27,9 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         await _profileService.updateUser(
           firstName: event.firstName,
           lastName: event.lastName,
+          address: event.address,
+          isBaptized: event.isBaptized,
+          isMember: event.isMember
         );
 
         UserProfile user = await _profileService.getUserProfile();
