@@ -10,7 +10,6 @@ class DashPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is UnAuthedState) {
@@ -27,11 +26,84 @@ class DashPage extends StatelessWidget {
         appBar: AppBar(
           title: Text('Dashboard'),
         ),
-        body: Center(
-          child: Text(
-            sb.Supabase.instance.client.auth.currentUser?.email ?? "No email",
+        body: Padding(
+          padding: EdgeInsets.all(8),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                _createDashCard(
+                  context,
+                  "Upcoming Events",
+                  "https://images.unsplash.com/photo-1486591978090-58e619d37fe7?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                  () {
+                    print('Card clicked'); // TODO: navigate to upcoming events screen
+                  },
+                ),
+                const SizedBox(height: 16),
+                _createDashCard(
+                  context,
+                  "Recent Sermons",
+                  "https://images.unsplash.com/photo-1673322880779-9c257a0cae44?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                  () {
+                    print('Card clicked'); // TODO: navigate to Sermons
+                  },
+                ),
+                const SizedBox(height: 16),
+                _createDashCard(
+                  context,
+                  "Tithes & Offerings",
+                  "https://images.unsplash.com/photo-1673042872287-a77ef03317a4?q=80&w=2008&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                  () {
+                    print('Card clicked'); // TODO: navigate to Tithes & Offerings
+                  },
+                ),
+              ],
+            ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _createDashCard(
+    BuildContext context,
+    String text,
+    String imagePath,
+    VoidCallback onTap,
+  ) {
+    return Card(
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+            width: MediaQuery.of(context).size.width,
+            height: 200.00,
+            decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: NetworkImage(imagePath),
+                  fit: BoxFit.fitWidth,
+                  alignment: Alignment.center,
+                ),
+                borderRadius: BorderRadius.all(Radius.circular(25))),
+            child: Center(
+              child: Text(
+                text,
+                style: TextStyle(
+                  fontSize: 24.0,
+                  letterSpacing: 3.0,
+                  shadows: <Shadow>[
+                    Shadow(
+                        offset: Offset(2.0, 2.0),
+                        blurRadius: 4.0,
+                        color: Color.fromARGB(255, 0, 0, 0)),
+                    Shadow(
+                        offset: Offset(2.0, 2.0),
+                        blurRadius: 4.0,
+                        color: Color.fromARGB(255, 0, 0, 0)),
+                  ],
+                ),
+              ),
+            )),
       ),
     );
   }
