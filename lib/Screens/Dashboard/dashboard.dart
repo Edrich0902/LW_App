@@ -4,6 +4,7 @@ import 'package:lw_app/Blocs/Auth/auth_bloc.dart';
 import 'package:lw_app/Screens/Auth/login.dart';
 import 'package:lw_app/Utils/snackbar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
+import 'package:lw_app/Screens/Sermons/sermons.dart';
 
 class DashPage extends StatelessWidget {
   const DashPage({super.key});
@@ -46,7 +47,10 @@ class DashPage extends StatelessWidget {
                   "Recent Sermons",
                   "https://images.unsplash.com/photo-1673322880779-9c257a0cae44?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
                   () {
-                    print('Card clicked'); // TODO: navigate to Sermons
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const SermonsPage()),
+                    );
                   },
                 ),
                 const SizedBox(height: 16),
