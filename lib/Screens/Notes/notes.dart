@@ -65,7 +65,8 @@ class _NotesPageState extends State<NotesPage> {
                       state.data.elementAt(index),
                       () {
                         notesBloc.add(
-                          DeleteNote(noteId: state.data.elementAt(index).id ?? ''),
+                          DeleteNote(
+                              noteId: state.data.elementAt(index).id ?? ''),
                         );
                       },
                       () {
@@ -95,51 +96,51 @@ class _NotesPageState extends State<NotesPage> {
 
   Widget _createNoteCard(Note note, VoidCallback delete, VoidCallback edit) {
     return Card(
-      child: Padding(
-        padding: EdgeInsets.all(8),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            ListTile(
-              leading: Icon(Icons.note),
-              title: Text(
-                note.title ?? '',
-                overflow: TextOverflow.ellipsis,
-              ),
-              subtitle: Text(
-                note.content ?? '',
-                overflow: TextOverflow.ellipsis,
-                maxLines: 2,
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: <Widget>[
-                IconButton(
-                  onPressed: () {
-                    confirmationDialog(
-                      context,
-                      'Are you sure you want to delete this note?',
-                      delete,
-                    );
-                  },
-                  icon: Icon(Icons.delete, color: Colors.red),
+      child: InkWell(
+        onTap: edit,
+        child: Padding(
+          padding: EdgeInsets.all(8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              ListTile(
+                leading: Icon(Icons.note),
+                title: Text(
+                  note.title ?? '',
+                  overflow: TextOverflow.ellipsis,
                 ),
-                IconButton(
-                  onPressed: edit,
-                  icon: Icon(Icons.edit),
+                subtitle: Text(
+                  note.content ?? '',
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 3,
                 ),
-              ],
-            ),
-          ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  IconButton(
+                    onPressed: () {
+                      confirmationDialog(
+                        context,
+                        'Are you sure you want to delete this note?',
+                        delete,
+                      );
+                    },
+                    icon: Icon(Icons.delete, color: Colors.red),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
   // TODO: extract and make generic and reusable
-  void confirmationDialog(BuildContext context, String message, VoidCallback confirm) {
+  void confirmationDialog(
+      BuildContext context, String message, VoidCallback confirm) {
     Widget cancelButton = ElevatedButton(
       onPressed: () {
         Navigator.of(context, rootNavigator: true).pop();
@@ -158,10 +159,7 @@ class _NotesPageState extends State<NotesPage> {
     AlertDialog dialog = AlertDialog(
       title: Text('Delete Note'),
       content: Text(message),
-      actions: [
-        cancelButton,
-        confirmButton
-      ],
+      actions: [cancelButton, confirmButton],
     );
 
     showDialog(
