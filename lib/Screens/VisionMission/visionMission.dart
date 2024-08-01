@@ -5,6 +5,7 @@ import 'package:lw_app/Blocs/VisionMission/vision_mission_bloc.dart';
 import 'package:lw_app/Utils/snackbar.dart';
 import 'package:lw_app/Models/MetaData/meta_data.dart' as Lw;
 import 'package:lw_app/Widgets/WhatsappContactFAB/whatsapp_contact_fab.dart';
+import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 
 class VisionMissionPage extends StatefulWidget {
   const VisionMissionPage({super.key});
@@ -32,6 +33,7 @@ class _VisionMissionPageState extends State<VisionMissionPage> {
       child: Scaffold(
         appBar: AppBar(
           title: Text('Vision & Mission'),
+          actions: <Widget>[ProfileActionButton()],
         ),
         floatingActionButton: WhatsappContactFAB(),
         body: SafeArea(

@@ -7,6 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 import 'package:lw_app/Screens/Sermons/sermons.dart';
 import 'package:lw_app/Screens/Events/events.dart';
 import 'package:lw_app/Widgets/WhatsappContactFAB/whatsapp_contact_fab.dart';
+import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 
 class DashPage extends StatelessWidget {
   const DashPage({super.key});
@@ -28,6 +29,7 @@ class DashPage extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: Text('Dashboard'),
+          actions: <Widget>[ProfileActionButton()],
         ),
         floatingActionButton: WhatsappContactFAB(),
         body: Padding(
