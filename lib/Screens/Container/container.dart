@@ -47,9 +47,10 @@ class _ContainerPageState extends State<ContainerPage> {
         children: <Widget>[
           // TODO: add other pages to the page view here
           DashPage(),
-          DashPage(),
+          DashPage(), // TODO: change this to upcoming events page
+          VisionMissionPage(), // Bible page // TODO: update to Bible page
           VisionMissionPage(),
-          ProfilePage(),
+          ProfilePage(), // TODO: update to konnek page
         ],
         onPageChanged: (index) => pageChanged(index),
       ),
@@ -72,20 +73,29 @@ class _ContainerPageState extends State<ContainerPage> {
             tabs: [
               // TODO: add buttons to bottom nav pages here
               GButton(
+                padding: EdgeInsets.all(12.0),
                 icon: Icons.home,
-                text: 'Home',
+                text: 'Tuis',
               ),
               GButton(
+                padding: EdgeInsets.all(8.0),
                 icon: Icons.calendar_month,
-                text: 'Calendar',
+                text: 'Kalender',
               ),
               GButton(
+                padding: EdgeInsets.all(8.0),
+                icon: Icons.menu_book,
+                text: 'Bybel',
+              ),
+              GButton(
+                padding: EdgeInsets.all(8.0),
                 icon: Icons.info_outline,
-                text: 'Vision & Mission',
+                text: 'Visie & Missie',
               ),
               GButton(
-                icon: Icons.person,
-                text: 'Profile',
+                padding: EdgeInsets.all(8.0),
+                icon: Icons.group,
+                text: 'Konnek',
               ),
             ],
             gap: 8,
