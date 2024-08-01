@@ -5,6 +5,7 @@ import 'package:lw_app/Screens/Auth/login.dart';
 import 'package:lw_app/Utils/snackbar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 import 'package:lw_app/Screens/Sermons/sermons.dart';
+import 'package:lw_app/Screens/Events/events.dart';
 
 class DashPage extends StatelessWidget {
   const DashPage({super.key});
@@ -38,7 +39,10 @@ class DashPage extends StatelessWidget {
                   "Upcoming Events",
                   "https://images.unsplash.com/photo-1486591978090-58e619d37fe7?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
                   () {
-                    print('Card clicked'); // TODO: navigate to upcoming events screen
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const EventsPage()),
+                    );
                   },
                 ),
                 const SizedBox(height: 16),
