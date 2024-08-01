@@ -98,6 +98,7 @@ class DashPage extends StatelessWidget {
                 text,
                 style: TextStyle(
                   fontSize: 24.0,
+                  color: Colors.white, // hard coded to white regardless of theme to better display on background
                   letterSpacing: 3.0,
                   shadows: <Shadow>[
                     Shadow(
