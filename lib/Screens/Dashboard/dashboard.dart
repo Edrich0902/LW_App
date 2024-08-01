@@ -6,6 +6,7 @@ import 'package:lw_app/Utils/snackbar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 import 'package:lw_app/Screens/Sermons/sermons.dart';
 import 'package:lw_app/Screens/Events/events.dart';
+import 'package:lw_app/Widgets/WhatsappContactFAB/whatsapp_contact_fab.dart';
 
 class DashPage extends StatelessWidget {
   const DashPage({super.key});
@@ -28,6 +29,7 @@ class DashPage extends StatelessWidget {
         appBar: AppBar(
           title: Text('Dashboard'),
         ),
+        floatingActionButton: WhatsappContactFAB(),
         body: Padding(
           padding: EdgeInsets.all(8),
           child: SingleChildScrollView(

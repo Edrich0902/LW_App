@@ -4,6 +4,7 @@ import 'package:lw_app/Screens/ProfileEdit/profile_edit.dart';
 import 'package:lw_app/Screens/Notes/notes.dart';
 import 'package:lw_app/Screens/Home/home.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lw_app/Widgets/WhatsappContactFAB/whatsapp_contact_fab.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -26,6 +27,7 @@ class _ProfilePageState extends State<ProfilePage> {
       appBar: AppBar(
         title: Text('Profile'),
       ),
+      floatingActionButton: WhatsappContactFAB(),
       body: SafeArea(
         child: ListView(
           padding: EdgeInsets.all(8.0),
