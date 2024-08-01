@@ -6,6 +6,7 @@ import 'package:lw_app/Screens/Dashboard/dashboard.dart';
 import 'package:lw_app/Screens/Notes/notes.dart';
 import 'package:lw_app/Screens/Profile/profile.dart';
 import 'package:lw_app/Screens/VisionMission/visionMission.dart';
+import 'package:lw_app/Screens/Bible/bible.dart';
 
 class ContainerPage extends StatefulWidget {
   const ContainerPage({super.key});
@@ -48,7 +49,7 @@ class _ContainerPageState extends State<ContainerPage> {
           // TODO: add other pages to the page view here
           DashPage(),
           DashPage(), // TODO: change this to upcoming events page
-          VisionMissionPage(), // Bible page // TODO: update to Bible page
+          BiblePage(),
           VisionMissionPage(),
           ProfilePage(), // TODO: update to konnek page
         ],
