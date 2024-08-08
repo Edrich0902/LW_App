@@ -40,8 +40,19 @@ class DashPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 LwpBanner(
+                  imageUrl: "https://images.unsplash.com/photo-1673322880779-9c257a0cae44?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                  message: "Preke",
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const SermonsPage()),
+                    );
+                  },
+                ),
+                const SizedBox(height: 16),
+                LwpBanner(
                   imageUrl: "https://images.unsplash.com/photo-1486591978090-58e619d37fe7?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                  message: "Upcoming Events",
+                  message: "Opkomende Gebeure",
                   onTap: () {
                     Navigator.push(
                       context,
@@ -52,19 +63,32 @@ class DashPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 LwpBanner(
-                  imageUrl: "https://images.unsplash.com/photo-1673322880779-9c257a0cae44?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                  message: "Recent Sermons",
+                  imageUrl: "https://images.unsplash.com/photo-1673042872287-a77ef03317a4?q=80&w=2008&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                  message: "Tiendes & Offergawes",
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const SermonsPage()),
-                    );
+                    print('Card clicked'); // TODO: navigate to Tithes & Offerings
                   },
                 ),
                 const SizedBox(height: 16),
                 LwpBanner(
-                  imageUrl: "https://images.unsplash.com/photo-1673042872287-a77ef03317a4?q=80&w=2008&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                  message: "Tithes & Offerings",
+                  imageUrl: "https://images.unsplash.com/photo-1519491050282-cf00c82424b4?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                  message: "Eerste Keer Besoeker",
+                  onTap: () {
+                    print('Card clicked'); // TODO: navigate to Tithes & Offerings
+                  },
+                ),
+                const SizedBox(height: 16),
+                LwpBanner(
+                  imageUrl: "https://images.unsplash.com/photo-1564177611049-76e2933c6017?q=80&w=1364&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                  message: "Volg Ons",
+                  onTap: () {
+                    print('Card clicked'); // TODO: navigate to Tithes & Offerings
+                  },
+                ),
+                const SizedBox(height: 16),
+                LwpBanner(
+                  imageUrl: "https://images.unsplash.com/photo-1492052722242-2554d0e99e3a?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                  message: "Kursusse",
                   onTap: () {
                     print('Card clicked'); // TODO: navigate to Tithes & Offerings
                   },
