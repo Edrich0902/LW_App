@@ -8,6 +8,7 @@ import 'package:lw_app/Screens/Sermons/sermons.dart';
 import 'package:lw_app/Screens/Events/events.dart';
 import 'package:lw_app/Widgets/WhatsappContactFAB/whatsapp_contact_fab.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
+import 'package:lw_app/Widgets/LwpBanner/lwp_banner.dart';
 
 class DashPage extends StatelessWidget {
   const DashPage({super.key});
@@ -38,23 +39,22 @@ class DashPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                _createDashCard(
-                  context,
-                  "Upcoming Events",
-                  "https://images.unsplash.com/photo-1486591978090-58e619d37fe7?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                  () {
+                LwpBanner(
+                  imageUrl: "https://images.unsplash.com/photo-1486591978090-58e619d37fe7?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                  message: "Upcoming Events",
+                  onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const EventsPage()),
+                      MaterialPageRoute(
+                          builder: (context) => const EventsPage()),
                     );
                   },
                 ),
                 const SizedBox(height: 16),
-                _createDashCard(
-                  context,
-                  "Recent Sermons",
-                  "https://images.unsplash.com/photo-1673322880779-9c257a0cae44?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                  () {
+                LwpBanner(
+                  imageUrl: "https://images.unsplash.com/photo-1673322880779-9c257a0cae44?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                  message: "Recent Sermons",
+                  onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => const SermonsPage()),
@@ -62,11 +62,10 @@ class DashPage extends StatelessWidget {
                   },
                 ),
                 const SizedBox(height: 16),
-                _createDashCard(
-                  context,
-                  "Tithes & Offerings",
-                  "https://images.unsplash.com/photo-1673042872287-a77ef03317a4?q=80&w=2008&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                  () {
+                LwpBanner(
+                  imageUrl: "https://images.unsplash.com/photo-1673042872287-a77ef03317a4?q=80&w=2008&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                  message: "Tithes & Offerings",
+                  onTap: () {
                     print('Card clicked'); // TODO: navigate to Tithes & Offerings
                   },
                 ),
@@ -74,49 +73,6 @@ class DashPage extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _createDashCard(
-    BuildContext context,
-    String text,
-    String imagePath,
-    VoidCallback onTap,
-  ) {
-    return Card(
-      child: InkWell(
-        onTap: onTap,
-        child: Container(
-            width: MediaQuery.of(context).size.width,
-            height: 200.00,
-            decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: NetworkImage(imagePath),
-                  fit: BoxFit.fitWidth,
-                  alignment: Alignment.center,
-                ),
-                borderRadius: BorderRadius.all(Radius.circular(25))),
-            child: Center(
-              child: Text(
-                text,
-                style: TextStyle(
-                  fontSize: 24.0,
-                  color: Colors.white, // hard coded to white regardless of theme to better display on background
-                  letterSpacing: 3.0,
-                  shadows: <Shadow>[
-                    Shadow(
-                        offset: Offset(2.0, 2.0),
-                        blurRadius: 4.0,
-                        color: Color.fromARGB(255, 0, 0, 0)),
-                    Shadow(
-                        offset: Offset(2.0, 2.0),
-                        blurRadius: 4.0,
-                        color: Color.fromARGB(255, 0, 0, 0)),
-                  ],
-                ),
-              ),
-            )),
       ),
     );
   }

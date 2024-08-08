@@ -15,61 +15,19 @@ class _ConnectPageState extends State<ConnectPage> {
     super.initState();
   }
 
+  // TODO: complete this screen with dummy content
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Konnek'),
+        title: Text('Skakel In'),
         actions: <Widget>[ProfileActionButton()],
       ),
       floatingActionButton: WhatsappContactFAB(),
       body: SafeArea(
         child: Center(
-          child: Text('Konnek page'),
+          child: Text('Skakel in page'),
         ),
-      ),
-    );
-  }
-
-  Widget _createConnectCard(
-      BuildContext context,
-      String text,
-      String imagePath,
-      VoidCallback onTap,
-      ) {
-    return Card(
-      child: InkWell(
-        onTap: onTap,
-        child: Container(
-            width: MediaQuery.of(context).size.width,
-            height: 200.00,
-            decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: NetworkImage(imagePath),
-                  fit: BoxFit.fitWidth,
-                  alignment: Alignment.center,
-                ),
-                borderRadius: BorderRadius.all(Radius.circular(25))),
-            child: Center(
-              child: Text(
-                text,
-                style: TextStyle(
-                  fontSize: 24.0,
-                  color: Colors.white, // hard coded to white regardless of theme to better display on background
-                  letterSpacing: 3.0,
-                  shadows: <Shadow>[
-                    Shadow(
-                        offset: Offset(2.0, 2.0),
-                        blurRadius: 4.0,
-                        color: Color.fromARGB(255, 0, 0, 0)),
-                    Shadow(
-                        offset: Offset(2.0, 2.0),
-                        blurRadius: 4.0,
-                        color: Color.fromARGB(255, 0, 0, 0)),
-                  ],
-                ),
-              ),
-            )),
       ),
     );
   }

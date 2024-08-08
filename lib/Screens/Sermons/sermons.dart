@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lw_app/Models/YoutubeVideo/youtube_video.dart';
 import 'package:lw_app/Services/Youtube/youtube_service.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:lw_app/Widgets/LwpBanner/lwp_banner.dart';
 
 class SermonsPage extends StatefulWidget {
   const SermonsPage({super.key});
@@ -45,8 +46,6 @@ class _SermonsPageState extends State<SermonsPage> {
                 itemCount: snapshot.data!.length,
                 itemBuilder: (BuildContext context, int index) {
                   return _buildVideoCard(snapshot.data![index], () {
-                    // TODO: open videos in YT App
-                    // TODO: check if possible to play in app viewer
                     launchUrl(Uri.parse(recentVideos[index]));
                   });
                 },
@@ -65,22 +64,9 @@ class _SermonsPageState extends State<SermonsPage> {
   }
 
   Widget _buildVideoCard(YoutubeVideo video, VoidCallback onTap) {
-    return Card(
-      child: InkWell(
-        onTap: onTap,
-        child: Container(
-          width: MediaQuery.of(context).size.width,
-          height: 200.00,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: NetworkImage(video.thumbnail_url),
-              fit: BoxFit.fitWidth,
-              alignment: Alignment.center,
-            ),
-            borderRadius: BorderRadius.all(Radius.circular(25)),
-          ),
-        ),
-      ),
+    return LwpBanner(
+      imageUrl: video.thumbnail_url,
+      onTap: onTap,
     );
   }
 }

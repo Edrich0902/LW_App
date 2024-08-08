@@ -96,7 +96,7 @@ class _ContainerPageState extends State<ContainerPage> {
               GButton(
                 padding: EdgeInsets.all(8.0),
                 icon: Icons.group,
-                text: 'Konnek',
+                text: 'Skakel In',
               ),
             ],
             gap: 8,
