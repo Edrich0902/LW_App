@@ -34,7 +34,7 @@ class _SermonsPageState extends State<SermonsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Sermons"),
+        title: Text('Preke'),
       ),
       body: SafeArea(
         child: FutureBuilder<List<YoutubeVideo>>(

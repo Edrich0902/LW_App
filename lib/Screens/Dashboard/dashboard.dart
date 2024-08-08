@@ -29,7 +29,7 @@ class DashPage extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Dashboard'),
+          title: Text('Tuis'),
           actions: <Widget>[ProfileActionButton()],
         ),
         floatingActionButton: WhatsappContactFAB(),
