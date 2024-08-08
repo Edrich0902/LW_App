@@ -91,7 +91,7 @@ class _ContainerPageState extends State<ContainerPage> {
               GButton(
                 padding: EdgeInsets.all(8.0),
                 icon: Icons.info_outline,
-                text: 'Visie & Missie',
+                text: 'Meer Oor Ons',
               ),
               GButton(
                 padding: EdgeInsets.all(8.0),

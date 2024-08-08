@@ -6,6 +6,7 @@ import 'package:lw_app/Utils/snackbar.dart';
 import 'package:lw_app/Models/MetaData/meta_data.dart' as Lw;
 import 'package:lw_app/Widgets/WhatsappContactFAB/whatsapp_contact_fab.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
+import 'package:lw_app/Widgets/LwpBio/lwp_bio.dart';
 
 class VisionMissionPage extends StatefulWidget {
   const VisionMissionPage({super.key});
@@ -32,7 +33,7 @@ class _VisionMissionPageState extends State<VisionMissionPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Vision & Mission'),
+          title: Text('Meer Oor Ons'),
           actions: <Widget>[ProfileActionButton()],
         ),
         floatingActionButton: WhatsappContactFAB(),
@@ -49,6 +50,27 @@ class _VisionMissionPageState extends State<VisionMissionPage> {
                 for (Lw.MetaData item in state.data) {
                   content.add(_createDataItem(data: item));
                 }
+
+                content.add(Text(
+                  'Rolspelers',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 24,
+                    letterSpacing: 2,
+                  ),
+                ));
+
+                for (var i in [1,2,3,4,5]) {
+                  content.add(
+                      LwpBio(
+                        name: 'Name Surname',
+                        title: 'Senior Pastoor',
+                        bio: 'This is a long bio. This is a long bio. This is a long bio. This is a long bio. This is a long bio.',
+                        profileImageUrl: 'https://yt3.googleusercontent.com/ytc/AL5GRJUbsh7ILjzuEQAZTot_kkV2GohZR75CjoWM9NSI9Q=s900-c-k-c0x00ffffff-no-rj',
+                      )
+                  );
+                }
+
                 // Return list content
                 return SingleChildScrollView(
                   child: Padding(
@@ -92,7 +114,6 @@ class _VisionMissionPageState extends State<VisionMissionPage> {
           data.content ?? 'No Content',
           style: TextStyle(
             letterSpacing: 1,
-
           ),
         ),
         const SizedBox(height: 16),
