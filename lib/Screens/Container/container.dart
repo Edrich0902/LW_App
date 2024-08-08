@@ -5,7 +5,7 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:lw_app/Screens/Dashboard/dashboard.dart';
 import 'package:lw_app/Screens/Notes/notes.dart';
 import 'package:lw_app/Screens/Profile/profile.dart';
-import 'package:lw_app/Screens/VisionMission/visionMission.dart';
+import 'package:lw_app/Screens/MoreInfo/moreInfo.dart';
 import 'package:lw_app/Screens/Bible/bible.dart';
 import 'package:lw_app/Screens/Connect/connect.dart';
 
@@ -50,7 +50,7 @@ class _ContainerPageState extends State<ContainerPage> {
           DashPage(),
           DashPage(), // TODO: change this to upcoming events page
           BiblePage(),
-          VisionMissionPage(),
+          MoreInfoPage(),
           ConnectPage(),
         ],
         onPageChanged: (index) => pageChanged(index),

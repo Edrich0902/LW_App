@@ -1,33 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lw_app/Blocs/VisionMission/vision_mission_bloc.dart';
+import 'package:lw_app/Blocs/MoreInfo/more_info_bloc.dart';
 import 'package:lw_app/Utils/snackbar.dart';
 import 'package:lw_app/Models/MetaData/meta_data.dart' as Lw;
 import 'package:lw_app/Widgets/WhatsappContactFAB/whatsapp_contact_fab.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:lw_app/Widgets/LwpBio/lwp_bio.dart';
 
-class VisionMissionPage extends StatefulWidget {
-  const VisionMissionPage({super.key});
+class MoreInfoPage extends StatefulWidget {
+  const MoreInfoPage({super.key});
 
   @override
-  State<VisionMissionPage> createState() => _VisionMissionPageState();
+  State<MoreInfoPage> createState() => _MoreInfoPageState();
 }
 
-class _VisionMissionPageState extends State<VisionMissionPage> {
+class _MoreInfoPageState extends State<MoreInfoPage> {
   @override
   void initState() {
-    context.read<VisionMissionBloc>().add(const LoadVisionMission());
+    context.read<MoreInfoBloc>().add(const LoadMoreInfo());
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    VisionMissionBloc visionMissionBloc =
-        BlocProvider.of<VisionMissionBloc>(context);
+    MoreInfoBloc moreInfoBloc =
+        BlocProvider.of<MoreInfoBloc>(context);
 
-    return BlocListener<VisionMissionBloc, VisionMissionState>(
+    return BlocListener<MoreInfoBloc, MoreInfoState>(
       listener: (context, state) {
         // Listen to state updates and execute logic here
       },
@@ -38,13 +38,13 @@ class _VisionMissionPageState extends State<VisionMissionPage> {
         ),
         floatingActionButton: WhatsappContactFAB(),
         body: SafeArea(
-          child: BlocBuilder<VisionMissionBloc, VisionMissionState>(
+          child: BlocBuilder<MoreInfoBloc, MoreInfoState>(
             builder: (context, state) {
-              if (state is VisionMissionLoading) {
+              if (state is MoreInfoLoading) {
                 return const Center(
                   child: const CircularProgressIndicator(),
                 );
-              } else if (state is VisionMissionSuccess) {
+              } else if (state is MoreInfoSuccess) {
                 // Build list content
                 List<Widget> content = [];
                 for (Lw.MetaData item in state.data) {

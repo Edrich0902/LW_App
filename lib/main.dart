@@ -8,7 +8,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/Auth/auth_bloc.dart';
 import 'package:lw_app/Blocs/User/user_bloc.dart';
-import 'package:lw_app/Blocs/VisionMission/vision_mission_bloc.dart';
+import 'package:lw_app/Blocs/MoreInfo/more_info_bloc.dart';
 import 'package:lw_app/Blocs/Notes/notes_bloc.dart';
 import 'package:lw_app/Blocs/NoteEdit/note_edit_bloc.dart';
 
@@ -34,8 +34,8 @@ Future<void> main() async {
         BlocProvider<UserBloc>(
           create: (_) => UserBloc(),
         ),
-        BlocProvider<VisionMissionBloc>(
-          create: (_) => VisionMissionBloc(),
+        BlocProvider<MoreInfoBloc>(
+          create: (_) => MoreInfoBloc(),
         ),
         BlocProvider<NotesBloc>(
           create: (_) => NotesBloc(),

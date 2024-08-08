@@ -9,7 +9,7 @@ import 'package:lw_app/Blocs/User/user_bloc.dart';
 // Screens
 import 'package:lw_app/Screens/ProfileEdit/profile_edit.dart';
 import 'package:lw_app/Screens/Dashboard/dashboard.dart';
-import 'package:lw_app/Screens/VisionMission/visionMission.dart';
+import 'package:lw_app/Screens/VisionMission/moreInfo.dart';
 import 'package:lw_app/Screens/Notes/notes.dart';
 
 class AppDrawer extends StatefulWidget {
