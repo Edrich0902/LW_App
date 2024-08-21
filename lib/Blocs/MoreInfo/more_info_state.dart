@@ -16,11 +16,12 @@ class MoreInfoLoading extends MoreInfoState {
 
 class MoreInfoSuccess extends MoreInfoState {
   final List<MetaData> data;
+  final List<Roleplayer> roleplayers;
 
-  const MoreInfoSuccess({required this.data});
+  const MoreInfoSuccess({required this.data, required this.roleplayers});
 
   @override
-  List<Object?> get props => [data];
+  List<Object?> get props => [data, roleplayers];
 }
 
 class MoreInfoError extends MoreInfoState {

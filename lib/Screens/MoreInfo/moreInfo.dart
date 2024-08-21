@@ -60,12 +60,14 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
                   ),
                 ));
 
-                for (var i in [1,2,3,4,5]) {
+                // TODO: check if this can be improved - list builder?
+                for (var roleplayer in state.roleplayers) {
                   content.add(
                       LwpBio(
-                        name: 'Name Surname',
-                        title: 'Senior Pastoor',
-                        bio: 'This is a long bio. This is a long bio. This is a long bio. This is a long bio. This is a long bio.',
+                        name: roleplayer.fullname ?? '',
+                        title: roleplayer.title ?? '',
+                        bio: roleplayer.bio ?? '',
+                        // TODO: add profile image functionality
                         profileImageUrl: 'https://yt3.googleusercontent.com/ytc/AL5GRJUbsh7ILjzuEQAZTot_kkV2GohZR75CjoWM9NSI9Q=s900-c-k-c0x00ffffff-no-rj',
                       )
                   );
