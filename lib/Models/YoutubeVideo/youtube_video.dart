@@ -1,4 +1,6 @@
-class YoutubeVideo {
+import 'package:equatable/equatable.dart';
+
+class YoutubeVideo extends Equatable {
   final String title;
   final String author_name;
   final String author_url;
@@ -28,6 +30,23 @@ class YoutubeVideo {
     required this.thumbnail_url,
     required this.html
   });
+
+  @override
+  List<Object?> get props => [
+    title,
+    author_name,
+    author_url,
+    type,
+    height,
+    width,
+    version,
+    provider_name,
+    provider_url,
+    thumbnail_height,
+    thumbnail_width,
+    thumbnail_url,
+    html
+  ];
 
   factory YoutubeVideo.fromJson(Map<String, dynamic> json) {
     return YoutubeVideo(
