@@ -51,6 +51,7 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
                   content.add(_createDataItem(data: item));
                 }
 
+                content.add(const SizedBox(height: 16.0));
                 content.add(Text(
                   'Rolspelers',
                   style: TextStyle(
@@ -59,6 +60,7 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
                     letterSpacing: 2,
                   ),
                 ));
+                content.add(const SizedBox(height: 16.0));
 
                 // TODO: check if this can be improved - list builder?
                 for (var roleplayer in state.roleplayers) {
@@ -99,27 +101,24 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
   }
 
   Widget _createDataItem({required Lw.MetaData data}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Text(
-          data.title ?? 'No Title',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 24,
-            letterSpacing: 2,
-          ),
+    return Card(
+      child: Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Column(
+          children: <Widget>[
+            Theme(
+              data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+              child: ExpansionTile(
+                title: Text(data.title ?? ''),
+                childrenPadding: EdgeInsets.all(16.0),
+                children: <Widget>[
+                  Text(data.content ?? '')
+                ],
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 16),
-        Text(
-          data.content ?? 'No Content',
-          style: TextStyle(
-            letterSpacing: 1,
-          ),
-        ),
-        const SizedBox(height: 16),
-      ],
+      ),
     );
   }
 }
