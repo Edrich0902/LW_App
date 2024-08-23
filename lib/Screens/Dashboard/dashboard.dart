@@ -6,6 +6,7 @@ import 'package:lw_app/Utils/snackbar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 import 'package:lw_app/Screens/Sermons/sermons.dart';
 import 'package:lw_app/Screens/Events/events.dart';
+import 'package:lw_app/Screens/SocialMedia/social_media.dart';
 import 'package:lw_app/Widgets/WhatsappContactFAB/whatsapp_contact_fab.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:lw_app/Widgets/LwpBanner/lwp_banner.dart';
@@ -82,7 +83,11 @@ class DashPage extends StatelessWidget {
                   imageUrl: "https://images.unsplash.com/photo-1564177611049-76e2933c6017?q=80&w=1364&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
                   message: "Volg Ons",
                   onTap: () {
-                    print('Card clicked'); // TODO: navigate to Tithes & Offerings
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const SocialMediaPage()),
+                    );
                   },
                 ),
                 const SizedBox(height: 16),
