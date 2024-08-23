@@ -14,8 +14,9 @@ class YoutubeVideo extends Equatable {
   final int thumbnail_width;
   final String thumbnail_url;
   final String html;
+  String? youtubeLink;
 
-  const YoutubeVideo({
+  YoutubeVideo({
     required this.title,
     required this.author_name,
     required this.author_url,
@@ -28,7 +29,8 @@ class YoutubeVideo extends Equatable {
     required this.thumbnail_height,
     required this.thumbnail_width,
     required this.thumbnail_url,
-    required this.html
+    required this.html,
+    this.youtubeLink,
   });
 
   @override
@@ -45,7 +47,8 @@ class YoutubeVideo extends Equatable {
     thumbnail_height,
     thumbnail_width,
     thumbnail_url,
-    html
+    html,
+    youtubeLink,
   ];
 
   factory YoutubeVideo.fromJson(Map<String, dynamic> json) {

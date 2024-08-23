@@ -11,6 +11,7 @@ import 'package:lw_app/Blocs/User/user_bloc.dart';
 import 'package:lw_app/Blocs/MoreInfo/more_info_bloc.dart';
 import 'package:lw_app/Blocs/Notes/notes_bloc.dart';
 import 'package:lw_app/Blocs/NoteEdit/note_edit_bloc.dart';
+import 'package:lw_app/Blocs/Sermons/sermons_bloc.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,7 +43,10 @@ Future<void> main() async {
         ),
         BlocProvider<NoteEditBloc>(
           create: (_) => NoteEditBloc(),
-        )
+        ),
+        BlocProvider<SermonsBloc>(
+          create: (_) => SermonsBloc(),
+        ),
       ],
       child: const App(),
     ),

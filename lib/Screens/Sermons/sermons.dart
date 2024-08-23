@@ -3,6 +3,10 @@ import 'package:lw_app/Models/YoutubeVideo/youtube_video.dart';
 import 'package:lw_app/Services/Youtube/youtube_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:lw_app/Widgets/LwpBanner/lwp_banner.dart';
+import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
+import 'package:lw_app/Blocs/Sermons/sermons_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lw_app/Utils/snackbar.dart';
 
 class SermonsPage extends StatefulWidget {
   const SermonsPage({super.key});
@@ -12,52 +16,60 @@ class SermonsPage extends StatefulWidget {
 }
 
 class _SermonsPageState extends State<SermonsPage> {
-  late Future<List<YoutubeVideo>> videos;
-  
   @override
   void initState() {
+    context.read<SermonsBloc>().add(const LoadSermons());
     super.initState();
-    final youtubeService = YoutubeService();
-    
-    videos = youtubeService.fetchLatestSermons(recentVideos);
   }
-
-  // TODO: make this configurable on admin screen
-  final List<String> recentVideos = [
-    'https://www.youtube.com/watch?v=nx8wQEBzRMw',
-    'https://www.youtube.com/watch?v=Xca6EKFjwL8&pp=ygUTbGV3ZW5kZSB3b29yZCBwYWFybA%3D%3D',
-    'https://www.youtube.com/watch?v=THp3CoqiyI0&t=396s&pp=ygUTbGV3ZW5kZSB3b29yZCBwYWFybA%3D%3D',
-    'https://www.youtube.com/watch?v=tNyC25KXsO4&pp=ygUTbGV3ZW5kZSB3b29yZCBwYWFybA%3D%3D',
-  ];
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Preke'),
-      ),
-      body: SafeArea(
-        child: FutureBuilder<List<YoutubeVideo>>(
-          future: videos,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return ListView.builder(
-                padding: EdgeInsets.all(8),
-                itemCount: snapshot.data!.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return _buildVideoCard(snapshot.data![index], () {
-                    launchUrl(Uri.parse(recentVideos[index]));
-                  });
-                },
-              );
-            } else if (snapshot.hasError) {
-              print("Error: ${snapshot.error}");
-              return Text("Error loading videos");
+    SermonsBloc sermonsBloc = BlocProvider.of<SermonsBloc>(context);
+
+    return BlocListener<SermonsBloc, SermonsState>(
+      listener: (context, state) {
+        // Listen to state updates and execute logic here
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Preke'),
+          actions: <Widget>[ProfileActionButton()],
+        ),
+        body: SafeArea(
+          child: BlocBuilder<SermonsBloc, SermonsState>(
+            builder: (context, state) {
+              if (state is SermonsLoading) {
+                return const Center(
+                  child: const CircularProgressIndicator(),
+                );
+              } else if (state is SermonsSuccess) {
+                if (state.youtubeVideos.isNotEmpty) {
+                  return RefreshIndicator(
+                    onRefresh: () async => sermonsBloc.add(LoadSermons()),
+                    child: ListView.builder(
+                      padding: EdgeInsets.all(8.0),
+                      itemCount: state.youtubeVideos.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return _buildVideoCard(state.youtubeVideos[index], () {
+                          launchUrl(Uri.parse(state.youtubeVideos[index].youtubeLink ?? ''));
+                        });
+                      },
+                    ),
+                  );
+                } else {
+                  return const Center(
+                    // TODO: create generic empty list screen
+                    child: const Text("Geen Preke Beskikbaar"),
+                  );
+                }
+              } else {
+                return const Center(
+                  // TODO: create generic fallback error screen
+                  child: const Text("Something went wrong!"),
+                );
+              }
             }
-            return Center(
-              child: const CircularProgressIndicator(),
-            );
-          },
+          ),
         ),
       ),
     );
