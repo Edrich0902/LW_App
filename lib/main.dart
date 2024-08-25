@@ -13,6 +13,7 @@ import 'package:lw_app/Blocs/Notes/notes_bloc.dart';
 import 'package:lw_app/Blocs/NoteEdit/note_edit_bloc.dart';
 import 'package:lw_app/Blocs/Sermons/sermons_bloc.dart';
 import 'package:lw_app/Blocs/SocialMedia/social_media_bloc.dart';
+import 'package:lw_app/Blocs/Events/events_bloc.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -50,6 +51,9 @@ Future<void> main() async {
         ),
         BlocProvider<SocialMediaBloc>(
           create: (_) => SocialMediaBloc(),
+        ),
+        BlocProvider<EventsBloc>(
+          create: (_) => EventsBloc(),
         ),
       ],
       child: const App(),

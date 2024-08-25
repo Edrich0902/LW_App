@@ -5,7 +5,7 @@ import 'package:lw_app/Screens/Auth/login.dart';
 import 'package:lw_app/Utils/snackbar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 import 'package:lw_app/Screens/Sermons/sermons.dart';
-import 'package:lw_app/Screens/Events/events.dart';
+import 'package:lw_app/Screens/UpcomingEvents/upcoming_events.dart';
 import 'package:lw_app/Screens/SocialMedia/social_media.dart';
 import 'package:lw_app/Widgets/WhatsappContactFAB/whatsapp_contact_fab.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
@@ -58,7 +58,7 @@ class DashPage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const EventsPage()),
+                          builder: (context) => const UpcomingEventsPage()),
                     );
                   },
                 ),
