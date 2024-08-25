@@ -8,6 +8,7 @@ import 'package:lw_app/Screens/Profile/profile.dart';
 import 'package:lw_app/Screens/MoreInfo/moreInfo.dart';
 import 'package:lw_app/Screens/Bible/bible.dart';
 import 'package:lw_app/Screens/Connect/connect.dart';
+import 'package:lw_app/Screens/Calendar/calendar.dart';
 
 class ContainerPage extends StatefulWidget {
   const ContainerPage({super.key});
@@ -48,7 +49,7 @@ class _ContainerPageState extends State<ContainerPage> {
         controller: _pageViewController,
         children: <Widget>[
           DashPage(),
-          DashPage(), // TODO: change this to upcoming events page
+          CalendarPage(),
           BiblePage(),
           MoreInfoPage(),
           ConnectPage(),
