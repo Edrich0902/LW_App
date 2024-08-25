@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Utils/snackbar.dart';
 import 'package:lw_app/Blocs/Events/events_bloc.dart';
 import 'package:lw_app/Models/Event/event_type.dart';
+import 'package:lw_app/Utils/date_formatter.dart';
 
 class UpcomingEventsPage extends StatefulWidget {
   const UpcomingEventsPage({super.key});
@@ -73,28 +74,65 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
     );
   }
 
-  // TODO: update event card to show more info
   Widget _buildEventCard(Event event, VoidCallback onTap) {
     return Card(
       child: InkWell(
         onTap: onTap,
         child: Padding(
           padding: EdgeInsets.all(8),
-          child: ListTile(
-            leading: Icon(Icons.event),
-            title: Text(
-              event.title,
-              overflow: TextOverflow.ellipsis,
-            ),
-            subtitle: Text(
-              event.description,
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-            ),
-            trailing: Icon(Icons.arrow_forward_ios_rounded),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Column(
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      Icon(Icons.event),
+                      const SizedBox(width: 16.0),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            event.title,
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              letterSpacing: 2.0
+                            ),
+                          ),
+                          Text(
+                            event.description,
+                            style: TextStyle(
+                              fontSize: 14.0,
+                              letterSpacing: 2.0,
+                              fontWeight: FontWeight.w200,
+                            ),
+                          ),
+                          const SizedBox(height: 16.0),
+                          Text(
+                            _formatEventDateTime(event),
+                            style: TextStyle(
+                              fontSize: 12.0,
+                              letterSpacing: 2.0,
+                              fontWeight: FontWeight.w200,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              Spacer(),
+              Icon(Icons.arrow_forward_ios_rounded),
+            ],
           ),
         ),
       ),
     );
+  }
+
+  String _formatEventDateTime(Event event) {
+    if (event.startDate == null) return 'N/A';
+    return "${event.day} ${DateFormatter.formatDate(event.startDate)} ${DateFormatter.formatTime(event.time)}";
   }
 }

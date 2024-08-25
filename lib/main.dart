@@ -14,12 +14,16 @@ import 'package:lw_app/Blocs/NoteEdit/note_edit_bloc.dart';
 import 'package:lw_app/Blocs/Sermons/sermons_bloc.dart';
 import 'package:lw_app/Blocs/SocialMedia/social_media_bloc.dart';
 import 'package:lw_app/Blocs/Events/events_bloc.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Load environment variables
   await dotenv.load(fileName: Environment.fileName);
+
+  // Init locale
+  initializeDateFormatting();
 
   // Init supabase
   await Supabase.initialize(
