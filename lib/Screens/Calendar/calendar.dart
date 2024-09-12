@@ -5,6 +5,7 @@ import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:lw_app/Blocs/Calendar/calendar_bloc.dart';
 import 'package:lw_app/Models/Event/event_type.dart';
 import 'package:lw_app/Models/Event/event.dart';
+import 'package:lw_app/Widgets/LwpEvent/lwp_event.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});
@@ -70,11 +71,7 @@ class _CalendarPageState extends State<CalendarPage> {
                               itemBuilder: (BuildContext context, int index) {
                                 Event event = weekdayEvents[index];
 
-                                return Card(
-                                  child: ListTile(
-                                    title: Text(event.title),
-                                  ),
-                                );
+                                return LwpEvent(event: event);
                               },
                             )
                           ],

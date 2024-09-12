@@ -63,6 +63,7 @@ class _LwpBioState extends State<LwpBio> {
               child: ExpansionTile(
                 title: Text('Bio'),
                 childrenPadding: EdgeInsets.all(16.0),
+                expandedAlignment: Alignment.centerLeft,
                 children: <Widget>[
                   Text(widget.bio)
                 ],
