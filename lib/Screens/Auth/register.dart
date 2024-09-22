@@ -52,7 +52,7 @@ class _RegisterPageState extends State<RegisterPage> {
               children: [
                 Text(
                   "Register",
-                  style: theme.textTheme.headline4,
+                  style: theme.textTheme.headlineLarge,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(

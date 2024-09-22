@@ -20,7 +20,7 @@ class _WhatsappContactFABState extends State<WhatsappContactFAB> {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
-      child: Icon(Icons.whatsapp),
+      child: Icon(Icons.message),
       onPressed: () {
         String link = url + number;
         launchUrl(Uri.parse(link), mode: LaunchMode.externalApplication);

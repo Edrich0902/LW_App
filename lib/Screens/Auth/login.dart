@@ -65,7 +65,7 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 32),
                 Text(
                   "Sign In",
-                  style: theme.textTheme.headline4,
+                  style: theme.textTheme.headlineLarge,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(

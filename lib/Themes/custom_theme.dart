@@ -31,15 +31,21 @@ MaterialColor mainColor = const MaterialColor(0xFF22628c, <int, Color>{
 class AppTheme {
   AppTheme._();
 
-  // TODO: add dialog theme for light and dark mode
-
   static ThemeData lightTheme = ThemeData(
     primarySwatch: mainColor,
+    colorScheme: ColorScheme.fromSeed(seedColor: mainColor, brightness: Brightness.light),
     primaryColor: LightColors.primary,
     scaffoldBackgroundColor: LightColors.background,
-    backgroundColor: LightColors.background,
     brightness: Brightness.light,
     appBarTheme: AppBarTheme(
+      iconTheme: IconThemeData(
+        color: Colors.white,
+      ),
+      actionsIconTheme: IconThemeData(
+        color: Colors.white,
+      ),
+      foregroundColor: Colors.white,
+      centerTitle: true,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24.0),
       ),
@@ -51,6 +57,8 @@ class AppTheme {
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ButtonStyle(
+        backgroundColor: MaterialStateProperty.all<Color>(LightColors.primary),
+        foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
         shape: MaterialStateProperty.all<RoundedRectangleBorder>(
             RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24.0),
@@ -106,11 +114,19 @@ class AppTheme {
 
   static ThemeData darkTheme = ThemeData(
     primarySwatch: mainColor,
+    colorScheme: ColorScheme.fromSeed(seedColor: mainColor, brightness: Brightness.dark),
     primaryColor: DarkColors.primary,
     scaffoldBackgroundColor: DarkColors.background,
-    backgroundColor: DarkColors.background,
     brightness: Brightness.dark,
     appBarTheme: AppBarTheme(
+      iconTheme: IconThemeData(
+        color: Colors.white,
+      ),
+      actionsIconTheme: IconThemeData(
+        color: Colors.white,
+      ),
+      foregroundColor: Colors.white,
+      centerTitle: true,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24.0),
       ),
@@ -122,6 +138,8 @@ class AppTheme {
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ButtonStyle(
+        backgroundColor: MaterialStateProperty.all<Color>(DarkColors.primary),
+        foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
         shape: MaterialStateProperty.all<RoundedRectangleBorder>(
             RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24.0),
