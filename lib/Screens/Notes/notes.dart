@@ -95,6 +95,8 @@ class _NotesPageState extends State<NotesPage> {
   }
 
   Widget _createNoteCard(Note note, VoidCallback delete, VoidCallback edit) {
+    final theme = Theme.of(context);
+
     return Card(
       child: InkWell(
         onTap: edit,
@@ -109,11 +111,13 @@ class _NotesPageState extends State<NotesPage> {
                 title: Text(
                   note.title ?? '',
                   overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.titleLarge,
                 ),
                 subtitle: Text(
                   note.content ?? '',
                   overflow: TextOverflow.ellipsis,
                   maxLines: 3,
+                  style: theme.textTheme.bodyMedium,
                 ),
               ),
               Row(

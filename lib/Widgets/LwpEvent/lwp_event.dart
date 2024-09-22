@@ -23,6 +23,8 @@ class _LwpEventState extends State<LwpEvent> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Card(
       child: Padding(
         padding: EdgeInsets.all(20.0),
@@ -33,17 +35,11 @@ class _LwpEventState extends State<LwpEvent> {
               children: <Widget>[
                 Text(
                   widget.event.title,
-                  style: TextStyle(
-                    fontSize: 14.0,
-                    letterSpacing: 2.0
-                  ),
+                  style: theme.textTheme.titleLarge
                 ),
                 Text(
                   DateFormatter.formatTime(widget.event.time),
-                  style: TextStyle(
-                    fontSize: 14.0,
-                    letterSpacing: 2.0
-                  ),
+                  style: theme.textTheme.titleLarge
                 ),
               ],
             ),
@@ -53,10 +49,7 @@ class _LwpEventState extends State<LwpEvent> {
               child: ExpansionTile(
                 title: Text(
                   'Lees Meer',
-                  style: TextStyle(
-                    fontSize: 14.0,
-                    letterSpacing: 2.0
-                  ),
+                  style: theme.textTheme.titleMedium
                 ),
                 childrenPadding: EdgeInsets.all(16.0),
                 tilePadding: EdgeInsets.all(0.0),
@@ -64,10 +57,7 @@ class _LwpEventState extends State<LwpEvent> {
                 children: <Widget>[
                   Text(
                     widget.event.description,
-                    style: TextStyle(
-                        fontSize: 12.0,
-                        letterSpacing: 2.0
-                    ),
+                    style: theme.textTheme.bodyMedium
                   ),
                 ],
               ),

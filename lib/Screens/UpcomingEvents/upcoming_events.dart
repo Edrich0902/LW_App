@@ -23,6 +23,7 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     EventsBloc eventsBloc = BlocProvider.of<EventsBloc>(context);
 
     return BlocListener<EventsBloc, EventsState>(
@@ -75,6 +76,8 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
   }
 
   Widget _buildEventCard(Event event, VoidCallback onTap) {
+    final theme = Theme.of(context);
+
     return Card(
       child: InkWell(
         onTap: onTap,
@@ -94,27 +97,16 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
                         children: <Widget>[
                           Text(
                             event.title,
-                            style: TextStyle(
-                              fontSize: 16.0,
-                              letterSpacing: 2.0
-                            ),
+                            style: theme.textTheme.titleMedium
                           ),
                           Text(
                             event.description,
-                            style: TextStyle(
-                              fontSize: 14.0,
-                              letterSpacing: 2.0,
-                              fontWeight: FontWeight.w200,
-                            ),
+                            style: theme.textTheme.bodyMedium
                           ),
                           const SizedBox(height: 16.0),
                           Text(
                             _formatEventDateTime(event),
-                            style: TextStyle(
-                              fontSize: 12.0,
-                              letterSpacing: 2.0,
-                              fontWeight: FontWeight.w200,
-                            ),
+                            style: theme.textTheme.bodySmall
                           ),
                         ],
                       ),

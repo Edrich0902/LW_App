@@ -24,6 +24,7 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     MoreInfoBloc moreInfoBloc =
         BlocProvider.of<MoreInfoBloc>(context);
 
@@ -54,11 +55,7 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
                 content.add(const SizedBox(height: 16.0));
                 content.add(Text(
                   'Rolspelers',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 24,
-                    letterSpacing: 2,
-                  ),
+                  style: theme.textTheme.titleLarge
                 ));
                 content.add(const SizedBox(height: 16.0));
 
@@ -101,6 +98,7 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
   }
 
   Widget _createDataItem({required Lw.MetaData data}) {
+    final theme = Theme.of(context);
     return Card(
       child: Padding(
         padding: EdgeInsets.all(8.0),
@@ -109,10 +107,16 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
             Theme(
               data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
               child: ExpansionTile(
-                title: Text(data.title ?? ''),
+                title: Text(
+                  data.title ?? '',
+                  style: theme.textTheme.titleLarge,
+                ),
                 childrenPadding: EdgeInsets.all(16.0),
                 children: <Widget>[
-                  Text(data.content ?? '')
+                  Text(
+                    data.content ?? '',
+                    style: theme.textTheme.bodyMedium,
+                  )
                 ],
               ),
             ),

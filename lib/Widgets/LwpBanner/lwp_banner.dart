@@ -25,6 +25,8 @@ class _LwpBannerState extends State<LwpBanner> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Card(
       child: InkWell(
         onTap: widget.onTap,
@@ -41,21 +43,21 @@ class _LwpBannerState extends State<LwpBanner> {
             child: Center(
               child: widget.message.isNotEmpty ? Text(
                 widget.message,
-                style: TextStyle(
-                  fontSize: 24.0,
-                  color: Colors.white, // hard coded to white regardless of theme to better display on background
-                  letterSpacing: 3.0,
-                  shadows: <Shadow>[
-                    Shadow(
-                        offset: Offset(2.0, 2.0),
-                        blurRadius: 4.0,
-                        color: Color.fromARGB(255, 0, 0, 0)),
-                    Shadow(
-                        offset: Offset(2.0, 2.0),
-                        blurRadius: 4.0,
-                        color: Color.fromARGB(255, 0, 0, 0)),
-                  ],
-                ),
+                style: theme.textTheme.headlineMedium!.merge(
+                  TextStyle(
+                    color: Colors.white,
+                    shadows: <Shadow>[
+                      Shadow(
+                          offset: Offset(2.0, 2.0),
+                          blurRadius: 4.0,
+                          color: Color.fromARGB(255, 0, 0, 0)),
+                      Shadow(
+                          offset: Offset(2.0, 2.0),
+                          blurRadius: 4.0,
+                          color: Color.fromARGB(255, 0, 0, 0)),
+                    ],
+                  )
+                )
               ) : Container(),
             )),
       ),

@@ -99,69 +99,71 @@ class _NotesEditPageState extends State<NotesEditPage> {
   Widget _noteForm({required NoteEditBloc noteEditBloc, Note? note}) {
     Note updatedNote;
 
-    return Form(
-      key: _noteFormKey,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _titleController,
-              validator: (title) {
-                if (title == null || title.isEmpty) {
-                  return 'Title is required';
-                }
-                return null;
-              },
-              decoration: InputDecoration(
-                labelText: 'Title',
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _contentController,
-              validator: (content) {
-                if (content == null || content.isEmpty) {
-                  return 'Content is required';
-                }
-                return null;
-              },
-              decoration: InputDecoration(
-                labelText: 'Content',
-              ),
-              maxLines: 25,
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () => {
-                if (_noteFormKey.currentState!.validate()) {
-                  if (isEdit && note != null) {
-                    updatedNote = new Note(
-                      id: note.id,
-                      user_id: note.user_id,
-                      title: _titleController.text,
-                      content: _contentController.text,
-                      createdAt: note.createdAt,
-                    ),
-
-                    noteEditBloc.add(
-                      UpdateNote(note: updatedNote)
-                    )
-                  } else {
-                    noteEditBloc.add(
-                      CreateNote(
-                        _titleController.text,
-                        _contentController.text,
-                      )
-                    )
+    return SingleChildScrollView(
+      child: Form(
+        key: _noteFormKey,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _titleController,
+                validator: (title) {
+                  if (title == null || title.isEmpty) {
+                    return 'Title is required';
                   }
-                }
-              },
-              child: Text(isEdit ? 'Update Note' : 'Save Note'),
-            ),
-          ],
+                  return null;
+                },
+                decoration: InputDecoration(
+                  labelText: 'Title',
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _contentController,
+                validator: (content) {
+                  if (content == null || content.isEmpty) {
+                    return 'Content is required';
+                  }
+                  return null;
+                },
+                decoration: InputDecoration(
+                  labelText: 'Content',
+                ),
+                maxLines: 20,
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => {
+                  if (_noteFormKey.currentState!.validate()) {
+                    if (isEdit && note != null) {
+                      updatedNote = new Note(
+                        id: note.id,
+                        user_id: note.user_id,
+                        title: _titleController.text,
+                        content: _contentController.text,
+                        createdAt: note.createdAt,
+                      ),
+
+                      noteEditBloc.add(
+                          UpdateNote(note: updatedNote)
+                      )
+                    } else {
+                      noteEditBloc.add(
+                          CreateNote(
+                            _titleController.text,
+                            _contentController.text,
+                          )
+                      )
+                    }
+                  }
+                },
+                child: Text(isEdit ? 'Update Note' : 'Save Note'),
+              ),
+            ],
+          ),
         ),
       ),
     );

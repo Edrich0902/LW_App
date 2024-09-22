@@ -28,6 +28,8 @@ class _LwpBioState extends State<LwpBio> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Card(
       child: Padding(
         padding: EdgeInsets.all(8.0),
@@ -42,17 +44,11 @@ class _LwpBioState extends State<LwpBio> {
                   children: <Widget>[
                     Text(
                       widget.name,
-                      style: TextStyle(
-                        fontSize: 16.0,
-                        letterSpacing: 2.0,
-                      ),
+                      style: theme.textTheme.titleLarge
                     ),
                     Text(
                       widget.title,
-                      style: TextStyle(
-                        fontSize: 12.0,
-                        letterSpacing: 2.0,
-                      ),
+                      style: theme.textTheme.titleMedium
                     ),
                   ],
                 ),

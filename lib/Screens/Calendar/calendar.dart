@@ -23,6 +23,7 @@ class _CalendarPageState extends State<CalendarPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     CalendarBloc calendarBloc = BlocProvider.of<CalendarBloc>(context);
 
     return BlocListener<CalendarBloc, CalendarState>(
@@ -57,11 +58,7 @@ class _CalendarPageState extends State<CalendarPage> {
                             const SizedBox(height: 8.0),
                             Text(
                               weekday,
-                              style: TextStyle(
-                                fontSize: 18.0,
-                                letterSpacing: 2.0,
-                                fontWeight: FontWeight.w600
-                              ),
+                              style: theme.textTheme.titleLarge
                             ),
                             const SizedBox(height: 8.0),
                             ListView.builder(
