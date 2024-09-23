@@ -15,6 +15,7 @@ import 'package:lw_app/Blocs/Sermons/sermons_bloc.dart';
 import 'package:lw_app/Blocs/SocialMedia/social_media_bloc.dart';
 import 'package:lw_app/Blocs/Events/events_bloc.dart';
 import 'package:lw_app/Blocs/Calendar/calendar_bloc.dart';
+import 'package:lw_app/Blocs/ConnectGroups/connect_groups_bloc.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
@@ -62,6 +63,9 @@ Future<void> main() async {
         ),
         BlocProvider<CalendarBloc>(
           create: (_) => CalendarBloc(),
+        ),
+        BlocProvider<ConnectGroupsBloc>(
+          create: (_) => ConnectGroupsBloc(),
         ),
       ],
       child: const App(),

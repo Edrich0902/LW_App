@@ -29,5 +29,5 @@ class CalendarError extends CalendarState {
   const CalendarError(this.error);
 
   @override
-  List<Object> get props => [props];
+  List<Object> get props => [error];
 }
