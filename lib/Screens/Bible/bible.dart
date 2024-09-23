@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
-import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 
@@ -27,18 +26,16 @@ class _BiblePageState extends State<BiblePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Bybel'),
-        actions: <Widget>[ProfileActionButton()],
+        title: const Text('Bybel'),
+        actions: const <Widget>[ProfileActionButton()],
       ),
       body: SafeArea(
-        child: Container(
-          child: WebViewWidget(
-            // gesture recognisers allow for vertical scroll in viewpager
-            gestureRecognizers: Set()..add(Factory(
-                () => VerticalDragGestureRecognizer()
-            )),
-            controller: controller,
-          ),
+        child: WebViewWidget(
+          // gesture recognisers allow for vertical scroll in viewpager
+          gestureRecognizers: Set()..add(Factory(
+                  () => VerticalDragGestureRecognizer()
+          )),
+          controller: controller,
         ),
       ),
     );

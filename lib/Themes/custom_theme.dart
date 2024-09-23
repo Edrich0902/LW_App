@@ -38,10 +38,10 @@ class AppTheme {
     scaffoldBackgroundColor: LightColors.background,
     brightness: Brightness.light,
     appBarTheme: AppBarTheme(
-      iconTheme: IconThemeData(
+      iconTheme: const IconThemeData(
         color: Colors.white,
       ),
-      actionsIconTheme: IconThemeData(
+      actionsIconTheme: const IconThemeData(
         color: Colors.white,
       ),
       foregroundColor: Colors.white,
@@ -57,9 +57,9 @@ class AppTheme {
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all<Color>(LightColors.primary),
-        foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+        backgroundColor: WidgetStateProperty.all<Color>(LightColors.primary),
+        foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
+        shape: WidgetStateProperty.all<RoundedRectangleBorder>(
             RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24.0),
         )),
@@ -107,8 +107,8 @@ class AppTheme {
       backgroundColor: LightColors.background,
     ),
     checkboxTheme: CheckboxThemeData(
-      fillColor: MaterialStateProperty.all<Color>(LightColors.primary),
-      checkColor: MaterialStateProperty.all<Color>(Colors.white),
+      fillColor: WidgetStateProperty.all<Color>(LightColors.primary),
+      checkColor: WidgetStateProperty.all<Color>(Colors.white),
     ),
   );
 
@@ -119,10 +119,10 @@ class AppTheme {
     scaffoldBackgroundColor: DarkColors.background,
     brightness: Brightness.dark,
     appBarTheme: AppBarTheme(
-      iconTheme: IconThemeData(
+      iconTheme: const IconThemeData(
         color: Colors.white,
       ),
-      actionsIconTheme: IconThemeData(
+      actionsIconTheme: const IconThemeData(
         color: Colors.white,
       ),
       foregroundColor: Colors.white,
@@ -138,9 +138,9 @@ class AppTheme {
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all<Color>(DarkColors.primary),
-        foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+        backgroundColor: WidgetStateProperty.all<Color>(DarkColors.primary),
+        foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
+        shape: WidgetStateProperty.all<RoundedRectangleBorder>(
             RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24.0),
         )),
@@ -188,8 +188,8 @@ class AppTheme {
       backgroundColor: DarkColors.background,
     ),
     checkboxTheme: CheckboxThemeData(
-      fillColor: MaterialStateProperty.all<Color>(DarkColors.primary),
-      checkColor: MaterialStateProperty.all<Color>(Colors.white),
+      fillColor: WidgetStateProperty.all<Color>(DarkColors.primary),
+      checkColor: WidgetStateProperty.all<Color>(Colors.white),
     ),
   );
 }

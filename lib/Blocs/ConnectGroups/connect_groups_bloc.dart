@@ -1,7 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:lw_app/Models/Group/group.dart';
-import 'package:lw_app/Models/Group/group_type.dart';
 import 'package:lw_app/Services/Groups/groups_service.dart';
 
 part 'connect_groups_event.dart';

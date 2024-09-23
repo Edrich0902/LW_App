@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/Notes/notes_bloc.dart';
 import 'package:lw_app/Utils/snackbar.dart';
@@ -36,18 +35,18 @@ class _NotesPageState extends State<NotesPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Notes'),
+          title: const Text('Notes'),
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => NotesEditPage(),
+                builder: (context) => const NotesEditPage(),
               ),
             );
           },
-          child: Icon(Icons.add),
+          child: const Icon(Icons.add),
         ),
         body: SafeArea(
           child: BlocBuilder<NotesBloc, NotesState>(
@@ -58,7 +57,7 @@ class _NotesPageState extends State<NotesPage> {
                 );
               } else if (state is NotesSuccess) {
                 return ListView.builder(
-                  padding: EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(8.0),
                   itemCount: state.data.length,
                   itemBuilder: (context, index) {
                     return _createNoteCard(
@@ -101,13 +100,13 @@ class _NotesPageState extends State<NotesPage> {
       child: InkWell(
         onTap: edit,
         child: Padding(
-          padding: EdgeInsets.all(8),
+          padding: const EdgeInsets.all(8),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               ListTile(
-                leading: Icon(Icons.note),
+                leading: const Icon(Icons.note),
                 title: Text(
                   note.title ?? '',
                   overflow: TextOverflow.ellipsis,
@@ -131,7 +130,7 @@ class _NotesPageState extends State<NotesPage> {
                         delete,
                       );
                     },
-                    icon: Icon(Icons.delete, color: Colors.red),
+                    icon: const Icon(Icons.delete, color: Colors.red),
                   ),
                 ],
               ),
@@ -149,7 +148,7 @@ class _NotesPageState extends State<NotesPage> {
       onPressed: () {
         Navigator.of(context, rootNavigator: true).pop();
       },
-      child: Text('Cancel'),
+      child: const Text('Cancel'),
     );
 
     Widget confirmButton = ElevatedButton(
@@ -157,11 +156,11 @@ class _NotesPageState extends State<NotesPage> {
         Navigator.of(context, rootNavigator: true).pop();
         confirm();
       },
-      child: Text('Confirm'),
+      child: const Text('Confirm'),
     );
 
     AlertDialog dialog = AlertDialog(
-      title: Text('Delete Note'),
+      title: const Text('Delete Note'),
       content: Text(message),
       actions: [cancelButton, confirmButton],
     );

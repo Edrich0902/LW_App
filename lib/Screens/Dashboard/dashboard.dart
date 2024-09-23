@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/Auth/auth_bloc.dart';
 import 'package:lw_app/Screens/Auth/login.dart';
 import 'package:lw_app/Utils/snackbar.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 import 'package:lw_app/Screens/Sermons/sermons.dart';
 import 'package:lw_app/Screens/UpcomingEvents/upcoming_events.dart';
 import 'package:lw_app/Screens/SocialMedia/social_media.dart';
@@ -30,12 +29,12 @@ class DashPage extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Tuis'),
-          actions: <Widget>[ProfileActionButton()],
+          title: const Text('Tuis'),
+          actions: const <Widget>[ProfileActionButton()],
         ),
-        floatingActionButton: WhatsappContactFAB(),
+        floatingActionButton: const WhatsappContactFAB(),
         body: Padding(
-          padding: EdgeInsets.all(8),
+          padding: const EdgeInsets.all(8),
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

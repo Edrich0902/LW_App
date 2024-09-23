@@ -11,7 +11,7 @@ class DateFormatter {
 
   static String formatTime(String? time) {
     if (time == null) return '';
-    var convertedTime = DateTime.parse("1970-01-01T${time}");
+    var convertedTime = DateTime.parse("1970-01-01T$time");
     return DateFormat.Hm().format(convertedTime);
   }
 }

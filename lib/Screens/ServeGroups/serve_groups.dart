@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:lw_app/Widgets/WhatsappContactFAB/whatsapp_contact_fab.dart';
-import 'package:lw_app/Utils/snackbar.dart';
 import 'package:lw_app/Models/Group/group.dart';
 import 'package:lw_app/Blocs/ServiceGroups/service_groups_bloc.dart';
 
@@ -16,13 +15,12 @@ class ServeGroupsPage extends StatefulWidget {
 class _ServeGroupsPageState extends State<ServeGroupsPage> {
   @override
   void initState() {
-    context.read<ServiceGroupsBloc>().add(LoadServiceGroups());
+    context.read<ServiceGroupsBloc>().add(const LoadServiceGroups());
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     ServiceGroupsBloc serviceGroupsBloc = BlocProvider.of<ServiceGroupsBloc>(context);
 
     return BlocListener<ServiceGroupsBloc, ServiceGroupsState>(
@@ -31,23 +29,23 @@ class _ServeGroupsPageState extends State<ServeGroupsPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Kom Dien'),
-          actions: <Widget>[ProfileActionButton()],
+          title: const Text('Kom Dien'),
+          actions: const <Widget>[ProfileActionButton()],
         ),
-        floatingActionButton: WhatsappContactFAB(),
+        floatingActionButton: const WhatsappContactFAB(),
         body: SafeArea(
           child: BlocBuilder<ServiceGroupsBloc, ServiceGroupsState>(
             builder: (context, state) {
               if (state is ServiceGroupsLoading) {
                 return const Center(
-                  child: const CircularProgressIndicator(),
+                  child: CircularProgressIndicator(),
                 );
               } else if (state is ServiceGroupsSuccess) {
                 if (state.serviceGroups.isNotEmpty) {
                   return RefreshIndicator(
-                    onRefresh: () async => serviceGroupsBloc.add(LoadServiceGroups()),
+                    onRefresh: () async => serviceGroupsBloc.add(const LoadServiceGroups()),
                     child: ListView.builder(
-                      padding: EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(8.0),
                       itemCount: state.serviceGroups.length,
                       itemBuilder: (BuildContext context, int index) {
                         return _buildServiceGroupCard(state.serviceGroups[index], () => print("clicked"));
@@ -56,12 +54,12 @@ class _ServeGroupsPageState extends State<ServeGroupsPage> {
                   );
                 } else {
                   return const Center(
-                    child: const Text("Geen Kom Dien Groepe"),
+                    child: Text("Geen Kom Dien Groepe"),
                   );
                 }
               } else {
                 return const Center(
-                  child: const Text("Something went wrong!"),
+                  child: Text("Something went wrong!"),
                 );
               }
             },
@@ -78,12 +76,12 @@ class _ServeGroupsPageState extends State<ServeGroupsPage> {
       child: InkWell(
         onTap: onTap, // TODO: check if this is necessary
         child: Padding(
-            padding: EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 ListTile(
-                  leading: Icon(Icons.group),
+                  leading: const Icon(Icons.group),
                   title: Text(
                     group.title,
                     style: theme.textTheme.titleMedium,
@@ -98,7 +96,7 @@ class _ServeGroupsPageState extends State<ServeGroupsPage> {
                   children: <Widget>[
                     ElevatedButton(
                       onPressed: () => print("clicked"), // TODO: link to whatsapp group - prevent auto join?
-                      child: Text("Join WhatsApp"),
+                      child: const Text("Join WhatsApp"),
                     )
                   ],
                 ),

@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:lw_app/Models/Note/note.dart';
@@ -35,7 +33,7 @@ class NoteEditBloc extends Bloc<NoteEditEvent, NoteEditState> {
     
     on<CreateNote>((event, emit) async {
       try {
-        Note note = new Note(title: event.title, content: event.content);
+        Note note = Note(title: event.title, content: event.content);
         await _noteService.createNote(note: note);
 
         emit(NoteCreateSuccess());

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:lw_app/Blocs/NoteEdit/note_edit_bloc.dart';
 import 'package:lw_app/Blocs/Notes/notes_bloc.dart';
 import 'package:lw_app/Models/Note/note.dart';
@@ -29,7 +28,7 @@ class _NotesEditPageState extends State<NotesEditPage> {
       context.read<NoteEditBloc>().add(LoadNote(widget.noteId ?? ''));
     } else {
       isEdit = false;
-      context.read<NoteEditBloc>().add(InitNote());
+      context.read<NoteEditBloc>().add(const InitNote());
     }
 
     super.initState();
@@ -56,13 +55,13 @@ class _NotesEditPageState extends State<NotesEditPage> {
       listener: (context, state) {
         if (state is NoteCreateSuccess) {
           SnackBarHelper.showSuccessSnack(context, 'Note Created');
-          notesBloc.add(LoadNotes());
+          notesBloc.add(const LoadNotes());
           Navigator.of(context).pop(); // go to previous screen
         }
 
         if (state is NoteUpdateSuccess) {
           SnackBarHelper.showSuccessSnack(context, 'Note Updated');
-          notesBloc.add(LoadNotes());
+          notesBloc.add(const LoadNotes());
           Navigator.of(context).pop(); // go to previous screen
         }
       },
@@ -75,7 +74,7 @@ class _NotesEditPageState extends State<NotesEditPage> {
             buildWhen: (previous, current) => previous != current,
             builder: (context, state) {
               if (state is NoteLoading) {
-                return Center(
+                return const Center(
                   child: CircularProgressIndicator(),
                 );
               } else if (state is NoteSuccess) {
@@ -85,7 +84,7 @@ class _NotesEditPageState extends State<NotesEditPage> {
                 initForm();
                 return _noteForm(noteEditBloc: noteEditBloc);
               } else {
-                return Center(
+                return const Center(
                   child: Text('Something went wrong!'),
                 );
               }
@@ -116,7 +115,7 @@ class _NotesEditPageState extends State<NotesEditPage> {
                   }
                   return null;
                 },
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Title',
                 ),
               ),
@@ -129,7 +128,7 @@ class _NotesEditPageState extends State<NotesEditPage> {
                   }
                   return null;
                 },
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Content',
                 ),
                 maxLines: 20,
@@ -139,7 +138,7 @@ class _NotesEditPageState extends State<NotesEditPage> {
                 onPressed: () => {
                   if (_noteFormKey.currentState!.validate()) {
                     if (isEdit && note != null) {
-                      updatedNote = new Note(
+                      updatedNote = Note(
                         id: note.id,
                         user_id: note.user_id,
                         title: _titleController.text,

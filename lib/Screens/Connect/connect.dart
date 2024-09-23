@@ -22,12 +22,12 @@ class _ConnectPageState extends State<ConnectPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Skakel In'),
-        actions: <Widget>[ProfileActionButton()],
+        title: const Text('Skakel In'),
+        actions: const <Widget>[ProfileActionButton()],
       ),
-      floatingActionButton: WhatsappContactFAB(),
+      floatingActionButton: const WhatsappContactFAB(),
       body: Padding(
-        padding: EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(8.0),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

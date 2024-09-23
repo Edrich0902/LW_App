@@ -11,7 +11,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  bool _isRedirecting = false;
   bool _showPassword = false;
   final _loginFormKey = GlobalKey<FormState>();
   late final TextEditingController _emailController;
@@ -21,8 +20,6 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     _emailController = TextEditingController();
     _passwordController = TextEditingController();
-
-    if (_isRedirecting) return;
 
     super.initState();
   }

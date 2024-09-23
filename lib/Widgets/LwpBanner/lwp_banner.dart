@@ -39,12 +39,12 @@ class _LwpBannerState extends State<LwpBanner> {
                   fit: BoxFit.fitWidth,
                   alignment: Alignment.center,
                 ),
-                borderRadius: BorderRadius.all(Radius.circular(25))),
+                borderRadius: const BorderRadius.all(Radius.circular(25))),
             child: Center(
               child: widget.message.isNotEmpty ? Text(
                 widget.message,
                 style: theme.textTheme.headlineMedium!.merge(
-                  TextStyle(
+                  const TextStyle(
                     color: Colors.white,
                     shadows: <Shadow>[
                       Shadow(

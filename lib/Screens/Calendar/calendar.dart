@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lw_app/Utils/snackbar.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:lw_app/Blocs/Calendar/calendar_bloc.dart';
 import 'package:lw_app/Models/Event/event_type.dart';
@@ -32,22 +31,22 @@ class _CalendarPageState extends State<CalendarPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Kalender'),
-          actions: <Widget>[ProfileActionButton()],
+          title: const Text('Kalender'),
+          actions: const <Widget>[ProfileActionButton()],
         ),
         body: SafeArea(
           child: BlocBuilder<CalendarBloc, CalendarState>(
             builder: (context, state) {
               if (state is CalendarLoading) {
                 return const Center(
-                  child: const CircularProgressIndicator(),
+                  child: CircularProgressIndicator(),
                 );
               } else if (state is CalendarSuccess) {
                 if (state.eventsMap.isNotEmpty) {
                   return RefreshIndicator(
                     onRefresh: () async => calendarBloc.add(LoadCalendar(eventType: EventType.WEEKLY)),
                     child: ListView.builder(
-                      padding: EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(8.0),
                       itemCount: state.eventsMap.length,
                       itemBuilder: (BuildContext context, int index) {
                         String weekday = state.eventsMap.keys.elementAt(index);
@@ -63,7 +62,7 @@ class _CalendarPageState extends State<CalendarPage> {
                             const SizedBox(height: 8.0),
                             ListView.builder(
                               shrinkWrap: true,
-                              physics: ClampingScrollPhysics(),
+                              physics: const ClampingScrollPhysics(),
                               itemCount: weekdayEvents.length,
                               itemBuilder: (BuildContext context, int index) {
                                 Event event = weekdayEvents[index];
@@ -79,13 +78,13 @@ class _CalendarPageState extends State<CalendarPage> {
                 } else {
                   return const Center(
                     // TODO: create generic empty list screen
-                    child: const Text("Geen Kalender Items"),
+                    child: Text("Geen Kalender Items"),
                   );
                 }
               } else {
                 return const Center(
                   // TODO: create generic fallback error screen
-                  child: const Text("Something went wrong!"),
+                  child: Text("Something went wrong!"),
                 );
               }
             },

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:lw_app/Models/Event/event.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lw_app/Utils/snackbar.dart';
 import 'package:lw_app/Blocs/Events/events_bloc.dart';
 import 'package:lw_app/Models/Event/event_type.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
@@ -23,7 +22,6 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     EventsBloc eventsBloc = BlocProvider.of<EventsBloc>(context);
 
     return BlocListener<EventsBloc, EventsState>(
@@ -32,22 +30,22 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Opkomende Gebeure'),
-          actions: <Widget>[ProfileActionButton()],
+          title: const Text('Opkomende Gebeure'),
+          actions: const <Widget>[ProfileActionButton()],
         ),
         body: SafeArea(
           child: BlocBuilder<EventsBloc, EventsState>(
             builder: (context, state) {
               if (state is EventsLoading) {
                 return const Center(
-                  child: const CircularProgressIndicator(),
+                  child: CircularProgressIndicator(),
                 );
               } else if (state is EventsSuccess) {
                 if (state.events.isNotEmpty) {
                   return RefreshIndicator(
                     onRefresh: () async => eventsBloc.add(LoadEvents(eventType: EventType.ONCE)),
                     child: ListView.builder(
-                      padding: EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(8.0),
                       itemCount: state.events.length,
                       itemBuilder: (BuildContext context, int index) {
                         return _buildEventCard(state.events[index], () {
@@ -59,13 +57,13 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
                 } else {
                   return const Center(
                     // TODO: create generic empty list screen
-                    child: const Text("Geen Opkomende Gebeure"),
+                    child: Text("Geen Opkomende Gebeure"),
                   );
                 }
               } else {
                 return const Center(
                   // TODO: create generic fallback error screen
-                  child: const Text("Something went wrong!"),
+                  child: Text("Something went wrong!"),
                 );
               }
             },
@@ -82,7 +80,7 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: EdgeInsets.all(8),
+          padding: const EdgeInsets.all(8),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
@@ -90,7 +88,7 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
                 children: <Widget>[
                   Row(
                     children: <Widget>[
-                      Icon(Icons.event),
+                      const Icon(Icons.event),
                       const SizedBox(width: 16.0),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -114,8 +112,8 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
                   ),
                 ],
               ),
-              Spacer(),
-              Icon(Icons.arrow_forward_ios_rounded),
+              const Spacer(),
+              const Icon(Icons.arrow_forward_ios_rounded),
             ],
           ),
         ),

@@ -29,22 +29,22 @@ class _SocialMediaPageState extends State<SocialMediaPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Volg Ons'),
-          actions: <Widget>[ProfileActionButton()],
+          title: const Text('Volg Ons'),
+          actions: const <Widget>[ProfileActionButton()],
         ),
         body: SafeArea(
           child: BlocBuilder<SocialMediaBloc, SocialMediaState>(
             builder: (context, state) {
               if (state is SocialMediaLoading) {
                 return const Center(
-                  child: const CircularProgressIndicator(),
+                  child: CircularProgressIndicator(),
                 );
               } else if (state is SocialMediaSuccess) {
                 if (state.socialMedia.isNotEmpty) {
                   return RefreshIndicator(
-                    onRefresh: () async => socialMediaBloc.add(LoadSocialMedia()),
+                    onRefresh: () async => socialMediaBloc.add(const LoadSocialMedia()),
                     child: ListView.builder(
-                      padding: EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(8.0),
                       itemCount: state.socialMedia.length,
                       itemBuilder: (BuildContext context, int index) {
                         return LwpBanner(
@@ -60,13 +60,13 @@ class _SocialMediaPageState extends State<SocialMediaPage> {
                 } else {
                   return const Center(
                     // TODO: create generic empty list screen
-                    child: const Text("Geen Volg Ons Skakels"),
+                    child: Text("Geen Volg Ons Skakels"),
                   );
                 }
               } else {
                 return const Center(
                   // TODO: create generic fallback error screen
-                  child: const Text("Something went wrong!"),
+                  child: Text("Something went wrong!"),
                 );
               }
             },

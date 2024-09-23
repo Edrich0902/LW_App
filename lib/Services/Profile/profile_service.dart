@@ -19,9 +19,9 @@ class ProfileService {
       await supabase.from('user_profile').update({
         'first_name': firstName,
         'last_name': lastName,
-        'address': address ?? null,
-        'is_member': isMember ?? null,
-        'is_baptized': isBaptized ?? null,
+        'address': address,
+        'is_member': isMember,
+        'is_baptized': isBaptized,
       }).eq('id', currentUser?.id);
     } catch (error) {
       throw error.toString();

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/MoreInfo/more_info_bloc.dart';
-import 'package:lw_app/Utils/snackbar.dart';
 import 'package:lw_app/Models/MetaData/meta_data.dart' as Lw;
 import 'package:lw_app/Widgets/WhatsappContactFAB/whatsapp_contact_fab.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
@@ -25,8 +23,6 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    MoreInfoBloc moreInfoBloc =
-        BlocProvider.of<MoreInfoBloc>(context);
 
     return BlocListener<MoreInfoBloc, MoreInfoState>(
       listener: (context, state) {
@@ -34,16 +30,16 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Meer Oor Ons'),
-          actions: <Widget>[ProfileActionButton()],
+          title: const Text('Meer Oor Ons'),
+          actions: const <Widget>[ProfileActionButton()],
         ),
-        floatingActionButton: WhatsappContactFAB(),
+        floatingActionButton: const WhatsappContactFAB(),
         body: SafeArea(
           child: BlocBuilder<MoreInfoBloc, MoreInfoState>(
             builder: (context, state) {
               if (state is MoreInfoLoading) {
                 return const Center(
-                  child: const CircularProgressIndicator(),
+                  child: CircularProgressIndicator(),
                 );
               } else if (state is MoreInfoSuccess) {
                 // Build list content
@@ -87,7 +83,7 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
               } else {
                 return const Center(
                   // TODO: create generic fallback error screen
-                  child: const Text("Something went wrong!"),
+                  child: Text("Something went wrong!"),
                 );
               }
             },
@@ -101,7 +97,7 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
     final theme = Theme.of(context);
     return Card(
       child: Padding(
-        padding: EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(8.0),
         child: Column(
           children: <Widget>[
             Theme(
@@ -111,7 +107,7 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
                   data.title ?? '',
                   style: theme.textTheme.titleLarge,
                 ),
-                childrenPadding: EdgeInsets.all(16.0),
+                childrenPadding: const EdgeInsets.all(16.0),
                 children: <Widget>[
                   Text(
                     data.content ?? '',

@@ -25,15 +25,15 @@ class _ProfilePageState extends State<ProfilePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile'),
+        title: const Text('Profile'),
       ),
-      floatingActionButton: WhatsappContactFAB(),
+      floatingActionButton: const WhatsappContactFAB(),
       body: SafeArea(
         child: ListView(
-          padding: EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(8.0),
           children: <Widget>[
             _profileListItem(
-              Icon(Icons.person),
+              const Icon(Icons.person),
               'My Profile',
               () {
                 Navigator.push(
@@ -43,7 +43,7 @@ class _ProfilePageState extends State<ProfilePage> {
               },
             ),
             _profileListItem(
-              Icon(Icons.notes),
+              const Icon(Icons.notes),
               'My Notes',
               () {
                 Navigator.push(
@@ -53,14 +53,14 @@ class _ProfilePageState extends State<ProfilePage> {
               },
             ),
             _profileListItem(
-              Icon(Icons.settings),
+              const Icon(Icons.settings),
               'Settings',
               () {
                 print('item clicked');
               },
             ),
             _profileListItem(
-              Icon(Icons.logout),
+              const Icon(Icons.logout),
               'Sign Out',
               () {
                 authBloc.add(const SignOutEvent());
@@ -81,7 +81,7 @@ class _ProfilePageState extends State<ProfilePage> {
       child: ListTile(
         leading: icon,
         title: Text(text),
-        trailing: Icon(Icons.arrow_forward),
+        trailing: const Icon(Icons.arrow_forward),
         onTap: onTap,
       ),
     );

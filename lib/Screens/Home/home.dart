@@ -7,7 +7,6 @@ import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 // Screens
 import 'package:lw_app/Screens/Auth/login.dart';
 import 'package:lw_app/Screens/Container/container.dart';
-import 'package:lw_app/Screens/Dashboard/dashboard.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

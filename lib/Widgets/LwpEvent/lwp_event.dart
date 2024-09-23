@@ -27,7 +27,7 @@ class _LwpEventState extends State<LwpEvent> {
 
     return Card(
       child: Padding(
-        padding: EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           children: <Widget>[
             Row(
@@ -51,8 +51,8 @@ class _LwpEventState extends State<LwpEvent> {
                   'Lees Meer',
                   style: theme.textTheme.titleMedium
                 ),
-                childrenPadding: EdgeInsets.all(16.0),
-                tilePadding: EdgeInsets.all(0.0),
+                childrenPadding: const EdgeInsets.all(16.0),
+                tilePadding: const EdgeInsets.all(0.0),
                 expandedAlignment: Alignment.centerLeft,
                 children: <Widget>[
                   Text(
