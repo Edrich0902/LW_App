@@ -5,6 +5,8 @@ import 'package:lw_app/Models/MetaData/meta_data.dart' as Lw;
 import 'package:lw_app/Widgets/WhatsappContactFAB/whatsapp_contact_fab.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:lw_app/Widgets/LwpBio/lwp_bio.dart';
+import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
+import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 
 class MoreInfoPage extends StatefulWidget {
   const MoreInfoPage({super.key});
@@ -38,9 +40,7 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
           child: BlocBuilder<MoreInfoBloc, MoreInfoState>(
             builder: (context, state) {
               if (state is MoreInfoLoading) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
+                return const LwpLoader();
               } else if (state is MoreInfoSuccess) {
                 // Build list content
                 List<Widget> content = [];
@@ -81,10 +81,7 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
                   ),
                 );
               } else {
-                return const Center(
-                  // TODO: create generic fallback error screen
-                  child: Text("Something went wrong!"),
-                );
+                return const LwpError();
               }
             },
           ),

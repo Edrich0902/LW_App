@@ -5,6 +5,9 @@ import 'package:lw_app/Blocs/Calendar/calendar_bloc.dart';
 import 'package:lw_app/Models/Event/event_type.dart';
 import 'package:lw_app/Models/Event/event.dart';
 import 'package:lw_app/Widgets/LwpEvent/lwp_event.dart';
+import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
+import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
+import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});
@@ -38,9 +41,7 @@ class _CalendarPageState extends State<CalendarPage> {
           child: BlocBuilder<CalendarBloc, CalendarState>(
             builder: (context, state) {
               if (state is CalendarLoading) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
+                return const LwpLoader(message: "Loading Kalender");
               } else if (state is CalendarSuccess) {
                 if (state.eventsMap.isNotEmpty) {
                   return RefreshIndicator(
@@ -76,16 +77,10 @@ class _CalendarPageState extends State<CalendarPage> {
                     ),
                   );
                 } else {
-                  return const Center(
-                    // TODO: create generic empty list screen
-                    child: Text("Geen Kalender Items"),
-                  );
+                  return const LwpEmpty(message: "Geen Kalender Items");
                 }
               } else {
-                return const Center(
-                  // TODO: create generic fallback error screen
-                  child: Text("Something went wrong!"),
-                );
+                return const LwpError();
               }
             },
           ),

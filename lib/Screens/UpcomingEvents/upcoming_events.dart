@@ -5,6 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/Events/events_bloc.dart';
 import 'package:lw_app/Models/Event/event_type.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
+import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
+import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
+import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 
 class UpcomingEventsPage extends StatefulWidget {
   const UpcomingEventsPage({super.key});
@@ -37,9 +40,7 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
           child: BlocBuilder<EventsBloc, EventsState>(
             builder: (context, state) {
               if (state is EventsLoading) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
+                return const LwpLoader(message: "Loading Opkomende Gebeure");
               } else if (state is EventsSuccess) {
                 if (state.events.isNotEmpty) {
                   return RefreshIndicator(
@@ -55,16 +56,10 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
                     ),
                   );
                 } else {
-                  return const Center(
-                    // TODO: create generic empty list screen
-                    child: Text("Geen Opkomende Gebeure"),
-                  );
+                  return const LwpEmpty(message: "Geen Opkomende Gebeure");
                 }
               } else {
-                return const Center(
-                  // TODO: create generic fallback error screen
-                  child: Text("Something went wrong!"),
-                );
+                return const LwpError();
               }
             },
           ),

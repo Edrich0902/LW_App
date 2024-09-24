@@ -4,6 +4,9 @@ import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:lw_app/Widgets/WhatsappContactFAB/whatsapp_contact_fab.dart';
 import 'package:lw_app/Models/Group/group.dart';
 import 'package:lw_app/Blocs/ConnectGroups/connect_groups_bloc.dart';
+import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
+import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
+import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 
 class ConnectGroupsPage extends StatefulWidget {
   const ConnectGroupsPage({super.key});
@@ -37,9 +40,7 @@ class _ConnectGroupsPageState extends State<ConnectGroupsPage> {
           child: BlocBuilder<ConnectGroupsBloc, ConnectGroupsState>(
             builder: (context, state) {
               if (state is ConnectGroupsLoading) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
+                return const LwpLoader(message: "Loading Konneksie Groepe");
               } else if (state is ConnectGroupsSuccess) {
                 if (state.connectGroups.isNotEmpty) {
                   return RefreshIndicator(
@@ -53,14 +54,12 @@ class _ConnectGroupsPageState extends State<ConnectGroupsPage> {
                     ),
                   );
                 } else {
-                  return const Center(
-                    child: Text("Geen Konneksie Groepe"),
-                  );
+                  return const LwpEmpty(message: "Geen Konneksie Groepe");
                 }
+              } else if (state is ConnectGroupsError) {
+                return LwpError(message: state.error);
               } else {
-                return const Center(
-                  child: Text("Something went wrong!"),
-                );
+                return const LwpError();
               }
             },
           ),

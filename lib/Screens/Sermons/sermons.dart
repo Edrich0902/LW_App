@@ -5,6 +5,9 @@ import 'package:lw_app/Widgets/LwpBanner/lwp_banner.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:lw_app/Blocs/Sermons/sermons_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
+import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
+import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 
 class SermonsPage extends StatefulWidget {
   const SermonsPage({super.key});
@@ -37,9 +40,7 @@ class _SermonsPageState extends State<SermonsPage> {
           child: BlocBuilder<SermonsBloc, SermonsState>(
             builder: (context, state) {
               if (state is SermonsLoading) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
+                return const LwpLoader(message: "Loading Preke");
               } else if (state is SermonsSuccess) {
                 if (state.youtubeVideos.isNotEmpty) {
                   return RefreshIndicator(
@@ -55,16 +56,10 @@ class _SermonsPageState extends State<SermonsPage> {
                     ),
                   );
                 } else {
-                  return const Center(
-                    // TODO: create generic empty list screen
-                    child: Text("Geen Preke Beskikbaar"),
-                  );
+                  return const LwpEmpty(message: "Geen Preke Beskikbaar");
                 }
               } else {
-                return const Center(
-                  // TODO: create generic fallback error screen
-                  child: Text("Something went wrong!"),
-                );
+                return const LwpError();
               }
             }
           ),

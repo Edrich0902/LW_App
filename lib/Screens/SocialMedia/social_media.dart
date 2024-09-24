@@ -4,6 +4,9 @@ import 'package:lw_app/Widgets/LwpBanner/lwp_banner.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/SocialMedia/social_media_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
+import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
+import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 
 class SocialMediaPage extends StatefulWidget {
   const SocialMediaPage({super.key});
@@ -36,9 +39,7 @@ class _SocialMediaPageState extends State<SocialMediaPage> {
           child: BlocBuilder<SocialMediaBloc, SocialMediaState>(
             builder: (context, state) {
               if (state is SocialMediaLoading) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
+                return const LwpLoader(message: "Loading Volg Ons");
               } else if (state is SocialMediaSuccess) {
                 if (state.socialMedia.isNotEmpty) {
                   return RefreshIndicator(
@@ -58,16 +59,10 @@ class _SocialMediaPageState extends State<SocialMediaPage> {
                     ),
                   );
                 } else {
-                  return const Center(
-                    // TODO: create generic empty list screen
-                    child: Text("Geen Volg Ons Skakels"),
-                  );
+                  return const LwpEmpty(message: "Geen Volg Ons Skakels");
                 }
               } else {
-                return const Center(
-                  // TODO: create generic fallback error screen
-                  child: Text("Something went wrong!"),
-                );
+                return const LwpError();
               }
             },
           ),

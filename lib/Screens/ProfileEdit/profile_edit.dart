@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/User/user_bloc.dart';
 import 'package:lw_app/Utils/snackbar.dart';
 import 'package:lw_app/Widgets/LabeledCheckbox/labeled_checkbox.dart';
+import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
+import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 
 class ProfileEditPage extends StatefulWidget {
   const ProfileEditPage({super.key});
@@ -69,7 +71,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
               child: BlocBuilder<UserBloc, UserState>(
                 builder: (context, state) {
                   if (state is UserLoading) {
-                    return const CircularProgressIndicator();
+                    return const LwpLoader(message: "Loading Profile");
                   } else if (state is UserSuccess) {
                     initForm(state);
                     return SingleChildScrollView(
@@ -182,7 +184,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                       ),
                     );
                   } else {
-                    return const Text("Something went wrong!");
+                    return const LwpError();
                   }
                 },
               ),

@@ -4,6 +4,8 @@ import 'package:lw_app/Blocs/NoteEdit/note_edit_bloc.dart';
 import 'package:lw_app/Blocs/Notes/notes_bloc.dart';
 import 'package:lw_app/Models/Note/note.dart';
 import 'package:lw_app/Utils/snackbar.dart';
+import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
+import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 
 class NotesEditPage extends StatefulWidget {
   final String? noteId;
@@ -74,9 +76,7 @@ class _NotesEditPageState extends State<NotesEditPage> {
             buildWhen: (previous, current) => previous != current,
             builder: (context, state) {
               if (state is NoteLoading) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
+                return const LwpLoader();
               } else if (state is NoteSuccess) {
                 initForm(note: state.note);
                 return _noteForm(noteEditBloc: noteEditBloc, note: state.note);
@@ -84,9 +84,7 @@ class _NotesEditPageState extends State<NotesEditPage> {
                 initForm();
                 return _noteForm(noteEditBloc: noteEditBloc);
               } else {
-                return const Center(
-                  child: Text('Something went wrong!'),
-                );
+                return const LwpError();
               }
             },
           ),

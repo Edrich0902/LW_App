@@ -4,6 +4,9 @@ import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:lw_app/Widgets/WhatsappContactFAB/whatsapp_contact_fab.dart';
 import 'package:lw_app/Models/Group/group.dart';
 import 'package:lw_app/Blocs/ServiceGroups/service_groups_bloc.dart';
+import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
+import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
+import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 
 class ServeGroupsPage extends StatefulWidget {
   const ServeGroupsPage({super.key});
@@ -37,9 +40,7 @@ class _ServeGroupsPageState extends State<ServeGroupsPage> {
           child: BlocBuilder<ServiceGroupsBloc, ServiceGroupsState>(
             builder: (context, state) {
               if (state is ServiceGroupsLoading) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
+                return const LwpLoader(message: "Loading Kom Dien Groepe");
               } else if (state is ServiceGroupsSuccess) {
                 if (state.serviceGroups.isNotEmpty) {
                   return RefreshIndicator(
@@ -53,14 +54,10 @@ class _ServeGroupsPageState extends State<ServeGroupsPage> {
                     ),
                   );
                 } else {
-                  return const Center(
-                    child: Text("Geen Kom Dien Groepe"),
-                  );
+                  return const LwpEmpty(message: "Geen Kom Dien Groepe");
                 }
               } else {
-                return const Center(
-                  child: Text("Something went wrong!"),
-                );
+                return const LwpError();
               }
             },
           ),
