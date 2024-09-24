@@ -7,6 +7,7 @@ import 'package:lw_app/Blocs/ConnectGroups/connect_groups_bloc.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
+import 'package:lw_app/Utils/maps_helper.dart';
 
 class ConnectGroupsPage extends StatefulWidget {
   const ConnectGroupsPage({super.key});
@@ -94,7 +95,7 @@ class _ConnectGroupsPageState extends State<ConnectGroupsPage> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
                   IconButton(
-                    onPressed: () => print("clicked"), // TODO: link to google maps location
+                    onPressed: () => MapsHelper.openLocation(group.location),
                     icon: const Icon(Icons.location_on_outlined),
                   ),
                   ElevatedButton(
