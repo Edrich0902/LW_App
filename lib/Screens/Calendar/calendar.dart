@@ -8,6 +8,7 @@ import 'package:lw_app/Widgets/LwpEvent/lwp_event.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
+import 'package:lw_app/Models/Event/event_category.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});
@@ -19,7 +20,7 @@ class CalendarPage extends StatefulWidget {
 class _CalendarPageState extends State<CalendarPage> {
   @override
   void initState() {
-    context.read<CalendarBloc>().add(LoadCalendar(eventType: EventType.WEEKLY));
+    context.read<CalendarBloc>().add(LoadCalendar(eventType: EventType.WEEKLY, eventCategory: EventCategory.GENERAL));
     super.initState();
   }
 
@@ -45,7 +46,7 @@ class _CalendarPageState extends State<CalendarPage> {
               } else if (state is CalendarSuccess) {
                 if (state.eventsMap.isNotEmpty) {
                   return RefreshIndicator(
-                    onRefresh: () async => calendarBloc.add(LoadCalendar(eventType: EventType.WEEKLY)),
+                    onRefresh: () async => calendarBloc.add(LoadCalendar(eventType: EventType.WEEKLY, eventCategory: EventCategory.GENERAL)),
                     child: ListView.builder(
                       padding: const EdgeInsets.all(8.0),
                       itemCount: state.eventsMap.length,

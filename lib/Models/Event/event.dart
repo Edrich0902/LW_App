@@ -7,6 +7,7 @@ class Event extends Equatable {
   final String time;
   final String type;
   final String day;
+  final String category;
   final String? startDate;
   final String? endDate;
   final String? createdAt;
@@ -19,6 +20,7 @@ class Event extends Equatable {
     required this.time,
     required this.type,
     required this.day,
+    required this.category,
     this.startDate,
     this.endDate,
     this.createdAt,
@@ -33,6 +35,7 @@ class Event extends Equatable {
     time,
     type,
     day,
+    category,
     startDate,
     endDate,
     createdAt,
@@ -47,6 +50,7 @@ class Event extends Equatable {
       time: json['time'] ?? '',
       type: json['type'] ?? '',
       day: json['day'] ?? '',
+      category: json['category'] ?? '',
       startDate: json['start_date'] ?? '',
       endDate: json['end_date'] ?? '',
       createdAt: json['created_at'] ?? '',

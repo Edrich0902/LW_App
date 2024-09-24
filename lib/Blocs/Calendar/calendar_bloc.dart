@@ -14,7 +14,7 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
     on<LoadCalendar>((event, emit) async {
       emit(CalendarLoading());
       try {
-        List<Event> events = await _eventService.getEvents(type: event.eventType);
+        List<Event> events = await _eventService.getEvents(type: event.eventType, category: event.eventCategory);
         Map<String, List<Event>> eventsMap = groupBy(events, (obj) => obj.day);
         List<String> days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]; // TODO: this can possibly be improved
 

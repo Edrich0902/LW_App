@@ -6,6 +6,7 @@ import 'package:lw_app/Utils/snackbar.dart';
 import 'package:lw_app/Screens/Sermons/sermons.dart';
 import 'package:lw_app/Screens/UpcomingEvents/upcoming_events.dart';
 import 'package:lw_app/Screens/SocialMedia/social_media.dart';
+import 'package:lw_app/Screens/Courses/courses.dart';
 import 'package:lw_app/Widgets/WhatsappContactFAB/whatsapp_contact_fab.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:lw_app/Widgets/LwpBanner/lwp_banner.dart';
@@ -94,7 +95,11 @@ class DashPage extends StatelessWidget {
                   imageUrl: "https://images.unsplash.com/photo-1492052722242-2554d0e99e3a?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
                   message: "Kursusse",
                   onTap: () {
-                    print('Card clicked'); // TODO: navigate to Tithes & Offerings
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const CoursesPage()),
+                    );
                   },
                 ),
               ],

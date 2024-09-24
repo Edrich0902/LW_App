@@ -17,6 +17,7 @@ import 'package:lw_app/Blocs/Events/events_bloc.dart';
 import 'package:lw_app/Blocs/Calendar/calendar_bloc.dart';
 import 'package:lw_app/Blocs/ConnectGroups/connect_groups_bloc.dart';
 import 'package:lw_app/Blocs/ServiceGroups/service_groups_bloc.dart';
+import 'package:lw_app/Blocs/Courses/courses_bloc.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
@@ -70,6 +71,9 @@ Future<void> main() async {
         ),
         BlocProvider<ServiceGroupsBloc>(
           create: (_) => ServiceGroupsBloc(),
+        ),
+        BlocProvider<CoursesBloc>(
+          create: (_) => CoursesBloc(),
         ),
       ],
       child: const App(),
