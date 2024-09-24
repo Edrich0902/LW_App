@@ -8,6 +8,7 @@ import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 import 'package:lw_app/Utils/maps_helper.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ConnectGroupsPage extends StatefulWidget {
   const ConnectGroupsPage({super.key});
@@ -99,7 +100,7 @@ class _ConnectGroupsPageState extends State<ConnectGroupsPage> {
                     icon: const Icon(Icons.location_on_outlined),
                   ),
                   ElevatedButton(
-                    onPressed: () => print("clicked"), // TODO: link to whatsapp group - prevent auto join?
+                    onPressed: () => _openConnectGroupWhatsapp(),
                     child: const Text("Join WhatsApp"),
                   )
                 ],
@@ -109,5 +110,11 @@ class _ConnectGroupsPageState extends State<ConnectGroupsPage> {
         ),
       ),
     );
+  }
+
+  // TODO: get community link to open community from app
+  void _openConnectGroupWhatsapp() {
+    String link = "https://wa.me/+27727238406";
+    launchUrl(Uri.parse(link), mode: LaunchMode.externalApplication);
   }
 }

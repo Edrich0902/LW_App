@@ -7,6 +7,7 @@ import 'package:lw_app/Blocs/ServiceGroups/service_groups_bloc.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ServeGroupsPage extends StatefulWidget {
   const ServeGroupsPage({super.key});
@@ -92,7 +93,7 @@ class _ServeGroupsPageState extends State<ServeGroupsPage> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: <Widget>[
                     ElevatedButton(
-                      onPressed: () => print("clicked"), // TODO: link to whatsapp group - prevent auto join?
+                      onPressed: () => _openServeGroupWhatsapp(),
                       child: const Text("Join WhatsApp"),
                     )
                   ],
@@ -102,5 +103,11 @@ class _ServeGroupsPageState extends State<ServeGroupsPage> {
         ),
       ),
     );
+  }
+
+  // TODO: get community link to open community from app
+  void _openServeGroupWhatsapp() {
+    String link = "https://wa.me/+27727238406";
+    launchUrl(Uri.parse(link), mode: LaunchMode.externalApplication);
   }
 }
