@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloudinary_flutter/image/cld_image.dart';
 
 class LwpProfileImage extends StatefulWidget {
   const LwpProfileImage({
@@ -31,7 +32,13 @@ class _LwpProfileImageState extends State<LwpProfileImage> {
       child: CircleAvatar(
         radius: widget.radius,
         child: ClipOval(
-          child: Image.network(widget.imageUrl),
+          // TODO: switch rest of the app iamges to this cloudinary widget as well
+          child: CldImageWidget(
+            publicId: "cld-sample-2",
+            width: 100,
+            height: 100,
+            fit: BoxFit.cover,
+          ),
         ),
       ),
     );

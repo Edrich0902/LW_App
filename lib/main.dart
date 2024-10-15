@@ -5,6 +5,9 @@ import 'package:lw_app/Screens/Home/home.dart';
 import 'package:lw_app/Themes/custom_theme.dart';
 import 'package:lw_app/Utils/environment.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:intl/date_symbol_data_local.dart';
+
+// Blocs
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/Auth/auth_bloc.dart';
 import 'package:lw_app/Blocs/User/user_bloc.dart';
@@ -18,7 +21,10 @@ import 'package:lw_app/Blocs/Calendar/calendar_bloc.dart';
 import 'package:lw_app/Blocs/ConnectGroups/connect_groups_bloc.dart';
 import 'package:lw_app/Blocs/ServiceGroups/service_groups_bloc.dart';
 import 'package:lw_app/Blocs/Courses/courses_bloc.dart';
-import 'package:intl/date_symbol_data_local.dart';
+
+// Cloudinary
+import 'package:cloudinary_flutter/cloudinary_context.dart';
+import 'package:cloudinary_url_gen/cloudinary.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,6 +39,13 @@ Future<void> main() async {
   await Supabase.initialize(
     url: Environment.supabaseUrl,
     anonKey: Environment.supabaseKey,
+  );
+
+  // Init Cloudinary
+  // TODO: add profile image uploading
+  // TODO: ensure all public ids are stored correctly in database and handled on front-end
+  CloudinaryContext.cloudinary = Cloudinary.fromCloudName(
+    cloudName: Environment.cloudinaryCloud,
   );
 
   // Start app
