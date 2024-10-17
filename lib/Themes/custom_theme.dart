@@ -65,11 +65,6 @@ class AppTheme {
         )),
       ),
     ),
-    iconButtonTheme: IconButtonThemeData(
-      style: ButtonStyle(
-        backgroundColor: WidgetStateProperty.all<Color>(LightColors.primary),
-      ),
-    ),
     inputDecorationTheme: InputDecorationTheme(
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(24.0),
@@ -150,11 +145,6 @@ class AppTheme {
           borderRadius: BorderRadius.circular(24.0),
         )),
       ),
-    ),
-    iconButtonTheme: IconButtonThemeData(
-        style: ButtonStyle(
-          backgroundColor: WidgetStateProperty.all<Color>(LightColors.primary),
-        ),
     ),
     inputDecorationTheme: InputDecorationTheme(
       border: OutlineInputBorder(

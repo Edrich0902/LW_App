@@ -122,7 +122,10 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                                         );
                                       },
                                       icon: Icon(Icons.camera_alt_outlined),
-                                      style: ButtonStyle(foregroundColor: MaterialStateProperty.all(Colors.white)),
+                                      style: ButtonStyle(
+                                        foregroundColor: MaterialStateProperty.all(Colors.white),
+                                        backgroundColor: MaterialStateProperty.all(theme.primaryColor)
+                                      ),
                                     ),
                                     IconButton(
                                       onPressed: () async {
@@ -133,7 +136,10 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                                         );
                                       },
                                       icon: Icon(Icons.attach_file),
-                                      style: ButtonStyle(foregroundColor: MaterialStateProperty.all(Colors.white)),
+                                      style: ButtonStyle(
+                                        foregroundColor: MaterialStateProperty.all(Colors.white),
+                                        backgroundColor: MaterialStateProperty.all(theme.primaryColor)
+                                      ),
                                     ),
                                   ],
                                 ),
