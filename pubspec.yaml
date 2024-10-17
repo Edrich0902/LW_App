@@ -55,6 +55,7 @@ dependencies:
   collection: ^1.16.0
   cloudinary_url_gen: ^1.0.0
   cloudinary_flutter: ^1.0.0
+  image_picker: ^1.0.0
 
 flutter_icons:
   android: "launcher_icon"

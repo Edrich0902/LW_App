@@ -3,7 +3,6 @@ import 'package:lw_app/Utils/environment.dart';
 import 'dart:io';
 import 'dart:convert';
 
-// TODO: figure out how to plug this into other code and join with states
 class CloudinaryHelper {
   static String _baseUrl = 'https://api.cloudinary.com/v1_1/${Environment.cloudinaryCloud}/upload';
 
@@ -22,8 +21,7 @@ class CloudinaryHelper {
       final responseString = String.fromCharCodes(responseData);
       final jsonMap = jsonDecode(responseString);
 
-      // TODO: possibly store url and public_id on db to allow access on all platforms
-      return {"public_id": jsonMap['public_id'], "url": jsonMap['public_id']}; // use public id to access images
+      return {"public_id": jsonMap['public_id'], "url": jsonMap['url']}; // use public id to access images
     } else {
       // TODO: how to handle this better
       throw Exception("Error Uploading Image");

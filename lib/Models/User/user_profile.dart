@@ -10,6 +10,8 @@ class UserProfile extends Equatable {
   final String? address;
   final bool? isBaptized;
   final bool? isMember;
+  final String? profilePublicId;
+  final String? profileUrl;
 
   const UserProfile({
     this.id,
@@ -20,11 +22,13 @@ class UserProfile extends Equatable {
     this.role,
     this.address,
     this.isBaptized,
-    this.isMember
+    this.isMember,
+    this.profilePublicId,
+    this.profileUrl,
   });
 
   @override
-  List<Object?> get props => [id, firstName, lastName, updatedAt, createdAt, role, address, isBaptized, isMember];
+  List<Object?> get props => [id, firstName, lastName, updatedAt, createdAt, role, address, isBaptized, isMember, profilePublicId, profileUrl];
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
     return UserProfile(
@@ -37,6 +41,8 @@ class UserProfile extends Equatable {
       address: json['address'] ?? '',
       isBaptized: json['is_baptized'] ?? false,
       isMember: json['is_member'] ?? false,
+      profilePublicId: json['profile_public_id'] ?? '',
+      profileUrl: json['profile_url'] ?? ''
     );
   }
 }

@@ -42,8 +42,6 @@ Future<void> main() async {
   );
 
   // Init Cloudinary
-  // TODO: add profile image uploading
-  // TODO: ensure all public ids are stored correctly in database and handled on front-end
   CloudinaryContext.cloudinary = Cloudinary.fromCloudName(
     cloudName: Environment.cloudinaryCloud,
   );
@@ -107,6 +105,7 @@ class App extends StatelessWidget {
       home: EasySplashScreen(
         durationInSeconds: 3,
         logo: Image.network(
+          // TODO: add this asset to cloudinary and serve from cloud
             "https://yt3.googleusercontent.com/ytc/AL5GRJUbsh7ILjzuEQAZTot_kkV2GohZR75CjoWM9NSI9Q=s900-c-k-c0x00ffffff-no-rj"), //TODO: update logo url -> make asset
         navigator: const HomePage(),
       ),

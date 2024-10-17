@@ -6,6 +6,9 @@ import 'package:lw_app/Utils/snackbar.dart';
 import 'package:lw_app/Widgets/LabeledCheckbox/labeled_checkbox.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
+import 'package:cloudinary_flutter/image/cld_image.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class ProfileEditPage extends StatefulWidget {
   const ProfileEditPage({super.key});
@@ -29,6 +32,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
       TextEditingController();
   bool _isMember = false;
   bool _isBaptized = false;
+  String _profilePublicId = '';
 
   @override
   void initState() {
@@ -50,16 +54,22 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     _addressController.text = state.user.address ?? '';
     _isMember = state.user.isMember ?? false;
     _isBaptized = state.user.isBaptized ?? false;
+    _profilePublicId = state.user.profilePublicId ?? '';
   }
 
   @override
   Widget build(BuildContext context) {
     UserBloc userBloc = BlocProvider.of<UserBloc>(context);
+    final theme = Theme.of(context);
 
     return BlocListener<UserBloc, UserState>(
       listener: (context, state) {
         if (state is UserUpdateSuccess) {
           SnackBarHelper.showSuccessSnack(context, 'Profile Updated');
+        }
+
+        if (state is UserProfilePictureSuccess) {
+          SnackBarHelper.showSuccessSnack(context, 'Profile Image Updated');
         }
       },
       child: Scaffold(
@@ -82,13 +92,50 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: <Widget>[
+                                ClipOval(
+                                  child: CldImageWidget(
+                                    publicId: _profilePublicId,
+                                    placeholder: (context, url) => CircularProgressIndicator(),
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Container(
+                                        color: Colors.grey[300], // Background color for the fallback
+                                        child: Center(
+                                          child: Icon(Icons.person, size: 100.0), // Fallback icon
+                                        ),
+                                      );
+                                    },
+                                    width: 250,
+                                    height: 250,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
                                 const SizedBox(height: 16),
-                                //TODO: add profile photo functionality
-                                const CircleAvatar(
-                                  radius: 100,
-                                  //TODO: update with actual user image and add placeholder
-                                  backgroundImage: NetworkImage(
-                                      "https://yt3.googleusercontent.com/ytc/AL5GRJUbsh7ILjzuEQAZTot_kkV2GohZR75CjoWM9NSI9Q=s900-c-k-c0x00ffffff-no-rj"),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    IconButton(
+                                      onPressed: () async {
+                                        File? image = await _pickImageFromCamera();
+                                        if (image == null) return;
+                                        userBloc.add(
+                                            UploadProfilePicture(profileImageFile: image)
+                                        );
+                                      },
+                                      icon: Icon(Icons.camera_alt_outlined),
+                                      style: ButtonStyle(foregroundColor: MaterialStateProperty.all(Colors.white)),
+                                    ),
+                                    IconButton(
+                                      onPressed: () async {
+                                        File? image = await _pickImageFromGallery();
+                                        if (image == null) return;
+                                        userBloc.add(
+                                          UploadProfilePicture(profileImageFile: image)
+                                        );
+                                      },
+                                      icon: Icon(Icons.attach_file),
+                                      style: ButtonStyle(foregroundColor: MaterialStateProperty.all(Colors.white)),
+                                    ),
+                                  ],
                                 ),
                                 const SizedBox(height: 16),
                                 TextFormField(
@@ -193,5 +240,19 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
         ),
       ),
     );
+  }
+
+  Future<File?> _pickImageFromGallery() async {
+    final returnedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
+    File? imageFile = File(returnedImage!.path);
+    if (await imageFile.exists()) return imageFile;
+    return null;
+  }
+
+  Future<File?> _pickImageFromCamera() async {
+    final returnedImage = await ImagePicker().pickImage(source: ImageSource.camera);
+    File? imageFile = File(returnedImage!.path);
+    if (await imageFile.exists()) return imageFile;
+    return null;
   }
 }

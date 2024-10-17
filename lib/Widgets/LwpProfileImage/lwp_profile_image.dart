@@ -32,7 +32,7 @@ class _LwpProfileImageState extends State<LwpProfileImage> {
       child: CircleAvatar(
         radius: widget.radius,
         child: ClipOval(
-          // TODO: switch rest of the app iamges to this cloudinary widget as well
+          // TODO: switch rest of the app images to this cloudinary widget as well
           child: CldImageWidget(
             publicId: "cld-sample-2",
             width: 100,

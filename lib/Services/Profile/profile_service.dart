@@ -28,6 +28,21 @@ class ProfileService {
     }
   }
 
+  Future<void> updateUserProfileImage({
+    required String profilePublicId,
+    required String profileUrl
+  }) async {
+    try {
+      final User? currentUser = _auth.currentUser;
+      await supabase.from('user_profile').update({
+        'profile_public_id': profilePublicId,
+        'profile_url': profileUrl
+      }).eq('id', currentUser?.id);
+    } catch (error) {
+      throw error.toString();
+    }
+  }
+
   Future<UserProfile> getUserProfile() async {
     try {
       final User? currentUser = _auth.currentUser;
