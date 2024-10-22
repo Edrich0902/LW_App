@@ -9,6 +9,9 @@ import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 import 'package:cloudinary_flutter/image/cld_image.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:cloudinary_url_gen/transformation/transformation.dart';
+import 'package:cloudinary_url_gen/transformation/delivery/delivery.dart';
+import 'package:cloudinary_url_gen/transformation/delivery/delivery_actions.dart';
 
 class ProfileEditPage extends StatefulWidget {
   const ProfileEditPage({super.key});
@@ -95,6 +98,9 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                                 ClipOval(
                                   child: CldImageWidget(
                                     publicId: _profilePublicId,
+                                    transformation: Transformation()
+                                        .delivery(Delivery.quality(Quality.auto()))
+                                        .delivery(Delivery.format(Format.auto)),
                                     placeholder: (context, url) => CircularProgressIndicator(),
                                     errorBuilder: (context, error, stackTrace) {
                                       return Container(

@@ -7,13 +7,13 @@ class LwpBio extends StatefulWidget {
     required this.name,
     required this.title,
     required this.bio,
-    required this.profileImageUrl,
+    required this.publicId,
   }) : super(key: key);
 
   final String name;
   final String title;
   final String bio;
-  final String profileImageUrl;
+  final String publicId;
 
   @override
   State<LwpBio> createState() => _LwpBioState();
@@ -37,7 +37,7 @@ class _LwpBioState extends State<LwpBio> {
           children: <Widget>[
             Row(
               children: <Widget>[
-                LwpProfileImage(imageUrl: widget.profileImageUrl),
+                LwpProfileImage(publicId: widget.publicId),
                 const SizedBox(width: 16.0),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

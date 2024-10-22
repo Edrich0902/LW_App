@@ -5,6 +5,8 @@ class Roleplayer extends Equatable {
   final String? fullname;
   final String? title;
   final String? bio;
+  final String? profilePublicId;
+  final String? profileUrl;
   final String? updatedAt;
   final String? createdAt;
 
@@ -13,6 +15,8 @@ class Roleplayer extends Equatable {
     this.fullname,
     this.title,
     this.bio,
+    this.profilePublicId,
+    this.profileUrl,
     this.updatedAt,
     this.createdAt
   });
@@ -26,6 +30,8 @@ class Roleplayer extends Equatable {
       fullname: json['fullname'] ?? '',
       title: json['title'] ?? '',
       bio: json['bio'] ?? '',
+      profilePublicId: json['profile_public_id'] ?? '',
+      profileUrl: json['profile_url'] ?? '',
       updatedAt: json['updated_at'] ?? '',
       createdAt: json['created_at'] ?? '',
     );

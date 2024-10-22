@@ -10,6 +10,8 @@ class Event extends Equatable {
   final String category;
   final String? startDate;
   final String? endDate;
+  final String? bannerPublicId;
+  final String? bannerUrl;
   final String? createdAt;
   final String? updatedAt;
 
@@ -23,6 +25,8 @@ class Event extends Equatable {
     required this.category,
     this.startDate,
     this.endDate,
+    this.bannerPublicId,
+    this.bannerUrl,
     this.createdAt,
     this.updatedAt,
   });
@@ -38,6 +42,8 @@ class Event extends Equatable {
     category,
     startDate,
     endDate,
+    bannerPublicId,
+    bannerUrl,
     createdAt,
     updatedAt,
   ];
@@ -53,6 +59,8 @@ class Event extends Equatable {
       category: json['category'] ?? '',
       startDate: json['start_date'] ?? '',
       endDate: json['end_date'] ?? '',
+      bannerPublicId: json['banner_public_id'] ?? '',
+      bannerUrl: json['banner_url'] ?? '',
       createdAt: json['created_at'] ?? '',
       updatedAt: json['updated_at'] ?? '',
     );

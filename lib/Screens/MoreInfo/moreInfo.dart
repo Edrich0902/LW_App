@@ -62,8 +62,7 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
                         name: roleplayer.fullname ?? '',
                         title: roleplayer.title ?? '',
                         bio: roleplayer.bio ?? '',
-                        // TODO: add profile image functionality
-                        profileImageUrl: 'https://yt3.googleusercontent.com/ytc/AL5GRJUbsh7ILjzuEQAZTot_kkV2GohZR75CjoWM9NSI9Q=s900-c-k-c0x00ffffff-no-rj',
+                        publicId: roleplayer.profilePublicId ?? '',
                       )
                   );
                 }

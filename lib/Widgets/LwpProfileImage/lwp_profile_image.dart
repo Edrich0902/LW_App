@@ -6,12 +6,12 @@ class LwpProfileImage extends StatefulWidget {
     Key? key,
     this.height = 100,
     this.radius = 100,
-    required this.imageUrl
+    required this.publicId
   }) : super(key: key);
 
   final double height;
   final double radius;
-  final String imageUrl;
+  final String publicId;
 
   @override
   State<LwpProfileImage> createState() => _LwpProfileImageState();
@@ -32,9 +32,8 @@ class _LwpProfileImageState extends State<LwpProfileImage> {
       child: CircleAvatar(
         radius: widget.radius,
         child: ClipOval(
-          // TODO: switch rest of the app images to this cloudinary widget as well
           child: CldImageWidget(
-            publicId: "cld-sample-2",
+            publicId: widget.publicId ?? 'samples/cloudinary-icon',
             width: 100,
             height: 100,
             fit: BoxFit.cover,
