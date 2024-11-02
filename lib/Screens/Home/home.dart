@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/Auth/auth_bloc.dart';
-import 'package:lw_app/Utils/snackbar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 
 // Screens
@@ -49,8 +48,6 @@ class _HomePageState extends State<HomePage> {
             context,
             MaterialPageRoute(builder: (context) => const LoginPage()),
           );
-        } else if (state is AuthErrorState) {
-          SnackBarHelper.showErrorSnack(context, 'Login Failed');
         }
       },
       child: const LoginPage(),

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/Auth/auth_bloc.dart';
 import 'package:lw_app/Screens/Auth/login.dart';
-import 'package:lw_app/Utils/snackbar.dart';
 import 'package:lw_app/Screens/Sermons/sermons.dart';
 import 'package:lw_app/Screens/UpcomingEvents/upcoming_events.dart';
 import 'package:lw_app/Screens/SocialMedia/social_media.dart';
@@ -10,6 +9,7 @@ import 'package:lw_app/Screens/Courses/courses.dart';
 import 'package:lw_app/Widgets/WhatsappContactFAB/whatsapp_contact_fab.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:lw_app/Widgets/LwpBanner/lwp_banner.dart';
+import 'package:animated_snack_bar/animated_snack_bar.dart';
 
 class DashPage extends StatelessWidget {
   const DashPage({super.key});
@@ -25,7 +25,11 @@ class DashPage extends StatelessWidget {
             (route) => false,
           );
         } else if (state is AuthErrorState) {
-          SnackBarHelper.showErrorSnack(context, 'Error, could not Sign Out');
+          AnimatedSnackBar.material(
+              "Error, could not Sign Out",
+              type: AnimatedSnackBarType.error,
+              mobileSnackBarPosition: MobileSnackBarPosition.bottom
+          ).show(context);
         }
       },
       child: Scaffold(
