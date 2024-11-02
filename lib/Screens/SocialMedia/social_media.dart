@@ -51,6 +51,7 @@ class _SocialMediaPageState extends State<SocialMediaPage> {
                         return LwpBanner(
                           message: state.socialMedia[index].title!,
                           imageUrl: _getSocialMediaImage(state.socialMedia[index].type ?? ''),
+                          imagePublicId: state.socialMedia[index]?.bannerPublicId ?? null,
                           onTap: () {
                             launchUrl(Uri.parse(state.socialMedia[index].link ?? ''));
                           },

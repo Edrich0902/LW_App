@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lw_app/Models/Event/event.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
+import 'package:cloudinary_flutter/image/cld_image.dart';
 
 class LwpEvent extends StatefulWidget {
   const LwpEvent({
@@ -26,44 +27,53 @@ class _LwpEventState extends State<LwpEvent> {
     final theme = Theme.of(context);
 
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      clipBehavior: Clip.antiAliasWithSaveLayer,
+      child: Column(
+        children: <Widget>[
+          CldImageWidget(
+            publicId: widget.event.bannerPublicId ?? 'samples/cloudinary-icon',
+            fit: BoxFit.fill
+          ),
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
               children: <Widget>[
-                Text(
-                  widget.event.title,
-                  style: theme.textTheme.titleLarge
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                        widget.event.title,
+                        style: theme.textTheme.titleLarge
+                    ),
+                    Text(
+                        DateFormatter.formatTime(widget.event.time),
+                        style: theme.textTheme.titleLarge
+                    ),
+                  ],
                 ),
-                Text(
-                  DateFormatter.formatTime(widget.event.time),
-                  style: theme.textTheme.titleLarge
+                const SizedBox(height: 8.0),
+                Theme(
+                  data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+                  child: ExpansionTile(
+                    title: Text(
+                        'Lees Meer',
+                        style: theme.textTheme.titleMedium
+                    ),
+                    childrenPadding: const EdgeInsets.all(16.0),
+                    tilePadding: const EdgeInsets.all(0.0),
+                    expandedAlignment: Alignment.centerLeft,
+                    children: <Widget>[
+                      Text(
+                          widget.event.description,
+                          style: theme.textTheme.bodyMedium
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
-            const SizedBox(height: 8.0),
-            Theme(
-              data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-              child: ExpansionTile(
-                title: Text(
-                  'Lees Meer',
-                  style: theme.textTheme.titleMedium
-                ),
-                childrenPadding: const EdgeInsets.all(16.0),
-                tilePadding: const EdgeInsets.all(0.0),
-                expandedAlignment: Alignment.centerLeft,
-                children: <Widget>[
-                  Text(
-                    widget.event.description,
-                    style: theme.textTheme.bodyMedium
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+          )
+        ],
       ),
     );
   }

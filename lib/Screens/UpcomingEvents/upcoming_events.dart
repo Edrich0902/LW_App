@@ -8,6 +8,7 @@ import 'package:lw_app/Utils/date_formatter.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
+import 'package:cloudinary_flutter/image/cld_image.dart';
 
 class UpcomingEventsPage extends StatefulWidget {
   const UpcomingEventsPage({super.key});
@@ -72,46 +73,55 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
     final theme = Theme.of(context);
 
     return Card(
+      clipBehavior: Clip.antiAliasWithSaveLayer,
       child: InkWell(
         onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Column(
+        child: Column(
+          children: <Widget>[
+            CldImageWidget(
+                publicId: event.bannerPublicId ?? 'samples/cloudinary-icon',
+                fit: BoxFit.fill
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  Row(
+                  Column(
                     children: <Widget>[
-                      const Icon(Icons.event),
-                      const SizedBox(width: 16.0),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      Row(
                         children: <Widget>[
-                          Text(
-                            event.title,
-                            style: theme.textTheme.titleMedium
-                          ),
-                          Text(
-                            event.description,
-                            style: theme.textTheme.bodyMedium
-                          ),
-                          const SizedBox(height: 16.0),
-                          Text(
-                            _formatEventDateTime(event),
-                            style: theme.textTheme.bodySmall
+                          const Icon(Icons.event),
+                          const SizedBox(width: 16.0),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                  event.title,
+                                  style: theme.textTheme.titleMedium
+                              ),
+                              Text(
+                                  event.description,
+                                  style: theme.textTheme.bodyMedium
+                              ),
+                              const SizedBox(height: 16.0),
+                              Text(
+                                  _formatEventDateTime(event),
+                                  style: theme.textTheme.bodySmall
+                              ),
+                            ],
                           ),
                         ],
                       ),
                     ],
                   ),
+                  const Spacer(),
+                  const Icon(Icons.arrow_forward_ios_rounded),
                 ],
               ),
-              const Spacer(),
-              const Icon(Icons.arrow_forward_ios_rounded),
-            ],
-          ),
-        ),
+            ),
+          ],
+        )
       ),
     );
   }
