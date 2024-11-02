@@ -8,6 +8,7 @@ import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
+import 'package:cloudinary_flutter/image/cld_image.dart';
 
 class CoursesPage extends StatefulWidget {
   const CoursesPage({super.key});
@@ -74,40 +75,49 @@ class _CoursesPageState extends State<CoursesPage> {
     final theme = Theme.of(context);
 
     return Card(
+      clipBehavior: Clip.antiAliasWithSaveLayer,
       child: InkWell(
         onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Column(
+        child: Column(
+          children: <Widget>[
+            CldImageWidget(
+                publicId: course.bannerPublicId ?? 'samples/cloudinary-icon',
+                fit: BoxFit.fill
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  Row(
+                  Column(
                     children: <Widget>[
-                      const Icon(Icons.event),
-                      const SizedBox(width: 16.0),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      Row(
                         children: <Widget>[
-                          Text(course.title,
-                              style: theme.textTheme.titleMedium),
-                          Text(course.description,
-                              style: theme.textTheme.bodyMedium),
-                          const SizedBox(height: 16.0),
-                          Text(_formatCourseDateTime(course),
-                              style: theme.textTheme.bodySmall),
+                          const Icon(Icons.event),
+                          const SizedBox(width: 16.0),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(course.title,
+                                  style: theme.textTheme.titleMedium),
+                              Text(course.description,
+                                  style: theme.textTheme.bodyMedium),
+                              const SizedBox(height: 16.0),
+                              Text(_formatCourseDateTime(course),
+                                  style: theme.textTheme.bodySmall),
+                            ],
+                          ),
                         ],
                       ),
                     ],
                   ),
+                  const Spacer(),
+                  const Icon(Icons.arrow_forward_ios_rounded),
                 ],
               ),
-              const Spacer(),
-              const Icon(Icons.arrow_forward_ios_rounded),
-            ],
-          ),
-        ),
+            ),
+          ],
+        )
       ),
     );
   }
