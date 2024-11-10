@@ -9,6 +9,7 @@ import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 import 'package:lw_app/Models/Event/event_category.dart';
+import 'package:lw_app/Widgets/LwpAnnouncement/lwp_announcement.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});
@@ -36,7 +37,7 @@ class _CalendarPageState extends State<CalendarPage> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Kalender'),
-          actions: const <Widget>[ProfileActionButton()],
+          actions: const <Widget>[LwpAnnouncementButton(), ProfileActionButton()],
         ),
         body: SafeArea(
           child: BlocBuilder<CalendarBloc, CalendarState>(

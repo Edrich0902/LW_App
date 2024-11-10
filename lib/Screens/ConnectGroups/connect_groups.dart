@@ -10,6 +10,7 @@ import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 import 'package:lw_app/Utils/maps_helper.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cloudinary_flutter/image/cld_image.dart';
+import 'package:lw_app/Widgets/LwpAnnouncement/lwp_announcement.dart';
 
 class ConnectGroupsPage extends StatefulWidget {
   const ConnectGroupsPage({super.key});
@@ -36,7 +37,7 @@ class _ConnectGroupsPageState extends State<ConnectGroupsPage> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Konneksie Groepe'),
-          actions: const <Widget>[ProfileActionButton()],
+          actions: const <Widget>[LwpAnnouncementButton(), ProfileActionButton()],
         ),
         floatingActionButton: const WhatsappContactFAB(),
         body: SafeArea(

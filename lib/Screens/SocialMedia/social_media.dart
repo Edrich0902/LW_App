@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
+import 'package:lw_app/Widgets/LwpAnnouncement/lwp_announcement.dart';
 
 class SocialMediaPage extends StatefulWidget {
   const SocialMediaPage({super.key});
@@ -33,7 +34,7 @@ class _SocialMediaPageState extends State<SocialMediaPage> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Volg Ons'),
-          actions: const <Widget>[ProfileActionButton()],
+          actions: const <Widget>[LwpAnnouncementButton(), ProfileActionButton()],
         ),
         body: SafeArea(
           child: BlocBuilder<SocialMediaBloc, SocialMediaState>(

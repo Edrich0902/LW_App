@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
+import 'package:lw_app/Widgets/LwpAnnouncement/lwp_announcement.dart';
 
 class SermonsPage extends StatefulWidget {
   const SermonsPage({super.key});
@@ -34,7 +35,7 @@ class _SermonsPageState extends State<SermonsPage> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Preke'),
-          actions: const <Widget>[ProfileActionButton()],
+          actions: const <Widget>[LwpAnnouncementButton(), ProfileActionButton()],
         ),
         body: SafeArea(
           child: BlocBuilder<SermonsBloc, SermonsState>(

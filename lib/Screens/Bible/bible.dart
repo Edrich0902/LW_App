@@ -3,6 +3,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
+import 'package:lw_app/Widgets/LwpAnnouncement/lwp_announcement.dart';
 
 class BiblePage extends StatefulWidget {
   const BiblePage({super.key});
@@ -27,7 +28,7 @@ class _BiblePageState extends State<BiblePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Bybel'),
-        actions: const <Widget>[ProfileActionButton()],
+        actions: const <Widget>[LwpAnnouncementButton(), ProfileActionButton()],
       ),
       body: SafeArea(
         child: WebViewWidget(

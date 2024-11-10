@@ -8,6 +8,7 @@ import 'package:lw_app/Screens/SocialMedia/social_media.dart';
 import 'package:lw_app/Screens/Courses/courses.dart';
 import 'package:lw_app/Widgets/WhatsappContactFAB/whatsapp_contact_fab.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
+import 'package:lw_app/Widgets/LwpAnnouncement/lwp_announcement.dart';
 import 'package:lw_app/Widgets/LwpBanner/lwp_banner.dart';
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 
@@ -35,7 +36,7 @@ class DashPage extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Tuis'),
-          actions: const <Widget>[ProfileActionButton()],
+          actions: const <Widget>[LwpAnnouncementButton(), ProfileActionButton()],
         ),
         floatingActionButton: const WhatsappContactFAB(),
         body: Padding(

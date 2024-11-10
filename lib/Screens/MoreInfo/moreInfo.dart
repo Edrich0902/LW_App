@@ -7,6 +7,7 @@ import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:lw_app/Widgets/LwpBio/lwp_bio.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
+import 'package:lw_app/Widgets/LwpAnnouncement/lwp_announcement.dart';
 
 class MoreInfoPage extends StatefulWidget {
   const MoreInfoPage({super.key});
@@ -33,7 +34,7 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Meer Oor Ons'),
-          actions: const <Widget>[ProfileActionButton()],
+          actions: const <Widget>[LwpAnnouncementButton(), ProfileActionButton()],
         ),
         floatingActionButton: const WhatsappContactFAB(),
         body: SafeArea(

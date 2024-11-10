@@ -9,6 +9,7 @@ import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
 import 'package:cloudinary_flutter/image/cld_image.dart';
+import 'package:lw_app/Widgets/LwpAnnouncement/lwp_announcement.dart';
 
 class CoursesPage extends StatefulWidget {
   const CoursesPage({super.key});
@@ -37,7 +38,7 @@ class _CoursesPageState extends State<CoursesPage> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text("Kursusse"),
-          actions: const <Widget>[ProfileActionButton()],
+          actions: const <Widget>[LwpAnnouncementButton(), ProfileActionButton()],
         ),
         body: SafeArea(
           child: BlocBuilder<CoursesBloc, CoursesState>(

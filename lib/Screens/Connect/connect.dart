@@ -4,6 +4,7 @@ import 'package:lw_app/Widgets/WhatsappContactFAB/whatsapp_contact_fab.dart';
 import 'package:lw_app/Widgets/LwpBanner/lwp_banner.dart';
 import 'package:lw_app/Screens/ConnectGroups/connect_groups.dart';
 import 'package:lw_app/Screens/ServeGroups/serve_groups.dart';
+import 'package:lw_app/Widgets/LwpAnnouncement/lwp_announcement.dart';
 
 class ConnectPage extends StatefulWidget {
   const ConnectPage({super.key});
@@ -23,7 +24,7 @@ class _ConnectPageState extends State<ConnectPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Skakel In'),
-        actions: const <Widget>[ProfileActionButton()],
+        actions: const <Widget>[LwpAnnouncementButton(), ProfileActionButton()],
       ),
       floatingActionButton: const WhatsappContactFAB(),
       body: Padding(
