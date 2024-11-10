@@ -34,14 +34,16 @@ class UserAnnouncement extends Equatable {
   ];
 
   factory UserAnnouncement.fromJson(Map<String, dynamic> json) {
+    final announcement = json['announcements'] ?? {};
+
     return UserAnnouncement(
       id: json['id'] ?? '',
-      title: json['title'] ?? '',
-      body: json['body'] ?? '',
-      imageUrl: json['image_url'] ?? null,
-      imagePublicId: json['image_public_id'] ?? null,
-      createdAt: json['created_at'] ?? '',
-      updatedAt: json['updated_at'] ?? '',
+      title: announcement['title'] ?? '',
+      body: announcement['body'] ?? '',
+      imageUrl: announcement['image_url'] ?? null,
+      imagePublicId: announcement['image_public_id'] ?? null,
+      createdAt: announcement['created_at'] ?? '',
+      updatedAt: announcement['updated_at'] ?? '',
       isRead: json['is_read'] ?? false,
     );
   }

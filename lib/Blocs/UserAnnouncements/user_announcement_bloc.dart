@@ -22,7 +22,6 @@ class UserAnnouncementBloc extends Bloc<UserAnnouncementEvent, UserAnnouncementS
     on<ReadUserAnnouncements>((event, emit) async {
       try {
         await _userAnnouncementService.markUserNotificationsAsRead();
-        emit(UserAnnouncementRead());
       } catch (error) {
         emit(UserAnnouncementError(error.toString()));
       }

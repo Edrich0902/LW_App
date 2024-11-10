@@ -21,6 +21,7 @@ import 'package:lw_app/Blocs/Calendar/calendar_bloc.dart';
 import 'package:lw_app/Blocs/ConnectGroups/connect_groups_bloc.dart';
 import 'package:lw_app/Blocs/ServiceGroups/service_groups_bloc.dart';
 import 'package:lw_app/Blocs/Courses/courses_bloc.dart';
+import 'package:lw_app/Blocs/UserAnnouncements/user_announcement_bloc.dart';
 
 // Cloudinary
 import 'package:cloudinary_flutter/cloudinary_context.dart';
@@ -86,6 +87,9 @@ Future<void> main() async {
         BlocProvider<CoursesBloc>(
           create: (_) => CoursesBloc(),
         ),
+        BlocProvider<UserAnnouncementBloc>(
+          create: (_) => UserAnnouncementBloc(),
+        )
       ],
       child: const App(),
     ),

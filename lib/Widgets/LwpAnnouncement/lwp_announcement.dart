@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lw_app/Blocs/UserAnnouncements/user_announcement_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:lw_app/Screens/UserAnnouncements/user_announcements.dart';
 
 class LwpAnnouncementButton extends StatefulWidget {
   const LwpAnnouncementButton({super.key});
@@ -32,6 +33,7 @@ class _LwpAnnouncementButtonState extends State<LwpAnnouncementButton> {
   }
 
   void _setUnreadAnnouncements(int unreadAnnouncements) {
+    if (!mounted) return;
     setState(() {
       _unreadAnnouncements = unreadAnnouncements;
     });
@@ -41,8 +43,10 @@ class _LwpAnnouncementButtonState extends State<LwpAnnouncementButton> {
   Widget build(BuildContext context) {
     return IconButton(
       onPressed: () {
-        // TODO: this should go to notifications list page
-        print('Handle nav here');
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const UserAnnouncementsPage()),
+        );
       },
       icon: Badge(
         isLabelVisible: _unreadAnnouncements > 0,
