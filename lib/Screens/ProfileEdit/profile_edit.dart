@@ -69,7 +69,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
       listener: (context, state) {
         if (state is UserUpdateSuccess) {
           AnimatedSnackBar.material(
-              "Profile Updated",
+              "Profiel foto opdateer",
               type: AnimatedSnackBarType.success,
               mobileSnackBarPosition: MobileSnackBarPosition.bottom
           ).show(context);
@@ -77,7 +77,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
 
         if (state is UserProfilePictureSuccess) {
           AnimatedSnackBar.material(
-              "Profile Image Updated",
+              "Profiel foto opdateer",
               type: AnimatedSnackBarType.success,
               mobileSnackBarPosition: MobileSnackBarPosition.bottom
           ).show(context);
@@ -92,7 +92,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
               child: BlocBuilder<UserBloc, UserState>(
                 builder: (context, state) {
                   if (state is UserLoading) {
-                    return const LwpLoader(message: "Loading Profile");
+                    return const LwpLoader(message: "Laai Profiel");
                   } else if (state is UserSuccess) {
                     initForm(state);
                     return SingleChildScrollView(
@@ -109,11 +109,11 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                                     transformation: Transformation()
                                         .delivery(Delivery.quality(Quality.auto()))
                                         .delivery(Delivery.format(Format.auto)),
-                                    placeholder: (context, url) => CircularProgressIndicator(),
+                                    placeholder: (context, url) => const CircularProgressIndicator(),
                                     errorBuilder: (context, error, stackTrace) {
                                       return Container(
                                         color: Colors.grey[300], // Background color for the fallback
-                                        child: Center(
+                                        child: const Center(
                                           child: Icon(Icons.person, size: 100.0), // Fallback icon
                                         ),
                                       );
@@ -135,7 +135,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                                             UploadProfilePicture(profileImageFile: image)
                                         );
                                       },
-                                      icon: Icon(Icons.camera_alt_outlined),
+                                      icon: const Icon(Icons.camera_alt_outlined),
                                       style: ButtonStyle(
                                         foregroundColor: MaterialStateProperty.all(Colors.white),
                                         backgroundColor: MaterialStateProperty.all(theme.primaryColor)
@@ -149,7 +149,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                                           UploadProfilePicture(profileImageFile: image)
                                         );
                                       },
-                                      icon: Icon(Icons.attach_file),
+                                      icon: const Icon(Icons.attach_file),
                                       style: ButtonStyle(
                                         foregroundColor: MaterialStateProperty.all(Colors.white),
                                         backgroundColor: MaterialStateProperty.all(theme.primaryColor)
@@ -162,7 +162,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                                   initialValue: user?.email ?? 'N/A',
                                   enabled: false,
                                   decoration: const InputDecoration(
-                                    labelText: 'Email',
+                                    labelText: 'E-pos',
                                     suffixIcon: Icon(Icons.email),
                                   ),
                                 ),
@@ -172,12 +172,12 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                                   controller: _firstNameController,
                                   validator: (firstName) {
                                     if (firstName == null || firstName.isEmpty) {
-                                      return 'First Name is required';
+                                      return 'Naam word benodig';
                                     }
                                     return null;
                                   },
                                   decoration: const InputDecoration(
-                                    labelText: 'First Name',
+                                    labelText: 'Naam',
                                     suffixIcon: Icon(Icons.account_circle),
                                   ),
                                 ),
@@ -186,12 +186,12 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                                   controller: _lastNameController,
                                   validator: (lastName) {
                                     if (lastName == null || lastName.isEmpty) {
-                                      return 'Last Name is required';
+                                      return 'Van word benodig';
                                     }
                                     return null;
                                   },
                                   decoration: const InputDecoration(
-                                    labelText: 'Last Name',
+                                    labelText: 'Van',
                                     suffixIcon: Icon(Icons.account_circle),
                                   ),
                                 ),
@@ -199,21 +199,21 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                                 TextFormField(
                                   controller: _addressController,
                                   decoration: const InputDecoration(
-                                    labelText: 'Address',
+                                    labelText: 'Adres',
                                     suffixIcon: Icon(Icons.location_on),
                                   ),
                                 ),
                                 const SizedBox(height: 16),
                                 LabeledCheckbox(
                                   value: _isBaptized,
-                                  label: 'Are you baptized?',
+                                  label: 'Is jy gedoop?',
                                   onChanged: (bool? newValue) {
                                     setState(() => _isBaptized = newValue!);
                                   },
                                 ),
                                 LabeledCheckbox(
                                   value: _isMember,
-                                  label: 'Are you a member?',
+                                  label: 'Is jy n lidmaat?',
                                   onChanged: (bool? newValue) {
                                     setState(() => _isMember = newValue!);
                                   },
@@ -242,7 +242,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                                       backgroundColor: Colors.white,
                                     ),
                                   )
-                                      : const Text("Update Profile"),
+                                      : const Text("Opdateer Profiel"),
                                 ),
                               ],
                             ),

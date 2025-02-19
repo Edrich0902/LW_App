@@ -44,7 +44,7 @@ class _ConnectGroupsPageState extends State<ConnectGroupsPage> {
           child: BlocBuilder<ConnectGroupsBloc, ConnectGroupsState>(
             builder: (context, state) {
               if (state is ConnectGroupsLoading) {
-                return const LwpLoader(message: "Loading Konneksie Groepe");
+                return const LwpLoader(message: "Laai Konneksie Groepe");
               } else if (state is ConnectGroupsSuccess) {
                 if (state.connectGroups.isNotEmpty) {
                   return RefreshIndicator(
@@ -110,7 +110,7 @@ class _ConnectGroupsPageState extends State<ConnectGroupsPage> {
                         ),
                         ElevatedButton(
                           onPressed: () => _openConnectGroupWhatsapp(),
-                          child: const Text("Join WhatsApp"),
+                          child: const Text("Sluit aan op WhatsApp"),
                         )
                       ],
                     ),

@@ -43,7 +43,7 @@ class _ServeGroupsPageState extends State<ServeGroupsPage> {
           child: BlocBuilder<ServiceGroupsBloc, ServiceGroupsState>(
             builder: (context, state) {
               if (state is ServiceGroupsLoading) {
-                return const LwpLoader(message: "Loading Kom Dien Groepe");
+                return const LwpLoader(message: "Laai Kom Dien Groepe");
               } else if (state is ServiceGroupsSuccess) {
                 if (state.serviceGroups.isNotEmpty) {
                   return RefreshIndicator(

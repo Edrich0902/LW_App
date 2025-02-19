@@ -44,7 +44,7 @@ class _CoursesPageState extends State<CoursesPage> {
           child: BlocBuilder<CoursesBloc, CoursesState>(
             builder: (context, state) {
               if (state is CoursesLoading) {
-                return const LwpLoader(message: "Loading Kursusse");
+                return const LwpLoader(message: "Laai Kursusse");
               } else if (state is CoursesSuccess) {
                 if (state.courses.isNotEmpty) {
                   return RefreshIndicator(

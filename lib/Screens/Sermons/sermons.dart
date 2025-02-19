@@ -41,7 +41,7 @@ class _SermonsPageState extends State<SermonsPage> {
           child: BlocBuilder<SermonsBloc, SermonsState>(
             builder: (context, state) {
               if (state is SermonsLoading) {
-                return const LwpLoader(message: "Loading Preke");
+                return const LwpLoader(message: "Laai Preke");
               } else if (state is SermonsSuccess) {
                 if (state.youtubeVideos.isNotEmpty) {
                   return RefreshIndicator(

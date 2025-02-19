@@ -42,7 +42,7 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
           child: BlocBuilder<EventsBloc, EventsState>(
             builder: (context, state) {
               if (state is EventsLoading) {
-                return const LwpLoader(message: "Loading Opkomende Gebeure");
+                return const LwpLoader(message: "Laai Opkomende Gebeure");
               } else if (state is EventsSuccess) {
                 if (state.events.isNotEmpty) {
                   return RefreshIndicator(

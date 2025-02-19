@@ -40,7 +40,7 @@ class _SocialMediaPageState extends State<SocialMediaPage> {
           child: BlocBuilder<SocialMediaBloc, SocialMediaState>(
             builder: (context, state) {
               if (state is SocialMediaLoading) {
-                return const LwpLoader(message: "Loading Volg Ons");
+                return const LwpLoader(message: "Laai Volg Ons");
               } else if (state is SocialMediaSuccess) {
                 if (state.socialMedia.isNotEmpty) {
                   return RefreshIndicator(

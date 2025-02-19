@@ -43,7 +43,7 @@ class _CalendarPageState extends State<CalendarPage> {
           child: BlocBuilder<CalendarBloc, CalendarState>(
             builder: (context, state) {
               if (state is CalendarLoading) {
-                return const LwpLoader(message: "Loading Kalender");
+                return const LwpLoader(message: "Laai Kalender");
               } else if (state is CalendarSuccess) {
                 if (state.eventsMap.isNotEmpty) {
                   return RefreshIndicator(

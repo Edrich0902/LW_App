@@ -30,7 +30,7 @@ class _LwpLoaderState extends State<LwpLoader> {
           children: <Widget>[
             const CircularProgressIndicator(),
             const SizedBox(height: 16.0),
-            Text(widget.message == null ? "Loading" : widget.message!, style: theme.textTheme.titleLarge),
+            Text(widget.message == null ? "Laai" : widget.message!, style: theme.textTheme.titleLarge),
           ],
         ),
       ),

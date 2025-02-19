@@ -25,7 +25,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
+        title: const Text('Profiel'),
       ),
       floatingActionButton: const WhatsappContactFAB(),
       body: SafeArea(
@@ -34,7 +34,7 @@ class _ProfilePageState extends State<ProfilePage> {
           children: <Widget>[
             _profileListItem(
               const Icon(Icons.person),
-              'My Profile',
+              'My Profiel',
               () {
                 Navigator.push(
                   context,
@@ -44,7 +44,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             _profileListItem(
               const Icon(Icons.notes),
-              'My Notes',
+              'My Notas',
               () {
                 Navigator.push(
                   context,
@@ -54,14 +54,14 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             _profileListItem(
               const Icon(Icons.settings),
-              'Settings',
+              'Instellings',
               () {
                 print('item clicked');
               },
             ),
             _profileListItem(
               const Icon(Icons.logout),
-              'Sign Out',
+              'Teken Uit',
               () {
                 authBloc.add(const SignOutEvent());
                 Navigator.pushReplacement(
