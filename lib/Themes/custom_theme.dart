@@ -37,17 +37,20 @@ class AppTheme {
     primaryColor: LightColors.primary,
     scaffoldBackgroundColor: LightColors.background,
     brightness: Brightness.light,
-    appBarTheme: AppBarTheme(
-      iconTheme: const IconThemeData(
+    appBarTheme: const AppBarTheme(
+      iconTheme: IconThemeData(
         color: Colors.white,
       ),
-      actionsIconTheme: const IconThemeData(
+      actionsIconTheme: IconThemeData(
         color: Colors.white,
       ),
       foregroundColor: Colors.white,
       centerTitle: true,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24.0),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(24.0),
+          bottomRight: Radius.circular(24.0)
+        ),
       ),
       color: LightColors.primary,
     ),
@@ -118,17 +121,20 @@ class AppTheme {
     primaryColor: DarkColors.primary,
     scaffoldBackgroundColor: DarkColors.background,
     brightness: Brightness.dark,
-    appBarTheme: AppBarTheme(
-      iconTheme: const IconThemeData(
+    appBarTheme: const AppBarTheme(
+      iconTheme: IconThemeData(
         color: Colors.white,
       ),
-      actionsIconTheme: const IconThemeData(
+      actionsIconTheme: IconThemeData(
         color: Colors.white,
       ),
       foregroundColor: Colors.white,
       centerTitle: true,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24.0),
+        borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(24.0),
+            bottomRight: Radius.circular(24.0)
+        ),
       ),
       color: DarkColors.primary,
     ),

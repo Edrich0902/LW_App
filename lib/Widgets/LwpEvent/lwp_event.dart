@@ -30,9 +30,20 @@ class _LwpEventState extends State<LwpEvent> {
       clipBehavior: Clip.antiAliasWithSaveLayer,
       child: Column(
         children: <Widget>[
-          CldImageWidget(
-            publicId: widget.event.bannerPublicId ?? 'samples/cloudinary-icon',
-            fit: BoxFit.fill
+          Stack(
+            children: [
+              Container(
+                width: double.infinity,
+                height: 200, // Placeholder size
+                color: Colors.grey[300], // Placeholder color
+              ),
+              CldImageWidget(
+                publicId: widget.event.bannerPublicId ?? 'samples/cloudinary-icon',
+                fit: BoxFit.cover,
+                width: double.infinity,
+                height: 200,
+              ),
+            ],
           ),
           Padding(
             padding: const EdgeInsets.all(20.0),
