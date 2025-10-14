@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:lw_app/Models/User/user_profile.dart';
 
@@ -16,13 +18,14 @@ class ProfileService {
   }) async {
     try {
       final User? currentUser = _auth.currentUser;
+      if (currentUser == null) return;
       await supabase.from('user_profile').update({
         'first_name': firstName,
         'last_name': lastName,
         'address': address,
         'is_member': isMember,
         'is_baptized': isBaptized,
-      }).eq('id', currentUser?.id);
+      }).eq('id', currentUser.id);
     } catch (error) {
       throw error.toString();
     }
@@ -34,10 +37,11 @@ class ProfileService {
   }) async {
     try {
       final User? currentUser = _auth.currentUser;
+      if (currentUser == null) return;
       await supabase.from('user_profile').update({
         'profile_public_id': profilePublicId,
         'profile_url': profileUrl
-      }).eq('id', currentUser?.id);
+      }).eq('id', currentUser.id);
     } catch (error) {
       throw error.toString();
     }
@@ -49,7 +53,7 @@ class ProfileService {
       final response = await supabase
           .from('user_profile_view')
           .select('*')
-          .eq('id', currentUser?.id)
+          .eq('id', currentUser!.id)
           .single();
 
       UserProfile user =

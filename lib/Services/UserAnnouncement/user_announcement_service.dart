@@ -12,7 +12,7 @@ class UserAnnouncementService {
       final response = await supabase
           .from('user_announcements')
           .select('id, is_read, announcements (title, body, image_url, image_public_id, created_at, updated_at)')
-          .eq('user_id', _auth.currentUser?.id);
+          .eq('user_id', _auth.currentUser!.id);
 
       List<dynamic> listResponse = response;
       List<UserAnnouncement> data = listResponse
@@ -30,7 +30,7 @@ class UserAnnouncementService {
       final response = await supabase
           .from('user_announcements')
           .update({'is_read': true})
-          .eq('user_id', _auth.currentUser?.id);
+          .eq('user_id', _auth.currentUser!.id);
     } catch (error) {
       throw error.toString();
     }

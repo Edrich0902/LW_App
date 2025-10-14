@@ -9,10 +9,11 @@ class NoteService {
 
   Future<List<Note>> getUserNotes() async {
     try {
+      if (_auth.currentUser == null) return Future.value([]);
       final response = await supabase
           .from('notes')
           .select('*')
-          .eq('user_id', _auth.currentUser?.id);
+          .eq('user_id', _auth.currentUser!.id);
 
       // TODO: make response handler for list responses
       List<dynamic> listResponse = response;
@@ -63,7 +64,7 @@ class NoteService {
       await supabase.from('notes').update({
         'title': updatedNote.title,
         'content': updatedNote.content,
-      }).eq('id', noteId);
+      }).eq('id', noteId!);
     } catch (error) {
       throw error.toString();
     }

@@ -25,9 +25,10 @@ class _LwpAnnouncementButtonState extends State<LwpAnnouncementButton> {
   void _loadUnreadAnnouncements() async {
     final response = await supabase
         .from('user_announcements')
-        .select('is_read', const FetchOptions(count: CountOption.exact))
+        .select('is_read')
         .eq('is_read', false)
-        .eq('user_id', _auth.currentUser?.id);
+        .eq('user_id', _auth.currentUser!.id)
+        .count(CountOption.exact);
 
     _setUnreadAnnouncements(response.count);
   }
