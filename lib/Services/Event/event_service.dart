@@ -6,12 +6,19 @@ class EventService {
 
   EventService();
 
-  Future<List<Event>> getEvents({String? type, String? category}) async {
+  Future<List<Event>> getEvents({String? type, String? category, DateTime? date}) async {
     try {
       var queryBuilder = supabase.from('events').select('*');
 
-      if (type != null) queryBuilder.eq('type', type);
-      if (category != null) queryBuilder.eq('category', category);
+      if (type != null) {
+        queryBuilder = queryBuilder.eq('type', type);
+      }
+      if (category != null) {
+        queryBuilder = queryBuilder.eq('category', category);
+      }
+      if (date != null) {
+        queryBuilder = queryBuilder.gte('start_date', date);
+      }
 
       final response = await queryBuilder;
 

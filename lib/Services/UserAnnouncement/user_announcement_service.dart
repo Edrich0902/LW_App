@@ -12,7 +12,8 @@ class UserAnnouncementService {
       final response = await supabase
           .from('user_announcements')
           .select('id, is_read, announcements (title, body, image_url, image_public_id, created_at, updated_at)')
-          .eq('user_id', _auth.currentUser!.id);
+          .eq('user_id', _auth.currentUser!.id)
+          .eq('is_read', false);
 
       List<dynamic> listResponse = response;
       List<UserAnnouncement> data = listResponse

@@ -33,7 +33,7 @@ class _LwpProfileImageState extends State<LwpProfileImage> {
         radius: widget.radius,
         child: ClipOval(
           child: CldImageWidget(
-            publicId: widget.publicId ?? 'samples/cloudinary-icon',
+            publicId: widget.publicId.isEmpty ? 'samples/cloudinary-icon' : widget.publicId,
             width: 100,
             height: 100,
             fit: BoxFit.cover,

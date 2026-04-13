@@ -19,5 +19,15 @@ class EventsBloc extends Bloc<EventsEvent, EventsState> {
         emit(EventsError(error.toString()));
       }
     });
+
+    on<LoadUpcomingEvents>((event, emit) async {
+      emit(EventsLoading());
+      try {
+        List<Event> events = await _eventService.getEvents(type: event.eventType, date: event.date);
+        emit(EventsSuccess(events: events));
+      } catch (error) {
+        emit(EventsError(error.toString()));
+      }
+    });
   }
 }

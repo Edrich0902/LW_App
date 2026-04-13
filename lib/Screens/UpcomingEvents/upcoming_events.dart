@@ -19,10 +19,13 @@ class UpcomingEventsPage extends StatefulWidget {
 }
 
 class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
+  late DateTime currentDate;
   @override
   void initState() {
-    context.read<EventsBloc>().add(LoadEvents(eventType: EventType.ONCE));
     super.initState();
+
+    currentDate = DateTime.now();
+    context.read<EventsBloc>().add(LoadUpcomingEvents(eventType: EventType.ONCE, date: currentDate));
   }
 
   @override
@@ -46,7 +49,7 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
               } else if (state is EventsSuccess) {
                 if (state.events.isNotEmpty) {
                   return RefreshIndicator(
-                    onRefresh: () async => eventsBloc.add(LoadEvents(eventType: EventType.ONCE)),
+                    onRefresh: () async => eventsBloc.add(LoadUpcomingEvents(eventType: EventType.ONCE, date: currentDate)),
                     child: ListView.builder(
                       padding: const EdgeInsets.all(8.0),
                       itemCount: state.events.length,
@@ -88,35 +91,37 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  Column(
-                    children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          const Icon(Icons.event),
-                          const SizedBox(width: 16.0),
-                          Column(
+                  Expanded(
+                    child: Row(
+                      children: <Widget>[
+                        const Icon(Icons.event),
+                        const SizedBox(width: 16.0),
+                        Expanded(
+                          child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Text(
-                                  event.title,
-                                  style: theme.textTheme.titleMedium
+                                event.title,
+                                style: theme.textTheme.titleMedium,
                               ),
                               Text(
-                                  event.description,
-                                  style: theme.textTheme.bodyMedium
+                                event.description,
+                                style: theme.textTheme.bodyMedium,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 3,
                               ),
                               const SizedBox(height: 16.0),
                               Text(
-                                  _formatEventDateTime(event),
-                                  style: theme.textTheme.bodySmall
+                                _formatEventDateTime(event),
+                                style: theme.textTheme.bodySmall,
                               ),
                             ],
                           ),
-                        ],
-                      ),
-                    ],
+                        ),
+                      ],
+                    ),
                   ),
-                  const Spacer(),
+                  const SizedBox(width: 8),
                   const Icon(Icons.arrow_forward_ios_rounded),
                 ],
               ),

@@ -15,3 +15,13 @@ class LoadEvents extends EventsEvent {
   @override
   List<Object?> get props => [eventType];
 }
+
+class LoadUpcomingEvents extends EventsEvent {
+  final String? eventType;
+  final DateTime? date;
+
+  const LoadUpcomingEvents({ this.eventType, this.date });
+
+  @override
+  List<Object?> get props => [eventType, date];
+}

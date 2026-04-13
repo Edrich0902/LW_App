@@ -8,7 +8,7 @@ class SermonService {
 
   Future<List<Sermon>> getSermons() async {
     try {
-      final response = await supabase.from('sermons').select('*');
+      final response = await supabase.from('sermons').select('*').order('created_at'); // Ensure latest sermons load at top
 
       List<dynamic> listResponse = response;
       List<Sermon> data = listResponse
