@@ -26,7 +26,6 @@ class SermonsBloc extends Bloc<SermonsEvent, SermonsState> {
   }
 
   Future<List<YoutubeVideo>> _fetchYoutubeVideos(List<Sermon> sermons) async {
-    List<String?> sermonLinks = sermons.map((sermon) => sermon.link).toList();
-    return _youtubeService.fetchLatestSermons(sermonLinks);
+    return _youtubeService.fetchLatestSermons(sermons);
   }
 }

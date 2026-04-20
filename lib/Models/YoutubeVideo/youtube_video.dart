@@ -14,6 +14,9 @@ class YoutubeVideo extends Equatable {
   final int thumbnail_width;
   final String thumbnail_url;
   final String html;
+  String? description;
+  String? custom_author;
+  String? custom_title;
   String? youtubeLink;
 
   YoutubeVideo({
@@ -30,6 +33,9 @@ class YoutubeVideo extends Equatable {
     required this.thumbnail_width,
     required this.thumbnail_url,
     required this.html,
+    this.description,
+    this.custom_author,
+    this.custom_title,
     this.youtubeLink,
   });
 
@@ -49,6 +55,9 @@ class YoutubeVideo extends Equatable {
     thumbnail_url,
     html,
     youtubeLink,
+    description,
+    custom_author,
+    custom_title
   ];
 
   factory YoutubeVideo.fromJson(Map<String, dynamic> json) {

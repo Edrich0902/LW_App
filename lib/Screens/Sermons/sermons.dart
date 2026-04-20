@@ -9,6 +9,7 @@ import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 import 'package:lw_app/Widgets/LwpAnnouncement/lwp_announcement.dart';
+import 'package:lw_app/Screens/Sermons/sermon_detail.dart';
 
 class SermonsPage extends StatefulWidget {
   const SermonsPage({super.key});
@@ -51,7 +52,12 @@ class _SermonsPageState extends State<SermonsPage> {
                       itemCount: state.youtubeVideos.length,
                       itemBuilder: (BuildContext context, int index) {
                         return _buildVideoCard(state.youtubeVideos[index], () {
-                          launchUrl(Uri.parse(state.youtubeVideos[index].youtubeLink ?? ''));
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SermonDetailPage(video: state.youtubeVideos[index]),
+                            ),
+                          );
                         });
                       },
                     ),
