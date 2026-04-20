@@ -10,6 +10,7 @@ import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 import 'package:cloudinary_flutter/image/cld_image.dart';
 import 'package:lw_app/Widgets/LwpAnnouncement/lwp_announcement.dart';
+import 'package:lw_app/Screens/UpcomingEvents/upcoming_event_detail.dart';
 
 class UpcomingEventsPage extends StatefulWidget {
   const UpcomingEventsPage({super.key});
@@ -55,7 +56,12 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
                       itemCount: state.events.length,
                       itemBuilder: (BuildContext context, int index) {
                         return _buildEventCard(state.events[index], () {
-                          // TODO: open event detail here - create event detail screen
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => UpcomingEventDetailPage(event: state.events[index]),
+                            ),
+                          );
                         });
                       },
                     ),

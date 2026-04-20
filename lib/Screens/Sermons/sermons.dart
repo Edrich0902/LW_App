@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lw_app/Models/YoutubeVideo/youtube_video.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:lw_app/Widgets/LwpBanner/lwp_banner.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:lw_app/Blocs/Sermons/sermons_bloc.dart';

@@ -57,6 +57,7 @@ dependencies:
   cloudinary_flutter: ^1.0.0
   image_picker: ^1.0.0
   animated_snack_bar: ^0.4.0
+  add_2_calendar_new: ^1.0.4
 
 flutter_icons:
   android: "launcher_icon"
