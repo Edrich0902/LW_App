@@ -1,3 +1,4 @@
+import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/MoreInfo/more_info_bloc.dart';
@@ -25,67 +26,95 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return BlocListener<MoreInfoBloc, MoreInfoState>(
-      listener: (context, state) {
-        // Listen to state updates and execute logic here
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Meer Oor Ons'),
-          actions: const <Widget>[LwpAnnouncementButton(), ProfileActionButton()],
-        ),
-        floatingActionButton: const WhatsappContactFAB(),
-        body: SafeArea(
-          child: BlocBuilder<MoreInfoBloc, MoreInfoState>(
-            builder: (context, state) {
-              if (state is MoreInfoLoading) {
-                return const LwpLoader();
-              } else if (state is MoreInfoSuccess) {
-                // Build list content
-                List<Widget> content = [];
-                for (Lw.MetaData item in state.data) {
-                  content.add(_createDataItem(data: item));
-                }
-
-                content.add(const SizedBox(height: 16.0));
-                content.add(Text(
-                  'Rolspelers',
-                  style: theme.textTheme.titleLarge
-                ));
-                content.add(const SizedBox(height: 16.0));
-
-                // TODO: check if this can be improved - list builder?
-                for (var roleplayer in state.roleplayers) {
-                  content.add(
-                      LwpBio(
-                        name: roleplayer.fullname ?? '',
-                        title: roleplayer.title ?? '',
-                        bio: roleplayer.bio ?? '',
-                        publicId: roleplayer.profilePublicId ?? '',
-                      )
-                  );
-                }
-
-                // Return list content
-                return SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Center(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: content,
+    return BlocBuilder<MoreInfoBloc, MoreInfoState>(
+      builder: (context, state) {
+        if (state is MoreInfoLoading) {
+          return const Scaffold(body: LwpLoader());
+        } else if (state is MoreInfoSuccess) {
+          return Scaffold(
+            floatingActionButton: const WhatsappContactFAB(),
+            body: CustomScrollView(
+              slivers: [
+                SliverAppBar(
+                  expandedHeight: 120.0,
+                  floating: false,
+                  pinned: true,
+                  flexibleSpace: FlexibleSpaceBar(
+                    title: Text(
+                      'Meer Oor Ons',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        color: Colors.white
                       ),
                     ),
+                    centerTitle: false,
+                    titlePadding: const EdgeInsetsDirectional.only(
+                      start: 16,
+                      bottom: 16,
+                    ),
                   ),
-                );
-              } else {
-                return const LwpError();
-              }
-            },
-          ),
-        ),
+                  actions: const <Widget>[
+                    LwpAnnouncementButton(),
+                    ProfileActionButton()
+                  ],
+                ),
+                SliverPadding(
+                  padding: const EdgeInsets.all(16.0),
+                  sliver: SliverList(
+                    delegate: SliverChildListDelegate([
+                      _buildSectionHeader(context, 'Ons Gemeente'),
+                      ...state.data.map((item) => _createDataItem(data: item)),
+                      const SizedBox(height: 24.0),
+                      _buildSectionHeader(context, 'Ons Span'),
+                    ]),
+                  ),
+                ),
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final roleplayer = state.roleplayers[index];
+                        return LwpBio(
+                          name: roleplayer.fullname ?? '',
+                          title: roleplayer.title ?? '',
+                          bio: roleplayer.bio ?? '',
+                          publicId: roleplayer.profilePublicId ?? '',
+                          onTap: () {
+                            // Future: navigate to roleplayer detail
+                            AnimatedSnackBar.material(
+                              'Binnekort: Meer oor ${roleplayer.fullname}',
+                              type: AnimatedSnackBarType.info,
+                              mobileSnackBarPosition: MobileSnackBarPosition.bottom
+                            ).show(context);
+                          },
+                        );
+                      },
+                      childCount: state.roleplayers.length,
+                    ),
+                  ),
+                ),
+                const SliverToBoxAdapter(
+                  child: SizedBox(height: 80.0), // Padding for FAB
+                ),
+              ],
+            ),
+          );
+        } else {
+          return const Scaffold(body: LwpError());
+        }
+      },
+    );
+  }
+
+  Widget _buildSectionHeader(BuildContext context, String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12.0, left: 4.0),
+      child: Text(
+        title,
+        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).primaryColor,
+            ),
       ),
     );
   }
@@ -93,26 +122,30 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
   Widget _createDataItem({required Lw.MetaData data}) {
     final theme = Theme.of(context);
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: <Widget>[
-            Theme(
-              data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-              child: ExpansionTile(
-                title: Text(
-                  data.title ?? '',
-                  style: theme.textTheme.titleLarge,
-                ),
-                childrenPadding: const EdgeInsets.all(16.0),
-                children: <Widget>[
-                  Text(
-                    data.content ?? '',
-                    style: theme.textTheme.bodyMedium,
-                  )
-                ],
-              ),
+      margin: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 0.0),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
+      ),
+      child: Theme(
+        data: theme.copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          title: Text(
+            data.title ?? '',
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
             ),
+          ),
+          childrenPadding: const EdgeInsets.all(16.0),
+          expandedAlignment: Alignment.centerLeft,
+          children: <Widget>[
+            Text(
+              data.content ?? '',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                height: 1.5,
+              ),
+            )
           ],
         ),
       ),

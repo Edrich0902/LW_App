@@ -121,7 +121,6 @@ class UpcomingEventDetailPage extends StatelessWidget {
                 value,
                 style: const TextStyle(
                   fontSize: 16,
-                  color: Colors.black87,
                 ),
               ),
             ],
