@@ -87,7 +87,15 @@ Ensure you have the Flutter SDK installed and a valid `.env.development` or `.en
 4.  **Supabase Interaction:** Perform all database and auth operations within `Services`. Blocs should call Services, and UI should listen to Blocs.
 5.  **Themes:** Use the `AppTheme` class for styling to ensure consistency across light and dark modes. Use `Theme.of(context)` in widgets.
 6.  **Error Handling:** Use custom widgets like `LwpError` to display error states consistently.
-7.  **Calendar Integration:** When adding events/courses to the device calendar:
+7.  **SnackBars & Notifications:** NEVER use the base Flutter `SnackBar`. Always use the `animated_snack_bar` package for showing user feedback, success messages, or errors.
+    -   Example: `AnimatedSnackBar.material('Message', type: AnimatedSnackBarType.success).show(context);`
+8.  **Language & Localization:** All UI-facing content (labels, messages, buttons) MUST be in **Afrikaans**. Code-level naming (variables, files, classes) remains in **English**.
+9.  **Card UI Conventions:**
+    -   Use a consistent border radius of `24.0` for all cards (defined in `AppTheme`).
+    -   When listing details within a card (e.g., EFT details), use fixed-width labels (e.g., `130.0`) to ensure perfect vertical alignment across rows.
+    -   Prevent text wrapping for short labels by using `maxLines: 1` and `overflow: TextOverflow.ellipsis`.
+    -   Use `Divider(height: 32)` to separate sections within a card.
+10. **Calendar Integration:** When adding events/courses to the device calendar:
     -   Use the `add_2_calendar_new` package.
     -   Handle recurring events by mapping `EventType` to the `Frequency` enum.
     -   Parse time strings (e.g., `18:00:00+00`) by splitting at the timezone offset.
