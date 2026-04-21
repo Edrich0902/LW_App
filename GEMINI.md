@@ -87,6 +87,11 @@ Ensure you have the Flutter SDK installed and a valid `.env.development` or `.en
 4.  **Supabase Interaction:** Perform all database and auth operations within `Services`. Blocs should call Services, and UI should listen to Blocs.
 5.  **Themes:** Use the `AppTheme` class for styling to ensure consistency across light and dark modes. Use `Theme.of(context)` in widgets.
 6.  **Error Handling:** Use custom widgets like `LwpError` to display error states consistently.
+7.  **Calendar Integration:** When adding events/courses to the device calendar:
+    -   Use the `add_2_calendar_new` package.
+    -   Handle recurring events by mapping `EventType` to the `Frequency` enum.
+    -   Parse time strings (e.g., `18:00:00+00`) by splitting at the timezone offset.
+    -   Ensure `startDate` and `endDate` (for recurrence) are correctly handled as `DateTime` objects.
 
 ## Key Files
 
