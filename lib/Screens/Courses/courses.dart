@@ -10,6 +10,7 @@ import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
 import 'package:cloudinary_flutter/image/cld_image.dart';
 import 'package:lw_app/Widgets/LwpAnnouncement/lwp_announcement.dart';
+import 'package:lw_app/Screens/Courses/course_detail.dart';
 
 class CoursesPage extends StatefulWidget {
   const CoursesPage({super.key});
@@ -54,8 +55,16 @@ class _CoursesPageState extends State<CoursesPage> {
                       padding: const EdgeInsets.all(8.0),
                       itemCount: state.courses.length,
                       itemBuilder: (BuildContext context, int index) {
-                        return _buildCourseCard(state.courses[index],
-                            () => debugPrint("course clicked"));
+                        return _buildCourseCard(state.courses[index], () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CourseDetailPage(
+                                course: state.courses[index],
+                              ),
+                            ),
+                          );
+                        });
                       },
                     ),
                   );
