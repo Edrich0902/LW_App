@@ -146,7 +146,7 @@ class _NotesEditPageState extends State<NotesEditPage> {
                     if (isEdit && note != null) {
                       updatedNote = Note(
                         id: note.id,
-                        user_id: note.user_id,
+                        userId: note.userId,
                         title: _titleController.text,
                         content: _contentController.text,
                         createdAt: note.createdAt,

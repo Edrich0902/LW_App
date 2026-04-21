@@ -52,7 +52,7 @@ class AppTheme {
           bottomRight: Radius.circular(24.0)
         ),
       ),
-      color: LightColors.primary,
+      backgroundColor: LightColors.primary,
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
       backgroundColor: LightColors.primary,
@@ -136,7 +136,7 @@ class AppTheme {
             bottomRight: Radius.circular(24.0)
         ),
       ),
-      color: DarkColors.primary,
+      backgroundColor: DarkColors.primary,
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
       backgroundColor: DarkColors.primary,

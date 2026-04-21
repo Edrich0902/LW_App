@@ -47,8 +47,8 @@ class Group extends Equatable {
       type: json['type'] ?? '',
       whatsappLink: json['whatsappLink'] ?? '',
       location: json['location'] ?? '',
-      bannerPublicId: json['banner_public_id'] ?? null,
-      bannerUrl: json['banner_url'] ?? null,
+      bannerPublicId: json['banner_public_id'],
+      bannerUrl: json['banner_url'],
       createdAt: json['created_at'] ?? '',
       updatedAt: json['updated_at'] ?? '',
     );

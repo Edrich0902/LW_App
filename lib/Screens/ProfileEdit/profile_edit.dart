@@ -137,8 +137,8 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                                       },
                                       icon: const Icon(Icons.camera_alt_outlined),
                                       style: ButtonStyle(
-                                        foregroundColor: MaterialStateProperty.all(Colors.white),
-                                        backgroundColor: MaterialStateProperty.all(theme.primaryColor)
+                                        foregroundColor: WidgetStateProperty.all(Colors.white),
+                                        backgroundColor: WidgetStateProperty.all(theme.primaryColor)
                                       ),
                                     ),
                                     IconButton(
@@ -151,8 +151,8 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                                       },
                                       icon: const Icon(Icons.attach_file),
                                       style: ButtonStyle(
-                                        foregroundColor: MaterialStateProperty.all(Colors.white),
-                                        backgroundColor: MaterialStateProperty.all(theme.primaryColor)
+                                        foregroundColor: WidgetStateProperty.all(Colors.white),
+                                        backgroundColor: WidgetStateProperty.all(theme.primaryColor)
                                       ),
                                     ),
                                   ],

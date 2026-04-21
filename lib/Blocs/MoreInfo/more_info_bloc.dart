@@ -12,13 +12,13 @@ class MoreInfoBloc extends Bloc<MoreInfoEvent, MoreInfoState> {
   final MetaDataService _metaDataService = MetaDataService();
   final RoleplayerService _roleplayerService = RoleplayerService();
 
-  static final _search_keys = ['vision_statement', 'mission_statement'];
+  static final _searchKeys = ['vision_statement', 'mission_statement'];
 
   MoreInfoBloc() : super(MoreInfoInitial()) {
     on<LoadMoreInfo>((event, emit) async {
       emit(MoreInfoLoading());
       try {
-        List<MetaData> data = await _metaDataService.getVisionMission(_search_keys);
+        List<MetaData> data = await _metaDataService.getVisionMission(_searchKeys);
         List<Roleplayer> roleplayers = await _roleplayerService.getRolePlayers();
 
         emit(MoreInfoSuccess(data: data, roleplayers: roleplayers));

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lw_app/Blocs/UserAnnouncements/user_announcement_bloc.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:lw_app/Screens/UserAnnouncements/user_announcements.dart';
 
@@ -13,7 +11,7 @@ class LwpAnnouncementButton extends StatefulWidget {
 
 class _LwpAnnouncementButtonState extends State<LwpAnnouncementButton> {
   SupabaseClient supabase = Supabase.instance.client;
-  GoTrueClient _auth = Supabase.instance.client.auth;
+  final GoTrueClient _auth = Supabase.instance.client.auth;
   int _unreadAnnouncements = 0;
 
   @override

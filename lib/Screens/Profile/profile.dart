@@ -56,7 +56,7 @@ class _ProfilePageState extends State<ProfilePage> {
               const Icon(Icons.settings),
               'Instellings',
               () {
-                print('item clicked');
+                debugPrint('item clicked');
               },
             ),
             _profileListItem(

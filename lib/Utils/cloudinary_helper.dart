@@ -4,7 +4,7 @@ import 'dart:io';
 import 'dart:convert';
 
 class CloudinaryHelper {
-  static String _baseUrl = 'https://api.cloudinary.com/v1_1/${Environment.cloudinaryCloud}/upload';
+  static final String _baseUrl = 'https://api.cloudinary.com/v1_1/${Environment.cloudinaryCloud}/upload';
 
   static Future<Map<String, String>> uploadImage(File imageFile, String? folder) async {
     final url = Uri.parse(_baseUrl);
@@ -12,7 +12,7 @@ class CloudinaryHelper {
       ..fields['upload_preset'] = Environment.cloudinaryUploadPreset
       ..files.add(await http.MultipartFile.fromPath('file', imageFile.path));
 
-    if (folder != null && folder.isNotEmpty) request..fields['asset_folder'] = folder;
+    if (folder != null && folder.isNotEmpty) request.fields['asset_folder'] = folder;
 
     final response = await request.send();
 

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:lw_app/Models/Sermon/sermon.dart';
 import 'package:lw_app/Models/YoutubeVideo/youtube_video.dart';
@@ -15,10 +16,12 @@ class YoutubeService {
         YoutubeVideo video = YoutubeVideo.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
         video.youtubeLink = sermon.link;
         video.description = sermon.description;
-        video.custom_author = sermon.pastor;
-        video.custom_title = sermon.title;
+        video.customAuthor = sermon.pastor;
+        video.customTitle = sermon.title;
         videoData.add(video);
-      } else print("Failed to fetch video ($sermon)");
+      } else {
+        debugPrint("Failed to fetch video ($sermon)");
+      }
     }
 
     return videoData;

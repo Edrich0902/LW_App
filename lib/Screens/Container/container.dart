@@ -3,7 +3,7 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 
 // Screens
 import 'package:lw_app/Screens/Dashboard/dashboard.dart';
-import 'package:lw_app/Screens/MoreInfo/moreInfo.dart';
+import 'package:lw_app/Screens/MoreInfo/more_info.dart';
 import 'package:lw_app/Screens/Bible/bible.dart';
 import 'package:lw_app/Screens/Connect/connect.dart';
 import 'package:lw_app/Screens/Calendar/calendar.dart';

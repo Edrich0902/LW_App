@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class LwpLoader extends StatefulWidget {
   const LwpLoader({
-    Key? key,
+    super.key,
     this.message = '',
-  }) : super(key: key);
+  });
 
   final String? message;
 

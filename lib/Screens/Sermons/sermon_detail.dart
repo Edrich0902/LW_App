@@ -21,7 +21,7 @@ class SermonDetailPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             LwpBanner(
-              imageUrl: video.thumbnail_url,
+              imageUrl: video.thumbnailUrl,
               onTap: () => _launchVideo(),
             ),
             Padding(
@@ -30,7 +30,7 @@ class SermonDetailPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    video.custom_title ?? 'N/A',
+                    video.customTitle ?? 'N/A',
                     style: theme.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -41,7 +41,7 @@ class SermonDetailPage extends StatelessWidget {
                       Icon(Icons.person, color: theme.primaryColor, size: 20),
                       const SizedBox(width: 8),
                       Text(
-                        video.custom_author ?? 'N/A',
+                        video.customAuthor ?? 'N/A',
                         style: theme.textTheme.titleMedium,
                       ),
                     ],
@@ -86,7 +86,7 @@ class SermonDetailPage extends StatelessWidget {
                     context,
                     Icons.business,
                     "Verskaffer",
-                    video.provider_name,
+                    video.providerName,
                   ),
                   if (video.youtubeLink != null)
                     _buildMetadataTile(

@@ -3,12 +3,12 @@ import 'package:cloudinary_flutter/image/cld_image.dart';
 
 class LwpBanner extends StatefulWidget {
   const LwpBanner({
-    Key? key,
+    super.key,
     required this.imageUrl,
     this.imagePublicId,
     this.message = "",
     required this.onTap,
-  }) : super(key: key);
+  });
 
   final String imageUrl;
   final String? imagePublicId;
@@ -34,13 +34,13 @@ class _LwpBannerState extends State<LwpBanner> {
       clipBehavior: Clip.antiAliasWithSaveLayer,
       child: InkWell(
         onTap: widget.onTap,
-        child: Container(
+        child: SizedBox(
           width: MediaQuery.of(context).size.width,
           height: 200.0,
           child: Stack(
             fit: StackFit.expand,
             children: [
-              if (widget.imagePublicId == null || widget.imagePublicId!.isEmpty!)
+              if (widget.imagePublicId == null || widget.imagePublicId!.isEmpty)
                 Image.network(
                   widget.imageUrl,
                   fit: BoxFit.cover,

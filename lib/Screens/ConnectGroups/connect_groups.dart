@@ -53,7 +53,7 @@ class _ConnectGroupsPageState extends State<ConnectGroupsPage> {
                       padding: const EdgeInsets.all(8.0),
                       itemCount: state.connectGroups.length,
                       itemBuilder: (BuildContext context, int index) {
-                        return _buildConnectGroupCard(state.connectGroups[index], () => print("clicked"));
+                        return _buildConnectGroupCard(state.connectGroups[index], () => debugPrint("clicked"));
                       },
                     ),
                   );

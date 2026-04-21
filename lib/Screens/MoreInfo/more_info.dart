@@ -2,7 +2,7 @@ import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/MoreInfo/more_info_bloc.dart';
-import 'package:lw_app/Models/MetaData/meta_data.dart' as Lw;
+import 'package:lw_app/Models/MetaData/meta_data.dart' as lw;
 import 'package:lw_app/Widgets/WhatsappContactFAB/whatsapp_contact_fab.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:lw_app/Widgets/LwpBio/lwp_bio.dart';
@@ -119,7 +119,7 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
     );
   }
 
-  Widget _createDataItem({required Lw.MetaData data}) {
+  Widget _createDataItem({required lw.MetaData data}) {
     final theme = Theme.of(context);
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 0.0),

@@ -53,13 +53,6 @@ class _BiblePageState extends State<BiblePage> {
             isLoading ? const Center(child: LwpLoader(message: "Laai Bybel")) : const Stack(),
           ],
         ),
-        // child: WebViewWidget(
-        //   // gesture recognisers allow for vertical scroll in viewpager
-        //   gestureRecognizers: Set()..add(Factory(
-        //           () => VerticalDragGestureRecognizer()
-        //   )),
-        //   controller: controller,
-        // ),
       ),
     );
   }

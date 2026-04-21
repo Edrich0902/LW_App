@@ -55,7 +55,7 @@ class _CoursesPageState extends State<CoursesPage> {
                       itemCount: state.courses.length,
                       itemBuilder: (BuildContext context, int index) {
                         return _buildCourseCard(state.courses[index],
-                            () => print("course clicked"));
+                            () => debugPrint("course clicked"));
                       },
                     ),
                   );

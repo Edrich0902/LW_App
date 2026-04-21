@@ -57,12 +57,12 @@ class Event extends Equatable {
       type: json['type'] ?? '',
       day: json['day'] ?? '',
       category: json['category'] ?? '',
-      startDate: json['start_date'] ?? null,
-      endDate: json['end_date'] ?? null,
-      bannerPublicId: json['banner_public_id'] ?? null,
-      bannerUrl: json['banner_url'] ?? null,
-      createdAt: json['created_at'] ?? null,
-      updatedAt: json['updated_at'] ?? null,
+      startDate: json['start_date'],
+      endDate: json['end_date'],
+      bannerPublicId: json['banner_public_id'],
+      bannerUrl: json['banner_url'],
+      createdAt: json['created_at'],
+      updatedAt: json['updated_at'],
     );
   }
 }

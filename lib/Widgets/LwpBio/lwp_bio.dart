@@ -3,13 +3,13 @@ import 'package:lw_app/Widgets/LwpProfileImage/lwp_profile_image.dart';
 
 class LwpBio extends StatefulWidget {
   const LwpBio({
-    Key? key,
+    super.key,
     required this.name,
     required this.title,
     required this.bio,
     required this.publicId,
     this.onTap,
-  }) : super(key: key);
+  });
 
   final String name;
   final String title;

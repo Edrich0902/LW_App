@@ -3,11 +3,11 @@ import 'package:cloudinary_flutter/image/cld_image.dart';
 
 class LwpProfileImage extends StatefulWidget {
   const LwpProfileImage({
-    Key? key,
+    super.key,
     this.height = 100,
     this.radius = 100,
     required this.publicId
-  }) : super(key: key);
+  });
 
   final double height;
   final double radius;
@@ -26,7 +26,7 @@ class _LwpProfileImageState extends State<LwpProfileImage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: widget.height,
       width: widget.height,
       child: CircleAvatar(

@@ -5,9 +5,9 @@ import 'package:cloudinary_flutter/image/cld_image.dart';
 
 class LwpEvent extends StatefulWidget {
   const LwpEvent({
-    Key? key,
+    super.key,
     required this.event,
-  }) : super(key: key);
+  });
 
   final Event event;
 

@@ -76,7 +76,7 @@ class _SermonsPageState extends State<SermonsPage> {
 
   Widget _buildVideoCard(YoutubeVideo video, VoidCallback onTap) {
     return LwpBanner(
-      imageUrl: video.thumbnail_url,
+      imageUrl: video.thumbnailUrl,
       onTap: onTap,
     );
   }

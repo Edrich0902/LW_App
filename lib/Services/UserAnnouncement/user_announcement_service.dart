@@ -28,10 +28,10 @@ class UserAnnouncementService {
 
   Future<void> markUserNotificationsAsRead() async {
     try {
-      final response = await supabase
-          .from('user_announcements')
-          .update({'is_read': true})
-          .eq('user_id', _auth.currentUser!.id);
+      await supabase
+        .from('user_announcements')
+        .update({'is_read': true})
+        .eq('user_id', _auth.currentUser!.id);
     } catch (error) {
       throw error.toString();
     }

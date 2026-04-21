@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class LwpEmpty extends StatefulWidget {
   const LwpEmpty({
-    Key? key,
+    super.key,
     this.message = '',
-  }) : super(key: key);
+  });
 
   final String? message;
 

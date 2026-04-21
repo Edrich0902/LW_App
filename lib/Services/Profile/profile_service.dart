@@ -1,4 +1,3 @@
-import 'dart:ffi';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:lw_app/Models/User/user_profile.dart';

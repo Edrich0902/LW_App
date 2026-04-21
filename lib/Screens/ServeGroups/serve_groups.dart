@@ -52,7 +52,7 @@ class _ServeGroupsPageState extends State<ServeGroupsPage> {
                       padding: const EdgeInsets.all(8.0),
                       itemCount: state.serviceGroups.length,
                       itemBuilder: (BuildContext context, int index) {
-                        return _buildServiceGroupCard(state.serviceGroups[index], () => print("clicked"));
+                        return _buildServiceGroupCard(state.serviceGroups[index], () => debugPrint("clicked"));
                       },
                     ),
                   );

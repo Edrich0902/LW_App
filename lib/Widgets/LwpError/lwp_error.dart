@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class LwpError extends StatefulWidget {
   const LwpError({
-    Key? key,
+    super.key,
     this.message = '',
-  }) : super(key: key);
+  });
 
   final String? message;
 
