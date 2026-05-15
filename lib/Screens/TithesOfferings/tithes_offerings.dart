@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:animated_snack_bar/animated_snack_bar.dart';
+import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 
 class TithesOfferingsScreen extends StatelessWidget {
   const TithesOfferingsScreen({super.key});
 
   void _copyToClipboard(BuildContext context, String text, String label) {
     Clipboard.setData(ClipboardData(text: text));
-    AnimatedSnackBar.material(
+    LwpSnackbar.showSuccess(
+      context,
       '$label gekopieer na knipbord',
-      type: AnimatedSnackBarType.success,
-      mobileSnackBarPosition: MobileSnackBarPosition.bottom,
-    ).show(context);
+    );
   }
 
   @override
@@ -45,7 +44,7 @@ class TithesOfferingsScreen extends StatelessWidget {
                     end: Alignment.bottomCenter,
                     colors: [
                       Colors.transparent,
-                      Colors.black.withOpacity(0.7),
+                      Colors.black.withValues(alpha: 0.7),
                     ],
                   ),
                 ),

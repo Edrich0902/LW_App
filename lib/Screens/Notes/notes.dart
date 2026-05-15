@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/Notes/notes_bloc.dart';
-import 'package:animated_snack_bar/animated_snack_bar.dart';
+import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 import 'package:lw_app/Models/Note/note.dart';
 import 'package:lw_app/Screens/NotesEdit/notes_edit.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
@@ -28,19 +28,11 @@ class _NotesPageState extends State<NotesPage> {
     return BlocListener<NotesBloc, NotesState>(
       listener: (context, state) {
         if (state is NotesDeleteSuccess) {
-          AnimatedSnackBar.material(
-              "Note Deleted",
-              type: AnimatedSnackBarType.success,
-              mobileSnackBarPosition: MobileSnackBarPosition.bottom
-          ).show(context);
+          LwpSnackbar.showSuccess(context, "Nota verwyder");
         }
 
         if (state is NotesError) {
-          AnimatedSnackBar.material(
-              "Something went wrong",
-              type: AnimatedSnackBarType.error,
-              mobileSnackBarPosition: MobileSnackBarPosition.bottom
-          ).show(context);
+          LwpSnackbar.showError(context, "Iets het fout gegaan");
         }
       },
       child: Scaffold(

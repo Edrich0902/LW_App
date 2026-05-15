@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/NoteEdit/note_edit_bloc.dart';
 import 'package:lw_app/Blocs/Notes/notes_bloc.dart';
 import 'package:lw_app/Models/Note/note.dart';
-import 'package:animated_snack_bar/animated_snack_bar.dart';
+import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 
@@ -56,21 +56,13 @@ class _NotesEditPageState extends State<NotesEditPage> {
     return BlocListener<NoteEditBloc, NoteEditState>(
       listener: (context, state) {
         if (state is NoteCreateSuccess) {
-          AnimatedSnackBar.material(
-              "Note Created",
-              type: AnimatedSnackBarType.success,
-              mobileSnackBarPosition: MobileSnackBarPosition.bottom
-          ).show(context);
+          LwpSnackbar.showSuccess(context, "Nota geskep");
           notesBloc.add(const LoadNotes());
           Navigator.of(context).pop(); // go to previous screen
         }
 
         if (state is NoteUpdateSuccess) {
-          AnimatedSnackBar.material(
-              "Note Updated",
-              type: AnimatedSnackBarType.success,
-              mobileSnackBarPosition: MobileSnackBarPosition.bottom
-          ).show(context);
+          LwpSnackbar.showSuccess(context, "Nota opgedateer");
           notesBloc.add(const LoadNotes());
           Navigator.of(context).pop(); // go to previous screen
         }

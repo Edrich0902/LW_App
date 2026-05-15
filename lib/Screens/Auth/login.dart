@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/Auth/auth_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 import 'package:lw_app/Screens/Container/container.dart';
-import 'package:animated_snack_bar/animated_snack_bar.dart';
+import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -49,21 +49,13 @@ class _LoginPageState extends State<LoginPage> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthErrorState) {
-          AnimatedSnackBar.material(
-            "Login Failed",
-            type: AnimatedSnackBarType.error,
-            mobileSnackBarPosition: MobileSnackBarPosition.bottom
-          ).show(context);
+          LwpSnackbar.showError(context, "Intekening het misluk");
         }
 
         if (state is AuthSuccessState) {
           sb.Session? session = sb.Supabase.instance.client.auth.currentSession;
           if (session != null) {
-            AnimatedSnackBar.material(
-                "Login Success",
-                type: AnimatedSnackBarType.success,
-                mobileSnackBarPosition: MobileSnackBarPosition.bottom
-            ).show(context);
+            LwpSnackbar.showSuccess(context, "Intekening suksesvol");
 
             Navigator.pushReplacement(
               context,

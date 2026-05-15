@@ -91,8 +91,8 @@ Ensure you have the Flutter SDK installed and a valid `.env.development` or `.en
 4.  **Supabase Interaction:** Perform all database and auth operations within `Services`. Blocs should call Services, and UI should listen to Blocs.
 5.  **Themes:** Use the `AppTheme` class for styling to ensure consistency across light and dark modes. Use `Theme.of(context)` in widgets.
 6.  **Error Handling:** Use custom widgets like `LwpError` to display error states consistently.
-7.  **SnackBars & Notifications:** NEVER use the base Flutter `SnackBar`. Always use the `animated_snack_bar` package for showing user feedback, success messages, or errors.
-    -   Example: `AnimatedSnackBar.material('Message', type: AnimatedSnackBarType.success).show(context);`
+7.  **SnackBars & Notifications:** NEVER use the base Flutter `SnackBar` or the `animated_snack_bar` package directly. Always use the `LwpSnackbar` wrapper for showing user feedback, success messages, or errors.
+    -   Example: `LwpSnackbar.showSuccess(context, 'Boodskap');`
 8.  **Language & Localization:** All UI-facing content (labels, messages, buttons) MUST be in **Afrikaans**. Code-level naming (variables, files, classes) remains in **English**.
 9.  **Card UI Conventions:**
     -   Use a consistent border radius of `24.0` for all cards (defined in `AppTheme`).

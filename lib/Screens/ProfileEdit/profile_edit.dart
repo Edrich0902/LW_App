@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/User/user_bloc.dart';
-import 'package:animated_snack_bar/animated_snack_bar.dart';
+import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 import 'package:lw_app/Widgets/LabeledCheckbox/labeled_checkbox.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
@@ -68,19 +68,11 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     return BlocListener<UserBloc, UserState>(
       listener: (context, state) {
         if (state is UserUpdateSuccess) {
-          AnimatedSnackBar.material(
-              "Profiel foto opdateer",
-              type: AnimatedSnackBarType.success,
-              mobileSnackBarPosition: MobileSnackBarPosition.bottom
-          ).show(context);
+          LwpSnackbar.showSuccess(context, "Profiel opgedateer");
         }
 
         if (state is UserProfilePictureSuccess) {
-          AnimatedSnackBar.material(
-              "Profiel foto opdateer",
-              type: AnimatedSnackBarType.success,
-              mobileSnackBarPosition: MobileSnackBarPosition.bottom
-          ).show(context);
+          LwpSnackbar.showSuccess(context, "Profielfoto opgedateer");
         }
       },
       child: Scaffold(

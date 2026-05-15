@@ -11,7 +11,7 @@ import 'package:lw_app/Widgets/WhatsappContactFAB/whatsapp_contact_fab.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:lw_app/Widgets/LwpAnnouncement/lwp_announcement.dart';
 import 'package:lw_app/Widgets/LwpBanner/lwp_banner.dart';
-import 'package:animated_snack_bar/animated_snack_bar.dart';
+import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 
 class DashPage extends StatelessWidget {
   const DashPage({super.key});
@@ -27,11 +27,7 @@ class DashPage extends StatelessWidget {
             (route) => false,
           );
         } else if (state is AuthErrorState) {
-          AnimatedSnackBar.material(
-              "Error, could not Sign Out",
-              type: AnimatedSnackBarType.error,
-              mobileSnackBarPosition: MobileSnackBarPosition.bottom
-          ).show(context);
+          LwpSnackbar.showError(context, "Fout, kon nie uitteken nie");
         }
       },
       child: Scaffold(

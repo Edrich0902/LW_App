@@ -1,4 +1,4 @@
-import 'package:animated_snack_bar/animated_snack_bar.dart';
+import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/MoreInfo/more_info_bloc.dart';
@@ -81,11 +81,10 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
                           publicId: roleplayer.profilePublicId ?? '',
                           onTap: () {
                             // Future: navigate to roleplayer detail
-                            AnimatedSnackBar.material(
+                            LwpSnackbar.showInfo(
+                              context,
                               'Binnekort: Meer oor ${roleplayer.fullname}',
-                              type: AnimatedSnackBarType.info,
-                              mobileSnackBarPosition: MobileSnackBarPosition.bottom
-                            ).show(context);
+                            );
                           },
                         );
                       },
