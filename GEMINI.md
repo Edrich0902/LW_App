@@ -99,7 +99,12 @@ Ensure you have the Flutter SDK installed and a valid `.env.development` or `.en
     -   When listing details within a card (e.g., EFT details), use fixed-width labels (e.g., `130.0`) to ensure perfect vertical alignment across rows.
     -   Prevent text wrapping for short labels by using `maxLines: 1` and `overflow: TextOverflow.ellipsis`.
     -   Use `Divider(height: 32)` to separate sections within a card.
-10. **Calendar Integration:** When adding events/courses to the device calendar:
+10. **Hero + Grid Dashboard Pattern:**
+    -   **Hero Section:** Use a dynamic, high-impact Hero element (e.g., `DashboardHeroSermon`) to showcase the most relevant/latest content.
+    -   **Grid Section:** Follow the Hero with a 2-column grid of clean, icon-based cards (e.g., `DashboardGridCard`) for secondary actions.
+    -   **Loading States:** Always show a themed loading placeholder instead of flashing static content while fetching dynamic data.
+    -   **Direct Actions:** Provide direct links to detail screens from the Hero, with a clear "Kyk Alle" or "Sien Meer" link for the full list.
+11. **Calendar Integration:** When adding events/courses to the device calendar:
     -   Use the `add_2_calendar_new` package.
     -   Handle recurring events by mapping `EventType` to the `Frequency` enum.
     -   Parse time strings (e.g., `18:00:00+00`) by splitting at the timezone offset.

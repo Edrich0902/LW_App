@@ -3,7 +3,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:lw_app/Screens/UserAnnouncements/user_announcements.dart';
 
 class LwpAnnouncementButton extends StatefulWidget {
-  const LwpAnnouncementButton({super.key});
+  final Color? color;
+  const LwpAnnouncementButton({super.key, this.color});
 
   @override
   State<LwpAnnouncementButton> createState() => _LwpAnnouncementButtonState();
@@ -51,7 +52,10 @@ class _LwpAnnouncementButtonState extends State<LwpAnnouncementButton> {
         isLabelVisible: _unreadAnnouncements > 0,
         label: Text(_unreadAnnouncements.toString()),
         offset: const Offset(8, 8),
-        child: const Icon(Icons.notifications),
+        child: Icon(
+          Icons.notifications,
+          color: widget.color,
+        ),
       ),
     );
   }

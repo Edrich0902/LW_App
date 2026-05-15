@@ -1,5 +1,3 @@
-import 'dart:io';
-
 part of 'auth_bloc.dart';
 
 abstract class AuthEvent extends Equatable {
