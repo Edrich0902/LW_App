@@ -44,12 +44,11 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     AuthBloc authBloc = BlocProvider.of<AuthBloc>(context);
-    //TODO: add bloc listener here to fix login bug
 
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthErrorState) {
-          LwpSnackbar.showError(context, "Intekening het misluk");
+          LwpSnackbar.showError(context, "Intekening het misluk. Kontroleer asseblief jou besonderhede.");
         }
 
         if (state is AuthSuccessState) {
@@ -65,102 +64,147 @@ class _LoginPageState extends State<LoginPage> {
         }
       },
       child: Scaffold(
-        body: SafeArea(
-          child: Center(
-            child: Form(
-              key: _loginFormKey,
-              child: ListView(
-                shrinkWrap: true,
-                padding:
-                    const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(24.0),
-                    child: Image.asset(
-                      "assets/icons/icon.jpg",
-                      fit: BoxFit.cover,
+        body: Column(
+          children: [
+            Expanded(
+              flex: 2,
+              child: Hero(
+                tag: 'auth_top_section',
+                child: Stack(
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: theme.primaryColor,
+                      ),
+                      child: Image.asset(
+                        "assets/icons/icon.jpg",
+                        fit: BoxFit.cover,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 32),
-                  Text(
-                    "Sign In",
-                    style: theme.textTheme.headlineLarge,
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _emailController,
-                    validator: (email) {
-                      if (email == null || email.isEmpty) {
-                        return 'Email is required';
-                      }
-                      return null;
-                    },
-                    decoration: const InputDecoration(
-                      labelText: "Email",
-                      suffixIcon: Icon(Icons.email),
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.transparent,
+                            theme.scaffoldBackgroundColor.withValues(alpha: 0.1),
+                            theme.scaffoldBackgroundColor,
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _passwordController,
-                    validator: (password) {
-                      if (password == null || password.isEmpty) {
-                        return 'Password is required';
-                      }
-                      if (password.length < 6) {
-                        return 'Password must be at least 6 characters';
-                      }
-                      return null;
-                    },
-                    obscureText: !_showPassword,
-                    decoration: InputDecoration(
-                        labelText: "Password",
-                        suffixIcon: IconButton(
-                            onPressed: () => setShowPassword(),
-                            icon: Icon(_showPassword
-                                ? Icons.visibility
-                                : Icons.visibility_off))),
-                  ),
-                  const SizedBox(height: 16),
-                  BlocBuilder<AuthBloc, AuthState>(
-                    builder: (context, state) {
-                      return ElevatedButton(
-                        onPressed: () => {
-                          if (_loginFormKey.currentState!.validate())
-                            {
-                              authBloc.add(
-                                EmailSignInEvent(
-                                  _emailController.text,
-                                  _passwordController.text,
-                                ),
-                              )
-                            }
-                        },
-                        child: state is AuthLoadingState
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : const Text("Sign In"),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 4),
-                  TextButton(
-                      onPressed: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const RegisterPage())),
-                      child:
-                          const Text("Don't have an account? Register Here")),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
+            Expanded(
+              flex: 3,
+              child: Container(
+                color: theme.scaffoldBackgroundColor,
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+                  child: Form(
+                    key: _loginFormKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          "Welkom Terug",
+                          style: theme.textTheme.headlineLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: theme.primaryColor,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          "Teken in om voort te gaan",
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.hintColor,
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+                        TextFormField(
+                          controller: _emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          validator: (email) {
+                            if (email == null || email.isEmpty) {
+                              return 'E-pos is verpligtend';
+                            }
+                            return null;
+                          },
+                          decoration: const InputDecoration(
+                            labelText: "E-pos",
+                            prefixIcon: Icon(Icons.email_outlined),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _passwordController,
+                          validator: (password) {
+                            if (password == null || password.isEmpty) {
+                              return 'Wagwoord is verpligtend';
+                            }
+                            return null;
+                          },
+                          obscureText: !_showPassword,
+                          decoration: InputDecoration(
+                            labelText: "Wagwoord",
+                            prefixIcon: const Icon(Icons.lock_outline),
+                            suffixIcon: IconButton(
+                              onPressed: () => setShowPassword(),
+                              icon: Icon(
+                                _showPassword ? Icons.visibility : Icons.visibility_off,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+                        BlocBuilder<AuthBloc, AuthState>(
+                          builder: (context, state) {
+                            return ElevatedButton(
+                              onPressed: state is AuthLoadingState
+                                  ? null
+                                  : () {
+                                      if (_loginFormKey.currentState!.validate()) {
+                                        authBloc.add(
+                                          EmailSignInEvent(
+                                            _emailController.text,
+                                            _passwordController.text,
+                                          ),
+                                        );
+                                      }
+                                    },
+                              child: state is AuthLoadingState
+                                  ? const SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                  : const Text("Teken In"),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        TextButton(
+                          onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const RegisterPage(),
+                            ),
+                          ),
+                          child: const Text("Het jy nie 'n rekening nie? Registreer hier"),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

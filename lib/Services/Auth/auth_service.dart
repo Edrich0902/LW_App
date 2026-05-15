@@ -31,10 +31,18 @@ class AuthService {
 
   Future<void> createInitialProfile({
     required String? userId,
+    required String firstName,
+    required String lastName,
+    String? profileUrl,
+    String? profilePublicId,
   }) async {
     try {
       await supabase.from("user_profile").insert({
         'id': userId,
+        'first_name': firstName,
+        'last_name': lastName,
+        'profile_url': profileUrl,
+        'profile_public_id': profilePublicId,
       });
     } catch (error) {
       throw error.toString();
