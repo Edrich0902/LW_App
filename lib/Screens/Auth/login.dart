@@ -84,8 +84,8 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(24.0),
-                    child: Image.network(
-                      "https://yt3.googleusercontent.com/ytc/AL5GRJUbsh7ILjzuEQAZTot_kkV2GohZR75CjoWM9NSI9Q=s900-c-k-c0x00ffffff-no-rj",
+                    child: Image.asset(
+                      "assets/icons/icon.jpg",
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -149,7 +149,8 @@ class _LoginPageState extends State<LoginPage> {
                                 width: 20,
                                 height: 20,
                                 child: CircularProgressIndicator(
-                                  backgroundColor: Colors.white,
+                                  color: Colors.white,
+                                  strokeWidth: 2,
                                 ),
                               )
                             : const Text("Sign In"),

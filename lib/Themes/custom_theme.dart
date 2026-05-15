@@ -1,31 +1,31 @@
 import 'package:flutter/material.dart';
 
 class LightColors {
-  static const primary = Color(0xFF22628c);
-  static const secondary = Color(0xFFde4030);
-  static const accent = Color(0xFF996619);
+  static const primary = Color(0xFF11181C);
+  static const secondary = Color(0xFFF2C94C);
+  static const accent = Color(0xFFF2C94C);
   static const background = Color(0xFFFAFAFA);
 }
 
 class DarkColors {
-  static const primary = Color(0xFF22628c);
-  static const secondary = Color(0xFFde4030);
-  static const accent = Color(0xFF996619);
-  static const background = Color(0xFF11181d);
-  static const tertiary = Color(0xFF222f38);
+  static const primary = Color(0xFFF2C94C);
+  static const secondary = Color(0xFFF2C94C);
+  static const accent = Color(0xFFF2C94C);
+  static const background = Color(0xFF121212);
+  static const tertiary = Color(0xFF1E1E1E);
 }
 
-MaterialColor mainColor = const MaterialColor(0xFF22628c, <int, Color>{
-  50: Color(0xFF22628c),
-  100: Color(0xFF22628c),
-  200: Color(0xFF22628c),
-  300: Color(0xFF22628c),
-  400: Color(0xFF22628c),
-  500: Color(0xFF22628c),
-  600: Color(0xFF22628c),
-  700: Color(0xFF22628c),
-  800: Color(0xFF22628c),
-  900: Color(0xFF22628c),
+MaterialColor mainColor = const MaterialColor(0xFF11181C, <int, Color>{
+  50: Color(0xFF11181C),
+  100: Color(0xFF11181C),
+  200: Color(0xFF11181C),
+  300: Color(0xFF11181C),
+  400: Color(0xFF11181C),
+  500: Color(0xFF11181C),
+  600: Color(0xFF11181C),
+  700: Color(0xFF11181C),
+  800: Color(0xFF11181C),
+  900: Color(0xFF11181C),
 });
 
 class AppTheme {
@@ -39,41 +39,58 @@ class AppTheme {
     brightness: Brightness.light,
     appBarTheme: const AppBarTheme(
       iconTheme: IconThemeData(
-        color: Colors.white,
+        color: LightColors.primary,
       ),
       actionsIconTheme: IconThemeData(
-        color: Colors.white,
+        color: LightColors.primary,
       ),
-      foregroundColor: Colors.white,
+      foregroundColor: LightColors.primary,
       centerTitle: true,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(24.0),
-          bottomRight: Radius.circular(24.0)
-        ),
-      ),
-      backgroundColor: LightColors.primary,
+      elevation: 0,
+      backgroundColor: LightColors.background,
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
       backgroundColor: LightColors.primary,
       foregroundColor: Colors.white,
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
-      style: ButtonStyle(
-        backgroundColor: WidgetStateProperty.all<Color>(LightColors.primary),
-        foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
-        shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-            RoundedRectangleBorder(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: LightColors.primary,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16.0),
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24.0),
-        )),
+        ),
       ),
     ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        foregroundColor: LightColors.primary,
+      ),
+    ),
+    progressIndicatorTheme: const ProgressIndicatorThemeData(
+      color: LightColors.primary,
+    ),
     inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: const Color(0xFFEEEEEE),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 18.0),
+      labelStyle: const TextStyle(color: LightColors.primary),
+      floatingLabelStyle: const TextStyle(color: LightColors.primary),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(24.0),
+        borderSide: BorderSide.none,
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(24.0),
+        borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(24.0),
+        borderSide: const BorderSide(color: LightColors.secondary, width: 2.0),
       ),
       isDense: true,
-      filled: true,
     ),
     snackBarTheme: SnackBarThemeData(
       behavior: SnackBarBehavior.floating,
@@ -95,9 +112,9 @@ class AppTheme {
       ),
     ),
     cardTheme: CardThemeData(
-      color: LightColors.background,
+      color: Colors.white,
       elevation: 4.0,
-      shadowColor: DarkColors.background,
+      shadowColor: Colors.black.withValues(alpha: 0.1),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24.0),
       ),
@@ -117,7 +134,7 @@ class AppTheme {
 
   static ThemeData darkTheme = ThemeData(
     primarySwatch: mainColor,
-    colorScheme: ColorScheme.fromSeed(seedColor: mainColor, brightness: Brightness.dark),
+    colorScheme: ColorScheme.fromSeed(seedColor: DarkColors.primary, brightness: Brightness.dark),
     primaryColor: DarkColors.primary,
     scaffoldBackgroundColor: DarkColors.background,
     brightness: Brightness.dark,
@@ -130,41 +147,58 @@ class AppTheme {
       ),
       foregroundColor: Colors.white,
       centerTitle: true,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(24.0),
-            bottomRight: Radius.circular(24.0)
-        ),
-      ),
-      backgroundColor: DarkColors.primary,
+      elevation: 0,
+      backgroundColor: DarkColors.background,
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
       backgroundColor: DarkColors.primary,
-      foregroundColor: Colors.white,
+      foregroundColor: Colors.black,
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
-      style: ButtonStyle(
-        backgroundColor: WidgetStateProperty.all<Color>(DarkColors.primary),
-        foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
-        shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-            RoundedRectangleBorder(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: DarkColors.primary,
+        foregroundColor: Colors.black,
+        elevation: 0,
+        padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16.0),
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24.0),
-        )),
+        ),
       ),
     ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        foregroundColor: DarkColors.primary,
+      ),
+    ),
+    progressIndicatorTheme: const ProgressIndicatorThemeData(
+      color: DarkColors.primary,
+    ),
     inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: const Color(0xFF2A2A2A),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 18.0),
+      labelStyle: const TextStyle(color: Colors.white70),
+      floatingLabelStyle: const TextStyle(color: DarkColors.primary),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(24.0),
+        borderSide: BorderSide.none,
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(24.0),
+        borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(24.0),
+        borderSide: const BorderSide(color: DarkColors.secondary, width: 2.0),
       ),
       isDense: true,
-      filled: true,
     ),
     snackBarTheme: SnackBarThemeData(
       behavior: SnackBarBehavior.floating,
-      backgroundColor: LightColors.primary,
-      actionTextColor: Colors.white,
+      backgroundColor: DarkColors.primary,
+      actionTextColor: Colors.black,
       contentTextStyle: const TextStyle(
-        color: Colors.white,
+        color: Colors.black,
       ),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24.0),
@@ -181,7 +215,7 @@ class AppTheme {
     cardTheme: CardThemeData(
       color: DarkColors.tertiary,
       elevation: 4.0,
-      shadowColor: DarkColors.background,
+      shadowColor: Colors.black.withValues(alpha: 0.3),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24.0),
       ),
@@ -195,7 +229,7 @@ class AppTheme {
     ),
     checkboxTheme: CheckboxThemeData(
       fillColor: WidgetStateProperty.all<Color>(DarkColors.primary),
-      checkColor: WidgetStateProperty.all<Color>(Colors.white),
+      checkColor: WidgetStateProperty.all<Color>(Colors.black),
     ),
   );
 }

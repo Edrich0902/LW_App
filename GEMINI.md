@@ -34,12 +34,16 @@ The agent must prioritize **clean architecture**, **maintainability**, and **per
 - Prefer **sealed classes / enums** for state representation
 - Use **immutable models**
 
-### 4. Theming
-- Stick to the given theme as much as possible
-- Do not add custom colors or hardcoded colors if not required
-- Rather suggest updates to the custom_theme.dart config
-- The system should all pull from the set up theme to prevent any custom setup per file
-- This ensures consistency and uniformity across all files in the codebase
+### 4. Theming & Branding
+- **Strict Adherence:** Follow the guidelines in `THEME.md` for all UI changes.
+- **Color Usage:** Always use `Theme.of(context)` or the `LightColors`/`DarkColors` constants.
+- **Sleek & Modern:** Maintain the "Flat & Seamless" aesthetic (Elevation 0 for AppBars/Buttons).
+- **Navigation:** Bottom navigation in Dark Mode uses Charcoal (`#1E1E1E`) to balance the Gold accents.
+
+### 5. Behavioral Constraints
+- **NO Unapproved Text Changes:** Do NOT update user-facing labels, menu titles, or messages without explicit confirmation.
+- **Afrikaans UI:** Maintain all UI-facing content in **Afrikaans**.
+
 
 This project is a Flutter mobile application for **Lewende Woord Paarl**, a church community. It serves as a central hub for members to access sermons, notes, events, and community groups.
 

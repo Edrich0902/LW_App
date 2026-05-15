@@ -43,7 +43,7 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
                     title: Text(
                       'Meer Oor Ons',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: Colors.white
+                        color: Theme.of(context).primaryColor,
                       ),
                     ),
                     centerTitle: false,
