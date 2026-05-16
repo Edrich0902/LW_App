@@ -51,9 +51,10 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
                 if (state.events.isNotEmpty) {
                   return RefreshIndicator(
                     onRefresh: () async => eventsBloc.add(LoadUpcomingEvents(eventType: EventType.ONCE, date: currentDate)),
-                    child: ListView.builder(
-                      padding: const EdgeInsets.all(8.0),
+                    child: ListView.separated(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
                       itemCount: state.events.length,
+                      separatorBuilder: (context, index) => const SizedBox(height: 16.0),
                       itemBuilder: (BuildContext context, int index) {
                         return _buildEventCard(state.events[index], () {
                           Navigator.push(
@@ -83,57 +84,75 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
     final theme = Theme.of(context);
 
     return Card(
+      elevation: 0,
+      margin: EdgeInsets.zero,
       clipBehavior: Clip.antiAliasWithSaveLayer,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24.0),
+      ),
       child: InkWell(
         onTap: onTap,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            CldImageWidget(
-                publicId: event.bannerPublicId ?? 'samples/cloudinary-icon',
-                fit: BoxFit.fill
+            SizedBox(
+              height: 200,
+              width: double.infinity,
+              child: Hero(
+                tag: 'event_image_${event.id}',
+                child: CldImageWidget(
+                  publicId: event.bannerPublicId ?? 'samples/cloudinary-icon',
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
             Padding(
-              padding: const EdgeInsets.all(8),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Expanded(
-                    child: Row(
-                      children: <Widget>[
-                        const Icon(Icons.event),
-                        const SizedBox(width: 16.0),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                event.title,
-                                style: theme.textTheme.titleMedium,
-                              ),
-                              Text(
-                                event.description,
-                                style: theme.textTheme.bodyMedium,
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 3,
-                              ),
-                              const SizedBox(height: 16.0),
-                              Text(
-                                _formatEventDateTime(event),
-                                style: theme.textTheme.bodySmall,
-                              ),
-                            ],
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    event.title,
+                    style: theme.textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 4.0),
+                  Text(
+                    event.description,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.hintColor,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const Divider(height: 24.0),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.calendar_today_rounded,
+                        size: 16.0,
+                        color: theme.primaryColor,
+                      ),
+                      const SizedBox(width: 8.0),
+                      Expanded(
+                        child: Text(
+                          _formatEventDateTime(event),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                      Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        size: 14.0,
+                        color: theme.hintColor.withValues(alpha: 0.5),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 8),
-                  const Icon(Icons.arrow_forward_ios_rounded),
                 ],
               ),
             ),
           ],
-        )
+        ),
       ),
     );
   }
