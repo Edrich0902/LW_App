@@ -41,9 +41,8 @@ The agent must prioritize **clean architecture**, **maintainability**, and **per
 - **Navigation:** Bottom navigation in Dark Mode uses Charcoal (`#1E1E1E`) to balance the Gold accents.
 
 ### 5. Behavioral Constraints
-- **NO Unapproved Text Changes:** Do NOT update user-facing labels, menu titles, or messages without explicit confirmation.
+- **Validation is not optional:** After every code change, you MUST run `flutter analyze` on the affected files (or the whole project) to verify structural and type integrity.
 - **Afrikaans UI:** Maintain all UI-facing content in **Afrikaans**.
-
 
 This project is a Flutter mobile application for **Lewende Woord Paarl**, a church community. It serves as a central hub for members to access sermons, notes, events, and community groups.
 

@@ -31,11 +31,12 @@ class _LwpProfileImageState extends State<LwpProfileImage> {
       width: widget.height,
       child: CircleAvatar(
         radius: widget.radius,
+        backgroundColor: Colors.transparent,
         child: ClipOval(
           child: CldImageWidget(
             publicId: widget.publicId.isEmpty ? 'samples/cloudinary-icon' : widget.publicId,
-            width: 100,
-            height: 100,
+            width: widget.height,
+            height: widget.height,
             fit: BoxFit.cover,
           ),
         ),

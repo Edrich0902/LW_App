@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/User/user_bloc.dart';
+import 'package:lw_app/Models/User/user_profile.dart';
 import 'package:lw_app/Widgets/LwpProfileImage/lwp_profile_image.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 import 'package:lw_app/Widgets/LabeledCheckbox/labeled_checkbox.dart';
@@ -32,7 +33,8 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
       TextEditingController();
   bool _isMember = false;
   bool _isBaptized = false;
-  String _profilePublicId = '';
+  bool _isInitialized = false;
+  UserProfile? _currentUser;
 
   @override
   void initState() {
@@ -49,12 +51,18 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   }
 
   void initForm(UserSuccess state) {
+    if (_isInitialized) {
+      _currentUser = state.user;
+      return;
+    }
+    
     _firstNameController.text = state.user.firstName;
     _lastNameController.text = state.user.lastName;
     _addressController.text = state.user.address ?? '';
     _isMember = state.user.isMember ?? false;
     _isBaptized = state.user.isBaptized ?? false;
-    _profilePublicId = state.user.profilePublicId ?? '';
+    _currentUser = state.user;
+    _isInitialized = true;
   }
 
   @override
@@ -79,10 +87,15 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
         body: SafeArea(
           child: BlocBuilder<UserBloc, UserState>(
             builder: (context, state) {
-              if (state is UserLoading) {
-                return const LwpLoader(message: "Laai profiel...");
-              } else if (state is UserSuccess) {
+              if (state is UserSuccess) {
                 initForm(state);
+              }
+
+              if (!_isInitialized && state is UserLoading) {
+                return const LwpLoader(message: "Laai profiel...");
+              }
+
+              if (_isInitialized && _currentUser != null) {
                 return SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
                   child: Form(
@@ -91,7 +104,14 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: <Widget>[
                         const SizedBox(height: 24),
-                        _buildProfileImage(_profilePublicId, userBloc, theme),
+                        _buildProfileImage(
+                          state is UserSuccess 
+                              ? state.user.profilePublicId ?? '' 
+                              : _currentUser!.profilePublicId ?? '', 
+                          userBloc, 
+                          theme,
+                          state is UserLoading
+                        ),
                         const SizedBox(height: 32),
                         TextFormField(
                           initialValue: user?.email ?? 'N/A',
@@ -186,11 +206,13 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                     ),
                   ),
                 );
-              } else {
+              } else if (state is UserError && !_isInitialized) {
                 return LwpError(
                   onRetry: () => context.read<UserBloc>().add(const LoadUser()),
                 );
               }
+              
+              return const SizedBox.shrink();
             },
           ),
         ),
@@ -198,27 +220,41 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     );
   }
 
-  Widget _buildProfileImage(String publicId, UserBloc userBloc, ThemeData theme) {
+  Widget _buildProfileImage(String publicId, UserBloc userBloc, ThemeData theme, bool isLoading) {
     return Center(
       child: Stack(
         children: [
           LwpProfileImage(
             publicId: publicId,
-            height: 140,
-            radius: 70,
+            height: 160,
+            radius: 80,
           ),
+          if (isLoading)
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.3),
+                  shape: BoxShape.circle,
+                ),
+                child: const Center(
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
           Positioned(
-            bottom: 0,
-            right: 0,
+            bottom: 4,
+            right: 4,
             child: Container(
               decoration: BoxDecoration(
                 color: theme.primaryColor,
                 shape: BoxShape.circle,
-                border: Border.all(color: theme.scaffoldBackgroundColor, width: 3),
+                border: Border.all(color: theme.scaffoldBackgroundColor, width: 2),
               ),
               child: IconButton(
                 icon: const Icon(Icons.camera_alt, color: Colors.white, size: 20),
-                onPressed: () => _showImageSourcePicker(userBloc),
+                onPressed: isLoading ? null : () => _showImageSourcePicker(userBloc),
               ),
             ),
           ),
