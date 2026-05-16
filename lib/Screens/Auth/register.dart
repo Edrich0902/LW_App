@@ -139,7 +139,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         color: theme.primaryColor,
                       ),
                       child: Image.asset(
-                        "assets/icons/icon.jpg",
+                        "assets/icons/icon.png",
                         fit: BoxFit.cover,
                       ),
                     ),
