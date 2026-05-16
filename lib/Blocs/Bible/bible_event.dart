@@ -33,3 +33,7 @@ class ChangeChapter extends BibleEvent {
   @override
   List<Object?> get props => [chapter];
 }
+
+class NavigateNextChapter extends BibleEvent {}
+
+class NavigatePreviousChapter extends BibleEvent {}

@@ -12,6 +12,66 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
     on<ChangeVersion>(_onChangeVersion);
     on<ChangeBook>(_onChangeBook);
     on<ChangeChapter>(_onChangeChapter);
+    on<NavigateNextChapter>(_onNavigateNextChapter);
+    on<NavigatePreviousChapter>(_onNavigatePreviousChapter);
+  }
+
+  Future<void> _onNavigateNextChapter(NavigateNextChapter event, Emitter<BibleState> emit) async {
+    if (state is! BibleLoaded) return;
+    final currentState = state as BibleLoaded;
+
+    final currentIndex = currentState.chapters.indexWhere((c) => c.id == currentState.currentChapter.id);
+
+    if (currentIndex < currentState.chapters.length - 1) {
+      // Next chapter in same book
+      add(ChangeChapter(currentState.chapters[currentIndex + 1]));
+    } else {
+      // Next book
+      final currentBookIndex = currentState.books.indexWhere((b) => b.id == currentState.currentBook.id);
+      if (currentBookIndex < currentState.books.length - 1) {
+        add(ChangeBook(currentState.books[currentBookIndex + 1]));
+      }
+    }
+  }
+
+  Future<void> _onNavigatePreviousChapter(NavigatePreviousChapter event, Emitter<BibleState> emit) async {
+    if (state is! BibleLoaded) return;
+    final currentState = state as BibleLoaded;
+
+    final currentIndex = currentState.chapters.indexWhere((c) => c.id == currentState.currentChapter.id);
+
+    if (currentIndex > 0) {
+      // Previous chapter in same book
+      add(ChangeChapter(currentState.chapters[currentIndex - 1]));
+    } else {
+      // Previous book
+      final currentBookIndex = currentState.books.indexWhere((b) => b.id == currentState.currentBook.id);
+      if (currentBookIndex > 0) {
+        final previousBook = currentState.books[currentBookIndex - 1];
+        
+        emit(currentState.copyWith(isLoading: true));
+        try {
+          final chapters = await bibleService.getChapters(currentState.currentVersion.id, previousBook.id);
+          final lastChapter = chapters.last;
+          
+          final content = await bibleService.getChapterContent(
+            currentState.currentVersion.id,
+            previousBook.id,
+            lastChapter.id,
+          );
+
+          emit(currentState.copyWith(
+            currentBook: previousBook,
+            currentChapter: lastChapter,
+            content: content,
+            chapters: chapters,
+            isLoading: false,
+          ));
+        } catch (e) {
+          emit(BibleError('Fout met die navigasie na vorige boek: $e'));
+        }
+      }
+    }
   }
 
   Future<void> _onLoadBibleInitial(LoadBibleInitial event, Emitter<BibleState> emit) async {
@@ -69,7 +129,7 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
     if (state is! BibleLoaded) return;
     final currentState = state as BibleLoaded;
 
-    emit(BibleLoading());
+    emit(currentState.copyWith(isLoading: true));
     try {
       final books = await bibleService.getBooks(event.version.id);
       // Try to find same book in new version, else first
@@ -88,6 +148,7 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
         content: content,
         books: books,
         chapters: chapters,
+        isLoading: false,
       ));
     } catch (e) {
       emit(BibleError('Fout met die verandering van vertaling: $e'));
@@ -98,7 +159,7 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
     if (state is! BibleLoaded) return;
     final currentState = state as BibleLoaded;
 
-    emit(BibleLoading());
+    emit(currentState.copyWith(isLoading: true, currentBook: event.book));
     try {
       final chapters = await bibleService.getChapters(currentState.currentVersion.id, event.book.id);
       final chapter = chapters.first; // Default to chapter 1 when changing book
@@ -110,6 +171,7 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
         currentChapter: chapter,
         content: content,
         chapters: chapters,
+        isLoading: false,
       ));
     } catch (e) {
       emit(BibleError('Fout met die verandering van boek: $e'));
@@ -120,7 +182,7 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
     if (state is! BibleLoaded) return;
     final currentState = state as BibleLoaded;
 
-    emit(BibleLoading());
+    emit(currentState.copyWith(isLoading: true, currentChapter: event.chapter));
     try {
       final content = await bibleService.getChapterContent(
         currentState.currentVersion.id,
@@ -131,6 +193,7 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
       emit(currentState.copyWith(
         currentChapter: event.chapter,
         content: content,
+        isLoading: false,
       ));
     } catch (e) {
       emit(BibleError('Fout met die verandering van hoofstuk: $e'));

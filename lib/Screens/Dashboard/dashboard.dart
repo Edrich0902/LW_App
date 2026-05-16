@@ -17,6 +17,11 @@ import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/Dashboard/dashboard_grid_card.dart';
 import 'package:lw_app/Widgets/Dashboard/dashboard_hero_sermon.dart';
+import 'package:lw_app/Widgets/Dashboard/dashboard_votd_card.dart';
+import 'package:lw_app/Blocs/Votd/votd_bloc.dart';
+import 'package:lw_app/Blocs/Votd/votd_event.dart';
+import 'package:lw_app/Blocs/Votd/votd_state.dart';
+import 'package:lw_app/Screens/Bible/bible.dart';
 
 class DashPage extends StatefulWidget {
   const DashPage({super.key});
@@ -104,6 +109,48 @@ class _DashPageState extends State<DashPage> {
                       ),
                     );
                   }
+                  return const SizedBox.shrink();
+                },
+              ),
+              const SizedBox(height: 16),
+              BlocBuilder<VotdBloc, VotdState>(
+                builder: (context, state) {
+                  if (state is VotdSuccess) {
+                    return DashboardVotdCard(
+                      votd: state.votd,
+                      onTap: () {
+                        // For now just open Bible Page
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const BiblePage()),
+                        );
+                      },
+                    );
+                  } else if (state is VotdLoading) {
+                    return Container(
+                      height: 180,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).cardTheme.color,
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      child: const LwpLoader(message: ""),
+                    );
+                  } else if (state is VotdError) {
+                    return Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).cardTheme.color,
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      child: LwpError(
+                        message: state.message,
+                        onRetry: () => context.read<VotdBloc>().add(LoadVotd()),
+                      ),
+                    );
+                  }
+                  // Return nothing if initial - dashboard should still work
                   return const SizedBox.shrink();
                 },
               ),

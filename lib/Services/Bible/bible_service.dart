@@ -27,7 +27,6 @@ class BibleService {
       final List versions = data['data'] ?? [];
       return versions.map((v) => BibleVersion.fromJson(v)).toList();
     } else {
-      print('Bible API Error (getVersions): ${response.body}');
       throw Exception('Failed to load Bible versions: ${response.statusCode}');
     }
   }
@@ -45,7 +44,6 @@ class BibleService {
       final List books = data['data'] ?? [];
       return books.map((b) => BibleBook.fromJson(b)).toList();
     } else {
-      print('Bible API Error (getBooks): ${response.body}');
       throw Exception('Failed to load Bible books: ${response.statusCode}');
     }
   }
@@ -64,7 +62,6 @@ class BibleService {
       final List chapters = data['data'] ?? [];
       return chapters.map((c) => BibleChapter.fromJson(c)).toList();
     } else {
-      print('Bible API Error (getChapters): ${response.body}');
       throw Exception('Failed to load Bible chapters: ${response.statusCode}');
     }
   }
@@ -73,7 +70,13 @@ class BibleService {
     // Using the /passages endpoint as specified in Section 8 of you_version_integration.md
     // Ensure we have a full reference (e.g., 'JHN.1')
     final reference = chapterId.contains('.') ? chapterId : '$bookId.$chapterId';
-    final uri = Uri.https('api.youversion.com', '/v1/bibles/$versionId/passages/$reference');
+    return getPassageContent(versionId, reference);
+  }
+
+  Future<BibleContent> getPassageContent(String versionId, String reference) async {
+    final uri = Uri.https('api.youversion.com', '/v1/bibles/$versionId/passages/$reference', {
+      'format': 'html',
+    });
 
     final response = await http.get(
       uri,
@@ -86,8 +89,23 @@ class BibleService {
       final contentData = data['data'] ?? data;
       return BibleContent.fromJson(contentData);
     } else {
-      print('Bible API Error (getChapterContent): ${response.body}');
       throw Exception('Failed to load Bible content: ${response.statusCode}');
+    }
+  }
+
+  Future<String> getVotdPassageId(int day) async {
+    final uri = Uri.https('api.youversion.com', '/v1/verse_of_the_days/$day');
+    
+    final response = await http.get(
+      uri,
+      headers: _headers,
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return data['passage_id'];
+    } else {
+      throw Exception('Failed to load VOTD passage ID: ${response.statusCode}');
     }
   }
 }

@@ -18,6 +18,7 @@ class BibleLoaded extends BibleState {
   final List<BibleVersion> versions;
   final List<BibleBook> books;
   final List<BibleChapter> chapters;
+  final bool isLoading;
 
   const BibleLoaded({
     required this.currentVersion,
@@ -27,6 +28,7 @@ class BibleLoaded extends BibleState {
     required this.versions,
     required this.books,
     required this.chapters,
+    this.isLoading = false,
   });
 
   BibleLoaded copyWith({
@@ -37,6 +39,7 @@ class BibleLoaded extends BibleState {
     List<BibleVersion>? versions,
     List<BibleBook>? books,
     List<BibleChapter>? chapters,
+    bool? isLoading,
   }) {
     return BibleLoaded(
       currentVersion: currentVersion ?? this.currentVersion,
@@ -46,6 +49,7 @@ class BibleLoaded extends BibleState {
       versions: versions ?? this.versions,
       books: books ?? this.books,
       chapters: chapters ?? this.chapters,
+      isLoading: isLoading ?? this.isLoading,
     );
   }
 
@@ -58,6 +62,7 @@ class BibleLoaded extends BibleState {
         versions,
         books,
         chapters,
+        isLoading,
       ];
 }
 

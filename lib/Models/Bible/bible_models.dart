@@ -53,9 +53,21 @@ class BibleChapter extends Equatable {
   });
 
   factory BibleChapter.fromJson(Map<String, dynamic> json) {
+    String id = json['id'].toString();
+    String? number = json['number']?.toString();
+    
+    // If number is missing, try to extract it from ID (e.g. "JHN.1" -> "1")
+    if (number == null || number == 'null') {
+      if (id.contains('.')) {
+        number = id.split('.').last;
+      } else {
+        number = id;
+      }
+    }
+
     return BibleChapter(
-      id: json['id'].toString(),
-      number: json['number'].toString(),
+      id: id,
+      number: number,
     );
   }
 
@@ -73,10 +85,28 @@ class BibleContent extends Equatable {
   });
 
   factory BibleContent.fromJson(Map<String, dynamic> json) {
+    String rawHtml = json['content'] ?? '';
     return BibleContent(
-      html: json['content'] ?? '',
+      html: _processHtml(rawHtml),
       citation: json['reference'] ?? '',
     );
+  }
+
+  static String _processHtml(String html) {
+    // 1. Wrap raw numbers followed by non-breaking space or letter
+    // This handles cases where verse numbers are just raw text in the HTML
+    String processed = html.replaceAllMapped(RegExp(r'(?<=^|>|\s)(\d+)(?=[a-zA-Z\u00A0])'), (match) {
+      return '<span class="v">${match[1]}</span>';
+    });
+
+    // 2. Ensure common YouVersion classes are treated as verse markers
+    processed = processed.replaceAll('class="label"', 'class="v"');
+    processed = processed.replaceAll('class="verse"', 'class="v"');
+    
+    // 3. Ensure <sup> tags are styled correctly
+    processed = processed.replaceAll('<sup', '<sup class="v"');
+
+    return processed;
   }
 
   @override

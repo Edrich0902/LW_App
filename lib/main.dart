@@ -27,6 +27,8 @@ import 'package:lw_app/Blocs/Theme/theme_event.dart';
 import 'package:lw_app/Blocs/Theme/theme_state.dart';
 import 'package:lw_app/Blocs/Bible/bible_bloc.dart';
 import 'package:lw_app/Blocs/Bible/bible_event.dart';
+import 'package:lw_app/Blocs/Votd/votd_bloc.dart';
+import 'package:lw_app/Blocs/Votd/votd_event.dart';
 import 'package:lw_app/Services/Bible/bible_service.dart';
 
 // Cloudinary
@@ -98,6 +100,9 @@ Future<void> main() async {
         ),
         BlocProvider<BibleBloc>(
           create: (_) => BibleBloc(bibleService: BibleService())..add(LoadBibleInitial()),
+        ),
+        BlocProvider<VotdBloc>(
+          create: (_) => VotdBloc(bibleService: BibleService())..add(LoadVotd()),
         ),
         BlocProvider<ThemeBloc>(
           create: (_) => ThemeBloc()..add(const InitThemeEvent()),

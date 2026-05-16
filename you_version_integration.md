@@ -80,9 +80,29 @@ X-YVP-App-Key: YOUR_APP_KEY
 
 ---
 
-# 4. Bible Endpoints
+### Example HTML Response Structure
 
-## Get Available Bibles
+The `/passages` endpoint returns content wrapped in YouVersion-specific classes:
+
+```json
+{
+  "id": "JHN.1",
+  "content": "<div><div class=\"p\"><span class=\"yv-v\" v=\"1\"></span><span class=\"yv-vlbl\">1</span>In the beginning was the Word..."
+}
+```
+
+### Key HTML Classes & Tags
+
+| Class | Tag | Description |
+| :--- | :--- | :--- |
+| `p` | `<div>` or `<p>` | Standard paragraph. |
+| `yv-v` | `<span>` | Functional verse marker (usually empty). |
+| `yv-vlbl` | `<span>` | **Visible Verse Number** (the label). |
+| `s1`, `s2` | `<h2>`, `<h3>` | Section headings. |
+
+---
+
+# 5. Book Endpoints
 
 ### Endpoint
 
@@ -511,6 +531,24 @@ next_page_token
 
 ---
 
+## Flutter Implementation Details
+
+The Bible feature in this application is built using the **BLoC pattern** and `flutter_html`.
+
+### Sequential Navigation
+The application supports sequential chapter navigation (Next/Previous). The `BibleBloc` handles cross-book transitions:
+- When "Next" is pressed on the last chapter of a book, it automatically fetches and loads Chapter 1 of the following book.
+- When "Previous" is pressed on Chapter 1, it fetches the previous book's metadata and jumps to its last chapter.
+
+### Verse Formatting
+Since the YouVersion API returns raw HTML, we apply custom processing in `BibleContent.fromJson`:
+- **Regex Processing**: Wraps raw numbers in `<span class="v">` to ensure they can be styled consistently.
+- **CSS Styling**: We use `VerticalAlign.sup` to render verse numbers as superscripts, colored with the project's primary gold accent.
+
+### Search Functionality
+The `BibleNavigationSheet` implements real-time search for both **Vertalings** (Versions) and **Boeke** (Books) using `TextEditingController`s and simple `where` filtering on the `BibleLoaded` state lists.
+
+---
 # Useful References
 
 Developer Portal:
