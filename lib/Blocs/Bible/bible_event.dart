@@ -10,6 +10,21 @@ abstract class BibleEvent extends Equatable {
 
 class LoadBibleInitial extends BibleEvent {}
 
+class LoadSpecificPassage extends BibleEvent {
+  final BibleVersion version;
+  final BibleBook book;
+  final BibleChapter chapter;
+
+  const LoadSpecificPassage({
+    required this.version,
+    required this.book,
+    required this.chapter,
+  });
+
+  @override
+  List<Object?> get props => [version, book, chapter];
+}
+
 class ChangeVersion extends BibleEvent {
   final BibleVersion version;
   const ChangeVersion(this.version);

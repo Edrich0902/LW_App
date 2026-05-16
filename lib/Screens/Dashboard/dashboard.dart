@@ -21,6 +21,8 @@ import 'package:lw_app/Widgets/Dashboard/dashboard_votd_card.dart';
 import 'package:lw_app/Blocs/Votd/votd_bloc.dart';
 import 'package:lw_app/Blocs/Votd/votd_event.dart';
 import 'package:lw_app/Blocs/Votd/votd_state.dart';
+import 'package:lw_app/Blocs/Bible/bible_bloc.dart';
+import 'package:lw_app/Blocs/Bible/bible_event.dart';
 import 'package:lw_app/Screens/Bible/bible.dart';
 
 class DashPage extends StatefulWidget {
@@ -119,7 +121,11 @@ class _DashPageState extends State<DashPage> {
                     return DashboardVotdCard(
                       votd: state.votd,
                       onTap: () {
-                        // For now just open Bible Page
+                        context.read<BibleBloc>().add(LoadSpecificPassage(
+                          version: state.votd.version,
+                          book: state.votd.book,
+                          chapter: state.votd.chapter,
+                        ));
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => const BiblePage()),

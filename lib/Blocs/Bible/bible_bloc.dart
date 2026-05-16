@@ -9,11 +9,34 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
 
   BibleBloc({required this.bibleService}) : super(BibleLoading()) {
     on<LoadBibleInitial>(_onLoadBibleInitial);
+    on<LoadSpecificPassage>(_onLoadSpecificPassage);
     on<ChangeVersion>(_onChangeVersion);
     on<ChangeBook>(_onChangeBook);
     on<ChangeChapter>(_onChangeChapter);
     on<NavigateNextChapter>(_onNavigateNextChapter);
     on<NavigatePreviousChapter>(_onNavigatePreviousChapter);
+  }
+
+  Future<void> _onLoadSpecificPassage(LoadSpecificPassage event, Emitter<BibleState> emit) async {
+    emit(BibleLoading());
+    try {
+      final allVersions = await bibleService.getVersions(languages: ['en', 'af']);
+      final books = await bibleService.getBooks(event.version.id);
+      final chapters = await bibleService.getChapters(event.version.id, event.book.id);
+      final content = await bibleService.getChapterContent(event.version.id, event.book.id, event.chapter.id);
+
+      emit(BibleLoaded(
+        currentVersion: event.version,
+        currentBook: event.book,
+        currentChapter: event.chapter,
+        content: content,
+        versions: allVersions,
+        books: books,
+        chapters: chapters,
+      ));
+    } catch (e) {
+      emit(BibleError('Fout met die laai van die spesifieke vers: $e'));
+    }
   }
 
   Future<void> _onNavigateNextChapter(NavigateNextChapter event, Emitter<BibleState> emit) async {

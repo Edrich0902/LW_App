@@ -20,22 +20,36 @@ class VotdBloc extends Bloc<VotdEvent, VotdState> {
       
       final passageId = await bibleService.getVotdPassageId(dayOfYear);
       
-      // We need a version to fetch the content. 
-      // Try to find Afrikaans or NIV as default.
+      // 1. Fetch versions
       final allVersions = await bibleService.getVersions(languages: ['en', 'af']);
-      
       if (allVersions.isEmpty) {
         throw Exception('Geen Bybelvertalings gevind nie.');
       }
-
       final defaultVersion = allVersions.firstWhereOrNull((v) => v.name.contains('NIV')) ?? allVersions.first;
 
+      // 2. Parse passageId (e.g. "ROM.5.8" or "ROM.5")
+      final parts = passageId.split('.');
+      final bookId = parts[0];
+      final chapterNumber = parts.length > 1 ? parts[1] : '1';
+
+      // 3. Fetch Book metadata
+      final books = await bibleService.getBooks(defaultVersion.id);
+      final book = books.firstWhereOrNull((b) => b.id == bookId) ?? books.first;
+
+      // 4. Fetch Chapter metadata
+      final chapters = await bibleService.getChapters(defaultVersion.id, book.id);
+      final chapter = chapters.firstWhereOrNull((c) => c.number == chapterNumber) ?? chapters.first;
+
+      // 5. Fetch content
       final content = await bibleService.getPassageContent(defaultVersion.id, passageId);
 
       emit(VotdSuccess(Votd(
         day: dayOfYear,
         passageId: passageId,
         content: content,
+        version: defaultVersion,
+        book: book,
+        chapter: chapter,
       )));
     } catch (e) {
       emit(VotdError('Kon nie die Vers van die Dag laai nie: $e'));
