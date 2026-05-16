@@ -53,6 +53,7 @@ dependencies:
   url_launcher: ^6.1.11
   webview_flutter: ^4.2.0
   collection: ^1.16.0
+  flutter_html: ^3.0.0-beta.2
   cloudinary_url_gen: ^1.0.0
   cloudinary_flutter: ^1.0.0
   image_picker: ^1.0.0
