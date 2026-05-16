@@ -2,16 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/User/user_bloc.dart';
+import 'package:lw_app/Widgets/LwpProfileImage/lwp_profile_image.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 import 'package:lw_app/Widgets/LabeledCheckbox/labeled_checkbox.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
-import 'package:cloudinary_flutter/image/cld_image.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:cloudinary_url_gen/transformation/transformation.dart';
-import 'package:cloudinary_url_gen/transformation/delivery/delivery.dart';
-import 'package:cloudinary_url_gen/transformation/delivery/delivery_actions.dart';
 
 class ProfileEditPage extends StatefulWidget {
   const ProfileEditPage({super.key});
@@ -76,194 +73,211 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(),
+        appBar: AppBar(
+          title: const Text('Wysig Profiel'),
+        ),
         body: SafeArea(
-          child: Center(
-            child: Form(
-              key: _profileEditFormKey,
-              child: BlocBuilder<UserBloc, UserState>(
-                builder: (context, state) {
-                  if (state is UserLoading) {
-                    return const LwpLoader(message: "Laai Profiel");
-                  } else if (state is UserSuccess) {
-                    initForm(state);
-                    return SingleChildScrollView(
-                      child: StatefulBuilder(
-                        builder: (BuildContext context, StateSetter setState) {
-                          return Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                ClipOval(
-                                  child: CldImageWidget(
-                                    publicId: _profilePublicId,
-                                    transformation: Transformation()
-                                        .delivery(Delivery.quality(Quality.auto()))
-                                        .delivery(Delivery.format(Format.auto)),
-                                    placeholder: (context, url) => const CircularProgressIndicator(),
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return Container(
-                                        color: Colors.grey[300], // Background color for the fallback
-                                        child: const Center(
-                                          child: Icon(Icons.person, size: 100.0), // Fallback icon
-                                        ),
-                                      );
-                                    },
-                                    width: 250,
-                                    height: 250,
-                                    fit: BoxFit.cover,
+          child: BlocBuilder<UserBloc, UserState>(
+            builder: (context, state) {
+              if (state is UserLoading) {
+                return const LwpLoader(message: "Laai profiel...");
+              } else if (state is UserSuccess) {
+                initForm(state);
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                  child: Form(
+                    key: _profileEditFormKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        const SizedBox(height: 24),
+                        _buildProfileImage(_profilePublicId, userBloc, theme),
+                        const SizedBox(height: 32),
+                        TextFormField(
+                          initialValue: user?.email ?? 'N/A',
+                          enabled: false,
+                          decoration: const InputDecoration(
+                            labelText: 'E-pos',
+                            prefixIcon: Icon(Icons.email_outlined),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _firstNameController,
+                          textCapitalization: TextCapitalization.words,
+                          validator: (firstName) {
+                            if (firstName == null || firstName.isEmpty) {
+                              return 'Naam word benodig';
+                            }
+                            return null;
+                          },
+                          decoration: const InputDecoration(
+                            labelText: 'Naam',
+                            prefixIcon: Icon(Icons.person_outline),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _lastNameController,
+                          textCapitalization: TextCapitalization.words,
+                          validator: (lastName) {
+                            if (lastName == null || lastName.isEmpty) {
+                              return 'Van word benodig';
+                            }
+                            return null;
+                          },
+                          decoration: const InputDecoration(
+                            labelText: 'Van',
+                            prefixIcon: Icon(Icons.badge_outlined),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _addressController,
+                          textCapitalization: TextCapitalization.sentences,
+                          decoration: const InputDecoration(
+                            labelText: 'Adres',
+                            prefixIcon: Icon(Icons.location_on_outlined),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        LabeledCheckbox(
+                          value: _isBaptized,
+                          label: 'Is jy gedoop?',
+                          onChanged: (bool? newValue) {
+                            setState(() => _isBaptized = newValue!);
+                          },
+                        ),
+                        LabeledCheckbox(
+                          value: _isMember,
+                          label: 'Is jy n lidmaat?',
+                          onChanged: (bool? newValue) {
+                            setState(() => _isMember = newValue!);
+                          },
+                        ),
+                        const SizedBox(height: 32),
+                        ElevatedButton(
+                          onPressed: () {
+                            if (_profileEditFormKey.currentState!.validate()) {
+                              userBloc.add(
+                                UpdateUser(
+                                  firstName: _firstNameController.text,
+                                  lastName: _lastNameController.text,
+                                  address: _addressController.text,
+                                  isMember: _isMember,
+                                  isBaptized: _isBaptized,
+                                ),
+                              );
+                            }
+                          },
+                          child: state is UserLoading
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    backgroundColor: Colors.white,
+                                    strokeWidth: 2,
                                   ),
-                                ),
-                                const SizedBox(height: 16),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    IconButton(
-                                      onPressed: () async {
-                                        File? image = await _pickImageFromCamera();
-                                        if (image == null) return;
-                                        userBloc.add(
-                                            UploadProfilePicture(profileImageFile: image)
-                                        );
-                                      },
-                                      icon: const Icon(Icons.camera_alt_outlined),
-                                      style: ButtonStyle(
-                                        foregroundColor: WidgetStateProperty.all(Colors.white),
-                                        backgroundColor: WidgetStateProperty.all(theme.primaryColor)
-                                      ),
-                                    ),
-                                    IconButton(
-                                      onPressed: () async {
-                                        File? image = await _pickImageFromGallery();
-                                        if (image == null) return;
-                                        userBloc.add(
-                                          UploadProfilePicture(profileImageFile: image)
-                                        );
-                                      },
-                                      icon: const Icon(Icons.attach_file),
-                                      style: ButtonStyle(
-                                        foregroundColor: WidgetStateProperty.all(Colors.white),
-                                        backgroundColor: WidgetStateProperty.all(theme.primaryColor)
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 16),
-                                TextFormField(
-                                  initialValue: user?.email ?? 'N/A',
-                                  enabled: false,
-                                  decoration: const InputDecoration(
-                                    labelText: 'E-pos',
-                                    suffixIcon: Icon(Icons.email),
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-                                TextFormField(
-                                  // initialValue: state.user?.userMetadata?['firstName'],
-                                  controller: _firstNameController,
-                                  validator: (firstName) {
-                                    if (firstName == null || firstName.isEmpty) {
-                                      return 'Naam word benodig';
-                                    }
-                                    return null;
-                                  },
-                                  decoration: const InputDecoration(
-                                    labelText: 'Naam',
-                                    suffixIcon: Icon(Icons.account_circle),
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-                                TextFormField(
-                                  controller: _lastNameController,
-                                  validator: (lastName) {
-                                    if (lastName == null || lastName.isEmpty) {
-                                      return 'Van word benodig';
-                                    }
-                                    return null;
-                                  },
-                                  decoration: const InputDecoration(
-                                    labelText: 'Van',
-                                    suffixIcon: Icon(Icons.account_circle),
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-                                TextFormField(
-                                  controller: _addressController,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Adres',
-                                    suffixIcon: Icon(Icons.location_on),
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-                                LabeledCheckbox(
-                                  value: _isBaptized,
-                                  label: 'Is jy gedoop?',
-                                  onChanged: (bool? newValue) {
-                                    setState(() => _isBaptized = newValue!);
-                                  },
-                                ),
-                                LabeledCheckbox(
-                                  value: _isMember,
-                                  label: 'Is jy n lidmaat?',
-                                  onChanged: (bool? newValue) {
-                                    setState(() => _isMember = newValue!);
-                                  },
-                                ),
-                                const SizedBox(height: 16),
-                                ElevatedButton(
-                                  onPressed: () => {
-                                    if (_profileEditFormKey.currentState!.validate())
-                                      {
-                                        userBloc.add(
-                                          UpdateUser(
-                                            firstName: _firstNameController.text,
-                                            lastName: _lastNameController.text,
-                                            address: _addressController.text,
-                                            isMember: _isMember,
-                                            isBaptized: _isBaptized
-                                          ),
-                                        )
-                                      },
-                                  },
-                                  child: state is UserLoading
-                                      ? const SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      backgroundColor: Colors.white,
-                                    ),
-                                  )
-                                      : const Text("Opdateer Profiel"),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                    );
-                  } else {
-                    return const LwpError();
-                  }
-                },
-              ),
-            ),
+                                )
+                              : const Text("Opdateer Profiel"),
+                        ),
+                        const SizedBox(height: 24),
+                      ],
+                    ),
+                  ),
+                );
+              } else {
+                return LwpError(
+                  onRetry: () => context.read<UserBloc>().add(const LoadUser()),
+                );
+              }
+            },
           ),
         ),
       ),
     );
   }
 
+  Widget _buildProfileImage(String publicId, UserBloc userBloc, ThemeData theme) {
+    return Center(
+      child: Stack(
+        children: [
+          LwpProfileImage(
+            publicId: publicId,
+            height: 140,
+            radius: 70,
+          ),
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: Container(
+              decoration: BoxDecoration(
+                color: theme.primaryColor,
+                shape: BoxShape.circle,
+                border: Border.all(color: theme.scaffoldBackgroundColor, width: 3),
+              ),
+              child: IconButton(
+                icon: const Icon(Icons.camera_alt, color: Colors.white, size: 20),
+                onPressed: () => _showImageSourcePicker(userBloc),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showImageSourcePicker(UserBloc userBloc) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo_library_outlined),
+                title: const Text('Galery'),
+                onTap: () async {
+                  Navigator.pop(context);
+                  File? image = await _pickImageFromGallery();
+                  if (image != null) {
+                    userBloc.add(UploadProfilePicture(profileImageFile: image));
+                  }
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.camera_alt_outlined),
+                title: const Text('Kamera'),
+                onTap: () async {
+                  Navigator.pop(context);
+                  File? image = await _pickImageFromCamera();
+                  if (image != null) {
+                    userBloc.add(UploadProfilePicture(profileImageFile: image));
+                  }
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Future<File?> _pickImageFromGallery() async {
     final returnedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
-    File? imageFile = File(returnedImage!.path);
+    if (returnedImage == null) return null;
+    File? imageFile = File(returnedImage.path);
     if (await imageFile.exists()) return imageFile;
     return null;
   }
 
   Future<File?> _pickImageFromCamera() async {
     final returnedImage = await ImagePicker().pickImage(source: ImageSource.camera);
-    File? imageFile = File(returnedImage!.path);
+    if (returnedImage == null) return null;
+    File? imageFile = File(returnedImage.path);
     if (await imageFile.exists()) return imageFile;
     return null;
   }

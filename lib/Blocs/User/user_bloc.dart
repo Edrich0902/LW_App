@@ -22,6 +22,11 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       }
     });
 
+    // Reset user
+    on<ResetUser>((event, emit) {
+      emit(UserInitial());
+    });
+
     // Update user
     on<UpdateUser>((event, emit) async {
       emit(UserLoading());

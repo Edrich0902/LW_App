@@ -178,6 +178,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           onPressed: () {
                             Navigator.pop(context);
                             context.read<AuthBloc>().add(const SignOutEvent());
+                            context.read<UserBloc>().add(const ResetUser());
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(builder: (context) => const HomePage()),
