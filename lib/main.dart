@@ -22,6 +22,9 @@ import 'package:lw_app/Blocs/ConnectGroups/connect_groups_bloc.dart';
 import 'package:lw_app/Blocs/ServiceGroups/service_groups_bloc.dart';
 import 'package:lw_app/Blocs/Courses/courses_bloc.dart';
 import 'package:lw_app/Blocs/UserAnnouncements/user_announcement_bloc.dart';
+import 'package:lw_app/Blocs/Theme/theme_bloc.dart';
+import 'package:lw_app/Blocs/Theme/theme_event.dart';
+import 'package:lw_app/Blocs/Theme/theme_state.dart';
 
 // Cloudinary
 import 'package:cloudinary_flutter/cloudinary_context.dart';
@@ -89,6 +92,9 @@ Future<void> main() async {
         ),
         BlocProvider<UserAnnouncementBloc>(
           create: (_) => UserAnnouncementBloc(),
+        ),
+        BlocProvider<ThemeBloc>(
+          create: (_) => ThemeBloc()..add(const InitThemeEvent()),
         )
       ],
       child: const App(),
@@ -101,18 +107,22 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Lewende Woord Paarl',
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system,
-      home: EasySplashScreen(
-        durationInSeconds: 3,
-        logo: Image.network(
-          // TODO: add this asset to cloudinary and serve from cloud
-            "https://yt3.googleusercontent.com/ytc/AL5GRJUbsh7ILjzuEQAZTot_kkV2GohZR75CjoWM9NSI9Q=s900-c-k-c0x00ffffff-no-rj"), //TODO: update logo url -> make asset
-        navigator: const HomePage(),
-      ),
+    return BlocBuilder<ThemeBloc, ThemeState>(
+      builder: (context, state) {
+        return MaterialApp(
+          title: 'Lewende Woord Paarl',
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: state.themeMode,
+          home: EasySplashScreen(
+            durationInSeconds: 3,
+            logo: Image.network(
+              // TODO: add this asset to cloudinary and serve from cloud
+                "https://yt3.googleusercontent.com/ytc/AL5GRJUbsh7ILjzuEQAZTot_kkV2GohZR75CjoWM9NSI9Q=s900-c-k-c0x00ffffff-no-rj"), //TODO: update logo url -> make asset
+            navigator: const HomePage(),
+          ),
+        );
+      },
     );
   }
 }
