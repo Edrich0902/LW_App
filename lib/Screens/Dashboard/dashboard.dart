@@ -8,6 +8,7 @@ import 'package:lw_app/Screens/Sermons/sermon_detail.dart';
 import 'package:lw_app/Screens/UpcomingEvents/upcoming_events.dart';
 import 'package:lw_app/Screens/SocialMedia/social_media.dart';
 import 'package:lw_app/Screens/Courses/courses.dart';
+import 'package:lw_app/Screens/FirstTimeVisitor/first_time_visitor_screen.dart';
 import 'package:lw_app/Screens/TithesOfferings/tithes_offerings.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:lw_app/Widgets/LwpAnnouncement/lwp_announcement.dart';
@@ -138,13 +139,17 @@ class _DashPageState extends State<DashPage> {
                     },
                   ),
                   DashboardGridCard(
-                    title: "Eerste Keer Besoeker",
-                    icon: Icons.waving_hand,
-                    onTap: () {
-                      // TODO: navigate to First Time Visitor screen or info
-                    },
-                  ),
-                  DashboardGridCard(
+                   title: "Eerste Keer Besoeker",
+                   icon: Icons.waving_hand,
+                   onTap: () {
+                     Navigator.push(
+                       context,
+                       MaterialPageRoute(
+                           builder: (context) =>
+                               const FirstTimeVisitorScreen()),
+                     );
+                   },
+                  ),                  DashboardGridCard(
                     title: "Volg Ons",
                     icon: Icons.share,
                     onTap: () {
