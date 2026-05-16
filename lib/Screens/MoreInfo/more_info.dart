@@ -39,15 +39,12 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
                   expandedHeight: 120.0,
                   floating: false,
                   pinned: true,
-                  flexibleSpace: FlexibleSpaceBar(
+                  flexibleSpace: const FlexibleSpaceBar(
                     title: Text(
                       'Meer Oor Ons',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: Theme.of(context).primaryColor,
-                      ),
                     ),
                     centerTitle: false,
-                    titlePadding: const EdgeInsetsDirectional.only(
+                    titlePadding: EdgeInsetsDirectional.only(
                       start: 16,
                       bottom: 16,
                     ),
@@ -110,10 +107,7 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
       padding: const EdgeInsets.only(bottom: 12.0, left: 4.0),
       child: Text(
         title,
-        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).primaryColor,
-            ),
+        style: Theme.of(context).textTheme.titleLarge,
       ),
     );
   }

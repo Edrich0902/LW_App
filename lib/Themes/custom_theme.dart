@@ -2,17 +2,19 @@ import 'package:flutter/material.dart';
 
 class LightColors {
   static const primary = Color(0xFF11181C);
-  static const secondary = Color(0xFFF2C94C);
-  static const accent = Color(0xFFF2C94C);
+  static const secondary = Color(0xFF023059);
+  static const accent = Color(0xFF023059);
   static const background = Color(0xFFFAFAFA);
+  static const supporting = Color(0xFF4D4B4B);
 }
 
 class DarkColors {
-  static const primary = Color(0xFFF2C94C);
-  static const secondary = Color(0xFFF2C94C);
-  static const accent = Color(0xFFF2C94C);
+  static const primary = Color(0xFF2E86C1);
+  static const secondary = Color(0xFF2E86C1);
+  static const accent = Color(0xFF2E86C1);
   static const background = Color(0xFF121212);
   static const tertiary = Color(0xFF1E1E1E);
+  static const supporting = Color(0xFF4D4B4B);
 }
 
 MaterialColor mainColor = const MaterialColor(0xFF11181C, <int, Color>{
@@ -34,7 +36,7 @@ class AppTheme {
   static ThemeData lightTheme = ThemeData(
     primarySwatch: mainColor,
     colorScheme: ColorScheme.fromSeed(seedColor: mainColor, brightness: Brightness.light),
-    primaryColor: LightColors.primary,
+    primaryColor: LightColors.secondary,
     scaffoldBackgroundColor: LightColors.background,
     brightness: Brightness.light,
     appBarTheme: const AppBarTheme(
@@ -50,12 +52,12 @@ class AppTheme {
       backgroundColor: LightColors.background,
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: LightColors.primary,
+      backgroundColor: LightColors.secondary,
       foregroundColor: Colors.white,
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: LightColors.primary,
+        backgroundColor: LightColors.secondary,
         foregroundColor: Colors.white,
         elevation: 0,
         padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16.0),
@@ -66,18 +68,18 @@ class AppTheme {
     ),
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
-        foregroundColor: LightColors.primary,
+        foregroundColor: LightColors.secondary,
       ),
     ),
     progressIndicatorTheme: const ProgressIndicatorThemeData(
-      color: LightColors.primary,
+      color: LightColors.secondary,
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: const Color(0xFFEEEEEE),
       contentPadding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 18.0),
       labelStyle: const TextStyle(color: LightColors.primary),
-      floatingLabelStyle: const TextStyle(color: LightColors.primary),
+      floatingLabelStyle: const TextStyle(color: LightColors.secondary),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(24.0),
         borderSide: BorderSide.none,
@@ -94,7 +96,7 @@ class AppTheme {
     ),
     snackBarTheme: SnackBarThemeData(
       behavior: SnackBarBehavior.floating,
-      backgroundColor: LightColors.primary,
+      backgroundColor: LightColors.secondary,
       actionTextColor: Colors.white,
       contentTextStyle: const TextStyle(
         color: Colors.white,
@@ -127,8 +129,18 @@ class AppTheme {
       backgroundColor: LightColors.background,
     ),
     checkboxTheme: CheckboxThemeData(
-      fillColor: WidgetStateProperty.all<Color>(LightColors.primary),
+      fillColor: WidgetStateProperty.all<Color>(LightColors.secondary),
       checkColor: WidgetStateProperty.all<Color>(Colors.white),
+    ),
+    textTheme: const TextTheme(
+      titleLarge: TextStyle(
+        color: LightColors.primary,
+        fontWeight: FontWeight.bold,
+      ),
+      titleMedium: TextStyle(
+        color: LightColors.primary,
+        fontWeight: FontWeight.bold,
+      ),
     ),
   );
 
@@ -152,12 +164,12 @@ class AppTheme {
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
       backgroundColor: DarkColors.primary,
-      foregroundColor: Colors.black,
+      foregroundColor: Colors.white,
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: DarkColors.primary,
-        foregroundColor: Colors.black,
+        foregroundColor: Colors.white,
         elevation: 0,
         padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16.0),
         shape: RoundedRectangleBorder(
@@ -196,9 +208,9 @@ class AppTheme {
     snackBarTheme: SnackBarThemeData(
       behavior: SnackBarBehavior.floating,
       backgroundColor: DarkColors.primary,
-      actionTextColor: Colors.black,
+      actionTextColor: Colors.white,
       contentTextStyle: const TextStyle(
-        color: Colors.black,
+        color: Colors.white,
       ),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24.0),
@@ -229,7 +241,17 @@ class AppTheme {
     ),
     checkboxTheme: CheckboxThemeData(
       fillColor: WidgetStateProperty.all<Color>(DarkColors.primary),
-      checkColor: WidgetStateProperty.all<Color>(Colors.black),
+      checkColor: WidgetStateProperty.all<Color>(Colors.white),
+    ),
+    textTheme: const TextTheme(
+      titleLarge: TextStyle(
+        color: Colors.white,
+        fontWeight: FontWeight.bold,
+      ),
+      titleMedium: TextStyle(
+        color: Colors.white,
+        fontWeight: FontWeight.bold,
+      ),
     ),
   );
 }

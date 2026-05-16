@@ -102,9 +102,9 @@ class _ContainerPageState extends State<ContainerPage> {
             haptic: true,
             tabBorderRadius: 24.0,
             tabBackgroundColor: isDark 
-                ? const Color(0xFFF2C94C).withValues(alpha: 0.1) 
+                ? theme.primaryColor.withValues(alpha: 0.1) 
                 : Colors.white,
-            activeColor: isDark ? const Color(0xFFF2C94C) : theme.primaryColor,
+            activeColor: theme.primaryColor,
             color: isDark ? Colors.white70 : Colors.white,
           ),
         ),
