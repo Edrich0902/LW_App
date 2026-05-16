@@ -11,6 +11,7 @@ class UserAnnouncementBloc extends Bloc<UserAnnouncementEvent, UserAnnouncementS
 
   UserAnnouncementBloc() : super(UserAnnouncementInitial()) {
     on<LoadUserAnnouncements>((event, emit) async {
+      emit(UserAnnouncementLoading());
       try {
         List<UserAnnouncement> announcements = await _userAnnouncementService.getUserAnnouncements();
         emit(UserAnnouncementSuccess(userAnnouncements: announcements));

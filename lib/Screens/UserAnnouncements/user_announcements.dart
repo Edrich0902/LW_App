@@ -35,9 +35,7 @@ class _UserAnnouncementsPageState extends State<UserAnnouncementsPage> {
         body: SafeArea(
           child: BlocBuilder<UserAnnouncementBloc, UserAnnouncementState>(
             builder: (context, state) {
-              if (state is UserAnnouncementLoading) {
-                return const LwpLoader(message: "Laai Aankondigings");
-              } else if (state is UserAnnouncementSuccess) {
+              if (state is UserAnnouncementSuccess) {
                 if (state.userAnnouncements.isNotEmpty) {
                   userAnnouncementBloc.add(ReadUserAnnouncements()); // On view mark list of announcements as read
                   return ListView.builder(
@@ -50,8 +48,10 @@ class _UserAnnouncementsPageState extends State<UserAnnouncementsPage> {
                 } else {
                   return const LwpEmpty(message: "Geen Aankondigings");
                 }
-              } else {
+              } else if (state is UserAnnouncementError) {
                 return const LwpError();
+              } else {
+                return const LwpLoader(message: "Laai Aankondigings");
               }
             },
           ),
