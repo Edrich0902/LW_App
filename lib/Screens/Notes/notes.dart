@@ -6,6 +6,7 @@ import 'package:lw_app/Models/Note/note.dart';
 import 'package:lw_app/Screens/NotesEdit/notes_edit.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
+import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 
 class NotesPage extends StatefulWidget {
   const NotesPage({super.key});
@@ -37,7 +38,7 @@ class _NotesPageState extends State<NotesPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Notes'),
+          title: const Text('Notas'),
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
@@ -56,16 +57,20 @@ class _NotesPageState extends State<NotesPage> {
               if (state is NotesLoading) {
                 return const LwpLoader();
               } else if (state is NotesSuccess) {
+                if (state.data.isEmpty) {
+                  return const LwpEmpty(message: 'Geen notas gevind nie');
+                }
+
                 return ListView.builder(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(16.0),
                   itemCount: state.data.length,
                   itemBuilder: (context, index) {
+                    final note = state.data.elementAt(index);
                     return _createNoteCard(
-                      state.data.elementAt(index),
+                      note,
                       () {
                         notesBloc.add(
-                          DeleteNote(
-                              noteId: state.data.elementAt(index).id ?? ''),
+                          DeleteNote(noteId: note.id ?? ''),
                         );
                       },
                       () {
@@ -73,7 +78,7 @@ class _NotesPageState extends State<NotesPage> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => NotesEditPage(
-                              noteId: state.data.elementAt(index).id ?? '',
+                              noteId: note.id ?? '',
                             ),
                           ),
                         );
@@ -95,42 +100,43 @@ class _NotesPageState extends State<NotesPage> {
     final theme = Theme.of(context);
 
     return Card(
+      margin: const EdgeInsets.only(bottom: 16),
       child: InkWell(
         onTap: edit,
+        borderRadius: BorderRadius.circular(24.0),
         child: Padding(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               ListTile(
-                leading: const Icon(Icons.note),
+                leading: CircleAvatar(
+                  backgroundColor: theme.primaryColor.withValues(alpha: 0.1),
+                  child: Icon(Icons.note_alt_outlined, color: theme.primaryColor),
+                ),
                 title: Text(
                   note.title ?? '',
                   overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.titleLarge,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 subtitle: Text(
                   note.content ?? '',
                   overflow: TextOverflow.ellipsis,
-                  maxLines: 3,
+                  maxLines: 2,
                   style: theme.textTheme.bodyMedium,
                 ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  IconButton(
-                    onPressed: () {
-                      confirmationDialog(
-                        context,
-                        'Are you sure you want to delete this note?',
-                        delete,
-                      );
-                    },
-                    icon: const Icon(Icons.delete, color: Colors.red),
-                  ),
-                ],
+                trailing: IconButton(
+                  onPressed: () {
+                    confirmationDialog(
+                      context,
+                      'Is jy seker jy wil hierdie nota verwyder?',
+                      delete,
+                    );
+                  },
+                  icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                ),
               ),
             ],
           ),
@@ -139,34 +145,34 @@ class _NotesPageState extends State<NotesPage> {
     );
   }
 
-  // TODO: extract and make generic and reusable
   void confirmationDialog(
       BuildContext context, String message, VoidCallback confirm) {
-    Widget cancelButton = ElevatedButton(
-      onPressed: () {
-        Navigator.of(context, rootNavigator: true).pop();
-      },
-      child: const Text('Cancel'),
-    );
-
-    Widget confirmButton = ElevatedButton(
-      onPressed: () {
-        Navigator.of(context, rootNavigator: true).pop();
-        confirm();
-      },
-      child: const Text('Confirm'),
-    );
-
-    AlertDialog dialog = AlertDialog(
-      title: const Text('Delete Note'),
-      content: Text(message),
-      actions: [cancelButton, confirmButton],
-    );
-
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return dialog;
+        return AlertDialog(
+          title: const Text('Verwyder Nota'),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context, rootNavigator: true).pop();
+              },
+              child: const Text('Kanselleer'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context, rootNavigator: true).pop();
+                confirm();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.redAccent,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Bevestig'),
+            ),
+          ],
+        );
       },
     );
   }

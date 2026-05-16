@@ -69,7 +69,7 @@ class _NotesEditPageState extends State<NotesEditPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(isEdit ? 'Edit Note' : 'Create Note'),
+          title: Text(isEdit ? 'Wysig Nota' : 'Skep Nota'),
         ),
         body: SafeArea(
           child: BlocBuilder<NoteEditBloc, NoteEditState>(
@@ -100,38 +100,40 @@ class _NotesEditPageState extends State<NotesEditPage> {
       child: Form(
         key: _noteFormKey,
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              const SizedBox(height: 16),
               TextFormField(
                 controller: _titleController,
                 validator: (title) {
                   if (title == null || title.isEmpty) {
-                    return 'Title is required';
+                    return 'Titel is verpligtend';
                   }
                   return null;
                 },
                 decoration: const InputDecoration(
-                  labelText: 'Title',
+                  labelText: 'Titel',
+                  prefixIcon: Icon(Icons.title),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 24),
               TextFormField(
                 controller: _contentController,
                 validator: (content) {
                   if (content == null || content.isEmpty) {
-                    return 'Content is required';
+                    return 'Inhoud is verpligtend';
                   }
                   return null;
                 },
                 decoration: const InputDecoration(
-                  labelText: 'Content',
+                  labelText: 'Inhoud',
+                  prefixIcon: Icon(Icons.notes),
+                  alignLabelWithHint: true,
                 ),
-                maxLines: 20,
+                maxLines: 15,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 32),
               ElevatedButton(
                 onPressed: () => {
                   if (_noteFormKey.currentState!.validate()) {
@@ -157,7 +159,7 @@ class _NotesEditPageState extends State<NotesEditPage> {
                     }
                   }
                 },
-                child: Text(isEdit ? 'Update Note' : 'Save Note'),
+                child: Text(isEdit ? 'Wysig Nota' : 'Stoor Nota'),
               ),
             ],
           ),
