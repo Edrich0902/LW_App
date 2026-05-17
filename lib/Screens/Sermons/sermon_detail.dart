@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lw_app/Models/YoutubeVideo/youtube_video.dart';
-import 'package:lw_app/Widgets/LwpBanner/lwp_banner.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SermonDetailPage extends StatelessWidget {
@@ -15,53 +14,59 @@ class SermonDetailPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Preek Besonderhede'),
+        elevation: 0,
       ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            LwpBanner(
-              imageUrl: video.thumbnailUrl,
-              onTap: () => _launchVideo(),
+            AspectRatio(
+              aspectRatio: 16 / 9,
+              child: Image.network(
+                video.thumbnailUrl,
+                fit: BoxFit.cover,
+                width: double.infinity,
+              ),
             ),
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(24.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    video.customTitle ?? 'N/A',
-                    style: theme.textTheme.titleLarge?.copyWith(
+                    video.customTitle ?? video.title,
+                    style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 12),
                   Row(
                     children: [
                       Icon(Icons.person, color: theme.primaryColor, size: 20),
                       const SizedBox(width: 8),
                       Text(
-                        video.customAuthor ?? 'N/A',
+                        video.customAuthor ?? video.authorName,
                         style: theme.textTheme.titleMedium,
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 16),
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Icon(Icons.description, color: theme.primaryColor, size: 20),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          video.description ?? '',
-                          style: theme.textTheme.bodyMedium,
-                          maxLines: 4,
-                          overflow: TextOverflow.fade,
+                          video.description ?? 'Geen beskrywing beskikbaar nie.',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            height: 1.5,
+                          ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 32),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
@@ -69,32 +74,37 @@ class SermonDetailPage extends StatelessWidget {
                       icon: const Icon(Icons.play_circle_fill),
                       label: const Text("Kyk op YouTube"),
                       style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        backgroundColor: Colors.red
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(24.0),
+                        ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  const Divider(height: 64),
                   Text(
                     "Video Inligting",
                     style: theme.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const Divider(),
+                  const SizedBox(height: 16),
                   _buildMetadataTile(
                     context,
                     Icons.business,
                     "Verskaffer",
                     video.providerName,
                   ),
-                  if (video.youtubeLink != null)
+                  if (video.youtubeLink != null) ...[
+                    const Divider(height: 32),
                     _buildMetadataTile(
                       context,
                       Icons.link,
                       "Skakel",
                       video.youtubeLink!,
                     ),
+                  ],
                 ],
               ),
             ),

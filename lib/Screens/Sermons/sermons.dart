@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lw_app/Models/YoutubeVideo/youtube_video.dart';
-import 'package:lw_app/Widgets/LwpBanner/lwp_banner.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:lw_app/Blocs/Sermons/sermons_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -47,7 +46,7 @@ class _SermonsPageState extends State<SermonsPage> {
                   return RefreshIndicator(
                     onRefresh: () async => sermonsBloc.add(const LoadSermons()),
                     child: ListView.builder(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(16.0),
                       itemCount: state.youtubeVideos.length,
                       itemBuilder: (BuildContext context, int index) {
                         return _buildVideoCard(state.youtubeVideos[index], () {
@@ -75,9 +74,56 @@ class _SermonsPageState extends State<SermonsPage> {
   }
 
   Widget _buildVideoCard(YoutubeVideo video, VoidCallback onTap) {
-    return LwpBanner(
-      imageUrl: video.thumbnailUrl,
-      onTap: onTap,
+    final theme = Theme.of(context);
+
+    return Card(
+      elevation: 0,
+      margin: const EdgeInsets.only(bottom: 24.0),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24.0),
+      ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(24.0)),
+              child: AspectRatio(
+                aspectRatio: 16 / 9,
+                child: Image.network(
+                  video.thumbnailUrl,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    video.customTitle ?? video.title,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    video.customAuthor ?? video.authorName,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.hintColor,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
