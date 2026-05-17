@@ -38,7 +38,7 @@ class _CalendarPageState extends State<CalendarPage> {
         appBar: AppBar(
           title: const Text('Kalender'),
           actions: const <Widget>[LwpAnnouncementButton(), ProfileActionButton()],
-          centerTitle: false,
+          centerTitle: true,
         ),
         body: SafeArea(
           child: BlocBuilder<CalendarBloc, CalendarState>(
