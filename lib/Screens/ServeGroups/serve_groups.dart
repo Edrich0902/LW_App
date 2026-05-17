@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:lw_app/Widgets/WhatsappContactFAB/whatsapp_contact_fab.dart';
-import 'package:lw_app/Models/Group/group.dart';
 import 'package:lw_app/Blocs/ServiceGroups/service_groups_bloc.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:cloudinary_flutter/image/cld_image.dart';
 import 'package:lw_app/Widgets/LwpAnnouncement/lwp_announcement.dart';
+import 'package:lw_app/Widgets/Group/lwp_group_card.dart';
 
 class ServeGroupsPage extends StatefulWidget {
   const ServeGroupsPage({super.key});
@@ -49,10 +47,10 @@ class _ServeGroupsPageState extends State<ServeGroupsPage> {
                   return RefreshIndicator(
                     onRefresh: () async => serviceGroupsBloc.add(const LoadServiceGroups()),
                     child: ListView.builder(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(16.0),
                       itemCount: state.serviceGroups.length,
                       itemBuilder: (BuildContext context, int index) {
-                        return _buildServiceGroupCard(state.serviceGroups[index], () => debugPrint("clicked"));
+                        return LwpGroupCard(group: state.serviceGroups[index]);
                       },
                     ),
                   );
@@ -67,58 +65,5 @@ class _ServeGroupsPageState extends State<ServeGroupsPage> {
         ),
       ),
     );
-  }
-
-  Widget _buildServiceGroupCard(Group group, VoidCallback onTap) {
-    final theme = Theme.of(context);
-
-    return Card(
-      clipBehavior: Clip.antiAliasWithSaveLayer,
-      child: InkWell(
-        onTap: onTap, // TODO: check if this is necessary
-        child: Column(
-          children: <Widget>[
-            CldImageWidget(
-                publicId: group.bannerPublicId ?? 'samples/cloudinary-icon',
-                fit: BoxFit.fill
-            ),
-            Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    ListTile(
-                      leading: const Icon(Icons.group),
-                      title: Text(
-                        group.title,
-                        style: theme.textTheme.titleMedium,
-                      ),
-                      subtitle: Text(
-                        group.description,
-                        style: theme.textTheme.titleSmall,
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: <Widget>[
-                        ElevatedButton(
-                          onPressed: () => _openServeGroupWhatsapp(),
-                          child: const Text("Join WhatsApp"),
-                        )
-                      ],
-                    ),
-                  ],
-                )
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // TODO: get community link to open community from app
-  void _openServeGroupWhatsapp() {
-    String link = "https://wa.me/+27727238406";
-    launchUrl(Uri.parse(link), mode: LaunchMode.externalApplication);
   }
 }

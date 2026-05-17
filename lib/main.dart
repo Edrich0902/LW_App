@@ -1,7 +1,6 @@
-import 'package:easy_splash_screen/easy_splash_screen.dart';
+import 'package:lw_app/Screens/Splash/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:lw_app/Screens/Home/home.dart';
 import 'package:lw_app/Themes/custom_theme.dart';
 import 'package:lw_app/Utils/environment.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -22,6 +21,14 @@ import 'package:lw_app/Blocs/ConnectGroups/connect_groups_bloc.dart';
 import 'package:lw_app/Blocs/ServiceGroups/service_groups_bloc.dart';
 import 'package:lw_app/Blocs/Courses/courses_bloc.dart';
 import 'package:lw_app/Blocs/UserAnnouncements/user_announcement_bloc.dart';
+import 'package:lw_app/Blocs/Theme/theme_bloc.dart';
+import 'package:lw_app/Blocs/Theme/theme_event.dart';
+import 'package:lw_app/Blocs/Theme/theme_state.dart';
+import 'package:lw_app/Blocs/Bible/bible_bloc.dart';
+import 'package:lw_app/Blocs/Bible/bible_event.dart';
+import 'package:lw_app/Blocs/Votd/votd_bloc.dart';
+import 'package:lw_app/Blocs/Votd/votd_event.dart';
+import 'package:lw_app/Services/Bible/bible_service.dart';
 
 // Cloudinary
 import 'package:cloudinary_flutter/cloudinary_context.dart';
@@ -89,6 +96,15 @@ Future<void> main() async {
         ),
         BlocProvider<UserAnnouncementBloc>(
           create: (_) => UserAnnouncementBloc(),
+        ),
+        BlocProvider<BibleBloc>(
+          create: (_) => BibleBloc(bibleService: BibleService())..add(LoadBibleInitial()),
+        ),
+        BlocProvider<VotdBloc>(
+          create: (_) => VotdBloc(bibleService: BibleService())..add(LoadVotd()),
+        ),
+        BlocProvider<ThemeBloc>(
+          create: (_) => ThemeBloc()..add(const InitThemeEvent()),
         )
       ],
       child: const App(),
@@ -101,18 +117,16 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Lewende Woord Paarl',
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system,
-      home: EasySplashScreen(
-        durationInSeconds: 3,
-        logo: Image.network(
-          // TODO: add this asset to cloudinary and serve from cloud
-            "https://yt3.googleusercontent.com/ytc/AL5GRJUbsh7ILjzuEQAZTot_kkV2GohZR75CjoWM9NSI9Q=s900-c-k-c0x00ffffff-no-rj"), //TODO: update logo url -> make asset
-        navigator: const HomePage(),
-      ),
+    return BlocBuilder<ThemeBloc, ThemeState>(
+      builder: (context, state) {
+        return MaterialApp(
+          title: 'Lewende Woord Paarl',
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: state.themeMode,
+          home: const LwpSplashScreen(),
+        );
+      },
     );
   }
 }

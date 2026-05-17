@@ -7,4 +7,5 @@ class Environment {
   static String get supabaseKey => dotenv.env['SUPABASE_KEY'] ?? '';
   static String get cloudinaryCloud => dotenv.env['CLOUDINARY_CLOUD'] ?? '';
   static String get cloudinaryUploadPreset => dotenv.env['CLOUDINARY_UPLOAD_PRESET'] ?? '';
+  static String get youversionKey => dotenv.env['YOUVERSION_KEY'] ?? '';
 }

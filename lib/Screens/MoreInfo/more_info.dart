@@ -1,14 +1,14 @@
-import 'package:animated_snack_bar/animated_snack_bar.dart';
+import 'package:lw_app/Screens/MoreInfo/roleplayer_detail.dart';
+import 'package:lw_app/Widgets/LwpBio/roleplayer_grid_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/MoreInfo/more_info_bloc.dart';
-import 'package:lw_app/Models/MetaData/meta_data.dart' as lw;
 import 'package:lw_app/Widgets/WhatsappContactFAB/whatsapp_contact_fab.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
-import 'package:lw_app/Widgets/LwpBio/lwp_bio.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 import 'package:lw_app/Widgets/LwpAnnouncement/lwp_announcement.dart';
+import 'package:collection/collection.dart';
 
 class MoreInfoPage extends StatefulWidget {
   const MoreInfoPage({super.key});
@@ -26,11 +26,16 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
     return BlocBuilder<MoreInfoBloc, MoreInfoState>(
       builder: (context, state) {
         if (state is MoreInfoLoading) {
           return const Scaffold(body: LwpLoader());
         } else if (state is MoreInfoSuccess) {
+          final mission = state.data.firstWhereOrNull((m) => m.key == 'mission_statement');
+          final vision = state.data.firstWhereOrNull((v) => v.key == 'vision_statement');
+
           return Scaffold(
             floatingActionButton: const WhatsappContactFAB(),
             body: CustomScrollView(
@@ -39,11 +44,13 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
                   expandedHeight: 120.0,
                   floating: false,
                   pinned: true,
+                  elevation: 0,
+                  scrolledUnderElevation: 0,
                   flexibleSpace: FlexibleSpaceBar(
                     title: Text(
                       'Meer Oor Ons',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: Colors.white
+                      style: theme.textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     centerTitle: false,
@@ -61,31 +68,43 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
                   padding: const EdgeInsets.all(16.0),
                   sliver: SliverList(
                     delegate: SliverChildListDelegate([
-                      _buildSectionHeader(context, 'Ons Gemeente'),
-                      ...state.data.map((item) => _createDataItem(data: item)),
-                      const SizedBox(height: 24.0),
+                      if (mission != null) ...[
+                        _buildSectionHeader(context, 'Ons Misie'),
+                        _buildSectionContent(context, mission.content ?? ''),
+                        const SizedBox(height: 24.0),
+                      ],
+                      if (vision != null) ...[
+                        _buildSectionHeader(context, 'Ons Visie'),
+                        _buildSectionContent(context, vision.content ?? ''),
+                        const SizedBox(height: 32.0),
+                      ],
                       _buildSectionHeader(context, 'Ons Span'),
                     ]),
                   ),
                 ),
                 SliverPadding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  sliver: SliverList(
+                  sliver: SliverGrid(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 16.0,
+                      crossAxisSpacing: 16.0,
+                      childAspectRatio: 0.85,
+                    ),
                     delegate: SliverChildBuilderDelegate(
                       (context, index) {
                         final roleplayer = state.roleplayers[index];
-                        return LwpBio(
-                          name: roleplayer.fullname ?? '',
-                          title: roleplayer.title ?? '',
-                          bio: roleplayer.bio ?? '',
-                          publicId: roleplayer.profilePublicId ?? '',
+                        return RoleplayerGridCard(
+                          roleplayer: roleplayer,
                           onTap: () {
-                            // Future: navigate to roleplayer detail
-                            AnimatedSnackBar.material(
-                              'Binnekort: Meer oor ${roleplayer.fullname}',
-                              type: AnimatedSnackBarType.info,
-                              mobileSnackBarPosition: MobileSnackBarPosition.bottom
-                            ).show(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => RoleplayerDetailScreen(
+                                  roleplayer: roleplayer,
+                                ),
+                              ),
+                            );
                           },
                         );
                       },
@@ -94,7 +113,7 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
                   ),
                 ),
                 const SliverToBoxAdapter(
-                  child: SizedBox(height: 80.0), // Padding for FAB
+                  child: SizedBox(height: 100.0), // Padding for FAB
                 ),
               ],
             ),
@@ -112,41 +131,20 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
       child: Text(
         title,
         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).primaryColor,
-            ),
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }
 
-  Widget _createDataItem({required lw.MetaData data}) {
-    final theme = Theme.of(context);
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 0.0),
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
-      ),
-      child: Theme(
-        data: theme.copyWith(dividerColor: Colors.transparent),
-        child: ExpansionTile(
-          title: Text(
-            data.title ?? '',
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          childrenPadding: const EdgeInsets.all(16.0),
-          expandedAlignment: Alignment.centerLeft,
-          children: <Widget>[
-            Text(
-              data.content ?? '',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                height: 1.5,
-              ),
-            )
-          ],
+  Widget _buildSectionContent(BuildContext context, String content) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+      child: Text(
+        content,
+        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+          height: 1.6,
+          color: Theme.of(context).textTheme.bodyLarge?.color?.withValues(alpha: 0.8),
         ),
       ),
     );

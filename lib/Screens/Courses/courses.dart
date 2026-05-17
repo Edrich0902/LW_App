@@ -51,9 +51,10 @@ class _CoursesPageState extends State<CoursesPage> {
                   return RefreshIndicator(
                     onRefresh: () async => coursesBloc
                         .add(LoadCourses(eventCategory: EventCategory.COURSE)),
-                    child: ListView.builder(
-                      padding: const EdgeInsets.all(8.0),
+                    child: ListView.separated(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
                       itemCount: state.courses.length,
+                      separatorBuilder: (context, index) => const SizedBox(height: 16.0),
                       itemBuilder: (BuildContext context, int index) {
                         return _buildCourseCard(state.courses[index], () {
                           Navigator.push(
@@ -85,49 +86,75 @@ class _CoursesPageState extends State<CoursesPage> {
     final theme = Theme.of(context);
 
     return Card(
+      elevation: 0,
+      margin: EdgeInsets.zero,
       clipBehavior: Clip.antiAliasWithSaveLayer,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24.0),
+      ),
       child: InkWell(
         onTap: onTap,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            CldImageWidget(
-                publicId: course.bannerPublicId ?? 'samples/cloudinary-icon',
-                fit: BoxFit.fill
+            SizedBox(
+              height: 200,
+              width: double.infinity,
+              child: Hero(
+                tag: 'course_image_${course.id}',
+                child: CldImageWidget(
+                  publicId: course.bannerPublicId ?? 'samples/cloudinary-icon',
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
             Padding(
-              padding: const EdgeInsets.all(8),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Column(
-                    children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          const Icon(Icons.event),
-                          const SizedBox(width: 16.0),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(course.title,
-                                  style: theme.textTheme.titleMedium),
-                              Text(course.description,
-                                  style: theme.textTheme.bodyMedium),
-                              const SizedBox(height: 16.0),
-                              Text(_formatCourseDateTime(course),
-                                  style: theme.textTheme.bodySmall),
-                            ],
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    course.title,
+                    style: theme.textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 4.0),
+                  Text(
+                    course.description,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.hintColor,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const Divider(height: 24.0),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.calendar_today_rounded,
+                        size: 16.0,
+                        color: theme.primaryColor,
+                      ),
+                      const SizedBox(width: 8.0),
+                      Expanded(
+                        child: Text(
+                          _formatCourseDateTime(course),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            fontWeight: FontWeight.bold,
                           ),
-                        ],
+                        ),
+                      ),
+                      Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        size: 14.0,
+                        color: theme.hintColor.withValues(alpha: 0.5),
                       ),
                     ],
                   ),
-                  const Spacer(),
-                  const Icon(Icons.arrow_forward_ios_rounded),
                 ],
               ),
             ),
           ],
-        )
+        ),
       ),
     );
   }

@@ -23,8 +23,6 @@ class _UserAnnouncementsPageState extends State<UserAnnouncementsPage> {
 
   @override
   Widget build(BuildContext context) {
-    UserAnnouncementBloc userAnnouncementBloc = BlocProvider.of<UserAnnouncementBloc>(context);
-
     return BlocListener<UserAnnouncementBloc, UserAnnouncementState>(
       listener: (context, state) {
       },
@@ -35,23 +33,43 @@ class _UserAnnouncementsPageState extends State<UserAnnouncementsPage> {
         body: SafeArea(
           child: BlocBuilder<UserAnnouncementBloc, UserAnnouncementState>(
             builder: (context, state) {
-              if (state is UserAnnouncementLoading) {
-                return const LwpLoader(message: "Laai Aankondigings");
-              } else if (state is UserAnnouncementSuccess) {
+              if (state is UserAnnouncementSuccess) {
                 if (state.userAnnouncements.isNotEmpty) {
-                  userAnnouncementBloc.add(ReadUserAnnouncements()); // On view mark list of announcements as read
                   return ListView.builder(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                     itemCount: state.userAnnouncements.length,
                     itemBuilder: (context, index) {
-                      return _createAnnouncementItem(state.userAnnouncements.elementAt(index));
+                      final announcement = state.userAnnouncements[index];
+                      return Dismissible(
+                        key: Key(announcement.id ?? index.toString()),
+                        direction: DismissDirection.endToStart,
+                        onDismissed: (direction) {
+                          context.read<UserAnnouncementBloc>().add(DismissUserAnnouncement(announcement.id!));
+                        },
+                        background: Container(
+                          margin: const EdgeInsets.symmetric(vertical: 8.0),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).primaryColor.withAlpha(50),
+                            borderRadius: BorderRadius.circular(24.0),
+                          ),
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.only(right: 20.0),
+                          child: Icon(
+                            Icons.check_circle_outline,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                        ),
+                        child: _createAnnouncementItem(announcement),
+                      );
                     },
                   );
                 } else {
                   return const LwpEmpty(message: "Geen Aankondigings");
                 }
-              } else {
+              } else if (state is UserAnnouncementError) {
                 return const LwpError();
+              } else {
+                return const LwpLoader(message: "Laai Aankondigings");
               }
             },
           ),
@@ -63,46 +81,130 @@ class _UserAnnouncementsPageState extends State<UserAnnouncementsPage> {
   Widget _createAnnouncementItem(UserAnnouncement announcement) {
     final theme = Theme.of(context);
 
-    return Card(
-      child: InkWell(
-        onTap: () {}, //TODO: check if needed to implement
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12.0),
-                child: CldImageWidget(
-                  publicId: announcement.imagePublicId ?? 'samples/cloudinary-icon',
-                  fit: BoxFit.contain,
-                  width: 100,
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Card(
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24.0),
+          side: BorderSide(
+            color: theme.dividerColor.withAlpha(50),
+            width: 1,
+          ),
+        ),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(24.0),
+          onTap: () => _showAnnouncementDetails(context, announcement),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16.0),
+                  child: CldImageWidget(
+                    publicId: announcement.imagePublicId ?? 'samples/cloudinary-icon',
+                    fit: BoxFit.cover,
+                    width: 80,
+                    height: 80,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        announcement.title,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        announcement.body,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.textTheme.bodyMedium?.color?.withAlpha(200),
+                        ),
+                        maxLines: 3,
+                        softWrap: true,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showAnnouncementDetails(BuildContext context, UserAnnouncement announcement) {
+    final theme = Theme.of(context);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: BoxDecoration(
+          color: theme.scaffoldBackgroundColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+        ),
+        padding: const EdgeInsets.only(bottom: 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                margin: const EdgeInsets.only(top: 12, bottom: 8),
+                height: 4,
+                width: 40,
+                decoration: BoxDecoration(
+                  color: theme.dividerColor.withAlpha(50),
+                  borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      announcement.title,
-                      style: theme.textTheme.titleMedium,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      announcement.body,
-                      style: theme.textTheme.bodyMedium,
-                      maxLines: 2,
-                      softWrap: true,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
+            ),
+            if (announcement.imagePublicId != null)
+              Container(
+                width: double.infinity,
+                height: 250,
+                margin: const EdgeInsets.all(16),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(24),
+                  child: CldImageWidget(
+                    publicId: announcement.imagePublicId!,
+                    fit: BoxFit.cover,
+                  ),
                 ),
-              )
-            ],
-          ),
+              ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+              child: Text(
+                announcement.title,
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+              child: Text(
+                announcement.body,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: theme.textTheme.bodyLarge?.color?.withAlpha(200),
+                  height: 1.5,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

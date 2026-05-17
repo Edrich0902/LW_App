@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:lw_app/Screens/Profile/profile.dart';
 
 class ProfileActionButton extends StatefulWidget {
-  const ProfileActionButton({super.key});
+  final Color? color;
+  const ProfileActionButton({super.key, this.color});
 
   @override
   State<ProfileActionButton> createState() => _ProfileActionButtonState();
@@ -24,7 +25,10 @@ class _ProfileActionButtonState extends State<ProfileActionButton> {
           MaterialPageRoute(builder: (context) => const ProfilePage()),
         );
       },
-      icon: const Icon(Icons.account_circle_outlined),
+      icon: Icon(
+        Icons.account_circle_outlined,
+        color: widget.color,
+      ),
     );
   }
 }

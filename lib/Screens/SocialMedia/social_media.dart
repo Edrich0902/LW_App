@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
-import 'package:lw_app/Widgets/LwpBanner/lwp_banner.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/SocialMedia/social_media_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -45,17 +44,56 @@ class _SocialMediaPageState extends State<SocialMediaPage> {
                 if (state.socialMedia.isNotEmpty) {
                   return RefreshIndicator(
                     onRefresh: () async => socialMediaBloc.add(const LoadSocialMedia()),
-                    child: ListView.builder(
-                      padding: const EdgeInsets.all(8.0),
+                    child: ListView.separated(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
                       itemCount: state.socialMedia.length,
+                      separatorBuilder: (context, index) => const SizedBox(height: 16.0),
                       itemBuilder: (BuildContext context, int index) {
-                        return LwpBanner(
-                          message: state.socialMedia[index].title!,
-                          imageUrl: _getSocialMediaImage(state.socialMedia[index].type ?? ''),
-                          imagePublicId: state.socialMedia[index].bannerPublicId,
-                          onTap: () {
-                            launchUrl(Uri.parse(state.socialMedia[index].link ?? ''));
-                          },
+                        final social = state.socialMedia[index];
+                        return Card(
+                          elevation: 0,
+                          margin: EdgeInsets.zero,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(24.0),
+                          ),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(24.0),
+                            onTap: () {
+                              if (social.link != null && social.link!.isNotEmpty) {
+                                launchUrl(Uri.parse(social.link!), mode: LaunchMode.externalApplication);
+                              }
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(12.0),
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                                      borderRadius: BorderRadius.circular(16.0),
+                                    ),
+                                    child: Icon(
+                                      _getSocialMediaIcon(social.type ?? ''),
+                                      color: Theme.of(context).primaryColor,
+                                      size: 28,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16.0),
+                                  Expanded(
+                                    child: Text(
+                                      social.title ?? '',
+                                      style: Theme.of(context).textTheme.titleMedium,
+                                    ),
+                                  ),
+                                  Icon(
+                                    Icons.chevron_right_rounded,
+                                    color: Theme.of(context).hintColor.withValues(alpha: 0.5),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                         );
                       },
                     ),
@@ -73,8 +111,22 @@ class _SocialMediaPageState extends State<SocialMediaPage> {
     );
   }
 
-  String _getSocialMediaImage(String type) {
-    // TODO: update images based on type -> eventually make images configurable
-    return 'https://images.unsplash.com/photo-1689004624325-6edf074228dd?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
+  IconData _getSocialMediaIcon(String type) {
+    switch (type.toLowerCase()) {
+      case 'facebook':
+        return Icons.facebook;
+      case 'instagram':
+        return Icons.camera_alt_rounded;
+      case 'youtube':
+        return Icons.play_circle_fill_rounded;
+      case 'tiktok':
+        return Icons.music_note_rounded;
+      case 'threads':
+        return Icons.alternate_email_rounded;
+      case 'x':
+        return Icons.close_rounded;
+      default:
+        return Icons.link_rounded;
+    }
   }
 }

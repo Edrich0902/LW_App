@@ -14,6 +14,13 @@ class LoadUser extends UserEvent {
   List<Object> get props => [];
 }
 
+class ResetUser extends UserEvent {
+  const ResetUser();
+
+  @override
+  List<Object> get props => [];
+}
+
 class UploadProfilePicture extends UserEvent {
   final File profileImageFile;
 

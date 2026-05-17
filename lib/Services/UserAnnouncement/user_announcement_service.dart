@@ -36,4 +36,16 @@ class UserAnnouncementService {
       throw error.toString();
     }
   }
+
+  Future<void> markUserNotificationAsRead(String id) async {
+    try {
+      await supabase
+          .from('user_announcements')
+          .update({'is_read': true})
+          .eq('id', id)
+          .eq('user_id', _auth.currentUser!.id);
+    } catch (error) {
+      throw error.toString();
+    }
+  }
 }

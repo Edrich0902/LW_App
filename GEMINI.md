@@ -34,12 +34,15 @@ The agent must prioritize **clean architecture**, **maintainability**, and **per
 - Prefer **sealed classes / enums** for state representation
 - Use **immutable models**
 
-### 4. Theming
-- Stick to the given theme as much as possible
-- Do not add custom colors or hardcoded colors if not required
-- Rather suggest updates to the custom_theme.dart config
-- The system should all pull from the set up theme to prevent any custom setup per file
-- This ensures consistency and uniformity across all files in the codebase
+### 4. Theming & Branding
+- **Strict Adherence:** Follow the guidelines in `THEME.md` for all UI changes.
+- **Color Usage:** Always use `Theme.of(context)` or the `LightColors`/`DarkColors` constants.
+- **Sleek & Modern:** Maintain the "Flat & Seamless" aesthetic (Elevation 0 for AppBars/Buttons).
+- **Navigation:** Bottom navigation in Dark Mode uses Charcoal (`#1E1E1E`) to balance the Gold accents.
+
+### 5. Behavioral Constraints
+- **Validation is not optional:** After every code change, you MUST run `flutter analyze` on the affected files (or the whole project) to verify structural and type integrity.
+- **Afrikaans UI:** Maintain all UI-facing content in **Afrikaans**.
 
 This project is a Flutter mobile application for **Lewende Woord Paarl**, a church community. It serves as a central hub for members to access sermons, notes, events, and community groups.
 
@@ -87,15 +90,21 @@ Ensure you have the Flutter SDK installed and a valid `.env.development` or `.en
 4.  **Supabase Interaction:** Perform all database and auth operations within `Services`. Blocs should call Services, and UI should listen to Blocs.
 5.  **Themes:** Use the `AppTheme` class for styling to ensure consistency across light and dark modes. Use `Theme.of(context)` in widgets.
 6.  **Error Handling:** Use custom widgets like `LwpError` to display error states consistently.
-7.  **SnackBars & Notifications:** NEVER use the base Flutter `SnackBar`. Always use the `animated_snack_bar` package for showing user feedback, success messages, or errors.
-    -   Example: `AnimatedSnackBar.material('Message', type: AnimatedSnackBarType.success).show(context);`
+7.  **SnackBars & Notifications:** NEVER use the base Flutter `SnackBar` or the `animated_snack_bar` package directly. Always use the `LwpSnackbar` wrapper for showing user feedback, success messages, or errors.
+    -   Example: `LwpSnackbar.showSuccess(context, 'Boodskap');`
 8.  **Language & Localization:** All UI-facing content (labels, messages, buttons) MUST be in **Afrikaans**. Code-level naming (variables, files, classes) remains in **English**.
 9.  **Card UI Conventions:**
     -   Use a consistent border radius of `24.0` for all cards (defined in `AppTheme`).
     -   When listing details within a card (e.g., EFT details), use fixed-width labels (e.g., `130.0`) to ensure perfect vertical alignment across rows.
     -   Prevent text wrapping for short labels by using `maxLines: 1` and `overflow: TextOverflow.ellipsis`.
-    -   Use `Divider(height: 32)` to separate sections within a card.
-10. **Calendar Integration:** When adding events/courses to the device calendar:
+    - Use `Divider(height: 32)` to separate sections within a card.
+10. **Human-Readable Text:** Always format technical strings or IDs (e.g., user roles like `super_admin`) into human-readable text for the UI (e.g., `Super Admin`). Technical values should remain in the data layer, but the presentation layer must ensure they are readable and properly capitalized.
+11. **Hero + Grid Dashboard Pattern:**
+    - **Hero Section:** Use a dynamic, high-impact Hero element (e.g., `DashboardHeroSermon`) to showcase the most relevant/latest content.
+    - **Grid Section:** Follow the Hero with a 2-column grid of clean, icon-based cards (e.g., `DashboardGridCard`) for secondary actions.
+    - **Loading States:** Always show a themed loading placeholder instead of flashing static content while fetching dynamic data.
+    - **Direct Actions:** Provide direct links to detail screens from the Hero, with a clear "Kyk Alle" or "Sien Meer" link for the full list.
+12. **Calendar Integration:** When adding events/courses to the device calendar:
     -   Use the `add_2_calendar_new` package.
     -   Handle recurring events by mapping `EventType` to the `Frequency` enum.
     -   Parse time strings (e.g., `18:00:00+00`) by splitting at the timezone offset.
