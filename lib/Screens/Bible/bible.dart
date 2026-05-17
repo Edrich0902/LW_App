@@ -64,10 +64,15 @@ class BiblePage extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            state.currentVersion.name,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold),
+                          Expanded(
+                            child: Text(
+                              state.currentVersion.name,
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
                           ),
+                          const SizedBox(width: 8),
                           TextButton(
                             onPressed: () => _showNavigation(context, state),
                             child: const Text('Kies Vertaling'),
