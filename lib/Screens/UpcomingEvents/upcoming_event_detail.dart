@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lw_app/Models/Event/event.dart';
+import 'package:lw_app/Models/Event/event_type.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
 import 'package:add_2_calendar_new/add_2_calendar_new.dart' as calendar;
 import 'package:cloudinary_flutter/image/cld_image.dart';
@@ -236,6 +237,28 @@ class UpcomingEventDetailPage extends StatelessWidget {
         int.parse(timeParts[2]),
       ) : startDateTime.add(const Duration(hours: 1));
 
+      // Determine recurrence based on event type
+      calendar.Recurrence? recurrence;
+      if (event.type != EventType.ONCE) {
+        calendar.Frequency? frequency;
+        if (event.type == EventType.DAILY) {
+          frequency = calendar.Frequency.daily;
+        } else if (event.type == EventType.WEEKLY) {
+          frequency = calendar.Frequency.weekly;
+        } else if (event.type == EventType.MONTHLY) {
+          frequency = calendar.Frequency.monthly;
+        } else if (event.type == EventType.YEARLY) {
+          frequency = calendar.Frequency.yearly;
+        }
+
+        if (frequency != null) {
+          recurrence = calendar.Recurrence(
+            frequency: frequency,
+            endDate: event.endDate != null ? DateTime.parse(event.endDate!) : null,
+          );
+        }
+      }
+
       final calendar.Event calEvent = calendar.Event(
         title: event.title,
         description: event.description,
@@ -243,6 +266,7 @@ class UpcomingEventDetailPage extends StatelessWidget {
         startDate: startDateTime,
         endDate: endDateTime,
         allDay: false,
+        recurrence: recurrence,
       );
 
       calendar.Add2Calendar.addEvent2Cal(calEvent);

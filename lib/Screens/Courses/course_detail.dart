@@ -237,9 +237,10 @@ class CourseDetailPage extends StatelessWidget {
 
       final endDateTime = startDateTime.add(const Duration(hours: 1));
 
+      // Determine recurrence based on event type
       calendar.Recurrence? recurrence;
       if (course.type != EventType.ONCE) {
-        calendar.Frequency frequency;
+        calendar.Frequency? frequency;
         if (course.type == EventType.DAILY) {
           frequency = calendar.Frequency.daily;
         } else if (course.type == EventType.WEEKLY) {
@@ -248,15 +249,14 @@ class CourseDetailPage extends StatelessWidget {
           frequency = calendar.Frequency.monthly;
         } else if (course.type == EventType.YEARLY) {
           frequency = calendar.Frequency.yearly;
-        } else {
-          frequency = calendar.Frequency.weekly; // Default to weekly
         }
 
-        recurrence = calendar.Recurrence(
-          frequency: frequency,
-          interval: 1,
-          endDate: course.endDate != null ? DateTime.parse(course.endDate!) : null,
-        );
+        if (frequency != null) {
+          recurrence = calendar.Recurrence(
+            frequency: frequency,
+            endDate: course.endDate != null ? DateTime.parse(course.endDate!) : null,
+          );
+        }
       }
 
       final calendar.Event calEvent = calendar.Event(

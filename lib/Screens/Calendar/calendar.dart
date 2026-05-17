@@ -38,6 +38,7 @@ class _CalendarPageState extends State<CalendarPage> {
         appBar: AppBar(
           title: const Text('Kalender'),
           actions: const <Widget>[LwpAnnouncementButton(), ProfileActionButton()],
+          centerTitle: false,
         ),
         body: SafeArea(
           child: BlocBuilder<CalendarBloc, CalendarState>(
@@ -46,33 +47,82 @@ class _CalendarPageState extends State<CalendarPage> {
                 return const LwpLoader(message: "Laai Kalender");
               } else if (state is CalendarSuccess) {
                 if (state.eventsMap.isNotEmpty) {
+                  // Flatten the map into a list of items for the timeline
+                  final List<dynamic> timelineItems = [];
+                  state.eventsMap.forEach((day, events) {
+                    timelineItems.add(day);
+                    timelineItems.addAll(events);
+                  });
+
                   return RefreshIndicator(
                     onRefresh: () async => calendarBloc.add(LoadCalendar(eventType: EventType.WEEKLY, eventCategory: EventCategory.GENERAL)),
                     child: ListView.builder(
-                      padding: const EdgeInsets.all(8.0),
-                      itemCount: state.eventsMap.length,
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+                      itemCount: timelineItems.length,
                       itemBuilder: (BuildContext context, int index) {
-                        String weekday = state.eventsMap.keys.elementAt(index);
-                        List<Event> weekdayEvents = state.eventsMap[weekday]!;
+                        final item = timelineItems[index];
+                        final bool isLast = index == timelineItems.length - 1;
+                        final bool isDayHeader = item is String;
+                        final bool isFirst = index == 0;
 
-                        return Column(
-                          children: <Widget>[
-                            const SizedBox(height: 8.0),
-                            Text(
-                              weekday,
-                              style: theme.textTheme.titleLarge
+                        return Stack(
+                          children: [
+                            // 1. Vertical Line (drawn first so it's behind the dot)
+                            Positioned(
+                              left: 5, // Center of the 12px dot area
+                              top: isDayHeader && isFirst ? 10 : 0,
+                              bottom: 0,
+                              child: Visibility(
+                                visible: !isLast,
+                                child: Container(
+                                  width: 2,
+                                  color: theme.primaryColor.withValues(alpha: 0.2),
+                                ),
+                              ),
                             ),
-                            const SizedBox(height: 8.0),
-                            ListView.builder(
-                              shrinkWrap: true,
-                              physics: const ClampingScrollPhysics(),
-                              itemCount: weekdayEvents.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                Event event = weekdayEvents[index];
+                            
+                            // 2. Content with padding to make room for the line
+                            Padding(
+                              padding: const EdgeInsets.only(left: 28.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (isDayHeader) ...[
+                                    Text(
+                                      item.toUpperCase(),
+                                      style: theme.textTheme.titleSmall?.copyWith(
+                                        color: theme.primaryColor,
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 1.2,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                  ] else ...[
+                                    LwpEvent(event: item as Event),
+                                    const SizedBox(height: 16),
+                                  ],
+                                ],
+                              ),
+                            ),
 
-                                return LwpEvent(event: event);
-                              },
-                            )
+                            // 3. The Day Dot (drawn last so it's on top)
+                            if (isDayHeader)
+                              Positioned(
+                                left: 0,
+                                top: 4,
+                                child: Container(
+                                  width: 12,
+                                  height: 12,
+                                  decoration: BoxDecoration(
+                                    color: theme.primaryColor,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: theme.primaryColor.withValues(alpha: 0.2),
+                                      width: 4,
+                                    ),
+                                  ),
+                                ),
+                              ),
                           ],
                         );
                       },
