@@ -1,7 +1,6 @@
-import 'package:easy_splash_screen/easy_splash_screen.dart';
+import 'package:lw_app/Screens/Splash/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:lw_app/Screens/Home/home.dart';
 import 'package:lw_app/Themes/custom_theme.dart';
 import 'package:lw_app/Utils/environment.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -125,13 +124,7 @@ class App extends StatelessWidget {
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: state.themeMode,
-          home: EasySplashScreen(
-            durationInSeconds: 3,
-            logo: Image.network(
-              // TODO: add this asset to cloudinary and serve from cloud
-                "https://yt3.googleusercontent.com/ytc/AL5GRJUbsh7ILjzuEQAZTot_kkV2GohZR75CjoWM9NSI9Q=s900-c-k-c0x00ffffff-no-rj"), //TODO: update logo url -> make asset
-            navigator: const HomePage(),
-          ),
+          home: const LwpSplashScreen(),
         );
       },
     );
