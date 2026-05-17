@@ -20,3 +20,11 @@ class ReadUserAnnouncements extends UserAnnouncementEvent {
   @override
   List<Object> get props => [];
 }
+
+class DismissUserAnnouncement extends UserAnnouncementEvent {
+  final String id;
+  const DismissUserAnnouncement(this.id);
+
+  @override
+  List<Object> get props => [id];
+}
