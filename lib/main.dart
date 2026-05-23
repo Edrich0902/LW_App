@@ -30,6 +30,7 @@ import 'package:lw_app/Blocs/CompareTranslations/compare_translations_bloc.dart'
 import 'package:lw_app/Blocs/Votd/votd_bloc.dart';
 import 'package:lw_app/Blocs/Votd/votd_event.dart';
 import 'package:lw_app/Services/Bible/bible_service.dart';
+import 'package:lw_app/Blocs/TithesOfferings/tithes_offerings_bloc.dart';
 
 // Cloudinary
 import 'package:cloudinary_flutter/cloudinary_context.dart';
@@ -110,6 +111,9 @@ Future<void> main() async {
         ),
         BlocProvider<VotdBloc>(
           create: (_) => VotdBloc(bibleService: BibleService())..add(LoadVotd()),
+        ),
+        BlocProvider<TithesOfferingsBloc>(
+          create: (_) => TithesOfferingsBloc(),
         ),
         BlocProvider<ThemeBloc>(
           create: (_) => ThemeBloc()..add(const InitThemeEvent()),
