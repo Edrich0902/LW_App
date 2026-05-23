@@ -225,7 +225,7 @@ class LwpEvent extends StatelessWidget {
       final cleanTime = event.time.split('+').first;
       final timeParts = cleanTime.split(':');
 
-      final startDateTime = DateTime(
+      DateTime startDateTime = DateTime(
         baseDate.year,
         baseDate.month,
         baseDate.day,
@@ -233,6 +233,26 @@ class LwpEvent extends StatelessWidget {
         int.parse(timeParts[1]),
         int.parse(timeParts[2]),
       );
+
+      // For weekly events the stored start_date may not fall on the correct
+      // day of week. Adjust forward to the nearest matching weekday so the
+      // calendar repeats on the right day (e.g. Monday, not the creation day).
+      if (event.type == EventType.WEEKLY && event.day.isNotEmpty) {
+        const dayToWeekday = {
+          'Monday': DateTime.monday,
+          'Tuesday': DateTime.tuesday,
+          'Wednesday': DateTime.wednesday,
+          'Thursday': DateTime.thursday,
+          'Friday': DateTime.friday,
+          'Saturday': DateTime.saturday,
+          'Sunday': DateTime.sunday,
+        };
+        final targetWeekday = dayToWeekday[event.day];
+        if (targetWeekday != null && startDateTime.weekday != targetWeekday) {
+          final daysToAdd = (targetWeekday - startDateTime.weekday + 7) % 7;
+          startDateTime = startDateTime.add(Duration(days: daysToAdd));
+        }
+      }
 
       final endDateTime = event.endDate != null ? DateTime(
         DateTime.parse(event.endDate!).year,
