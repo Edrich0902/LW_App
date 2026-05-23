@@ -8,4 +8,5 @@ class Environment {
   static String get cloudinaryCloud => dotenv.env['CLOUDINARY_CLOUD'] ?? '';
   static String get cloudinaryUploadPreset => dotenv.env['CLOUDINARY_UPLOAD_PRESET'] ?? '';
   static String get youversionKey => dotenv.env['YOUVERSION_KEY'] ?? '';
+  static String get authCallbackUrl => dotenv.env['AUTH_CALLBACK_URL'] ?? '';
 }

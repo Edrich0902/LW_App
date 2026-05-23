@@ -6,6 +6,7 @@ import 'package:lw_app/Blocs/Auth/auth_bloc.dart';
 import 'package:lw_app/Screens/Container/container.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
+import 'package:lw_app/Screens/Auth/email_confirmation.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -107,6 +108,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
+        if (!(ModalRoute.of(context)?.isCurrent ?? false)) return;
+
         if (state is AuthErrorState) {
           LwpSnackbar.showError(context, "Registrasie het misluk. Probeer asseblief weer.");
         }
@@ -122,6 +125,15 @@ class _RegisterPageState extends State<RegisterPage> {
               (route) => false,
             );
           }
+        }
+        if (state is AuthConfirmationSentState) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EmailConfirmationPage(email: state.email),
+            ),
+            (route) => false,
+          );
         }
       },
       child: Scaffold(

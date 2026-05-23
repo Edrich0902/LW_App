@@ -31,3 +31,21 @@ class UnAuthedState extends AuthState {
   @override
   List<Object> get props => [];
 }
+
+class AuthConfirmationSentState extends AuthState {
+  final String email;
+  const AuthConfirmationSentState(this.email);
+
+  @override
+  List<Object> get props => [email];
+}
+
+class PasswordResetEmailSentState extends AuthState {
+  @override
+  List<Object> get props => [];
+}
+
+class PasswordResetSuccessState extends AuthState {
+  @override
+  List<Object> get props => [];
+}

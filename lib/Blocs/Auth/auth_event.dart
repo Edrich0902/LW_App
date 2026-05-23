@@ -36,3 +36,19 @@ class EmailSignUpEvent extends AuthEvent {
 class SignOutEvent extends AuthEvent {
   const SignOutEvent();
 }
+
+class SendPasswordResetEmailEvent extends AuthEvent {
+  final String email;
+  const SendPasswordResetEmailEvent(this.email);
+
+  @override
+  List<Object> get props => [email];
+}
+
+class UpdatePasswordEvent extends AuthEvent {
+  final String password;
+  const UpdatePasswordEvent(this.password);
+
+  @override
+  List<Object> get props => [password];
+}

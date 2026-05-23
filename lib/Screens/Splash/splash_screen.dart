@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:lw_app/Screens/Container/container.dart';
 import 'package:lw_app/Screens/Home/home.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 
@@ -10,19 +13,44 @@ class LwpSplashScreen extends StatefulWidget {
 }
 
 class _LwpSplashScreenState extends State<LwpSplashScreen> {
+  late final StreamSubscription<AuthState> _authSubscription;
+  bool _hasNavigated = false;
+
   @override
   void initState() {
     super.initState();
+
+    _authSubscription = Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+      if (!mounted || _hasNavigated) return;
+      
+      final event = data.event;
+      if (event == AuthChangeEvent.signedIn) {
+        _hasNavigated = true;
+        _authSubscription.cancel();
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const ContainerPage()),
+        );
+      }
+    });
     _navigateToHome();
   }
 
   Future<void> _navigateToHome() async {
     await Future.delayed(const Duration(seconds: 3));
-    if (!mounted) return;
+    if (!mounted || _hasNavigated) return;
+    _hasNavigated = true;
+    _authSubscription.cancel();
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => const HomePage()),
     );
+  }
+
+  @override
+  void dispose() {
+    _authSubscription.cancel();
+    super.dispose();
   }
 
   @override

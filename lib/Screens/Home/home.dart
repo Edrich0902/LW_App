@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lw_app/Blocs/Auth/auth_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 
 // Screens
@@ -36,21 +34,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthBloc, AuthState>(
-      listener: (context, state) {
-        if (state is AuthSuccessState) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const ContainerPage()),
-          );
-        } else if (state is UnAuthedState) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const LoginPage()),
-          );
-        }
-      },
-      child: const LoginPage(),
-    );
+    return const LoginPage();
   }
 }

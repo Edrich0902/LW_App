@@ -32,18 +32,31 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         final AuthResponse response = await _authService.signUpWithEmail(
           email: event.email,
           password: event.password,
+          data: {
+            'first_name': event.firstName,
+            'last_name': event.lastName,
+            'profile_url': profileUrl,
+            'profile_public_id': profilePublicId,
+          },
         );
 
-        // Creates the initial user profile with all details
-        await _authService.createInitialProfile(
-          userId: response.user?.id,
-          firstName: event.firstName,
-          lastName: event.lastName,
-          profileUrl: profileUrl,
-          profilePublicId: profilePublicId,
-        );
-
-        emit(AuthSuccessState());
+        if (response.session == null) {
+          emit(AuthConfirmationSentState(event.email));
+        } else {
+          try {
+            // Creates the initial user profile with all details if confirmation is disabled
+            await _authService.createInitialProfile(
+              userId: response.user?.id,
+              firstName: event.firstName,
+              lastName: event.lastName,
+              profileUrl: profileUrl,
+              profilePublicId: profilePublicId,
+            );
+          } catch (_) {
+            // Ignore error if profile was already created by the database trigger
+          }
+          emit(AuthSuccessState());
+        }
       } catch (error) {
         emit(AuthErrorState(error.toString()));
       }
@@ -69,6 +82,28 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       try {
         await _authService.signOut();
         emit(const UnAuthedState());
+      } catch (error) {
+        emit(AuthErrorState(error.toString()));
+      }
+    });
+
+    // Send Password Reset Email Event
+    on<SendPasswordResetEmailEvent>((event, emit) async {
+      emit(AuthLoadingState());
+      try {
+        await _authService.sendPasswordResetEmail(email: event.email);
+        emit(PasswordResetEmailSentState());
+      } catch (error) {
+        emit(AuthErrorState(error.toString()));
+      }
+    });
+
+    // Update Password Event
+    on<UpdatePasswordEvent>((event, emit) async {
+      emit(AuthLoadingState());
+      try {
+        await _authService.updatePassword(newPassword: event.password);
+        emit(PasswordResetSuccessState());
       } catch (error) {
         emit(AuthErrorState(error.toString()));
       }

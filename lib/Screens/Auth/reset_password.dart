@@ -1,32 +1,34 @@
 import 'package:flutter/material.dart';
-import 'package:lw_app/Screens/Auth/register.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/Auth/auth_bloc.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 import 'package:lw_app/Screens/Container/container.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:lw_app/Utils/environment.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class ResetPasswordPage extends StatefulWidget {
+  const ResetPasswordPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<ResetPasswordPage> createState() => _ResetPasswordPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _ResetPasswordPageState extends State<ResetPasswordPage> {
+  final _formKey = GlobalKey<FormState>();
   bool _showPassword = false;
-  final _loginFormKey = GlobalKey<FormState>();
-  late final TextEditingController _emailController;
   late final TextEditingController _passwordController;
+  late final TextEditingController _confirmPasswordController;
 
   @override
   void initState() {
-    _emailController = TextEditingController();
     _passwordController = TextEditingController();
-
+    _confirmPasswordController = TextEditingController();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
   }
 
   void setShowPassword() {
@@ -35,41 +37,45 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
+  void _submit() {
+    if (_formKey.currentState!.validate()) {
+      context.read<AuthBloc>().add(
+            UpdatePasswordEvent(_passwordController.text),
+          );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    AuthBloc authBloc = BlocProvider.of<AuthBloc>(context);
 
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (!(ModalRoute.of(context)?.isCurrent ?? false)) return;
-        
+
         if (state is AuthErrorState) {
-          LwpSnackbar.showError(context, "Intekening het misluk. Kontroleer asseblief jou besonderhede.");
+          LwpSnackbar.showError(
+            context,
+            "Kon nie jou wagwoord terugstel nie. Probeer asseblief weer.",
+          );
         }
 
-        if (state is AuthSuccessState) {
-          sb.Session? session = sb.Supabase.instance.client.auth.currentSession;
-          if (session != null) {
-            LwpSnackbar.showSuccess(context, "Intekening suksesvol");
-
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const ContainerPage()),
-            );
-          }
+        if (state is PasswordResetSuccessState) {
+          LwpSnackbar.showSuccess(
+            context,
+            "Jou wagwoord is suksesvol verander!",
+          );
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const ContainerPage()),
+            (route) => false,
+          );
         }
       },
       child: Scaffold(
         body: Column(
           children: [
+            // Top Section (Hero) - Follows the 2:3 ratio standard
             Expanded(
               flex: 2,
               child: Hero(
@@ -103,6 +109,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
             ),
+            // Bottom Section - Form Area (3/5 ratio)
             Expanded(
               flex: 3,
               child: Container(
@@ -110,12 +117,12 @@ class _LoginPageState extends State<LoginPage> {
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
                   child: Form(
-                    key: _loginFormKey,
+                    key: _formKey,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Text(
-                          "Welkom Terug",
+                          "Nuwe Wagwoord",
                           style: theme.textTheme.headlineLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: theme.primaryColor,
@@ -123,38 +130,26 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          "Teken in om voort te gaan",
+                          "Stel jou nuwe wagwoord in",
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: theme.hintColor,
                           ),
                         ),
                         const SizedBox(height: 32),
                         TextFormField(
-                          controller: _emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          validator: (email) {
-                            if (email == null || email.isEmpty) {
-                              return 'E-pos is verpligtend';
-                            }
-                            return null;
-                          },
-                          decoration: const InputDecoration(
-                            labelText: "E-pos",
-                            prefixIcon: Icon(Icons.email_outlined),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        TextFormField(
                           controller: _passwordController,
-                          validator: (password) {
-                            if (password == null || password.isEmpty) {
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
                               return 'Wagwoord is verpligtend';
+                            }
+                            if (value.length < 6) {
+                              return 'Wagwoord moet ten minste 6 karakters wees';
                             }
                             return null;
                           },
                           obscureText: !_showPassword,
                           decoration: InputDecoration(
-                            labelText: "Wagwoord",
+                            labelText: "Nuwe Wagwoord",
                             prefixIcon: const Icon(Icons.lock_outline),
                             suffixIcon: IconButton(
                               onPressed: () => setShowPassword(),
@@ -164,22 +159,29 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                         ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _confirmPasswordController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Bevestig asseblief jou wagwoord';
+                            }
+                            if (value != _passwordController.text) {
+                              return 'Wagwoorde stem nie ooreen nie';
+                            }
+                            return null;
+                          },
+                          obscureText: !_showPassword,
+                          decoration: const InputDecoration(
+                            labelText: "Bevestig Nuwe Wagwoord",
+                            prefixIcon: Icon(Icons.lock_reset_outlined),
+                          ),
+                        ),
                         const SizedBox(height: 32),
                         BlocBuilder<AuthBloc, AuthState>(
                           builder: (context, state) {
                             return ElevatedButton(
-                              onPressed: state is AuthLoadingState
-                                  ? null
-                                  : () {
-                                      if (_loginFormKey.currentState!.validate()) {
-                                        authBloc.add(
-                                          EmailSignInEvent(
-                                            _emailController.text,
-                                            _passwordController.text,
-                                          ),
-                                        );
-                                      }
-                                    },
+                              onPressed: state is AuthLoadingState ? null : _submit,
                               child: state is AuthLoadingState
                                   ? const SizedBox(
                                       width: 20,
@@ -188,33 +190,9 @@ class _LoginPageState extends State<LoginPage> {
                                         strokeWidth: 2,
                                       ),
                                     )
-                                  : const Text("Teken In"),
+                                  : const Text("Stel Wagwoord Terug"),
                             );
                           },
-                        ),
-                        const SizedBox(height: 16),
-                        TextButton(
-                          onPressed: () async {
-                            final url = Uri.parse('${Environment.authCallbackUrl}/forgot-password');
-                            if (await canLaunchUrl(url)) {
-                              await launchUrl(url, mode: LaunchMode.externalApplication);
-                            } else {
-                              if (context.mounted) {
-                                LwpSnackbar.showError(context, "Kon nie die herstelbladsy oopmaak nie.");
-                              }
-                            }
-                          },
-                          child: const Text("Wagwoord vergeet?"),
-                        ),
-                        const SizedBox(height: 8),
-                        TextButton(
-                          onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const RegisterPage(),
-                            ),
-                          ),
-                          child: const Text("Het jy nie 'n rekening nie? Registreer hier"),
                         ),
                       ],
                     ),

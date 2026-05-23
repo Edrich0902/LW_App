@@ -34,6 +34,9 @@ import 'package:lw_app/Services/Bible/bible_service.dart';
 import 'package:cloudinary_flutter/cloudinary_context.dart';
 import 'package:cloudinary_url_gen/cloudinary.dart';
 
+// Global navigation key
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -120,6 +123,7 @@ class App extends StatelessWidget {
     return BlocBuilder<ThemeBloc, ThemeState>(
       builder: (context, state) {
         return MaterialApp(
+          navigatorKey: navigatorKey,
           title: 'Lewende Woord Paarl',
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
