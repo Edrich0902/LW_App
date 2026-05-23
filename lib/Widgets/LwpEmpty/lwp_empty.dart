@@ -34,9 +34,9 @@ class _LwpEmptyState extends State<LwpEmpty> {
             ),
             const SizedBox(height: 48),
             if (widget.message != null)
-              Text(widget.message!, style: theme.textTheme.titleLarge),
+              Text(widget.message!, style: theme.textTheme.titleLarge, textAlign: TextAlign.center),
             if (widget.message == null)
-              Text("No content to display", style: theme.textTheme.titleLarge),
+              Text("No content to display", style: theme.textTheme.titleLarge, textAlign: TextAlign.center),
           ],
         ),
       ),

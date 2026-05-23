@@ -18,7 +18,10 @@ class BibleLoaded extends BibleState {
   final List<BibleVersion> versions;
   final List<BibleBook> books;
   final List<BibleChapter> chapters;
+  final List<BibleVerse> verses;
+  final Set<String> selectedVerseNumbers;
   final bool isLoading;
+  final bool isSavingInteraction;
 
   const BibleLoaded({
     required this.currentVersion,
@@ -28,7 +31,10 @@ class BibleLoaded extends BibleState {
     required this.versions,
     required this.books,
     required this.chapters,
+    this.verses = const [],
+    this.selectedVerseNumbers = const {},
     this.isLoading = false,
+    this.isSavingInteraction = false,
   });
 
   BibleLoaded copyWith({
@@ -39,7 +45,10 @@ class BibleLoaded extends BibleState {
     List<BibleVersion>? versions,
     List<BibleBook>? books,
     List<BibleChapter>? chapters,
+    List<BibleVerse>? verses,
+    Set<String>? selectedVerseNumbers,
     bool? isLoading,
+    bool? isSavingInteraction,
   }) {
     return BibleLoaded(
       currentVersion: currentVersion ?? this.currentVersion,
@@ -49,7 +58,10 @@ class BibleLoaded extends BibleState {
       versions: versions ?? this.versions,
       books: books ?? this.books,
       chapters: chapters ?? this.chapters,
+      verses: verses ?? this.verses,
+      selectedVerseNumbers: selectedVerseNumbers ?? this.selectedVerseNumbers,
       isLoading: isLoading ?? this.isLoading,
+      isSavingInteraction: isSavingInteraction ?? this.isSavingInteraction,
     );
   }
 
@@ -62,7 +74,10 @@ class BibleLoaded extends BibleState {
         versions,
         books,
         chapters,
+        verses,
+        selectedVerseNumbers,
         isLoading,
+        isSavingInteraction,
       ];
 }
 

@@ -52,3 +52,33 @@ class ChangeChapter extends BibleEvent {
 class NavigateNextChapter extends BibleEvent {}
 
 class NavigatePreviousChapter extends BibleEvent {}
+
+class LoadChapterInteractions extends BibleEvent {}
+
+class ToggleVerseSelection extends BibleEvent {
+  final String verseNumber;
+  const ToggleVerseSelection(this.verseNumber);
+
+  @override
+  List<Object?> get props => [verseNumber];
+}
+
+class ClearSelection extends BibleEvent {}
+
+class HighlightSelectedVerses extends BibleEvent {
+  final String? color;
+  const HighlightSelectedVerses(this.color);
+
+  @override
+  List<Object?> get props => [color];
+}
+
+class ToggleBookmarkSelected extends BibleEvent {}
+
+class SaveNoteForSelected extends BibleEvent {
+  final String noteText;
+  const SaveNoteForSelected(this.noteText);
+
+  @override
+  List<Object?> get props => [noteText];
+}
