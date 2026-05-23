@@ -3,10 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/Bible/bible_bloc.dart';
 import 'package:lw_app/Blocs/Bible/bible_event.dart';
 import 'package:lw_app/Blocs/Bible/bible_state.dart';
+import 'package:lw_app/Blocs/CompareTranslations/compare_translations_bloc.dart';
+import 'package:lw_app/Blocs/CompareTranslations/compare_translations_event.dart';
 import 'package:lw_app/Models/Bible/bible_models.dart';
 import 'package:lw_app/Screens/Bible/verse_image_editor.dart';
+import 'package:lw_app/Utils/bible_reference.dart';
 import 'package:lw_app/Utils/share_helper.dart';
 import 'package:lw_app/Utils/verse_image_formatter.dart';
+import 'package:lw_app/Widgets/Bible/compare_translations_sheet.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
@@ -220,6 +224,34 @@ class BiblePage extends StatelessWidget {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => VerseImageEditorScreen(draft: draft),
+      ),
+    );
+  }
+
+  void _showCompareTranslationsSheet(
+      BuildContext context, BibleLoaded state) {
+    final reference = buildPassageReference(
+        state.currentBook, state.currentChapter, state.selectedVerseNumbers);
+    final citation = buildCitation(
+        state.currentBook, state.currentChapter, state.selectedVerseNumbers);
+
+    final compareBloc = context.read<CompareTranslationsBloc>();
+    compareBloc.add(LoadComparison(
+      reference: reference,
+      citation: citation,
+      versions: state.versions,
+    ));
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (modalContext) => BlocProvider.value(
+        value: compareBloc,
+        child: CompareTranslationsSheet(
+          book: state.currentBook,
+          chapter: state.currentChapter,
+        ),
       ),
     );
   }
@@ -631,41 +663,49 @@ class BiblePage extends StatelessWidget {
                             ),
                             const SizedBox(height: 8),
                             // Row 2: Actions
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                _ActionButton(
-                                  icon: hasAnyBookmark
-                                      ? Icons.bookmark
-                                      : Icons.bookmark_border,
-                                  label: 'Stoor',
-                                  onTap: () {
-                                    context
-                                        .read<BibleBloc>()
-                                        .add(ToggleBookmarkSelected());
-                                    LwpSnackbar.showSuccess(
-                                        context, 'Boekmerk opgedateer');
-                                  },
-                                ),
-                                _ActionButton(
-                                  icon: Icons.note_alt_outlined,
-                                  label: 'Nota',
-                                  onTap: () =>
-                                      _showNoteBottomSheet(context, state),
-                                ),
-                                _ActionButton(
-                                  icon: Icons.image_outlined,
-                                  label: 'Beeld',
-                                  onTap: () =>
-                                      _openVerseImageEditor(context, state),
-                                ),
-                                _ActionButton(
-                                  icon: Icons.share_outlined,
-                                  label: 'Deel',
-                                  onTap: () =>
-                                      _shareSelectedVerses(context, state),
-                                ),
-                              ],
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: [
+                                  _ActionButton(
+                                    icon: hasAnyBookmark
+                                        ? Icons.bookmark
+                                        : Icons.bookmark_border,
+                                    label: 'Stoor',
+                                    onTap: () {
+                                      context
+                                          .read<BibleBloc>()
+                                          .add(ToggleBookmarkSelected());
+                                      LwpSnackbar.showSuccess(
+                                          context, 'Boekmerk opgedateer');
+                                    },
+                                  ),
+                                  _ActionButton(
+                                    icon: Icons.note_alt_outlined,
+                                    label: 'Nota',
+                                    onTap: () =>
+                                        _showNoteBottomSheet(context, state),
+                                  ),
+                                  _ActionButton(
+                                    icon: Icons.image_outlined,
+                                    label: 'Beeld',
+                                    onTap: () =>
+                                        _openVerseImageEditor(context, state),
+                                  ),
+                                  _ActionButton(
+                                    icon: Icons.share_outlined,
+                                    label: 'Deel',
+                                    onTap: () =>
+                                        _shareSelectedVerses(context, state),
+                                  ),
+                                  _ActionButton(
+                                    icon: Icons.compare_arrows,
+                                    label: 'Vergelyk',
+                                    onTap: () => _showCompareTranslationsSheet(
+                                        context, state),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
