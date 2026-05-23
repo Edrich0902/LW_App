@@ -10,9 +10,9 @@ This document tracks planned and potential features for the Lewende Woord Paarl 
 - [ ] **Daily Devotionals** - Short daily readings linked to current sermon series or themes.
 - [ ] **Bible Reading Plans** - Integrated plans with progress tracking directly in the app.
 - [ ] **Verse of the Day Notifications** - Push notifications to deliver the daily verse to users' lock screens.
-- [ ] **Enhanced Bible Interactivity** - Interactive verse selection for highlighting, sharing, and creating images.
-- [ ] **Verse Image Generator** - Tool to create beautiful, branded social media images from selected verses.
-- [ ] **Personal Verse Notes** - Ability to add and manage personal reflections tied to specific Bible verses.
+- [x] **Enhanced Bible Interactivity** - Interactive verse selection for highlighting, sharing, and creating images.
+- [x] **Verse Image Generator** - Tool to create beautiful, branded social media images from selected verses.
+- [x] **Personal Verse Notes** - Ability to add and manage personal reflections tied to specific Bible verses.
 
 ## 🎬 Media & Content Enhancements
 
@@ -27,6 +27,7 @@ This document tracks planned and potential features for the Lewende Woord Paarl 
 - [x] **Connect & Serve Groups** - Lists of community and volunteer groups.
 - [ ] **In-App Group Messaging** - Secure chat rooms for Connect Groups and Serve Groups to facilitate communication.
 - [ ] **Volunteer Scheduling (Roster)** - Integrated scheduling for Serve Groups so volunteers can check their duties.
+- [x] **Tithes & Offerings Screen** - Dynamic giving screen with EFT bank details (copyable) and SnapScan QR code, managed via Supabase.
 - [ ] **Integrated Giving** - Seamless in-app payments (e.g., PayFast, Peach Payments) for one-tap tithes and offerings.
 - [ ] **Event Check-in** - QR-code based check-in for children's ministry and special events.
 
