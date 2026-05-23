@@ -4,7 +4,9 @@ import 'package:lw_app/Blocs/Bible/bible_bloc.dart';
 import 'package:lw_app/Blocs/Bible/bible_event.dart';
 import 'package:lw_app/Blocs/Bible/bible_state.dart';
 import 'package:lw_app/Models/Bible/bible_models.dart';
+import 'package:lw_app/Screens/Bible/verse_image_editor.dart';
 import 'package:lw_app/Utils/share_helper.dart';
+import 'package:lw_app/Utils/verse_image_formatter.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
@@ -195,35 +197,31 @@ class BiblePage extends StatelessWidget {
 
   Future<void> _shareSelectedVerses(
       BuildContext context, BibleLoaded state) async {
-    if (state.selectedVerseNumbers.isEmpty) return;
+    final draft = buildVerseImageDraft(state);
+    if (draft == null) return;
 
-    final sortedNumbers = state.selectedVerseNumbers.toList()
-      ..sort((a, b) => int.parse(a).compareTo(int.parse(b)));
-
-    final buffer = StringBuffer();
-
-    for (final verseNum in sortedNumbers) {
-      final verse =
-          state.verses.firstWhereOrNull((v) => v.verseNumber == verseNum);
-      if (verse != null) {
-        if (buffer.isNotEmpty) buffer.write(' ');
-        buffer.write('[${verse.verseNumber}] ${verse.text}');
-      }
-    }
-
-    final citation =
-        '${state.currentBook.name} ${state.currentChapter.number}:${sortedNumbers.join(', ')} (${state.currentVersion.name})';
     final shareText =
-        '"${buffer.toString()}"\n\n- $citation\n\nGedeel via LW App';
+        '"${draft.verseText}"\n\n- ${draft.citation}\n\nGedeel via LW App';
 
     await ShareHelper.shareText(
       context,
       text: shareText,
-      subject: citation,
+      subject: draft.citation,
       clipboardMessage: 'Vers gekopieër na klembord',
     );
 
     if (context.mounted) context.read<BibleBloc>().add(ClearSelection());
+  }
+
+  void _openVerseImageEditor(BuildContext context, BibleLoaded state) {
+    final draft = buildVerseImageDraft(state);
+    if (draft == null) return;
+
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => VerseImageEditorScreen(draft: draft),
+      ),
+    );
   }
 
   void _showColorPicker(BuildContext context) {
@@ -359,13 +357,13 @@ class BiblePage extends StatelessWidget {
             icon: const Icon(Icons.bookmarks_outlined),
             tooltip: 'Gestoorde Verse',
             onPressed: () {
+              final bibleBloc = context.read<BibleBloc>();
               Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) => const SavedVersesPage()),
               ).then((_) {
                 // Refresh chapter interactions when returning
-                final bibleBloc = context.read<BibleBloc>();
                 if (bibleBloc.state is BibleLoaded) {
                   bibleBloc.add(LoadChapterInteractions());
                 }
@@ -654,6 +652,12 @@ class BiblePage extends StatelessWidget {
                                   label: 'Nota',
                                   onTap: () =>
                                       _showNoteBottomSheet(context, state),
+                                ),
+                                _ActionButton(
+                                  icon: Icons.image_outlined,
+                                  label: 'Beeld',
+                                  onTap: () =>
+                                      _openVerseImageEditor(context, state),
                                 ),
                                 _ActionButton(
                                   icon: Icons.share_outlined,

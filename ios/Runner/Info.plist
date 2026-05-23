@@ -27,11 +27,13 @@
 	<key>NSContactsUsageDescription</key>
     <string>Used for calendar integration</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Used for profile picture</string>
+	<string>Used to take photos for profile pictures and verse images</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Used to capture audio</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Used to pick image from gallery</string>
+	<string>Used to pick images from your gallery</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Used to save verse images to your photo library</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

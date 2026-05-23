@@ -27,6 +27,31 @@ class ShareHelper {
     }
   }
 
+  static Future<void> shareImage(
+    BuildContext context, {
+    required Uint8List bytes,
+    required String fileName,
+    String? subject,
+  }) async {
+    try {
+      await Share.shareXFiles(
+        [
+          XFile.fromData(
+            bytes,
+            name: fileName,
+            mimeType: 'image/png',
+          ),
+        ],
+        subject: subject,
+        sharePositionOrigin: _sharePositionOrigin(context),
+      );
+    } catch (_) {
+      if (context.mounted) {
+        LwpSnackbar.showError(context, 'Kon nie die beeld deel nie');
+      }
+    }
+  }
+
   static Rect _sharePositionOrigin(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
 
