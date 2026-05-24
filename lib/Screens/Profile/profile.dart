@@ -4,6 +4,7 @@ import 'package:lw_app/Blocs/User/user_bloc.dart';
 import 'package:lw_app/Screens/ProfileEdit/profile_edit.dart';
 import 'package:lw_app/Screens/Notes/notes.dart';
 import 'package:lw_app/Screens/Home/home.dart';
+import 'package:lw_app/Screens/PrayerRequests/my_prayer_requests.dart';
 import 'package:lw_app/Screens/Settings/settings.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Widgets/WhatsappContactFAB/whatsapp_contact_fab.dart';
@@ -130,7 +131,8 @@ class _ProfilePageState extends State<ProfilePage> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const ProfileEditPage()),
+                  MaterialPageRoute(
+                      builder: (context) => const ProfileEditPage()),
                 );
               },
             ),
@@ -142,6 +144,19 @@ class _ProfilePageState extends State<ProfilePage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const NotesPage()),
+                );
+              },
+            ),
+            const Divider(height: 1, indent: 56),
+            _buildMenuItem(
+              icon: Icons.favorite_outline,
+              title: 'My Gebedsversoeke',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const MyPrayerRequestsPage(),
+                  ),
                 );
               },
             ),
@@ -181,7 +196,8 @@ class _ProfilePageState extends State<ProfilePage> {
                             context.read<UserBloc>().add(const ResetUser());
                             Navigator.pushReplacement(
                               context,
-                              MaterialPageRoute(builder: (context) => const HomePage()),
+                              MaterialPageRoute(
+                                  builder: (context) => const HomePage()),
                             );
                           },
                           child: const Text(

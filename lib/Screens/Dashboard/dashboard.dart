@@ -10,6 +10,7 @@ import 'package:lw_app/Screens/SocialMedia/social_media.dart';
 import 'package:lw_app/Screens/Courses/courses.dart';
 import 'package:lw_app/Screens/FirstTimeVisitor/first_time_visitor_screen.dart';
 import 'package:lw_app/Screens/TithesOfferings/tithes_offerings.dart';
+import 'package:lw_app/Screens/PrayerRequests/prayer_requests.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:lw_app/Widgets/LwpAnnouncement/lwp_announcement.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
@@ -122,13 +123,14 @@ class _DashPageState extends State<DashPage> {
                       votd: state.votd,
                       onTap: () {
                         context.read<BibleBloc>().add(LoadSpecificPassage(
-                          version: state.votd.version,
-                          book: state.votd.book,
-                          chapter: state.votd.chapter,
-                        ));
+                              version: state.votd.version,
+                              book: state.votd.book,
+                              chapter: state.votd.chapter,
+                            ));
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const BiblePage()),
+                          MaterialPageRoute(
+                              builder: (context) => const BiblePage()),
                         );
                       },
                     );
@@ -187,22 +189,24 @@ class _DashPageState extends State<DashPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const TithesOfferingsScreen()),
+                            builder: (context) =>
+                                const TithesOfferingsScreen()),
                       );
                     },
                   ),
                   DashboardGridCard(
-                   title: "Eerste Keer Besoeker",
-                   icon: Icons.waving_hand,
-                   onTap: () {
-                     Navigator.push(
-                       context,
-                       MaterialPageRoute(
-                           builder: (context) =>
-                               const FirstTimeVisitorScreen()),
-                     );
-                   },
-                  ),                  DashboardGridCard(
+                    title: "Eerste Keer Besoeker",
+                    icon: Icons.waving_hand,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                const FirstTimeVisitorScreen()),
+                      );
+                    },
+                  ),
+                  DashboardGridCard(
                     title: "Volg Ons",
                     icon: Icons.share,
                     onTap: () {
@@ -221,6 +225,18 @@ class _DashPageState extends State<DashPage> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => const CoursesPage()),
+                      );
+                    },
+                  ),
+                  DashboardGridCard(
+                    title: "Gebedsversoeke",
+                    icon: Icons.favorite_outline,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const PrayerRequestsPage(),
+                        ),
                       );
                     },
                   ),

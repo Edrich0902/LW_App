@@ -33,6 +33,8 @@ import 'package:lw_app/Blocs/Votd/votd_bloc.dart';
 import 'package:lw_app/Blocs/Votd/votd_event.dart';
 import 'package:lw_app/Services/Bible/bible_service.dart';
 import 'package:lw_app/Blocs/TithesOfferings/tithes_offerings_bloc.dart';
+import 'package:lw_app/Blocs/PrayerRequests/prayer_requests_bloc.dart';
+import 'package:lw_app/Blocs/MyPrayerRequests/my_prayer_requests_bloc.dart';
 
 // Cloudinary
 import 'package:cloudinary_flutter/cloudinary_context.dart';
@@ -105,17 +107,25 @@ Future<void> main() async {
           create: (_) => UserAnnouncementBloc(),
         ),
         BlocProvider<BibleBloc>(
-          create: (_) => BibleBloc(bibleService: BibleService())..add(LoadBibleInitial()),
+          create: (_) =>
+              BibleBloc(bibleService: BibleService())..add(LoadBibleInitial()),
         ),
         BlocProvider<CompareTranslationsBloc>(
           lazy: true,
           create: (_) => CompareTranslationsBloc(bibleService: BibleService()),
         ),
         BlocProvider<VotdBloc>(
-          create: (_) => VotdBloc(bibleService: BibleService())..add(LoadVotd()),
+          create: (_) =>
+              VotdBloc(bibleService: BibleService())..add(LoadVotd()),
         ),
         BlocProvider<TithesOfferingsBloc>(
           create: (_) => TithesOfferingsBloc(),
+        ),
+        BlocProvider<PrayerRequestsBloc>(
+          create: (_) => PrayerRequestsBloc(),
+        ),
+        BlocProvider<MyPrayerRequestsBloc>(
+          create: (_) => MyPrayerRequestsBloc(),
         ),
         BlocProvider<ThemeBloc>(
           create: (_) => ThemeBloc()..add(const InitThemeEvent()),
