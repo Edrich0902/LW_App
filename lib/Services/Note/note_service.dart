@@ -42,15 +42,16 @@ class NoteService {
     }
   }
 
-  Future<void> createNote({
+  Future<Note> createNote({
     required Note note
   }) async {
     try {
-      await supabase.from('notes').insert({
+      final response = await supabase.from('notes').insert({
         'user_id': _auth.currentUser?.id,
         'title': note.title,
         'content': note.content,
-      });
+      }).select().single();
+      return Note.fromJson(Map<String, dynamic>.from(response));
     } catch (error) {
       throw error.toString();
     }

@@ -1,5 +1,7 @@
 import 'package:lw_app/Screens/Splash/splash_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:lw_app/Themes/custom_theme.dart';
 import 'package:lw_app/Utils/environment.dart';
@@ -137,6 +139,16 @@ class App extends StatelessWidget {
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: state.themeMode,
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            FlutterQuillLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('en'),
+            Locale('af'),
+          ],
           home: const LwpSplashScreen(),
         );
       },

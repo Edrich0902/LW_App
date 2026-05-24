@@ -33,8 +33,11 @@ class NoteUpdate extends NoteEditState {
 }
 
 class NoteUpdateSuccess extends NoteEditState {
+  NoteUpdateSuccess() : _at = DateTime.now();
+  final DateTime _at;
+
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [_at];
 }
 
 class NoteCreate extends NoteEditState {
@@ -47,8 +50,12 @@ class NoteCreate extends NoteEditState {
 }
 
 class NoteCreateSuccess extends NoteEditState {
+  final Note note;
+
+  const NoteCreateSuccess({required this.note});
+
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [note];
 }
 
 class NoteError extends NoteEditState {

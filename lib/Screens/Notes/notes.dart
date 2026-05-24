@@ -7,6 +7,7 @@ import 'package:lw_app/Screens/NotesEdit/notes_edit.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
+import 'package:lw_app/Utils/quill_helper.dart';
 
 class NotesPage extends StatefulWidget {
   const NotesPage({super.key});
@@ -122,7 +123,7 @@ class _NotesPageState extends State<NotesPage> {
                   ),
                 ),
                 subtitle: Text(
-                  note.content ?? '',
+                  QuillHelper.plainTextPreview(note.content),
                   overflow: TextOverflow.ellipsis,
                   maxLines: 2,
                   style: theme.textTheme.bodyMedium,
