@@ -13,7 +13,8 @@ class NoteService {
       final response = await supabase
           .from('notes')
           .select('*')
-          .eq('user_id', _auth.currentUser!.id);
+          .eq('user_id', _auth.currentUser!.id)
+          .order('updated_at', ascending: false);
 
       // TODO: make response handler for list responses
       List<dynamic> listResponse = response;

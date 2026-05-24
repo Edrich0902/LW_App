@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:lw_app/Blocs/Notes/notes_bloc.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 import 'package:lw_app/Models/Note/note.dart';
@@ -17,6 +18,8 @@ class NotesPage extends StatefulWidget {
 }
 
 class _NotesPageState extends State<NotesPage> {
+  final TextEditingController _searchController = TextEditingController();
+
   @override
   void initState() {
     context.read<NotesBloc>().add(const LoadNotes());
@@ -24,17 +27,30 @@ class _NotesPageState extends State<NotesPage> {
   }
 
   @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  List<Note> _filterNotes(List<Note> notes) {
+    final query = _searchController.text.toLowerCase().trim();
+    if (query.isEmpty) return notes;
+    return notes
+        .where((n) => (n.title ?? '').toLowerCase().contains(query))
+        .toList();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    NotesBloc notesBloc = BlocProvider.of<NotesBloc>(context);
+    final notesBloc = BlocProvider.of<NotesBloc>(context);
 
     return BlocListener<NotesBloc, NotesState>(
       listener: (context, state) {
         if (state is NotesDeleteSuccess) {
-          LwpSnackbar.showSuccess(context, "Nota verwyder");
+          LwpSnackbar.showSuccess(context, 'Nota verwyder');
         }
-
         if (state is NotesError) {
-          LwpSnackbar.showError(context, "Iets het fout gegaan");
+          LwpSnackbar.showError(context, 'Iets het fout gegaan');
         }
       },
       child: Scaffold(
@@ -58,34 +74,73 @@ class _NotesPageState extends State<NotesPage> {
               if (state is NotesLoading) {
                 return const LwpLoader();
               } else if (state is NotesSuccess) {
-                if (state.data.isEmpty) {
-                  return const LwpEmpty(message: 'Geen notas gevind nie');
-                }
+                final filtered = _filterNotes(state.data);
 
-                return ListView.builder(
-                  padding: const EdgeInsets.all(16.0),
-                  itemCount: state.data.length,
-                  itemBuilder: (context, index) {
-                    final note = state.data.elementAt(index);
-                    return _createNoteCard(
-                      note,
-                      () {
-                        notesBloc.add(
-                          DeleteNote(noteId: note.id ?? ''),
-                        );
-                      },
-                      () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => NotesEditPage(
-                              noteId: note.id ?? '',
+                return Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                      child: TextField(
+                        controller: _searchController,
+                        onChanged: (_) => setState(() {}),
+                        decoration: InputDecoration(
+                          hintText: 'Soek notas...',
+                          prefixIcon: const Icon(Icons.search),
+                          filled: true,
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 0),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(24.0),
+                            borderSide: BorderSide.none,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(24.0),
+                            borderSide: BorderSide.none,
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(24.0),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).primaryColor,
+                              width: 1.5,
                             ),
                           ),
-                        );
-                      },
-                    );
-                  },
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: filtered.isEmpty
+                          ? const LwpEmpty(message: 'Geen notas gevind nie')
+                          : RefreshIndicator(
+                              onRefresh: () async =>
+                                  notesBloc.add(const LoadNotes()),
+                              child: ListView.separated(
+                                padding: const EdgeInsets.fromLTRB(
+                                    16, 8, 16, 100),
+                                itemCount: filtered.length,
+                                separatorBuilder: (_, __) =>
+                                    const SizedBox(height: 12),
+                                itemBuilder: (context, index) {
+                                  final note = filtered[index];
+                                  return _buildNoteCard(
+                                    note,
+                                    onDelete: () => _confirmDelete(
+                                        context,
+                                        () => notesBloc.add(
+                                            DeleteNote(noteId: note.id ?? ''))),
+                                    onEdit: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => NotesEditPage(
+                                          noteId: note.id ?? '',
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                    ),
+                  ],
                 );
               } else {
                 return const LwpError();
@@ -97,48 +152,84 @@ class _NotesPageState extends State<NotesPage> {
     );
   }
 
-  Widget _createNoteCard(Note note, VoidCallback delete, VoidCallback edit) {
+  Widget _buildNoteCard(
+    Note note, {
+    required VoidCallback onDelete,
+    required VoidCallback onEdit,
+  }) {
     final theme = Theme.of(context);
+    final preview = QuillHelper.plainTextPreview(note.content);
+    final date = _formatDate(note.updatedAt ?? note.createdAt);
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 16),
+      elevation: 0,
+      margin: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24.0),
+        side: BorderSide(color: Colors.grey.withValues(alpha: 0.15)),
+      ),
       child: InkWell(
-        onTap: edit,
+        onTap: onEdit,
         borderRadius: BorderRadius.circular(24.0),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: theme.primaryColor.withValues(alpha: 0.1),
-                  child: Icon(Icons.note_alt_outlined, color: theme.primaryColor),
-                ),
-                title: Text(
-                  note.title ?? '',
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  CircleAvatar(
+                    backgroundColor:
+                        theme.primaryColor.withValues(alpha: 0.1),
+                    child: Icon(Icons.note_alt_outlined,
+                        color: theme.primaryColor, size: 20),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          note.title ?? '',
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        if (date != null) ...[
+                          const SizedBox(height: 2),
+                          Text(
+                            date,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: onDelete,
+                    icon: const Icon(Icons.delete_outline,
+                        color: Colors.redAccent, size: 20),
+                    visualDensity: VisualDensity.compact,
+                  ),
+                ],
+              ),
+              if (preview.isNotEmpty) ...[
+                const SizedBox(height: 10),
+                Text(
+                  preview,
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: Colors.grey,
+                    height: 1.4,
                   ),
                 ),
-                subtitle: Text(
-                  QuillHelper.plainTextPreview(note.content),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 2,
-                  style: theme.textTheme.bodyMedium,
-                ),
-                trailing: IconButton(
-                  onPressed: () {
-                    confirmationDialog(
-                      context,
-                      'Is jy seker jy wil hierdie nota verwyder?',
-                      delete,
-                    );
-                  },
-                  icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                ),
-              ),
+              ],
             ],
           ),
         ),
@@ -146,19 +237,25 @@ class _NotesPageState extends State<NotesPage> {
     );
   }
 
-  void confirmationDialog(
-      BuildContext context, String message, VoidCallback confirm) {
+  String? _formatDate(String? raw) {
+    if (raw == null || raw.isEmpty) return null;
+    final dt = DateTime.tryParse(raw);
+    if (dt == null) return null;
+    return DateFormat('dd MMM yyyy, HH:mm').format(dt.toLocal());
+  }
+
+  void _confirmDelete(BuildContext context, VoidCallback confirm) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Verwyder Nota'),
-          content: Text(message),
+          content:
+              const Text('Is jy seker jy wil hierdie nota verwyder?'),
           actions: [
             TextButton(
-              onPressed: () {
-                Navigator.of(context, rootNavigator: true).pop();
-              },
+              onPressed: () =>
+                  Navigator.of(context, rootNavigator: true).pop(),
               child: const Text('Kanselleer'),
             ),
             ElevatedButton(
