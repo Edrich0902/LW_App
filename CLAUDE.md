@@ -57,6 +57,12 @@ LwpSnackbar.showError(context, 'Iets het verkeerd gegaan');
 
 **Typing:** Always use explicit types. Avoid `dynamic`. Use sealed classes / enums for state representation. Models must be immutable.
 
+**Sharing (`share_plus`):** Always pass `sharePositionOrigin` — iOS crashes without it (`sharePositionOrigin: argument must be set`). Get it from the triggering widget's `BuildContext`:
+```dart
+final box = context.findRenderObject() as RenderBox?;
+Share.share(text, sharePositionOrigin: box != null ? box.localToGlobal(Offset.zero) & box.size : null);
+```
+
 **Commit messages:** `feature:`, `refactor:`, `chore:`, `fix:` prefixes — e.g. `feature: add sermon details view`.
 
 ## Theme Reference

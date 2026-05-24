@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:lw_app/Blocs/NoteEdit/note_edit_bloc.dart';
@@ -147,6 +148,7 @@ class _NotesEditPageState extends State<NotesEditPage> {
           if (state is NoteCreateSuccess) _initForm(state.note);
           if (state is NoteSuccess) _initForm(state.note);
           if (state is NoteUpdateSuccess) {
+            HapticFeedback.lightImpact();
             setState(() => _showSaved = true);
             _savedTimer?.cancel();
             _savedTimer = Timer(const Duration(seconds: 2), () {

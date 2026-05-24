@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:lw_app/Blocs/Notes/notes_bloc.dart';
@@ -47,6 +48,7 @@ class _NotesPageState extends State<NotesPage> {
     return BlocListener<NotesBloc, NotesState>(
       listener: (context, state) {
         if (state is NotesDeleteSuccess) {
+          HapticFeedback.mediumImpact();
           LwpSnackbar.showSuccess(context, 'Nota verwyder');
         }
         if (state is NotesError) {

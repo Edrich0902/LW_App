@@ -17,6 +17,8 @@ class SermonsPage extends StatefulWidget {
 }
 
 class _SermonsPageState extends State<SermonsPage> {
+  final TextEditingController _searchController = TextEditingController();
+
   @override
   void initState() {
     context.read<SermonsBloc>().add(const LoadSermons());
@@ -24,13 +26,27 @@ class _SermonsPageState extends State<SermonsPage> {
   }
 
   @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  List<YoutubeVideo> _filterSermons(List<YoutubeVideo> videos) {
+    final query = _searchController.text.toLowerCase().trim();
+    if (query.isEmpty) return videos;
+    return videos.where((v) {
+      final title = (v.customTitle ?? v.title).toLowerCase();
+      final author = (v.customAuthor ?? v.authorName).toLowerCase();
+      return title.contains(query) || author.contains(query);
+    }).toList();
+  }
+
+  @override
   Widget build(BuildContext context) {
     SermonsBloc sermonsBloc = BlocProvider.of<SermonsBloc>(context);
 
     return BlocListener<SermonsBloc, SermonsState>(
-      listener: (context, state) {
-        // Listen to state updates and execute logic here
-      },
+      listener: (context, state) {},
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Preke'),
@@ -43,22 +59,55 @@ class _SermonsPageState extends State<SermonsPage> {
                 return const LwpLoader(message: "Laai Preke");
               } else if (state is SermonsSuccess) {
                 if (state.youtubeVideos.isNotEmpty) {
-                  return RefreshIndicator(
-                    onRefresh: () async => sermonsBloc.add(const LoadSermons()),
-                    child: ListView.builder(
-                      padding: const EdgeInsets.all(16.0),
-                      itemCount: state.youtubeVideos.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return _buildVideoCard(state.youtubeVideos[index], () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => SermonDetailPage(video: state.youtubeVideos[index]),
-                            ),
-                          );
-                        });
-                      },
-                    ),
+                  return StatefulBuilder(
+                    builder: (context, setInnerState) {
+                      final filtered = _filterSermons(state.youtubeVideos);
+                      return RefreshIndicator(
+                        onRefresh: () async => sermonsBloc.add(const LoadSermons()),
+                        child: ListView.builder(
+                          padding: const EdgeInsets.all(16.0),
+                          itemCount: filtered.length + 1,
+                          itemBuilder: (BuildContext context, int index) {
+                            if (index == 0) {
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 16.0),
+                                child: TextField(
+                                  controller: _searchController,
+                                  onChanged: (_) => setInnerState(() {}),
+                                  decoration: InputDecoration(
+                                    hintText: 'Soek preke...',
+                                    prefixIcon: const Icon(Icons.search),
+                                    suffixIcon: _searchController.text.isNotEmpty
+                                        ? IconButton(
+                                            icon: const Icon(Icons.clear),
+                                            onPressed: () {
+                                              _searchController.clear();
+                                              setInnerState(() {});
+                                            },
+                                          )
+                                        : null,
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(24.0),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                    filled: true,
+                                  ),
+                                ),
+                              );
+                            }
+                            final video = filtered[index - 1];
+                            return _buildVideoCard(video, () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SermonDetailPage(video: video),
+                                ),
+                              );
+                            });
+                          },
+                        ),
+                      );
+                    },
                   );
                 } else {
                   return const LwpEmpty(message: "Geen Preke Beskikbaar");
@@ -66,7 +115,7 @@ class _SermonsPageState extends State<SermonsPage> {
               } else {
                 return const LwpError();
               }
-            }
+            },
           ),
         ),
       ),

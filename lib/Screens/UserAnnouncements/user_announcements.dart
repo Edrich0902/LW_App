@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
@@ -44,6 +45,7 @@ class _UserAnnouncementsPageState extends State<UserAnnouncementsPage> {
                         key: Key(announcement.id ?? index.toString()),
                         direction: DismissDirection.endToStart,
                         onDismissed: (direction) {
+                          HapticFeedback.mediumImpact();
                           context.read<UserAnnouncementBloc>().add(DismissUserAnnouncement(announcement.id!));
                         },
                         background: Container(

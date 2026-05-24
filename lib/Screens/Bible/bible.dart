@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/Bible/bible_bloc.dart';
 import 'package:lw_app/Blocs/Bible/bible_event.dart';
@@ -673,6 +674,7 @@ class BiblePage extends StatelessWidget {
                                         : Icons.bookmark_border,
                                     label: 'Stoor',
                                     onTap: () {
+                                      HapticFeedback.lightImpact();
                                       context
                                           .read<BibleBloc>()
                                           .add(ToggleBookmarkSelected());

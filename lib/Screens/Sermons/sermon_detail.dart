@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lw_app/Models/YoutubeVideo/youtube_video.dart';
 import 'package:lw_app/Widgets/LwpYoutubePlayer/lwp_youtube_player.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:share_plus/share_plus.dart';
 
 class SermonDetailPage extends StatelessWidget {
   final YoutubeVideo video;
@@ -16,6 +17,13 @@ class SermonDetailPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Preek Besonderhede'),
         elevation: 0,
+        actions: [
+          if (video.youtubeLink != null)
+            IconButton(
+              icon: const Icon(Icons.share),
+              onPressed: () => _shareVideo(context),
+            ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -114,6 +122,19 @@ class SermonDetailPage extends StatelessWidget {
   void _launchVideo() {
     if (video.youtubeLink != null) {
       launchUrl(Uri.parse(video.youtubeLink!));
+    }
+  }
+
+  void _shareVideo(BuildContext context) {
+    if (video.youtubeLink != null) {
+      final title = video.customTitle ?? video.title;
+      final box = context.findRenderObject() as RenderBox?;
+      Share.share(
+        '$title\n${video.youtubeLink}',
+        sharePositionOrigin: box != null
+            ? box.localToGlobal(Offset.zero) & box.size
+            : null,
+      );
     }
   }
 
