@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lw_app/Models/YoutubeVideo/youtube_video.dart';
+import 'package:lw_app/Widgets/LwpYoutubePlayer/lwp_youtube_player.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SermonDetailPage extends StatelessWidget {
@@ -20,13 +21,10 @@ class SermonDetailPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            AspectRatio(
-              aspectRatio: 16 / 9,
-              child: Image.network(
-                video.thumbnailUrl,
-                fit: BoxFit.cover,
-                width: double.infinity,
-              ),
+            LwpYoutubePlayer(
+              youtubeLink: video.youtubeLink,
+              thumbnailUrl: video.thumbnailUrl,
+              onOpenExternal: _launchVideo,
             ),
             Padding(
               padding: const EdgeInsets.all(24.0),
@@ -69,13 +67,12 @@ class SermonDetailPage extends StatelessWidget {
                   const SizedBox(height: 32),
                   SizedBox(
                     width: double.infinity,
-                    child: ElevatedButton.icon(
+                    child: OutlinedButton.icon(
                       onPressed: () => _launchVideo(),
-                      icon: const Icon(Icons.play_circle_fill),
+                      icon: const Icon(Icons.open_in_new),
                       label: const Text("Kyk op YouTube"),
-                      style: ElevatedButton.styleFrom(
+                      style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
-                        elevation: 0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(24.0),
                         ),
