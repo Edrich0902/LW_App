@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:lw_app/Models/Event/event.dart';
-import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lw_app/Blocs/Events/events_bloc.dart';
-import 'package:lw_app/Models/Event/event_type.dart';
-import 'package:lw_app/Utils/date_formatter.dart';
-import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
-import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
-import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 import 'package:cloudinary_flutter/image/cld_image.dart';
-import 'package:lw_app/Widgets/LwpAnnouncement/lwp_announcement.dart';
+import 'package:lw_app/Blocs/Events/events_bloc.dart';
+import 'package:lw_app/Blocs/EventRsvp/event_rsvp_bloc.dart';
+import 'package:lw_app/Models/Event/event.dart';
+import 'package:lw_app/Models/Event/event_type.dart';
 import 'package:lw_app/Screens/UpcomingEvents/upcoming_event_detail.dart';
+import 'package:lw_app/Utils/date_formatter.dart';
+import 'package:lw_app/Widgets/LwpAnnouncement/lwp_announcement.dart';
+import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
+import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
+import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
+import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 
 class UpcomingEventsPage extends StatefulWidget {
   const UpcomingEventsPage({super.key});
@@ -21,22 +22,22 @@ class UpcomingEventsPage extends StatefulWidget {
 
 class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
   late DateTime currentDate;
+
   @override
   void initState() {
     super.initState();
-
     currentDate = DateTime.now();
-    context.read<EventsBloc>().add(LoadUpcomingEvents(eventType: EventType.ONCE, date: currentDate));
+    context.read<EventsBloc>().add(
+          LoadUpcomingEvents(eventType: EventType.ONCE, date: currentDate),
+        );
   }
 
   @override
   Widget build(BuildContext context) {
-    EventsBloc eventsBloc = BlocProvider.of<EventsBloc>(context);
+    final eventsBloc = context.read<EventsBloc>();
 
     return BlocListener<EventsBloc, EventsState>(
-      listener: (context, state) {
-        // Listen to state updates and execute logic here
-      },
+      listener: (context, state) {},
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Opkomende Gebeure'),
@@ -50,17 +51,27 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
               } else if (state is EventsSuccess) {
                 if (state.events.isNotEmpty) {
                   return RefreshIndicator(
-                    onRefresh: () async => eventsBloc.add(LoadUpcomingEvents(eventType: EventType.ONCE, date: currentDate)),
+                    onRefresh: () async => eventsBloc.add(
+                      LoadUpcomingEvents(
+                          eventType: EventType.ONCE, date: currentDate),
+                    ),
                     child: ListView.separated(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 24.0),
                       itemCount: state.events.length,
-                      separatorBuilder: (context, index) => const SizedBox(height: 16.0),
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: 16.0),
                       itemBuilder: (BuildContext context, int index) {
-                        return _buildEventCard(state.events[index], () {
+                        final event = state.events[index];
+                        return _buildEventCard(event, () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => UpcomingEventDetailPage(event: state.events[index]),
+                              builder: (_) => BlocProvider(
+                                create: (_) => EventRsvpBloc()
+                                  ..add(InitEventRsvp(event)),
+                                child: UpcomingEventDetailPage(event: event),
+                              ),
                             ),
                           );
                         });
@@ -82,6 +93,7 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
 
   Widget _buildEventCard(Event event, VoidCallback onTap) {
     final theme = Theme.of(context);
+    final hasRsvps = event.attendingCount + event.interestedCount > 0;
 
     return Card(
       elevation: 0,
@@ -101,7 +113,8 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
               child: Hero(
                 tag: 'event_image_${event.id}',
                 child: CldImageWidget(
-                  publicId: event.bannerPublicId ?? 'samples/cloudinary-icon',
+                  publicId:
+                      event.bannerPublicId ?? 'samples/cloudinary-icon',
                   fit: BoxFit.cover,
                 ),
               ),
@@ -148,6 +161,39 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
                       ),
                     ],
                   ),
+                  if (hasRsvps) ...[
+                    const SizedBox(height: 8.0),
+                    Row(
+                      children: [
+                        Icon(Icons.check_circle_outline_rounded,
+                            size: 14.0, color: theme.hintColor),
+                        const SizedBox(width: 4.0),
+                        Text(
+                          '${event.attendingCount} kom',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.hintColor,
+                          ),
+                        ),
+                        if (event.interestedCount > 0) ...[
+                          Text(
+                            '  •  ',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.hintColor,
+                            ),
+                          ),
+                          Icon(Icons.star_outline_rounded,
+                              size: 14.0, color: theme.hintColor),
+                          const SizedBox(width: 4.0),
+                          Text(
+                            '${event.interestedCount} stel belang',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.hintColor,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ],
                 ],
               ),
             ),

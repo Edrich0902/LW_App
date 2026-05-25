@@ -20,8 +20,33 @@ class LoadUpcomingEvents extends EventsEvent {
   final String? eventType;
   final DateTime? date;
 
-  const LoadUpcomingEvents({ this.eventType, this.date });
+  const LoadUpcomingEvents({this.eventType, this.date});
 
   @override
   List<Object?> get props => [eventType, date];
+}
+
+class UpdateEventRsvpCounts extends EventsEvent {
+  final String eventId;
+  final int attendingCount;
+  final int interestedCount;
+  final int notAttendingCount;
+  final RsvpStatus? userStatus;
+
+  const UpdateEventRsvpCounts({
+    required this.eventId,
+    required this.attendingCount,
+    required this.interestedCount,
+    required this.notAttendingCount,
+    this.userStatus,
+  });
+
+  @override
+  List<Object?> get props => [
+        eventId,
+        attendingCount,
+        interestedCount,
+        notAttendingCount,
+        userStatus,
+      ];
 }
