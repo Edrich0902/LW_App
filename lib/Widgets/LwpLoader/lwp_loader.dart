@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:lw_app/Themes/lwp_tokens.dart';
 
-class LwpLoader extends StatefulWidget {
+class LwpLoader extends StatelessWidget {
   const LwpLoader({
     super.key,
     this.message = '',
@@ -9,28 +10,21 @@ class LwpLoader extends StatefulWidget {
   final String? message;
 
   @override
-  State<LwpLoader> createState() => _LwpLoaderState();
-}
-
-class _LwpLoaderState extends State<LwpLoader> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(LwpSpacing.xs),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const CircularProgressIndicator(),
-            const SizedBox(height: 16.0),
-            Text(widget.message == null ? "Laai" : widget.message!, style: theme.textTheme.titleLarge),
+            const SizedBox(height: LwpSpacing.md),
+            Text(
+              (message == null || message!.isEmpty) ? "Laai" : message!,
+              style: theme.textTheme.titleLarge,
+            ),
           ],
         ),
       ),

@@ -6,6 +6,8 @@ import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Blocs/UserAnnouncements/user_announcement_bloc.dart';
 import 'package:lw_app/Models/UserAnnouncement/user_announcement.dart';
+import 'package:lw_app/Themes/lwp_tokens.dart';
+import 'package:lw_app/Widgets/LwpBottomSheet/lwp_bottom_sheet.dart';
 import 'package:cloudinary_flutter/image/cld_image.dart';
 
 class UserAnnouncementsPage extends StatefulWidget {
@@ -25,8 +27,7 @@ class _UserAnnouncementsPageState extends State<UserAnnouncementsPage> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<UserAnnouncementBloc, UserAnnouncementState>(
-      listener: (context, state) {
-      },
+      listener: (context, state) {},
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Aankondigings'),
@@ -37,7 +38,8 @@ class _UserAnnouncementsPageState extends State<UserAnnouncementsPage> {
               if (state is UserAnnouncementSuccess) {
                 if (state.userAnnouncements.isNotEmpty) {
                   return ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 12.0),
                     itemCount: state.userAnnouncements.length,
                     itemBuilder: (context, index) {
                       final announcement = state.userAnnouncements[index];
@@ -46,13 +48,15 @@ class _UserAnnouncementsPageState extends State<UserAnnouncementsPage> {
                         direction: DismissDirection.endToStart,
                         onDismissed: (direction) {
                           HapticFeedback.mediumImpact();
-                          context.read<UserAnnouncementBloc>().add(DismissUserAnnouncement(announcement.id!));
+                          context
+                              .read<UserAnnouncementBloc>()
+                              .add(DismissUserAnnouncement(announcement.id!));
                         },
                         background: Container(
                           margin: const EdgeInsets.symmetric(vertical: 8.0),
                           decoration: BoxDecoration(
                             color: Theme.of(context).primaryColor.withAlpha(50),
-                            borderRadius: BorderRadius.circular(24.0),
+                            borderRadius: LwpRadii.lgAll,
                           ),
                           alignment: Alignment.centerRight,
                           padding: const EdgeInsets.only(right: 20.0),
@@ -86,16 +90,15 @@ class _UserAnnouncementsPageState extends State<UserAnnouncementsPage> {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       child: Card(
-        elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24.0),
+          borderRadius: LwpRadii.lgAll,
           side: BorderSide(
             color: theme.dividerColor.withAlpha(50),
             width: 1,
           ),
         ),
         child: InkWell(
-          borderRadius: BorderRadius.circular(24.0),
+          borderRadius: LwpRadii.lgAll,
           onTap: () => _showAnnouncementDetails(context, announcement),
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -103,9 +106,10 @@ class _UserAnnouncementsPageState extends State<UserAnnouncementsPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(16.0),
+                  borderRadius: LwpRadii.smAll,
                   child: CldImageWidget(
-                    publicId: announcement.imagePublicId ?? 'samples/cloudinary-icon',
+                    publicId:
+                        announcement.imagePublicId ?? 'samples/cloudinary-icon',
                     fit: BoxFit.cover,
                     width: 80,
                     height: 80,
@@ -129,7 +133,8 @@ class _UserAnnouncementsPageState extends State<UserAnnouncementsPage> {
                       Text(
                         announcement.body,
                         style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.textTheme.bodyMedium?.color?.withAlpha(200),
+                          color:
+                              theme.textTheme.bodyMedium?.color?.withAlpha(200),
                         ),
                         maxLines: 3,
                         softWrap: true,
@@ -146,7 +151,8 @@ class _UserAnnouncementsPageState extends State<UserAnnouncementsPage> {
     );
   }
 
-  void _showAnnouncementDetails(BuildContext context, UserAnnouncement announcement) {
+  void _showAnnouncementDetails(
+      BuildContext context, UserAnnouncement announcement) {
     final theme = Theme.of(context);
 
     showModalBottomSheet(
@@ -156,22 +162,18 @@ class _UserAnnouncementsPageState extends State<UserAnnouncementsPage> {
       builder: (context) => Container(
         decoration: BoxDecoration(
           color: theme.scaffoldBackgroundColor,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+          borderRadius: LwpRadii.lgTop,
         ),
-        padding: const EdgeInsets.only(bottom: 32),
+        padding: const EdgeInsets.only(bottom: LwpSpacing.xl),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Center(
-              child: Container(
-                margin: const EdgeInsets.only(top: 12, bottom: 8),
-                height: 4,
-                width: 40,
-                decoration: BoxDecoration(
-                  color: theme.dividerColor.withAlpha(50),
-                  borderRadius: BorderRadius.circular(2),
-                ),
+            const Center(
+              child: Padding(
+                padding:
+                    EdgeInsets.only(top: LwpSpacing.sm, bottom: LwpSpacing.xs),
+                child: LwpSheetHandle(),
               ),
             ),
             if (announcement.imagePublicId != null)
@@ -180,7 +182,7 @@ class _UserAnnouncementsPageState extends State<UserAnnouncementsPage> {
                 height: 250,
                 margin: const EdgeInsets.all(16),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: LwpRadii.lgAll,
                   child: CldImageWidget(
                     publicId: announcement.imagePublicId!,
                     fit: BoxFit.cover,

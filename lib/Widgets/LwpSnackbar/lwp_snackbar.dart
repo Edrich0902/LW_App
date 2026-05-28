@@ -1,6 +1,7 @@
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:lw_app/Themes/custom_theme.dart';
+import 'package:lw_app/Themes/lwp_tokens.dart';
 
 enum LwpSnackbarType { success, error, info, warning }
 
@@ -23,7 +24,8 @@ class LwpSnackbar {
     _show(context, message, LwpSnackbarType.warning);
   }
 
-  static void _show(BuildContext context, String message, LwpSnackbarType type) {
+  static void _show(
+      BuildContext context, String message, LwpSnackbarType type) {
     AnimatedSnackBar(
       builder: (context) {
         return _LwpSnackbarWidget(
@@ -56,7 +58,7 @@ class _LwpSnackbarWidget extends StatelessWidget {
     Color iconColor;
 
     if (isDarkMode) {
-      // Dark Mode Branding: Gold background, Black text
+      // Dark Mode Branding: Blue background, Black text
       backgroundColor = DarkColors.primary;
       textColor = Colors.black;
       iconColor = Colors.black;
@@ -94,7 +96,7 @@ class _LwpSnackbarWidget extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
       decoration: BoxDecoration(
         color: backgroundColor,
-        borderRadius: BorderRadius.circular(24.0),
+        borderRadius: LwpRadii.lgAll,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.2),

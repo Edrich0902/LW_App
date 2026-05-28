@@ -7,6 +7,7 @@ import 'package:lw_app/Blocs/Events/events_bloc.dart';
 import 'package:lw_app/Models/Event/event.dart';
 import 'package:lw_app/Models/Event/event_type.dart';
 import 'package:lw_app/Models/Event/rsvp_status.dart';
+import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 
@@ -45,8 +46,7 @@ class UpcomingEventDetailPage extends StatelessWidget {
               child: Hero(
                 tag: 'event_image_${event.id}',
                 child: CldImageWidget(
-                  publicId:
-                      event.bannerPublicId ?? 'samples/cloudinary-icon',
+                  publicId: event.bannerPublicId ?? 'samples/cloudinary-icon',
                   fit: BoxFit.cover,
                 ),
               ),
@@ -78,9 +78,7 @@ class UpcomingEventDetailPage extends StatelessWidget {
                     width: double.infinity,
                     decoration: BoxDecoration(
                       color: theme.scaffoldBackgroundColor,
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(24.0),
-                      ),
+                      borderRadius: LwpRadii.lgTop,
                     ),
                     padding: const EdgeInsets.symmetric(
                         horizontal: 24.0, vertical: 32.0),
@@ -96,8 +94,8 @@ class UpcomingEventDetailPage extends StatelessWidget {
                                 children: [
                                   Text(
                                     event.title,
-                                    style: theme.textTheme.headlineSmall
-                                        ?.copyWith(
+                                    style:
+                                        theme.textTheme.headlineSmall?.copyWith(
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -109,7 +107,7 @@ class UpcomingEventDetailPage extends StatelessWidget {
                                       color: theme.primaryColor
                                           .withValues(alpha: 0.1),
                                       borderRadius:
-                                          BorderRadius.circular(20),
+                                          BorderRadius.circular(LwpRadii.pill),
                                     ),
                                     child: Text(
                                       event.category,
@@ -170,9 +168,7 @@ class UpcomingEventDetailPage extends StatelessWidget {
                             icon: const Icon(Icons.event_available_rounded),
                             label: const Text("Voeg by Kalender"),
                             style: ElevatedButton.styleFrom(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 16),
-                              elevation: 0,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
                             ),
                           ),
                         ),
@@ -262,9 +258,7 @@ class UpcomingEventDetailPage extends StatelessWidget {
 
                   return ActionChip(
                     label: Text(label),
-                    backgroundColor: isSelected
-                        ? theme.primaryColor
-                        : null,
+                    backgroundColor: isSelected ? theme.primaryColor : null,
                     labelStyle: TextStyle(
                       color: isSelected
                           ? theme.colorScheme.onPrimary
@@ -316,7 +310,7 @@ class UpcomingEventDetailPage extends StatelessWidget {
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: theme.primaryColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: LwpRadii.smAll,
             ),
             child: Icon(icon, color: theme.primaryColor, size: 20),
           ),
@@ -372,10 +366,8 @@ class UpcomingEventDetailPage extends StatelessWidget {
           'Sunday': DateTime.sunday,
         };
         final targetWeekday = dayToWeekday[event.day];
-        if (targetWeekday != null &&
-            startDateTime.weekday != targetWeekday) {
-          final daysToAdd =
-              (targetWeekday - startDateTime.weekday + 7) % 7;
+        if (targetWeekday != null && startDateTime.weekday != targetWeekday) {
+          final daysToAdd = (targetWeekday - startDateTime.weekday + 7) % 7;
           startDateTime = startDateTime.add(Duration(days: daysToAdd));
         }
       }
@@ -407,9 +399,8 @@ class UpcomingEventDetailPage extends StatelessWidget {
         if (frequency != null) {
           recurrence = calendar.Recurrence(
             frequency: frequency,
-            endDate: event.endDate != null
-                ? DateTime.parse(event.endDate!)
-                : null,
+            endDate:
+                event.endDate != null ? DateTime.parse(event.endDate!) : null,
           );
         }
       }

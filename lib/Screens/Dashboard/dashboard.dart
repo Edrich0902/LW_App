@@ -24,7 +24,9 @@ import 'package:lw_app/Blocs/Votd/votd_event.dart';
 import 'package:lw_app/Blocs/Votd/votd_state.dart';
 import 'package:lw_app/Blocs/Bible/bible_bloc.dart';
 import 'package:lw_app/Blocs/Bible/bible_event.dart';
+import 'package:lw_app/Blocs/Bible/bible_state.dart';
 import 'package:lw_app/Screens/Bible/bible.dart';
+import 'package:lw_app/Themes/lwp_tokens.dart';
 
 class DashPage extends StatefulWidget {
   const DashPage({super.key});
@@ -38,6 +40,17 @@ class _DashPageState extends State<DashPage> {
   void initState() {
     super.initState();
     context.read<SermonsBloc>().add(LoadSermons());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _loadVotdForCurrentBibleVersion(context);
+    });
+  }
+
+  void _loadVotdForCurrentBibleVersion(BuildContext context) {
+    final bibleState = context.read<BibleBloc>().state;
+    context.read<VotdBloc>().add(LoadVotd(
+          version: bibleState is BibleLoaded ? bibleState.currentVersion : null,
+        ));
   }
 
   @override
@@ -90,23 +103,11 @@ class _DashPageState extends State<DashPage> {
                       },
                     );
                   } else if (state is SermonsLoading) {
-                    return Container(
-                      height: 180,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).cardTheme.color,
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      child: const LwpLoader(message: ""),
+                    return const _DashboardPlaceholder(
+                      child: LwpLoader(message: ""),
                     );
                   } else if (state is SermonsError) {
-                    return Container(
-                      height: 180,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).cardTheme.color,
-                        borderRadius: BorderRadius.circular(24),
-                      ),
+                    return _DashboardPlaceholder(
                       child: LwpError(
                         message: state.error,
                       ),
@@ -116,51 +117,57 @@ class _DashPageState extends State<DashPage> {
                 },
               ),
               const SizedBox(height: 16),
-              BlocBuilder<VotdBloc, VotdState>(
-                builder: (context, state) {
-                  if (state is VotdSuccess) {
-                    return DashboardVotdCard(
-                      votd: state.votd,
-                      onTap: () {
-                        context.read<BibleBloc>().add(LoadSpecificPassage(
-                              version: state.votd.version,
-                              book: state.votd.book,
-                              chapter: state.votd.chapter,
-                            ));
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const BiblePage()),
-                        );
-                      },
-                    );
-                  } else if (state is VotdLoading) {
-                    return Container(
-                      height: 180,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).cardTheme.color,
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      child: const LwpLoader(message: ""),
-                    );
-                  } else if (state is VotdError) {
-                    return Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).cardTheme.color,
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      child: LwpError(
-                        message: state.message,
-                        onRetry: () => context.read<VotdBloc>().add(LoadVotd()),
-                      ),
-                    );
-                  }
-                  // Return nothing if initial - dashboard should still work
-                  return const SizedBox.shrink();
+              BlocListener<BibleBloc, BibleState>(
+                listenWhen: (previous, current) {
+                  if (current is! BibleLoaded) return false;
+                  if (previous is! BibleLoaded) return true;
+                  return previous.currentVersion.id !=
+                      current.currentVersion.id;
                 },
+                listener: (context, state) {
+                  if (state is BibleLoaded) {
+                    context
+                        .read<VotdBloc>()
+                        .add(LoadVotd(version: state.currentVersion));
+                  }
+                },
+                child: BlocBuilder<VotdBloc, VotdState>(
+                  builder: (context, state) {
+                    if (state is VotdSuccess) {
+                      return DashboardVotdCard(
+                        votd: state.votd,
+                        onTap: () {
+                          context.read<BibleBloc>().add(LoadSpecificPassage(
+                                version: state.votd.version,
+                                book: state.votd.book,
+                                chapter: state.votd.chapter,
+                              ));
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const BiblePage()),
+                          );
+                        },
+                      );
+                    } else if (state is VotdLoading) {
+                      return const _DashboardPlaceholder(
+                        child: LwpLoader(message: ""),
+                      );
+                    } else if (state is VotdError) {
+                      return _DashboardPlaceholder(
+                        height: null,
+                        padding: const EdgeInsets.all(LwpSpacing.md),
+                        child: LwpError(
+                          message: state.message,
+                          onRetry: () =>
+                              _loadVotdForCurrentBibleVersion(context),
+                        ),
+                      );
+                    }
+                    // Return nothing if initial - dashboard should still work
+                    return const SizedBox.shrink();
+                  },
+                ),
               ),
               const SizedBox(height: 16),
               GridView.count(
@@ -246,6 +253,32 @@ class _DashPageState extends State<DashPage> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _DashboardPlaceholder extends StatelessWidget {
+  final Widget child;
+  final double? height;
+  final EdgeInsetsGeometry? padding;
+
+  const _DashboardPlaceholder({
+    required this.child,
+    this.height = 180,
+    this.padding,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: height,
+      width: double.infinity,
+      padding: padding,
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardTheme.color,
+        borderRadius: LwpRadii.lgAll,
+      ),
+      child: child,
     );
   }
 }

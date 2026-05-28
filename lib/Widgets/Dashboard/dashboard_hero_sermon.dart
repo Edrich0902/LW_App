@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lw_app/Models/Sermon/sermon.dart';
+import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
 import 'package:lw_app/Screens/Sermons/sermons.dart';
 
@@ -17,22 +18,33 @@ class DashboardHeroSermon extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final cardColor = theme.cardTheme.color ?? theme.colorScheme.surface;
+    final heroStartColor = isDark
+        ? Color.lerp(cardColor, theme.primaryColor, 0.4)!
+        : theme.primaryColor;
+    final heroEndColor = isDark
+        ? Color.lerp(cardColor, theme.primaryColor, 0.22)!
+        : theme.primaryColor.withValues(alpha: 0.85);
+    final accentColor = isDark ? theme.primaryColor : Colors.white;
 
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24.0),
+        borderRadius: LwpRadii.lgAll,
         gradient: LinearGradient(
-          colors: isDark
-              ? [theme.cardTheme.color!, theme.cardTheme.color!.withValues(alpha: 0.8)]
-              : [theme.primaryColor, theme.primaryColor.withValues(alpha: 0.85)],
+          colors: [heroStartColor, heroEndColor],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
+        border: isDark
+            ? Border.all(color: theme.primaryColor.withValues(alpha: 0.35))
+            : null,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 10,
+            color: isDark
+                ? theme.primaryColor.withValues(alpha: 0.22)
+                : Colors.black.withValues(alpha: 0.1),
+            blurRadius: isDark ? 16 : 10,
             offset: const Offset(0, 4),
           ),
         ],
@@ -41,7 +53,7 @@ class DashboardHeroSermon extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(24.0),
+          borderRadius: LwpRadii.lgAll,
           child: Padding(
             padding: const EdgeInsets.all(24.0),
             child: Column(
@@ -53,15 +65,13 @@ class DashboardHeroSermon extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: isDark
-                            ? theme.primaryColor.withValues(alpha: 0.2)
-                            : Colors.white.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(12),
+                        color: accentColor.withValues(alpha: 0.2),
+                        borderRadius: LwpRadii.smAll,
                       ),
                       child: Text(
                         "NUUTSTE PREEK",
                         style: TextStyle(
-                          color: isDark ? theme.primaryColor : Colors.white,
+                          color: accentColor,
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 1.2,

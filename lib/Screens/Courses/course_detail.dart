@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lw_app/Models/Event/event.dart';
 import 'package:lw_app/Models/Event/event_type.dart';
+import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
 import 'package:add_2_calendar_new/add_2_calendar_new.dart' as calendar;
 import 'package:cloudinary_flutter/image/cld_image.dart';
@@ -57,11 +58,10 @@ class CourseDetailPage extends StatelessWidget {
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: theme.scaffoldBackgroundColor,
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(24.0),
-                    ),
+                    borderRadius: LwpRadii.lgTop,
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 24.0, vertical: 32.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -74,16 +74,20 @@ class CourseDetailPage extends StatelessWidget {
                               children: [
                                 Text(
                                   course.title,
-                                  style: theme.textTheme.headlineSmall?.copyWith(
+                                  style:
+                                      theme.textTheme.headlineSmall?.copyWith(
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 const SizedBox(height: 8),
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 4),
                                   decoration: BoxDecoration(
-                                    color: theme.primaryColor.withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(20),
+                                    color: theme.primaryColor
+                                        .withValues(alpha: 0.1),
+                                    borderRadius:
+                                        BorderRadius.circular(LwpRadii.pill),
                                   ),
                                   child: Text(
                                     course.category,
@@ -100,7 +104,7 @@ class CourseDetailPage extends StatelessWidget {
                         ],
                       ),
                       const Divider(height: 48),
-                      
+
                       // Info Grid/List
                       _buildInfoTile(
                         context,
@@ -121,7 +125,7 @@ class CourseDetailPage extends StatelessWidget {
                         "Tyd",
                         DateFormatter.formatTime(course.time),
                       ),
-                      
+
                       const SizedBox(height: 32),
                       Text(
                         "Beskrywing",
@@ -137,7 +141,7 @@ class CourseDetailPage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 48),
-                      
+
                       // Action Button
                       SizedBox(
                         width: double.infinity,
@@ -147,7 +151,6 @@ class CourseDetailPage extends StatelessWidget {
                           label: const Text("Voeg by Kalender"),
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 16),
-                            elevation: 0,
                           ),
                         ),
                       ),
@@ -176,9 +179,10 @@ class CourseDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoTile(BuildContext context, IconData icon, String label, String value) {
+  Widget _buildInfoTile(
+      BuildContext context, IconData icon, String label, String value) {
     final theme = Theme.of(context);
-    
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12.0),
       child: Row(
@@ -187,7 +191,7 @@ class CourseDetailPage extends StatelessWidget {
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: theme.primaryColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: LwpRadii.smAll,
             ),
             child: Icon(icon, color: theme.primaryColor, size: 20),
           ),
@@ -254,7 +258,8 @@ class CourseDetailPage extends StatelessWidget {
         if (frequency != null) {
           recurrence = calendar.Recurrence(
             frequency: frequency,
-            endDate: course.endDate != null ? DateTime.parse(course.endDate!) : null,
+            endDate:
+                course.endDate != null ? DateTime.parse(course.endDate!) : null,
           );
         }
       }

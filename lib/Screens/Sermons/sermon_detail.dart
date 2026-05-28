@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lw_app/Models/YoutubeVideo/youtube_video.dart';
+import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Widgets/LwpYoutubePlayer/lwp_youtube_player.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
@@ -16,7 +17,6 @@ class SermonDetailPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Preek Besonderhede'),
-        elevation: 0,
         actions: [
           if (video.youtubeLink != null)
             IconButton(
@@ -60,11 +60,13 @@ class SermonDetailPage extends StatelessWidget {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.description, color: theme.primaryColor, size: 20),
+                      Icon(Icons.description,
+                          color: theme.primaryColor, size: 20),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          video.description ?? 'Geen beskrywing beskikbaar nie.',
+                          video.description ??
+                              'Geen beskrywing beskikbaar nie.',
                           style: theme.textTheme.bodyMedium?.copyWith(
                             height: 1.5,
                           ),
@@ -82,7 +84,7 @@ class SermonDetailPage extends StatelessWidget {
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(24.0),
+                          borderRadius: LwpRadii.lgAll,
                         ),
                       ),
                     ),
@@ -131,9 +133,8 @@ class SermonDetailPage extends StatelessWidget {
       final box = context.findRenderObject() as RenderBox?;
       Share.share(
         '$title\n${video.youtubeLink}',
-        sharePositionOrigin: box != null
-            ? box.localToGlobal(Offset.zero) & box.size
-            : null,
+        sharePositionOrigin:
+            box != null ? box.localToGlobal(Offset.zero) & box.size : null,
       );
     }
   }
@@ -148,14 +149,8 @@ class SermonDetailPage extends StatelessWidget {
     return ListTile(
       contentPadding: EdgeInsets.zero,
       leading: Icon(icon, color: theme.primaryColor, size: 20),
-      title: Text(
-        label,
-        style: theme.textTheme.bodyMedium
-      ),
-      subtitle: Text(
-        value,
-        style: theme.textTheme.bodySmall
-      ),
+      title: Text(label, style: theme.textTheme.bodyMedium),
+      subtitle: Text(value, style: theme.textTheme.bodySmall),
     );
   }
 }

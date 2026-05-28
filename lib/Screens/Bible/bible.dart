@@ -9,9 +9,12 @@ import 'package:lw_app/Blocs/CompareTranslations/compare_translations_event.dart
 import 'package:lw_app/Models/Bible/bible_models.dart';
 import 'package:lw_app/Screens/Bible/verse_image_editor.dart';
 import 'package:lw_app/Utils/bible_reference.dart';
+import 'package:lw_app/Themes/custom_theme.dart';
+import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/share_helper.dart';
 import 'package:lw_app/Utils/verse_image_formatter.dart';
 import 'package:lw_app/Widgets/Bible/compare_translations_sheet.dart';
+import 'package:lw_app/Widgets/LwpBottomSheet/lwp_bottom_sheet.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
@@ -108,8 +111,7 @@ class BiblePage extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
               color: theme.scaffoldBackgroundColor,
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(24)),
+              borderRadius: LwpRadii.lgTop,
             ),
             padding: const EdgeInsets.all(24.0),
             child: Column(
@@ -135,7 +137,7 @@ class BiblePage extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   'Skryf \'n persoonlike nota vir ${state.currentBook.name} ${state.currentChapter.number}:${state.selectedVerseNumbers.join(', ')}',
-                  style: const TextStyle(color: Colors.grey, fontSize: 13),
+                  style: TextStyle(color: theme.hintColor, fontSize: 13),
                 ),
                 const SizedBox(height: 16),
                 TextField(
@@ -145,12 +147,12 @@ class BiblePage extends StatelessWidget {
                   decoration: InputDecoration(
                     hintText: 'Skryf jou gedagtes hier...',
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: LwpRadii.lgAll,
                       borderSide: BorderSide(
                           color: theme.primaryColor.withValues(alpha: 0.5)),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: LwpRadii.lgAll,
                       borderSide:
                           BorderSide(color: theme.primaryColor, width: 2),
                     ),
@@ -163,8 +165,8 @@ class BiblePage extends StatelessWidget {
                   children: [
                     TextButton(
                       onPressed: () => Navigator.pop(modalContext),
-                      child: const Text('Kanselleer',
-                          style: TextStyle(color: Colors.grey)),
+                      child: Text('Kanselleer',
+                          style: TextStyle(color: theme.hintColor)),
                     ),
                     const SizedBox(width: 8),
                     ElevatedButton(
@@ -179,7 +181,7 @@ class BiblePage extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: theme.primaryColor,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: LwpRadii.lgAll,
                         ),
                         padding: const EdgeInsets.symmetric(
                             horizontal: 24, vertical: 12),
@@ -229,8 +231,7 @@ class BiblePage extends StatelessWidget {
     );
   }
 
-  void _showCompareTranslationsSheet(
-      BuildContext context, BibleLoaded state) {
+  void _showCompareTranslationsSheet(BuildContext context, BibleLoaded state) {
     final reference = buildPassageReference(
         state.currentBook, state.currentChapter, state.selectedVerseNumbers);
     final citation = buildCitation(
@@ -281,23 +282,14 @@ class BiblePage extends StatelessWidget {
         return Container(
           decoration: BoxDecoration(
             color: Theme.of(ctx).scaffoldBackgroundColor,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            borderRadius: LwpRadii.lgTop,
           ),
           padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.withValues(alpha: 0.4),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
+              const Center(child: LwpSheetHandle()),
               const SizedBox(height: 16),
               Text('Kies Kleur',
                   style: Theme.of(ctx)
@@ -549,13 +541,13 @@ class BiblePage extends StatelessWidget {
                     right: 16,
                     child: Material(
                       elevation: 8,
-                      borderRadius: BorderRadius.circular(24.0),
-                      color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+                      borderRadius: LwpRadii.lgAll,
+                      color: isDark ? DarkColors.surface : LightColors.surface,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 12),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(24.0),
+                          borderRadius: LwpRadii.lgAll,
                           border: Border.all(
                             color: theme.primaryColor.withValues(alpha: 0.3),
                             width: 1,
@@ -578,8 +570,8 @@ class BiblePage extends StatelessWidget {
                                   onTap: () => context
                                       .read<BibleBloc>()
                                       .add(ClearSelection()),
-                                  child: const Icon(Icons.close,
-                                      size: 20, color: Colors.grey),
+                                  child: Icon(Icons.close,
+                                      size: 20, color: theme.hintColor),
                                 ),
                               ],
                             ),
@@ -648,13 +640,11 @@ class BiblePage extends StatelessWidget {
                                           decoration: BoxDecoration(
                                             shape: BoxShape.circle,
                                             border: Border.all(
-                                                color: Colors.grey
+                                                color: theme.hintColor
                                                     .withValues(alpha: 0.5)),
                                           ),
-                                          child: const Icon(
-                                              Icons.format_color_reset,
-                                              size: 16,
-                                              color: Colors.grey),
+                                          child: Icon(Icons.format_color_reset,
+                                              size: 16, color: theme.hintColor),
                                         ),
                                       ),
                                     ),
@@ -752,7 +742,9 @@ class _NavigationButton extends StatelessWidget {
           ),
           child: Icon(
             icon,
-            color: enabled ? Theme.of(context).primaryColor : Colors.grey,
+            color: enabled
+                ? Theme.of(context).primaryColor
+                : Theme.of(context).disabledColor,
             size: 24,
           ),
         ),
@@ -803,7 +795,7 @@ class _VerseItem extends StatelessWidget {
         InkWell(
           onTap: onTap,
           onLongPress: onLongPress,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(LwpRadii.xs),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
             // Only add padding/decoration when selected or highlighted;
@@ -815,7 +807,7 @@ class _VerseItem extends StatelessWidget {
               color: isSelected
                   ? theme.primaryColor.withValues(alpha: isDark ? 0.2 : 0.15)
                   : highlight,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(LwpRadii.xs),
               border: Border.all(
                 color: isSelected ? theme.primaryColor : Colors.transparent,
                 width: 1.5,
@@ -928,7 +920,7 @@ class _ActionButton extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 4.0),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(LwpRadii.xs),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
           child: Column(
@@ -937,7 +929,7 @@ class _ActionButton extends StatelessWidget {
               Icon(icon, size: 22, color: theme.primaryColor),
               const SizedBox(height: 2),
               Text(label,
-                  style: const TextStyle(fontSize: 10, color: Colors.grey)),
+                  style: TextStyle(fontSize: 10, color: theme.hintColor)),
             ],
           ),
         ),
@@ -980,7 +972,7 @@ class _BibleNavigationSheetState extends State<BibleNavigationSheet>
       height: MediaQuery.of(context).size.height * 0.8,
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: LwpRadii.lgTop,
       ),
       child: BlocBuilder<BibleBloc, BibleState>(
         builder: (context, state) {
@@ -1007,7 +999,7 @@ class _BibleNavigationSheetState extends State<BibleNavigationSheet>
                 child: TabBar(
                   controller: _tabController,
                   labelColor: Theme.of(context).primaryColor,
-                  unselectedLabelColor: Colors.grey,
+                  unselectedLabelColor: Theme.of(context).hintColor,
                   indicatorColor: Theme.of(context).primaryColor,
                   tabs: const [
                     Tab(text: 'Vertaling'),
@@ -1031,7 +1023,7 @@ class _BibleNavigationSheetState extends State<BibleNavigationSheet>
                               hintText: 'Soek vertaling...',
                               prefixIcon: const Icon(Icons.search),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: LwpRadii.lgAll,
                               ),
                               contentPadding:
                                   const EdgeInsets.symmetric(horizontal: 16),
@@ -1072,7 +1064,7 @@ class _BibleNavigationSheetState extends State<BibleNavigationSheet>
                               hintText: 'Soek boek...',
                               prefixIcon: const Icon(Icons.search),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: LwpRadii.lgAll,
                               ),
                               contentPadding:
                                   const EdgeInsets.symmetric(horizontal: 16),
@@ -1127,8 +1119,10 @@ class _BibleNavigationSheetState extends State<BibleNavigationSheet>
                             decoration: BoxDecoration(
                               color: isSelected
                                   ? Theme.of(context).primaryColor
-                                  : Colors.grey.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(12),
+                                  : Theme.of(context)
+                                      .hintColor
+                                      .withValues(alpha: 0.1),
+                              borderRadius: LwpRadii.smAll,
                             ),
                             alignment: Alignment.center,
                             child: Text(

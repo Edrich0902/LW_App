@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lw_app/Models/Event/event.dart';
 import 'package:lw_app/Models/Event/event_type.dart';
+import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
+import 'package:lw_app/Widgets/LwpBottomSheet/lwp_bottom_sheet.dart';
 import 'package:cloudinary_flutter/image/cld_image.dart';
 import 'package:add_2_calendar_new/add_2_calendar_new.dart' as calendar;
 
@@ -18,19 +20,15 @@ class LwpEvent extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Card(
-      elevation: 0,
       clipBehavior: Clip.antiAliasWithSaveLayer,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24.0),
-      ),
       child: InkWell(
         onTap: () => _showEventDetails(context),
         child: Padding(
-          padding: const EdgeInsets.all(12.0),
+          padding: const EdgeInsets.all(LwpSpacing.sm),
           child: Row(
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(16.0),
+                borderRadius: LwpRadii.smAll,
                 child: CldImageWidget(
                   publicId: event.bannerPublicId ?? 'samples/cloudinary-icon',
                   fit: BoxFit.cover,
@@ -90,120 +88,78 @@ class LwpEvent extends StatelessWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.75,
-        decoration: BoxDecoration(
-          color: theme.scaffoldBackgroundColor,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24.0)),
-        ),
+      builder: (context) => LwpBottomSheet(
+        bannerPublicId: event.bannerPublicId,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Stack(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ClipRRect(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(24.0)),
-                  child: CldImageWidget(
-                    publicId: event.bannerPublicId ?? 'samples/cloudinary-icon',
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                    height: 200,
+                Expanded(
+                  child: Text(
+                    event.title,
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-                Positioned(
-                  top: 12,
-                  right: 12,
-                  child: CircleAvatar(
-                    backgroundColor: Colors.black.withValues(alpha: 0.3),
-                    child: IconButton(
-                      icon: const Icon(Icons.close, color: Colors.white),
-                      onPressed: () => Navigator.pop(context),
+                const SizedBox(width: LwpSpacing.md),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: theme.primaryColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(LwpRadii.pill),
+                  ),
+                  child: Text(
+                    event.category,
+                    style: TextStyle(
+                      color: theme.primaryColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
                     ),
                   ),
                 ),
               ],
             ),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            event.title,
-                            style: theme.textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: theme.primaryColor.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            event.category,
-                            style: TextStyle(
-                              color: theme.primaryColor,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Icon(Icons.access_time_rounded, color: theme.primaryColor, size: 20),
-                        const SizedBox(width: 8),
-                        Text(
-                          DateFormatter.formatTime(event.time),
-                          style: theme.textTheme.titleMedium,
-                        ),
-                      ],
-                    ),
-                    const Divider(height: 32),
-                    Text(
-                      "Beskrywing",
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      event.description,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        height: 1.5,
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                        onPressed: () => _addToCalendar(context),
-                        icon: const Icon(Icons.event_available_rounded),
-                        label: const Text("Voeg by Kalender"),
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                  ],
+            const SizedBox(height: LwpSpacing.md),
+            Row(
+              children: [
+                Icon(Icons.access_time_rounded,
+                    color: theme.primaryColor, size: 20),
+                const SizedBox(width: LwpSpacing.xs),
+                Text(
+                  DateFormatter.formatTime(event.time),
+                  style: theme.textTheme.titleMedium,
                 ),
+              ],
+            ),
+            const Divider(height: 32),
+            Text(
+              "Beskrywing",
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
               ),
             ),
+            const SizedBox(height: LwpSpacing.xs),
+            Text(
+              event.description,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: LwpSpacing.xl),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () => _addToCalendar(context),
+                icon: const Icon(Icons.event_available_rounded),
+                label: const Text("Voeg by Kalender"),
+              ),
+            ),
+            const SizedBox(height: LwpSpacing.lg),
           ],
         ),
       ),
@@ -254,14 +210,16 @@ class LwpEvent extends StatelessWidget {
         }
       }
 
-      final endDateTime = event.endDate != null ? DateTime(
-        DateTime.parse(event.endDate!).year,
-        DateTime.parse(event.endDate!).month,
-        DateTime.parse(event.endDate!).day,
-        int.parse(timeParts[0]),
-        int.parse(timeParts[1]),
-        int.parse(timeParts[2]),
-      ) : startDateTime.add(const Duration(hours: 1));
+      final endDateTime = event.endDate != null
+          ? DateTime(
+              DateTime.parse(event.endDate!).year,
+              DateTime.parse(event.endDate!).month,
+              DateTime.parse(event.endDate!).day,
+              int.parse(timeParts[0]),
+              int.parse(timeParts[1]),
+              int.parse(timeParts[2]),
+            )
+          : startDateTime.add(const Duration(hours: 1));
 
       // Determine recurrence based on event type
       calendar.Recurrence? recurrence;
@@ -280,7 +238,8 @@ class LwpEvent extends StatelessWidget {
         if (frequency != null) {
           recurrence = calendar.Recurrence(
             frequency: frequency,
-            endDate: event.endDate != null ? DateTime.parse(event.endDate!) : null,
+            endDate:
+                event.endDate != null ? DateTime.parse(event.endDate!) : null,
           );
         }
       }

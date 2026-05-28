@@ -31,6 +31,12 @@ Use `flutter_lints` from `analysis_options.yaml`. Format Dart with `dart format 
 
 Keep business logic out of widgets. UI dispatches BLoC events and renders states; BLoCs call `Services`; `Services` handle Supabase or external APIs. Use explicit types and avoid `dynamic` unless required. UI-facing text should remain in Afrikaans; code identifiers stay English.
 
+## UI Standards & Design Tokens
+
+Always use the project design system instead of hardcoding visual values. Use `Theme.of(context)`, `LightColors`/`DarkColors`, `LwpRadii`, and `LwpSpacing` from `lib/Themes/` for colours, radii, spacing, card shape, and component styling. Do not introduce raw hex colours, ad-hoc `Colors.grey`, numeric border radii, custom card outlines, or one-off spacing unless there is a clear component-specific reason.
+
+Cards should inherit `Theme.of(context).cardTheme` so the shared flat elevation, 24px radius, and light-mode outline stay consistent. Chips and pill-like controls should use `StadiumBorder` or `LwpRadii.pill`. Bottom sheets should use `LwpBottomSheet`/`LwpSheetHandle` where practical. Prefer existing wrappers such as `LwpSnackbar`, `LwpError`, `LwpEmpty`, `LwpLoader`, and themed components instead of direct package or base Flutter equivalents when the project already has an abstraction.
+
 ## Testing Guidelines
 
 Use `flutter_test`. Name test files with `_test.dart` under `test/`. Add widget tests for screens/widgets and unit tests for BLoC/service logic where practical. Run `flutter test` and `flutter analyze` before opening a PR.
@@ -43,4 +49,4 @@ Pull requests should include a summary, linked issue or task when available, tes
 
 ## Security & Configuration Tips
 
-Do not hardcode secrets or environment-specific URLs. Access configuration through `lib/Utils/environment.dart`. Prefer existing wrappers such as `LwpSnackbar`, `LwpError`, and themed components instead of direct package or base Flutter equivalents when the project already has an abstraction.
+Do not hardcode secrets or environment-specific URLs. Access configuration through `lib/Utils/environment.dart`.

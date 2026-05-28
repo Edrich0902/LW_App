@@ -6,6 +6,7 @@ import 'package:lw_app/Blocs/EventRsvp/event_rsvp_bloc.dart';
 import 'package:lw_app/Models/Event/event.dart';
 import 'package:lw_app/Models/Event/event_type.dart';
 import 'package:lw_app/Screens/UpcomingEvents/upcoming_event_detail.dart';
+import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
 import 'package:lw_app/Widgets/LwpAnnouncement/lwp_announcement.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
@@ -41,7 +42,10 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Opkomende Gebeure'),
-          actions: const <Widget>[LwpAnnouncementButton(), ProfileActionButton()],
+          actions: const <Widget>[
+            LwpAnnouncementButton(),
+            ProfileActionButton()
+          ],
         ),
         body: SafeArea(
           child: BlocBuilder<EventsBloc, EventsState>(
@@ -68,8 +72,8 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
                             context,
                             MaterialPageRoute(
                               builder: (_) => BlocProvider(
-                                create: (_) => EventRsvpBloc()
-                                  ..add(InitEventRsvp(event)),
+                                create: (_) =>
+                                    EventRsvpBloc()..add(InitEventRsvp(event)),
                                 child: UpcomingEventDetailPage(event: event),
                               ),
                             ),
@@ -96,11 +100,10 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
     final hasRsvps = event.attendingCount + event.interestedCount > 0;
 
     return Card(
-      elevation: 0,
       margin: EdgeInsets.zero,
       clipBehavior: Clip.antiAliasWithSaveLayer,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24.0),
+        borderRadius: LwpRadii.lgAll,
       ),
       child: InkWell(
         onTap: onTap,
@@ -113,8 +116,7 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
               child: Hero(
                 tag: 'event_image_${event.id}',
                 child: CldImageWidget(
-                  publicId:
-                      event.bannerPublicId ?? 'samples/cloudinary-icon',
+                  publicId: event.bannerPublicId ?? 'samples/cloudinary-icon',
                   fit: BoxFit.cover,
                 ),
               ),

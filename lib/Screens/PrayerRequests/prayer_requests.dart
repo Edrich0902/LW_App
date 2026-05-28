@@ -172,6 +172,7 @@ class _PrayerRequestsViewState extends State<_PrayerRequestsView> {
           onPressed: _showCreatePrayerSheet,
           icon: const Icon(Icons.add),
           label: const Text('Nuwe versoek'),
+          shape: const StadiumBorder(),
         ),
         body: BlocBuilder<PrayerRequestsBloc, PrayerRequestsState>(
           builder: (context, state) {

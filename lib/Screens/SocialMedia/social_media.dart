@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/SocialMedia/social_media_bloc.dart';
+import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
@@ -33,7 +34,10 @@ class _SocialMediaPageState extends State<SocialMediaPage> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Volg Ons'),
-          actions: const <Widget>[LwpAnnouncementButton(), ProfileActionButton()],
+          actions: const <Widget>[
+            LwpAnnouncementButton(),
+            ProfileActionButton()
+          ],
         ),
         body: SafeArea(
           child: BlocBuilder<SocialMediaBloc, SocialMediaState>(
@@ -43,24 +47,28 @@ class _SocialMediaPageState extends State<SocialMediaPage> {
               } else if (state is SocialMediaSuccess) {
                 if (state.socialMedia.isNotEmpty) {
                   return RefreshIndicator(
-                    onRefresh: () async => socialMediaBloc.add(const LoadSocialMedia()),
+                    onRefresh: () async =>
+                        socialMediaBloc.add(const LoadSocialMedia()),
                     child: ListView.separated(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 24.0),
                       itemCount: state.socialMedia.length,
-                      separatorBuilder: (context, index) => const SizedBox(height: 16.0),
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: 16.0),
                       itemBuilder: (BuildContext context, int index) {
                         final social = state.socialMedia[index];
                         return Card(
-                          elevation: 0,
                           margin: EdgeInsets.zero,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(24.0),
+                            borderRadius: LwpRadii.lgAll,
                           ),
                           child: InkWell(
-                            borderRadius: BorderRadius.circular(24.0),
+                            borderRadius: LwpRadii.lgAll,
                             onTap: () {
-                              if (social.link != null && social.link!.isNotEmpty) {
-                                launchUrl(Uri.parse(social.link!), mode: LaunchMode.externalApplication);
+                              if (social.link != null &&
+                                  social.link!.isNotEmpty) {
+                                launchUrl(Uri.parse(social.link!),
+                                    mode: LaunchMode.externalApplication);
                               }
                             },
                             child: Padding(
@@ -70,8 +78,10 @@ class _SocialMediaPageState extends State<SocialMediaPage> {
                                   Container(
                                     padding: const EdgeInsets.all(12.0),
                                     decoration: BoxDecoration(
-                                      color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
-                                      borderRadius: BorderRadius.circular(16.0),
+                                      color: Theme.of(context)
+                                          .primaryColor
+                                          .withValues(alpha: 0.1),
+                                      borderRadius: LwpRadii.smAll,
                                     ),
                                     child: Icon(
                                       _getSocialMediaIcon(social.type ?? ''),
@@ -83,12 +93,16 @@ class _SocialMediaPageState extends State<SocialMediaPage> {
                                   Expanded(
                                     child: Text(
                                       social.title ?? '',
-                                      style: Theme.of(context).textTheme.titleMedium,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium,
                                     ),
                                   ),
                                   Icon(
                                     Icons.chevron_right_rounded,
-                                    color: Theme.of(context).hintColor.withValues(alpha: 0.5),
+                                    color: Theme.of(context)
+                                        .hintColor
+                                        .withValues(alpha: 0.5),
                                   ),
                                 ],
                               ),

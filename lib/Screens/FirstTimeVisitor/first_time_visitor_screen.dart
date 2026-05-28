@@ -5,6 +5,7 @@ import 'package:lw_app/Models/Event/event.dart';
 import 'package:lw_app/Models/Event/event_type.dart';
 import 'package:lw_app/Screens/MoreInfo/more_info.dart';
 import 'package:lw_app/Screens/UpcomingEvents/upcoming_event_detail.dart';
+import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
 import 'package:lw_app/Utils/maps_helper.dart';
 import 'package:lw_app/Widgets/Dashboard/dashboard_grid_card.dart';
@@ -39,7 +40,6 @@ class _FirstTimeVisitorScreenState extends State<FirstTimeVisitorScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Welkom!'),
-        elevation: 0,
         actions: const [LwpAnnouncementButton(), ProfileActionButton()],
       ),
       body: SingleChildScrollView(
@@ -73,7 +73,7 @@ class _FirstTimeVisitorScreenState extends State<FirstTimeVisitorScreen> {
       padding: const EdgeInsets.all(24.0),
       decoration: BoxDecoration(
         color: theme.primaryColor.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(24.0),
+        borderRadius: LwpRadii.lgAll,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -212,11 +212,10 @@ class _FirstTimeVisitorScreenState extends State<FirstTimeVisitorScreen> {
     final theme = Theme.of(context);
 
     return Card(
-      elevation: 0,
       margin: EdgeInsets.zero,
       clipBehavior: Clip.antiAliasWithSaveLayer,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24.0),
+        borderRadius: LwpRadii.lgAll,
       ),
       child: InkWell(
         onTap: () {

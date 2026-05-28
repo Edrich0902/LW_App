@@ -7,6 +7,7 @@ import 'package:lw_app/Models/Bible/bible_models.dart';
 import 'package:lw_app/Models/Bible/user_verse_interaction.dart';
 import 'package:lw_app/Services/Bible/bible_interaction_service.dart';
 import 'package:lw_app/Screens/Bible/bible.dart' show highlightColorFromString;
+import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/share_helper.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
@@ -143,8 +144,7 @@ class _SavedVersesPageState extends State<SavedVersesPage>
           child: Container(
             decoration: BoxDecoration(
               color: theme.scaffoldBackgroundColor,
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(24)),
+              borderRadius: LwpRadii.lgTop,
             ),
             padding: const EdgeInsets.all(24.0),
             child: Column(
@@ -175,12 +175,12 @@ class _SavedVersesPageState extends State<SavedVersesPage>
                   decoration: InputDecoration(
                     hintText: 'Skryf jou gedagtes hier...',
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: LwpRadii.lgAll,
                       borderSide: BorderSide(
                           color: theme.primaryColor.withValues(alpha: 0.5)),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: LwpRadii.lgAll,
                       borderSide:
                           BorderSide(color: theme.primaryColor, width: 2),
                     ),
@@ -192,8 +192,8 @@ class _SavedVersesPageState extends State<SavedVersesPage>
                   children: [
                     TextButton(
                       onPressed: () => Navigator.pop(modalContext),
-                      child: const Text('Kanselleer',
-                          style: TextStyle(color: Colors.grey)),
+                      child: Text('Kanselleer',
+                          style: TextStyle(color: theme.hintColor)),
                     ),
                     const SizedBox(width: 8),
                     ElevatedButton(
@@ -206,8 +206,8 @@ class _SavedVersesPageState extends State<SavedVersesPage>
                             verseNumber: interaction.verseNumber,
                             note: textController.text,
                           );
+                          if (!mounted || !modalContext.mounted) return;
                           Navigator.pop(modalContext);
-                          if (!mounted) return;
                           LwpSnackbar.showSuccess(context, 'Nota opgedateer');
                           _loadData();
                         } catch (e) {
@@ -219,7 +219,7 @@ class _SavedVersesPageState extends State<SavedVersesPage>
                       style: ElevatedButton.styleFrom(
                         backgroundColor: theme.primaryColor,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: LwpRadii.lgAll,
                         ),
                       ),
                       child: const Text('Stoor',
@@ -260,7 +260,6 @@ class _SavedVersesPageState extends State<SavedVersesPage>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
       appBar: AppBar(
@@ -268,7 +267,7 @@ class _SavedVersesPageState extends State<SavedVersesPage>
         bottom: TabBar(
           controller: _tabController,
           labelColor: theme.primaryColor,
-          unselectedLabelColor: Colors.grey,
+          unselectedLabelColor: theme.hintColor,
           indicatorColor: theme.primaryColor,
           tabs: const [
             Tab(text: 'Bewaarde Verse'),
@@ -306,17 +305,11 @@ class _SavedVersesPageState extends State<SavedVersesPage>
                               }
 
                               return Card(
-                                elevation: 0,
-                                margin: const EdgeInsets.only(bottom: 12),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16.0),
-                                  side: BorderSide(
-                                    color: Colors.grey.withValues(alpha: 0.2),
-                                  ),
-                                ),
+                                margin: const EdgeInsets.only(
+                                    bottom: LwpSpacing.sm),
                                 child: InkWell(
                                   onTap: () => _navigateToVerse(item),
-                                  borderRadius: BorderRadius.circular(16.0),
+                                  borderRadius: LwpRadii.lgAll,
                                   child: Padding(
                                     padding: const EdgeInsets.all(16.0),
                                     child: Column(
@@ -337,9 +330,9 @@ class _SavedVersesPageState extends State<SavedVersesPage>
                                             const SizedBox(width: 8),
                                             Text(
                                               '(${item.versionId.toUpperCase()})',
-                                              style: const TextStyle(
+                                              style: TextStyle(
                                                   fontSize: 11,
-                                                  color: Colors.grey),
+                                                  color: theme.hintColor),
                                             ),
                                             const Spacer(),
                                             if (item.highlightColor != null)
@@ -363,12 +356,12 @@ class _SavedVersesPageState extends State<SavedVersesPage>
                                           ],
                                         ),
                                         const SizedBox(height: 8),
-                                        const Text(
+                                        Text(
                                           'Tik om in Bybel te sien...',
                                           style: TextStyle(
                                               fontSize: 12,
                                               fontStyle: FontStyle.italic,
-                                              color: Colors.grey),
+                                              color: theme.hintColor),
                                         ),
                                         const Divider(),
                                         // Actions: delete bookmark
@@ -422,17 +415,10 @@ class _SavedVersesPageState extends State<SavedVersesPage>
                               }
 
                               return Card(
-                                elevation: 0,
-                                margin: const EdgeInsets.only(bottom: 16),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      24.0), // Rounded corners of 24.0 for card designs
-                                  side: BorderSide(
-                                    color: Colors.grey.withValues(alpha: 0.2),
-                                  ),
-                                ),
+                                margin: const EdgeInsets.only(
+                                    bottom: LwpSpacing.sm),
                                 child: Padding(
-                                  padding: const EdgeInsets.all(20.0),
+                                  padding: const EdgeInsets.all(LwpSpacing.md),
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
@@ -455,9 +441,9 @@ class _SavedVersesPageState extends State<SavedVersesPage>
                                                   ),
                                                 ),
                                                 const SizedBox(width: 6),
-                                                const Icon(Icons.open_in_new,
+                                                Icon(Icons.open_in_new,
                                                     size: 12,
-                                                    color: Colors.grey),
+                                                    color: theme.hintColor),
                                               ],
                                             ),
                                           ),
@@ -466,9 +452,9 @@ class _SavedVersesPageState extends State<SavedVersesPage>
                                                 ? item.updatedAt!
                                                     .substring(0, 10)
                                                 : '',
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                                 fontSize: 11,
-                                                color: Colors.grey),
+                                                color: theme.hintColor),
                                           ),
                                         ],
                                       ),
@@ -478,11 +464,9 @@ class _SavedVersesPageState extends State<SavedVersesPage>
                                         width: double.infinity,
                                         padding: const EdgeInsets.all(14.0),
                                         decoration: BoxDecoration(
-                                          color: isDark
-                                              ? Colors.grey[900]
-                                              : Colors.grey[100],
-                                          borderRadius:
-                                              BorderRadius.circular(16.0),
+                                          color: theme.colorScheme
+                                              .surfaceContainerHighest,
+                                          borderRadius: LwpRadii.smAll,
                                         ),
                                         child: Text(
                                           item.note ?? '',
@@ -499,14 +483,16 @@ class _SavedVersesPageState extends State<SavedVersesPage>
                                             MainAxisAlignment.end,
                                         children: [
                                           IconButton(
-                                            icon: const Icon(Icons.share,
-                                                size: 20, color: Colors.grey),
+                                            icon: Icon(Icons.share,
+                                                size: 20,
+                                                color: theme.hintColor),
                                             onPressed: () => _shareNote(item),
                                             tooltip: 'Deel Nota',
                                           ),
                                           IconButton(
-                                            icon: const Icon(Icons.edit,
-                                                size: 20, color: Colors.grey),
+                                            icon: Icon(Icons.edit,
+                                                size: 20,
+                                                color: theme.hintColor),
                                             onPressed: () => _editNote(item),
                                             tooltip: 'Wysig Nota',
                                           ),

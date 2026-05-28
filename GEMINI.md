@@ -36,9 +36,10 @@ The agent must prioritize **clean architecture**, **maintainability**, and **per
 
 ### 4. Theming & Branding
 - **Strict Adherence:** Follow the guidelines in `THEME.md` for all UI changes.
-- **Color Usage:** Always use `Theme.of(context)` or the `LightColors`/`DarkColors` constants.
+- **Design Tokens:** Always use the project design system instead of hardcoding visual values. Use `Theme.of(context)`, `LightColors`/`DarkColors`, `LwpRadii`, and `LwpSpacing` from `lib/Themes/` for colours, radii, spacing, card shape, and component styling.
+- **Color Usage:** Never introduce raw hex colours or ad-hoc `Colors.grey` unless there is a clear component-specific reason.
 - **Sleek & Modern:** Maintain the "Flat & Seamless" aesthetic (Elevation 0 for AppBars/Buttons).
-- **Navigation:** Bottom navigation in Dark Mode uses Charcoal (`#1E1E1E`) to balance the Gold accents.
+- **Navigation:** Bottom navigation in Dark Mode uses Charcoal (`#1E1E1E`) to balance the Blue accents.
 
 ### 5. Behavioral Constraints
 - **Validation is not optional:** After every code change, you MUST run `flutter analyze` on the affected files (or the whole project) to verify structural and type integrity.
@@ -88,13 +89,17 @@ Ensure you have the Flutter SDK installed and a valid `.env.development` or `.en
     -   Variables/Methods: `lowerCamelCase`
 3.  **Environment Variables:** Never hardcode secrets. Use the `Environment` class in `lib/Utils/environment.dart` to access values from `.env` files.
 4.  **Supabase Interaction:** Perform all database and auth operations within `Services`. Blocs should call Services, and UI should listen to Blocs.
-5.  **Themes:** Use the `AppTheme` class for styling to ensure consistency across light and dark modes. Use `Theme.of(context)` in widgets.
+5.  **Themes:** Use the `AppTheme` class and tokens in `lib/Themes/` for styling to ensure consistency across light and dark modes. Use `Theme.of(context)` in widgets. Do not hardcode colours, spacing, border radii, card borders, or elevation values unless absolutely necessary.
 6.  **Error Handling:** Use custom widgets like `LwpError` to display error states consistently.
 7.  **SnackBars & Notifications:** NEVER use the base Flutter `SnackBar` or the `animated_snack_bar` package directly. Always use the `LwpSnackbar` wrapper for showing user feedback, success messages, or errors.
     -   Example: `LwpSnackbar.showSuccess(context, 'Boodskap');`
 8.  **Language & Localization:** All UI-facing content (labels, messages, buttons) MUST be in **Afrikaans**. Code-level naming (variables, files, classes) remains in **English**.
 9.  **Card UI Conventions:**
-    -   Use a consistent border radius of `24.0` for all cards (defined in `AppTheme`).
+    -   Let cards inherit `Theme.of(context).cardTheme` so the shared flat elevation, 24px radius, and light-mode outline stay consistent.
+    -   Do not override `Card.shape`, `elevation`, or borders locally unless the component intentionally differs from the app standard.
+    -   Use `LwpRadii` and `LwpSpacing` tokens for local UI details.
+    -   Use `StadiumBorder` or `LwpRadii.pill` for chips and pill-like controls.
+    -   Use `LwpBottomSheet`/`LwpSheetHandle` for bottom sheets where practical.
     -   When listing details within a card (e.g., EFT details), use fixed-width labels (e.g., `130.0`) to ensure perfect vertical alignment across rows.
     -   Prevent text wrapping for short labels by using `maxLines: 1` and `overflow: TextOverflow.ellipsis`.
     - Use `Divider(height: 32)` to separate sections within a card.

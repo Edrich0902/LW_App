@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/User/user_bloc.dart';
 import 'package:lw_app/Models/User/user_profile.dart';
+import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Widgets/LwpProfileImage/lwp_profile_image.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 import 'package:lw_app/Widgets/LabeledCheckbox/labeled_checkbox.dart';
@@ -29,8 +30,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
       TextEditingController();
   late final TextEditingController _lastNameController =
       TextEditingController();
-  late final TextEditingController _addressController =
-      TextEditingController();
+  late final TextEditingController _addressController = TextEditingController();
   bool _isMember = false;
   bool _isBaptized = false;
   bool _isInitialized = false;
@@ -55,7 +55,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
       _currentUser = state.user;
       return;
     }
-    
+
     _firstNameController.text = state.user.firstName;
     _lastNameController.text = state.user.lastName;
     _addressController.text = state.user.address ?? '';
@@ -97,7 +97,8 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
 
               if (_isInitialized && _currentUser != null) {
                 return SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 24.0, vertical: 16.0),
                   child: Form(
                     key: _profileEditFormKey,
                     child: Column(
@@ -105,13 +106,12 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                       children: <Widget>[
                         const SizedBox(height: 24),
                         _buildProfileImage(
-                          state is UserSuccess 
-                              ? state.user.profilePublicId ?? '' 
-                              : _currentUser!.profilePublicId ?? '', 
-                          userBloc, 
-                          theme,
-                          state is UserLoading
-                        ),
+                            state is UserSuccess
+                                ? state.user.profilePublicId ?? ''
+                                : _currentUser!.profilePublicId ?? '',
+                            userBloc,
+                            theme,
+                            state is UserLoading),
                         const SizedBox(height: 32),
                         TextFormField(
                           initialValue: user?.email ?? 'N/A',
@@ -211,7 +211,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                   onRetry: () => context.read<UserBloc>().add(const LoadUser()),
                 );
               }
-              
+
               return const SizedBox.shrink();
             },
           ),
@@ -220,7 +220,8 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     );
   }
 
-  Widget _buildProfileImage(String publicId, UserBloc userBloc, ThemeData theme, bool isLoading) {
+  Widget _buildProfileImage(
+      String publicId, UserBloc userBloc, ThemeData theme, bool isLoading) {
     return Center(
       child: Stack(
         children: [
@@ -250,11 +251,14 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
               decoration: BoxDecoration(
                 color: theme.primaryColor,
                 shape: BoxShape.circle,
-                border: Border.all(color: theme.scaffoldBackgroundColor, width: 2),
+                border:
+                    Border.all(color: theme.scaffoldBackgroundColor, width: 2),
               ),
               child: IconButton(
-                icon: const Icon(Icons.camera_alt, color: Colors.white, size: 20),
-                onPressed: isLoading ? null : () => _showImageSourcePicker(userBloc),
+                icon:
+                    const Icon(Icons.camera_alt, color: Colors.white, size: 20),
+                onPressed:
+                    isLoading ? null : () => _showImageSourcePicker(userBloc),
               ),
             ),
           ),
@@ -267,7 +271,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
+        borderRadius: LwpRadii.lgTop,
       ),
       builder: (context) {
         return SafeArea(
@@ -303,7 +307,8 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   }
 
   Future<File?> _pickImageFromGallery() async {
-    final returnedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final returnedImage =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
     if (returnedImage == null) return null;
     File? imageFile = File(returnedImage.path);
     if (await imageFile.exists()) return imageFile;
@@ -311,7 +316,8 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   }
 
   Future<File?> _pickImageFromCamera() async {
-    final returnedImage = await ImagePicker().pickImage(source: ImageSource.camera);
+    final returnedImage =
+        await ImagePicker().pickImage(source: ImageSource.camera);
     if (returnedImage == null) return null;
     File? imageFile = File(returnedImage.path);
     if (await imageFile.exists()) return imageFile;

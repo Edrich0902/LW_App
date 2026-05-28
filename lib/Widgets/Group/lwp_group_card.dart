@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloudinary_flutter/image/cld_image.dart';
 import 'package:lw_app/Models/Group/group.dart';
+import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Widgets/Group/lwp_group_bottom_sheet.dart';
 
 class LwpGroupCard extends StatelessWidget {
@@ -13,20 +14,16 @@ class LwpGroupCard extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Card(
-      elevation: 0,
       clipBehavior: Clip.antiAliasWithSaveLayer,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24.0),
-      ),
-      margin: const EdgeInsets.only(bottom: 12.0),
+      margin: const EdgeInsets.only(bottom: LwpSpacing.sm),
       child: InkWell(
         onTap: () => _showGroupDetails(context),
         child: Padding(
-          padding: const EdgeInsets.all(12.0),
+          padding: const EdgeInsets.all(LwpSpacing.sm),
           child: Row(
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(16.0),
+                borderRadius: LwpRadii.smAll,
                 child: CldImageWidget(
                   publicId: group.bannerPublicId ?? 'samples/cloudinary-icon',
                   fit: BoxFit.cover,
@@ -81,4 +78,3 @@ class LwpGroupCard extends StatelessWidget {
     );
   }
 }
-

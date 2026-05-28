@@ -6,6 +6,8 @@ import 'package:lw_app/Blocs/CompareTranslations/compare_translations_bloc.dart'
 import 'package:lw_app/Blocs/CompareTranslations/compare_translations_event.dart';
 import 'package:lw_app/Blocs/CompareTranslations/compare_translations_state.dart';
 import 'package:lw_app/Models/Bible/bible_models.dart';
+import 'package:lw_app/Themes/lwp_tokens.dart';
+import 'package:lw_app/Widgets/LwpBottomSheet/lwp_bottom_sheet.dart';
 
 class CompareTranslationsSheet extends StatefulWidget {
   final BibleBook book;
@@ -52,20 +54,13 @@ class _CompareTranslationsSheetState extends State<CompareTranslationsSheet> {
         return Container(
           decoration: BoxDecoration(
             color: theme.scaffoldBackgroundColor,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            borderRadius: LwpRadii.lgTop,
           ),
           child: Column(
             children: [
-              const SizedBox(height: 8),
-              Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.grey.withValues(alpha: 0.4),
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              const SizedBox(height: 16),
+              const SizedBox(height: LwpSpacing.xs),
+              const LwpSheetHandle(),
+              const SizedBox(height: LwpSpacing.md),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Row(
@@ -80,7 +75,7 @@ class _CompareTranslationsSheetState extends State<CompareTranslationsSheet> {
                     ),
                     InkWell(
                       onTap: () => Navigator.pop(context),
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(LwpRadii.pill),
                       child: const Padding(
                         padding: EdgeInsets.all(4),
                         child: Icon(Icons.close, size: 20),
@@ -99,7 +94,7 @@ class _CompareTranslationsSheetState extends State<CompareTranslationsSheet> {
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Text(
                       state.citation,
-                      style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                      style: TextStyle(color: theme.hintColor, fontSize: 13),
                     ),
                   );
                 },
@@ -116,16 +111,16 @@ class _CompareTranslationsSheetState extends State<CompareTranslationsSheet> {
                     contentPadding: const EdgeInsets.symmetric(
                         vertical: 10, horizontal: 16),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(24),
+                      borderRadius: LwpRadii.lgAll,
                       borderSide: BorderSide(
                           color: theme.primaryColor.withValues(alpha: 0.3)),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(24),
+                      borderRadius: LwpRadii.lgAll,
                       borderSide: BorderSide(color: theme.dividerColor),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(24),
+                      borderRadius: LwpRadii.lgAll,
                       borderSide:
                           BorderSide(color: theme.primaryColor, width: 2),
                     ),
@@ -146,7 +141,7 @@ class _CompareTranslationsSheetState extends State<CompareTranslationsSheet> {
                       return Center(
                         child: Text(
                           'Geen vertalings gevind nie',
-                          style: TextStyle(color: Colors.grey[600]),
+                          style: TextStyle(color: theme.hintColor),
                         ),
                       );
                     }
@@ -215,7 +210,7 @@ class _TranslationCard extends StatelessWidget {
         children: [
           Text(
             'Kon nie laai nie',
-            style: TextStyle(color: Colors.grey[600], fontSize: 13),
+            style: TextStyle(color: theme.hintColor, fontSize: 13),
           ),
           const SizedBox(height: 8),
           TextButton.icon(
@@ -250,14 +245,7 @@ class _TranslationCard extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24),
-        side: BorderSide(
-          color: theme.dividerColor.withValues(alpha: 0.5),
-        ),
-      ),
+      margin: const EdgeInsets.only(bottom: LwpSpacing.sm),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -278,7 +266,7 @@ class _TranslationCard extends StatelessWidget {
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
                     color: theme.primaryColor.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(LwpRadii.pill),
                   ),
                   child: Text(
                     version.language.toUpperCase(),

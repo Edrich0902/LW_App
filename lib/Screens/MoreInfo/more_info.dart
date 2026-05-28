@@ -27,14 +27,16 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return BlocBuilder<MoreInfoBloc, MoreInfoState>(
       builder: (context, state) {
         if (state is MoreInfoLoading) {
           return const Scaffold(body: LwpLoader());
         } else if (state is MoreInfoSuccess) {
-          final mission = state.data.firstWhereOrNull((m) => m.key == 'mission_statement');
-          final vision = state.data.firstWhereOrNull((v) => v.key == 'vision_statement');
+          final mission =
+              state.data.firstWhereOrNull((m) => m.key == 'mission_statement');
+          final vision =
+              state.data.firstWhereOrNull((v) => v.key == 'vision_statement');
 
           return Scaffold(
             floatingActionButton: const WhatsappContactFAB(),
@@ -44,7 +46,6 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
                   expandedHeight: 120.0,
                   floating: false,
                   pinned: true,
-                  elevation: 0,
                   scrolledUnderElevation: 0,
                   flexibleSpace: FlexibleSpaceBar(
                     title: Text(
@@ -85,7 +86,8 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
                 SliverPadding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   sliver: SliverGrid(
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       mainAxisSpacing: 16.0,
                       crossAxisSpacing: 16.0,
@@ -131,8 +133,8 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
       child: Text(
         title,
         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-          fontWeight: FontWeight.bold,
-        ),
+              fontWeight: FontWeight.bold,
+            ),
       ),
     );
   }
@@ -143,9 +145,13 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
       child: Text(
         content,
         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-          height: 1.6,
-          color: Theme.of(context).textTheme.bodyLarge?.color?.withValues(alpha: 0.8),
-        ),
+              height: 1.6,
+              color: Theme.of(context)
+                  .textTheme
+                  .bodyLarge
+                  ?.color
+                  ?.withValues(alpha: 0.8),
+            ),
       ),
     );
   }

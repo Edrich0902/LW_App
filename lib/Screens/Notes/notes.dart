@@ -6,6 +6,7 @@ import 'package:lw_app/Blocs/Notes/notes_bloc.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 import 'package:lw_app/Models/Note/note.dart';
 import 'package:lw_app/Screens/NotesEdit/notes_edit.dart';
+import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
@@ -92,15 +93,15 @@ class _NotesPageState extends State<NotesPage> {
                           contentPadding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 0),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(24.0),
+                            borderRadius: LwpRadii.lgAll,
                             borderSide: BorderSide.none,
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(24.0),
+                            borderRadius: LwpRadii.lgAll,
                             borderSide: BorderSide.none,
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(24.0),
+                            borderRadius: LwpRadii.lgAll,
                             borderSide: BorderSide(
                               color: Theme.of(context).primaryColor,
                               width: 1.5,
@@ -116,8 +117,8 @@ class _NotesPageState extends State<NotesPage> {
                               onRefresh: () async =>
                                   notesBloc.add(const LoadNotes()),
                               child: ListView.separated(
-                                padding: const EdgeInsets.fromLTRB(
-                                    16, 8, 16, 100),
+                                padding:
+                                    const EdgeInsets.fromLTRB(16, 8, 16, 100),
                                 itemCount: filtered.length,
                                 separatorBuilder: (_, __) =>
                                     const SizedBox(height: 12),
@@ -164,15 +165,14 @@ class _NotesPageState extends State<NotesPage> {
     final date = _formatDate(note.updatedAt ?? note.createdAt);
 
     return Card(
-      elevation: 0,
       margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24.0),
-        side: BorderSide(color: Colors.grey.withValues(alpha: 0.15)),
+        borderRadius: LwpRadii.lgAll,
+        side: BorderSide(color: theme.dividerColor),
       ),
       child: InkWell(
         onTap: onEdit,
-        borderRadius: BorderRadius.circular(24.0),
+        borderRadius: LwpRadii.lgAll,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -182,8 +182,7 @@ class _NotesPageState extends State<NotesPage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   CircleAvatar(
-                    backgroundColor:
-                        theme.primaryColor.withValues(alpha: 0.1),
+                    backgroundColor: theme.primaryColor.withValues(alpha: 0.1),
                     child: Icon(Icons.note_alt_outlined,
                         color: theme.primaryColor, size: 20),
                   ),
@@ -205,7 +204,7 @@ class _NotesPageState extends State<NotesPage> {
                           Text(
                             date,
                             style: theme.textTheme.labelSmall?.copyWith(
-                              color: Colors.grey,
+                              color: theme.hintColor,
                             ),
                           ),
                         ],
@@ -227,7 +226,7 @@ class _NotesPageState extends State<NotesPage> {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: Colors.grey,
+                    color: theme.hintColor,
                     height: 1.4,
                   ),
                 ),
@@ -252,12 +251,10 @@ class _NotesPageState extends State<NotesPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Verwyder Nota'),
-          content:
-              const Text('Is jy seker jy wil hierdie nota verwyder?'),
+          content: const Text('Is jy seker jy wil hierdie nota verwyder?'),
           actions: [
             TextButton(
-              onPressed: () =>
-                  Navigator.of(context, rootNavigator: true).pop(),
+              onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
               child: const Text('Kanselleer'),
             ),
             ElevatedButton(

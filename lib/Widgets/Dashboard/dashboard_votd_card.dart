@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:lw_app/Models/Bible/votd_model.dart';
+import 'package:lw_app/Themes/lwp_tokens.dart';
 
 class DashboardVotdCard extends StatelessWidget {
   final Votd votd;
@@ -17,24 +18,23 @@ class DashboardVotdCard extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Card(
-      elevation: 0,
       margin: EdgeInsets.zero,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24.0)),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(24.0),
+        borderRadius: LwpRadii.lgAll,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (votd.imageUrl != null)
               ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(24.0)),
+                borderRadius: LwpRadii.lgTop,
                 child: Image.network(
                   votd.imageUrl!,
                   width: double.infinity,
                   height: 200,
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
+                  errorBuilder: (context, error, stackTrace) =>
+                      const SizedBox.shrink(),
                 ),
               ),
             Padding(
@@ -45,10 +45,11 @@ class DashboardVotdCard extends StatelessWidget {
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
                           color: theme.primaryColor.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: LwpRadii.smAll,
                         ),
                         child: Text(
                           "VERS VAN DIE DAG",
@@ -61,7 +62,7 @@ class DashboardVotdCard extends StatelessWidget {
                         ),
                       ),
                       const Spacer(),
-                      const Icon(Icons.menu_book, size: 16, color: Colors.grey),
+                      Icon(Icons.menu_book, size: 16, color: theme.hintColor),
                     ],
                   ),
                   const SizedBox(height: 16),
@@ -85,12 +86,41 @@ class DashboardVotdCard extends StatelessWidget {
                     },
                   ),
                   const SizedBox(height: 12),
-                  Text(
-                    votd.content.citation,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: theme.primaryColor,
-                    ),
+                  Wrap(
+                    spacing: LwpSpacing.sm,
+                    runSpacing: LwpSpacing.xs,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Text(
+                        votd.content.citation,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: theme.primaryColor,
+                        ),
+                      ),
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 260),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: LwpSpacing.sm,
+                            vertical: LwpSpacing.xxs,
+                          ),
+                          decoration: ShapeDecoration(
+                            color: theme.primaryColor.withValues(alpha: 0.1),
+                            shape: const StadiumBorder(),
+                          ),
+                          child: Text(
+                            votd.version.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: theme.primaryColor,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lw_app/Themes/lwp_tokens.dart';
 
 class DashboardGridCard extends StatelessWidget {
   final String title;
@@ -19,7 +20,7 @@ class DashboardGridCard extends StatelessWidget {
     return Card(
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(24.0),
+        borderRadius: LwpRadii.lgAll,
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Column(

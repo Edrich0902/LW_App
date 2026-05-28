@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lw_app/Blocs/Auth/auth_bloc.dart';
 import 'package:lw_app/Screens/Container/container.dart';
+import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 import 'package:lw_app/Screens/Auth/email_confirmation.dart';
@@ -111,7 +112,8 @@ class _RegisterPageState extends State<RegisterPage> {
         if (!(ModalRoute.of(context)?.isCurrent ?? false)) return;
 
         if (state is AuthErrorState) {
-          LwpSnackbar.showError(context, "Registrasie het misluk. Probeer asseblief weer.");
+          LwpSnackbar.showError(
+              context, "Registrasie het misluk. Probeer asseblief weer.");
         }
 
         if (state is AuthSuccessState) {
@@ -162,7 +164,8 @@ class _RegisterPageState extends State<RegisterPage> {
                           end: Alignment.bottomCenter,
                           colors: [
                             Colors.transparent,
-                            theme.scaffoldBackgroundColor.withValues(alpha: 0.1),
+                            theme.scaffoldBackgroundColor
+                                .withValues(alpha: 0.1),
                             theme.scaffoldBackgroundColor,
                           ],
                         ),
@@ -177,7 +180,8 @@ class _RegisterPageState extends State<RegisterPage> {
               child: Container(
                 color: theme.scaffoldBackgroundColor,
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 24.0, vertical: 32.0),
                   child: Form(
                     key: _registerFormKey,
                     child: Column(
@@ -191,7 +195,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                 children: [
                                   Text(
                                     _getStepTitle(),
-                                    style: theme.textTheme.headlineLarge?.copyWith(
+                                    style:
+                                        theme.textTheme.headlineLarge?.copyWith(
                                       fontWeight: FontWeight.bold,
                                       color: theme.primaryColor,
                                     ),
@@ -234,7 +239,8 @@ class _RegisterPageState extends State<RegisterPage> {
                         BlocBuilder<AuthBloc, AuthState>(
                           builder: (context, state) {
                             return ElevatedButton(
-                              onPressed: state is AuthLoadingState ? null : _nextStep,
+                              onPressed:
+                                  state is AuthLoadingState ? null : _nextStep,
                               child: state is AuthLoadingState
                                   ? const SizedBox(
                                       width: 20,
@@ -243,7 +249,9 @@ class _RegisterPageState extends State<RegisterPage> {
                                         strokeWidth: 2,
                                       ),
                                     )
-                                  : Text(_currentStep < 2 ? "Volgende" : "Registreer"),
+                                  : Text(_currentStep < 2
+                                      ? "Volgende"
+                                      : "Registreer"),
                             );
                           },
                         ),
@@ -251,7 +259,8 @@ class _RegisterPageState extends State<RegisterPage> {
                           const SizedBox(height: 16),
                           TextButton(
                             onPressed: () => Navigator.pop(context),
-                            child: const Text("Het jy reeds 'n rekening? Teken hier in"),
+                            child: const Text(
+                                "Het jy reeds 'n rekening? Teken hier in"),
                           ),
                         ],
                       ],
@@ -412,8 +421,10 @@ class _RegisterPageState extends State<RegisterPage> {
             children: [
               CircleAvatar(
                 radius: 60,
-                backgroundColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),
-                backgroundImage: _imageFile != null ? FileImage(_imageFile!) : null,
+                backgroundColor:
+                    Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                backgroundImage:
+                    _imageFile != null ? FileImage(_imageFile!) : null,
                 child: _imageFile == null
                     ? Icon(
                         Icons.person,
@@ -453,7 +464,7 @@ class _RegisterPageState extends State<RegisterPage> {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
+        borderRadius: LwpRadii.lgTop,
       ),
       builder: (context) {
         return SafeArea(

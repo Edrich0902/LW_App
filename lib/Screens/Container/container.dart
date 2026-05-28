@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:lw_app/Themes/custom_theme.dart';
+import 'package:lw_app/Themes/lwp_tokens.dart';
 
 // Screens
 import 'package:lw_app/Screens/Dashboard/dashboard.dart';
@@ -27,7 +29,8 @@ class _ContainerPageState extends State<ContainerPage> {
   void itemChanged(int index) {
     setState(() {
       _selectedIndex = index;
-      _pageViewController.animateToPage(index, duration: const Duration(milliseconds: 300), curve: Curves.ease);
+      _pageViewController.animateToPage(index,
+          duration: const Duration(milliseconds: 300), curve: Curves.ease);
     });
   }
 
@@ -57,11 +60,8 @@ class _ContainerPageState extends State<ContainerPage> {
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1E1E1E) : theme.primaryColor,
-          borderRadius: const BorderRadius.only(
-            topRight: Radius.circular(24.0),
-            topLeft: Radius.circular(24.0),
-          ),
+          color: isDark ? DarkColors.surface : theme.primaryColor,
+          borderRadius: LwpRadii.lgTop,
         ),
         child: Padding(
           padding: const EdgeInsets.fromLTRB(15, 15, 15, 20),
@@ -100,9 +100,9 @@ class _ContainerPageState extends State<ContainerPage> {
             curve: Curves.easeInOut,
             duration: const Duration(milliseconds: 300),
             haptic: true,
-            tabBorderRadius: 24.0,
-            tabBackgroundColor: isDark 
-                ? theme.primaryColor.withValues(alpha: 0.1) 
+            tabBorderRadius: LwpRadii.lg,
+            tabBackgroundColor: isDark
+                ? theme.primaryColor.withValues(alpha: 0.1)
                 : Colors.white,
             activeColor: theme.primaryColor,
             color: isDark ? Colors.white70 : Colors.white,

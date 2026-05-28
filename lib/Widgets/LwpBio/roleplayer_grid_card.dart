@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lw_app/Models/Roleplayer/roleplayer.dart';
+import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Widgets/LwpProfileImage/lwp_profile_image.dart';
 
 class RoleplayerGridCard extends StatelessWidget {
@@ -17,9 +18,8 @@ class RoleplayerGridCard extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Card(
-      elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24.0),
+        borderRadius: LwpRadii.lgAll,
         side: BorderSide(
           color: theme.dividerColor.withValues(alpha: 0.1),
         ),

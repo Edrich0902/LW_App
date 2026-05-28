@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lw_app/Themes/lwp_tokens.dart';
 
 class ConnectHero extends StatelessWidget {
   const ConnectHero({super.key});
@@ -12,7 +13,7 @@ class ConnectHero extends StatelessWidget {
       width: double.infinity,
       height: 200,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24.0),
+        borderRadius: LwpRadii.lgAll,
         image: const DecorationImage(
           image: NetworkImage(
             'https://images.unsplash.com/photo-1511632765486-a01980e01a18?q=80&w=1470&auto=format&fit=crop',
@@ -29,7 +30,7 @@ class ConnectHero extends StatelessWidget {
       ),
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24.0),
+          borderRadius: LwpRadii.lgAll,
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -50,7 +51,7 @@ class ConnectHero extends StatelessWidget {
                 color: isDark
                     ? theme.primaryColor.withValues(alpha: 0.9)
                     : theme.primaryColor.withValues(alpha: 0.9),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: LwpRadii.smAll,
               ),
               child: Text(
                 "SKAKEL IN",

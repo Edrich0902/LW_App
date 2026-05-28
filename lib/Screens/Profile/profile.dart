@@ -101,7 +101,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   _formatRole(role),
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.grey[600],
+                    color: Theme.of(context).hintColor,
                   ),
                 ),
               ),

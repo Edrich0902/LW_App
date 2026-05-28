@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloudinary_flutter/image/cld_image.dart';
 import 'package:lw_app/Models/Roleplayer/roleplayer.dart';
+import 'package:lw_app/Themes/lwp_tokens.dart';
 
 class RoleplayerDetailScreen extends StatelessWidget {
   const RoleplayerDetailScreen({super.key, required this.roleplayer});
@@ -20,8 +21,8 @@ class RoleplayerDetailScreen extends StatelessWidget {
             height: size.height * 0.45,
             width: double.infinity,
             child: CldImageWidget(
-              publicId: roleplayer.profilePublicId?.isNotEmpty == true 
-                  ? roleplayer.profilePublicId! 
+              publicId: roleplayer.profilePublicId?.isNotEmpty == true
+                  ? roleplayer.profilePublicId!
                   : 'samples/cloudinary-icon',
               fit: BoxFit.cover,
             ),
@@ -53,11 +54,10 @@ class RoleplayerDetailScreen extends StatelessWidget {
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: theme.scaffoldBackgroundColor,
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(32.0),
-                    ),
+                    borderRadius: LwpRadii.lgTop,
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 24.0, vertical: 32.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -106,7 +106,8 @@ class RoleplayerDetailScreen extends StatelessWidget {
             child: CircleAvatar(
               backgroundColor: Colors.black.withValues(alpha: 0.3),
               child: IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 18),
+                icon: const Icon(Icons.arrow_back_ios_new,
+                    color: Colors.white, size: 18),
                 onPressed: () => Navigator.of(context).pop(),
               ),
             ),

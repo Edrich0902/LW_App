@@ -81,6 +81,7 @@ class _MyPrayerRequestsViewState extends State<_MyPrayerRequestsView> {
                           child: ChoiceChip(
                             label: const Text('Alles'),
                             selected: _selectedStatus == null,
+                            shape: const StadiumBorder(),
                             onSelected: (_) {
                               setState(() => _selectedStatus = null);
                             },
@@ -92,6 +93,7 @@ class _MyPrayerRequestsViewState extends State<_MyPrayerRequestsView> {
                             child: ChoiceChip(
                               label: Text(status.afrikaansLabel),
                               selected: _selectedStatus == status,
+                              shape: const StadiumBorder(),
                               onSelected: (_) {
                                 setState(() => _selectedStatus = status);
                               },

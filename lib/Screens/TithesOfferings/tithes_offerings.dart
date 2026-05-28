@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/TithesOfferings/tithes_offerings_bloc.dart';
 import 'package:lw_app/Models/TithesOfferings/tithes_offerings_settings.dart';
+import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:lw_app/Widgets/LwpAnnouncement/lwp_announcement.dart';
@@ -21,7 +22,9 @@ class TithesOfferingsScreen extends StatefulWidget {
 class _TithesOfferingsScreenState extends State<TithesOfferingsScreen> {
   @override
   void initState() {
-    context.read<TithesOfferingsBloc>().add(const LoadTithesOfferingsSettings());
+    context
+        .read<TithesOfferingsBloc>()
+        .add(const LoadTithesOfferingsSettings());
     super.initState();
   }
 
@@ -45,12 +48,15 @@ class _TithesOfferingsScreenState extends State<TithesOfferingsScreen> {
       ),
       body: BlocBuilder<TithesOfferingsBloc, TithesOfferingsState>(
         builder: (context, state) {
-          if (state is TithesOfferingsLoading || state is TithesOfferingsInitial) {
+          if (state is TithesOfferingsLoading ||
+              state is TithesOfferingsInitial) {
             return const LwpLoader(message: 'Laai Tiendes & Offergawes');
           } else if (state is TithesOfferingsSuccess) {
             return _buildContent(context, state.settings);
           } else if (state is TithesOfferingsEmpty) {
-            return const LwpEmpty(message: 'Tiendes & Offergawes inligting word binnekort opgedateer.');
+            return const LwpEmpty(
+                message:
+                    'Tiendes & Offergawes inligting word binnekort opgedateer.');
           } else {
             return const LwpError();
           }
@@ -90,7 +96,8 @@ class _TithesOfferingsScreenState extends State<TithesOfferingsScreen> {
                       ],
                     ),
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 24.0, vertical: 32.0),
                   alignment: Alignment.bottomLeft,
                   child: Text(
                     'Gee met \'n Blye Hart',
@@ -117,7 +124,8 @@ class _TithesOfferingsScreenState extends State<TithesOfferingsScreen> {
 
           // EFT Details Card
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
             child: Card(
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
@@ -132,7 +140,8 @@ class _TithesOfferingsScreenState extends State<TithesOfferingsScreen> {
                             color: theme.primaryColor.withValues(alpha: 0.1),
                             shape: BoxShape.circle,
                           ),
-                          child: Icon(Icons.account_balance, color: theme.primaryColor, size: 20),
+                          child: Icon(Icons.account_balance,
+                              color: theme.primaryColor, size: 20),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
@@ -148,8 +157,11 @@ class _TithesOfferingsScreenState extends State<TithesOfferingsScreen> {
                       ],
                     ),
                     const Divider(height: 32),
-                    _buildDetailRow(context, 'Bank', settings.bank, isCopyable: false),
-                    _buildDetailRow(context, 'Rekeningnaam', settings.accountName, isCopyable: false),
+                    _buildDetailRow(context, 'Bank', settings.bank,
+                        isCopyable: false),
+                    _buildDetailRow(
+                        context, 'Rekeningnaam', settings.accountName,
+                        isCopyable: false),
                     _buildDetailRow(
                       context,
                       'Rekeningnommer',
@@ -180,7 +192,8 @@ class _TithesOfferingsScreenState extends State<TithesOfferingsScreen> {
           // SnapScan Card
           if (settings.snapscanQrUrl != null)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
               child: Card(
                 child: Padding(
                   padding: const EdgeInsets.all(20.0),
@@ -194,7 +207,8 @@ class _TithesOfferingsScreenState extends State<TithesOfferingsScreen> {
                               color: theme.primaryColor.withValues(alpha: 0.1),
                               shape: BoxShape.circle,
                             ),
-                            child: Icon(Icons.qr_code_scanner, color: theme.primaryColor, size: 20),
+                            child: Icon(Icons.qr_code_scanner,
+                                color: theme.primaryColor, size: 20),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
@@ -216,13 +230,13 @@ class _TithesOfferingsScreenState extends State<TithesOfferingsScreen> {
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(24),
+                          borderRadius: LwpRadii.lgAll,
                           border: Border.all(
                             color: theme.dividerColor.withValues(alpha: 0.1),
                           ),
                         ),
                         child: ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: LwpRadii.smAll,
                           child: Image(
                             image: NetworkImage(settings.snapscanQrUrl!),
                             fit: BoxFit.contain,
@@ -291,7 +305,8 @@ class _TithesOfferingsScreenState extends State<TithesOfferingsScreen> {
             child: isCopyable
                 ? IconButton(
                     icon: const Icon(Icons.copy, size: 18),
-                    onPressed: () => _copyToClipboard(context, value, copyLabel ?? label),
+                    onPressed: () =>
+                        _copyToClipboard(context, value, copyLabel ?? label),
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
                     splashRadius: 20,

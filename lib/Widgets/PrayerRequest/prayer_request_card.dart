@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lw_app/Models/PrayerRequest/prayer_request.dart';
+import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
 
 class PrayerRequestCard extends StatelessWidget {
@@ -47,6 +48,7 @@ class PrayerRequestCard extends StatelessWidget {
                 Chip(
                   label: Text(request.category.afrikaansLabel),
                   visualDensity: VisualDensity.compact,
+                  shape: const StadiumBorder(),
                 ),
                 if (showStatus)
                   Chip(
@@ -58,6 +60,7 @@ class PrayerRequestCard extends StatelessWidget {
                       fontWeight: FontWeight.w600,
                     ),
                     visualDensity: VisualDensity.compact,
+                    shape: const StadiumBorder(),
                   ),
               ],
             ),
@@ -92,7 +95,7 @@ class PrayerRequestCard extends StatelessWidget {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: theme.colorScheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: LwpRadii.smAll,
                 ),
                 child: Text(
                   'Nota: ${request.moderationNote!}',
@@ -118,6 +121,7 @@ class PrayerRequestCard extends StatelessWidget {
                     ),
                     label: Text('Ek bid vir jou (${request.reactionCount})'),
                     onPressed: onPrayTap,
+                    shape: const StadiumBorder(),
                   ),
                 if (onResolveTap != null &&
                     request.status != PrayerRequestStatus.resolved)
@@ -125,6 +129,7 @@ class PrayerRequestCard extends StatelessWidget {
                     avatar: const Icon(Icons.check_circle_outline, size: 18),
                     label: const Text('Merk as afgehandel'),
                     onPressed: onResolveTap,
+                    shape: const StadiumBorder(),
                   ),
               ],
             ),

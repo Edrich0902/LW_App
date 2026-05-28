@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lw_app/Models/YoutubeVideo/youtube_video.dart';
+import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:lw_app/Blocs/Sermons/sermons_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -50,7 +51,10 @@ class _SermonsPageState extends State<SermonsPage> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Preke'),
-          actions: const <Widget>[LwpAnnouncementButton(), ProfileActionButton()],
+          actions: const <Widget>[
+            LwpAnnouncementButton(),
+            ProfileActionButton()
+          ],
         ),
         body: SafeArea(
           child: BlocBuilder<SermonsBloc, SermonsState>(
@@ -63,7 +67,8 @@ class _SermonsPageState extends State<SermonsPage> {
                     builder: (context, setInnerState) {
                       final filtered = _filterSermons(state.youtubeVideos);
                       return RefreshIndicator(
-                        onRefresh: () async => sermonsBloc.add(const LoadSermons()),
+                        onRefresh: () async =>
+                            sermonsBloc.add(const LoadSermons()),
                         child: ListView.builder(
                           padding: const EdgeInsets.all(16.0),
                           itemCount: filtered.length + 1,
@@ -77,17 +82,18 @@ class _SermonsPageState extends State<SermonsPage> {
                                   decoration: InputDecoration(
                                     hintText: 'Soek preke...',
                                     prefixIcon: const Icon(Icons.search),
-                                    suffixIcon: _searchController.text.isNotEmpty
-                                        ? IconButton(
-                                            icon: const Icon(Icons.clear),
-                                            onPressed: () {
-                                              _searchController.clear();
-                                              setInnerState(() {});
-                                            },
-                                          )
-                                        : null,
+                                    suffixIcon:
+                                        _searchController.text.isNotEmpty
+                                            ? IconButton(
+                                                icon: const Icon(Icons.clear),
+                                                onPressed: () {
+                                                  _searchController.clear();
+                                                  setInnerState(() {});
+                                                },
+                                              )
+                                            : null,
                                     border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(24.0),
+                                      borderRadius: LwpRadii.lgAll,
                                       borderSide: BorderSide.none,
                                     ),
                                     filled: true,
@@ -100,7 +106,8 @@ class _SermonsPageState extends State<SermonsPage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => SermonDetailPage(video: video),
+                                  builder: (context) =>
+                                      SermonDetailPage(video: video),
                                 ),
                               );
                             });
@@ -126,19 +133,18 @@ class _SermonsPageState extends State<SermonsPage> {
     final theme = Theme.of(context);
 
     return Card(
-      elevation: 0,
-      margin: const EdgeInsets.only(bottom: 24.0),
+      margin: const EdgeInsets.only(bottom: LwpSpacing.lg),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24.0),
+        borderRadius: LwpRadii.lgAll,
       ),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(24.0),
+        borderRadius: LwpRadii.lgAll,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(24.0)),
+              borderRadius: LwpRadii.lgTop,
               child: AspectRatio(
                 aspectRatio: 16 / 9,
                 child: Image.network(

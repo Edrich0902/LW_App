@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Models/Event/event.dart';
 import 'package:lw_app/Blocs/Courses/courses_bloc.dart';
 import 'package:lw_app/Models/Event/event_category.dart';
+import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
@@ -39,7 +40,10 @@ class _CoursesPageState extends State<CoursesPage> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text("Kursusse"),
-          actions: const <Widget>[LwpAnnouncementButton(), ProfileActionButton()],
+          actions: const <Widget>[
+            LwpAnnouncementButton(),
+            ProfileActionButton()
+          ],
         ),
         body: SafeArea(
           child: BlocBuilder<CoursesBloc, CoursesState>(
@@ -52,9 +56,11 @@ class _CoursesPageState extends State<CoursesPage> {
                     onRefresh: () async => coursesBloc
                         .add(LoadCourses(eventCategory: EventCategory.COURSE)),
                     child: ListView.separated(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 24.0),
                       itemCount: state.courses.length,
-                      separatorBuilder: (context, index) => const SizedBox(height: 16.0),
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: 16.0),
                       itemBuilder: (BuildContext context, int index) {
                         return _buildCourseCard(state.courses[index], () {
                           Navigator.push(
@@ -86,11 +92,10 @@ class _CoursesPageState extends State<CoursesPage> {
     final theme = Theme.of(context);
 
     return Card(
-      elevation: 0,
       margin: EdgeInsets.zero,
       clipBehavior: Clip.antiAliasWithSaveLayer,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24.0),
+        borderRadius: LwpRadii.lgAll,
       ),
       child: InkWell(
         onTap: onTap,

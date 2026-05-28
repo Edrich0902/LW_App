@@ -9,6 +9,8 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Instellings'),
@@ -17,14 +19,14 @@ class SettingsPage extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.all(16.0),
           children: [
-            const Padding(
-              padding: EdgeInsets.only(left: 8.0, bottom: 8.0),
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0, bottom: 8.0),
               child: Text(
                 'Voorkoms',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
-                  color: Colors.grey,
+                  color: theme.hintColor,
                 ),
               ),
             ),
@@ -83,7 +85,7 @@ class SettingsPage extends StatelessWidget {
       title: Text(title),
       trailing: isSelected
           ? Icon(Icons.check_circle, color: theme.primaryColor)
-          : const Icon(Icons.circle_outlined, color: Colors.grey),
+          : Icon(Icons.circle_outlined, color: theme.hintColor),
       onTap: () {
         context.read<ThemeBloc>().add(UpdateThemeEvent(mode));
       },

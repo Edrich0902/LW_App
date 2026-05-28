@@ -49,9 +49,11 @@ LwpSnackbar.showSuccess(context, 'Suksesvol gestoor');
 LwpSnackbar.showError(context, 'Iets het verkeerd gegaan');
 ```
 
-**Theming:** Always use `Theme.of(context)` or `LightColors`/`DarkColors` constants. Never hardcode colours. AppBars and buttons use `elevation: 0`. All interactive elements use `BorderRadius.circular(24.0)`.
+**Theming:** Always use the project design system instead of hardcoding visual values. Use `Theme.of(context)`, `LightColors`/`DarkColors`, `LwpRadii`, and `LwpSpacing` from `lib/Themes/` for colours, radii, spacing, card shape, and component styling. Never introduce raw hex colours, ad-hoc `Colors.grey`, numeric border radii, custom card outlines, or one-off spacing unless there is a clear component-specific reason. AppBars and buttons use `elevation: 0`.
 
-**Card UI:** Border radius `24.0` everywhere. For label-value rows, fixed label width `130.0` with `maxLines: 1, overflow: TextOverflow.ellipsis`. Separate sections with `Divider(height: 32)`.
+**Card UI:** Cards should inherit `Theme.of(context).cardTheme` so the shared flat elevation, 24px radius, and light-mode outline stay consistent. Do not override `Card.shape`, `elevation`, or borders locally unless the component intentionally differs from the app standard. For label-value rows, fixed label width `130.0` with `maxLines: 1, overflow: TextOverflow.ellipsis`. Separate sections with `Divider(height: 32)`.
+
+**Pills, chips, and sheets:** Chips and pill-like controls should use `StadiumBorder` or `LwpRadii.pill`. Bottom sheets should use `LwpBottomSheet`/`LwpSheetHandle` where practical.
 
 **Dashboard pattern:** Hero section (latest content) → 2-column grid of icon-based cards. Show a themed loading placeholder while fetching.
 
@@ -69,7 +71,7 @@ Share.share(text, sharePositionOrigin: box != null ? box.localToGlobal(Offset.ze
 
 | Token | Light | Dark |
 |---|---|---|
-| Primary | `#11181C` Deep Black | `#F2C94C` Gold |
+| Primary | `#11181C` Deep Black | `#2E86C1` Blue |
 | Background | `#FAFAFA` Off-white | `#121212` Deep Dark |
 | Surface / Bottom Nav | — | `#1E1E1E` Charcoal |
 

@@ -5,8 +5,11 @@ import 'package:lw_app/Models/Bible/bible_models.dart';
 import 'package:lw_app/Services/Bible/bible_service.dart';
 import 'package:lw_app/Services/Bible/bible_interaction_service.dart';
 import 'package:collection/collection.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BibleBloc extends Bloc<BibleEvent, BibleState> {
+  static const String _lastVersionIdKey = 'last_bible_version_id';
+
   final BibleService bibleService;
   final BibleInteractionService interactionService;
 
@@ -30,6 +33,25 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
     on<SaveNoteForSelected>(_onSaveNoteForSelected);
   }
 
+  Future<void> _saveLastVersionId(String versionId) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_lastVersionIdKey, versionId);
+  }
+
+  Future<BibleVersion> _getInitialVersion(List<BibleVersion> versions) async {
+    final prefs = await SharedPreferences.getInstance();
+    final lastVersionId = prefs.getString(_lastVersionIdKey);
+
+    if (lastVersionId != null) {
+      final savedVersion =
+          versions.firstWhereOrNull((version) => version.id == lastVersionId);
+      if (savedVersion != null) return savedVersion;
+    }
+
+    return versions.firstWhereOrNull((v) => v.name.contains('NIV')) ??
+        versions.first;
+  }
+
   Future<List<BibleVerse>> _getParsedAndMergedVerses({
     required String versionId,
     required String bookId,
@@ -42,7 +64,8 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
       chapterId: chapterId,
     );
 
-    final chapterNum = chapterId.contains('.') ? chapterId.split('.').last : chapterId;
+    final chapterNum =
+        chapterId.contains('.') ? chapterId.split('.').last : chapterId;
 
     try {
       final interactions = await interactionService.getInteractionsForChapter(
@@ -71,13 +94,17 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
     }
   }
 
-  Future<void> _onLoadSpecificPassage(LoadSpecificPassage event, Emitter<BibleState> emit) async {
+  Future<void> _onLoadSpecificPassage(
+      LoadSpecificPassage event, Emitter<BibleState> emit) async {
     emit(BibleLoading());
     try {
-      final allVersions = await bibleService.getVersions(languages: ['en', 'af']);
+      final allVersions =
+          await bibleService.getVersions(languages: ['en', 'af']);
       final books = await bibleService.getBooks(event.version.id);
-      final chapters = await bibleService.getChapters(event.version.id, event.book.id);
-      final content = await bibleService.getChapterContent(event.version.id, event.book.id, event.chapter.id);
+      final chapters =
+          await bibleService.getChapters(event.version.id, event.book.id);
+      final content = await bibleService.getChapterContent(
+          event.version.id, event.book.id, event.chapter.id);
 
       final verses = await _getParsedAndMergedVerses(
         versionId: event.version.id,
@@ -85,6 +112,8 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
         chapterId: event.chapter.id,
         rawHtml: content.rawHtml,
       );
+
+      await _saveLastVersionId(event.version.id);
 
       emit(BibleLoaded(
         currentVersion: event.version,
@@ -101,40 +130,47 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
     }
   }
 
-  Future<void> _onNavigateNextChapter(NavigateNextChapter event, Emitter<BibleState> emit) async {
+  Future<void> _onNavigateNextChapter(
+      NavigateNextChapter event, Emitter<BibleState> emit) async {
     if (state is! BibleLoaded) return;
     final currentState = state as BibleLoaded;
 
-    final currentIndex = currentState.chapters.indexWhere((c) => c.id == currentState.currentChapter.id);
+    final currentIndex = currentState.chapters
+        .indexWhere((c) => c.id == currentState.currentChapter.id);
 
     if (currentIndex < currentState.chapters.length - 1) {
       add(ChangeChapter(currentState.chapters[currentIndex + 1]));
     } else {
-      final currentBookIndex = currentState.books.indexWhere((b) => b.id == currentState.currentBook.id);
+      final currentBookIndex = currentState.books
+          .indexWhere((b) => b.id == currentState.currentBook.id);
       if (currentBookIndex < currentState.books.length - 1) {
         add(ChangeBook(currentState.books[currentBookIndex + 1]));
       }
     }
   }
 
-  Future<void> _onNavigatePreviousChapter(NavigatePreviousChapter event, Emitter<BibleState> emit) async {
+  Future<void> _onNavigatePreviousChapter(
+      NavigatePreviousChapter event, Emitter<BibleState> emit) async {
     if (state is! BibleLoaded) return;
     final currentState = state as BibleLoaded;
 
-    final currentIndex = currentState.chapters.indexWhere((c) => c.id == currentState.currentChapter.id);
+    final currentIndex = currentState.chapters
+        .indexWhere((c) => c.id == currentState.currentChapter.id);
 
     if (currentIndex > 0) {
       add(ChangeChapter(currentState.chapters[currentIndex - 1]));
     } else {
-      final currentBookIndex = currentState.books.indexWhere((b) => b.id == currentState.currentBook.id);
+      final currentBookIndex = currentState.books
+          .indexWhere((b) => b.id == currentState.currentBook.id);
       if (currentBookIndex > 0) {
         final previousBook = currentState.books[currentBookIndex - 1];
-        
+
         emit(currentState.copyWith(isLoading: true));
         try {
-          final chapters = await bibleService.getChapters(currentState.currentVersion.id, previousBook.id);
+          final chapters = await bibleService.getChapters(
+              currentState.currentVersion.id, previousBook.id);
           final lastChapter = chapters.last;
-          
+
           final content = await bibleService.getChapterContent(
             currentState.currentVersion.id,
             previousBook.id,
@@ -163,17 +199,19 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
     }
   }
 
-  Future<void> _onLoadBibleInitial(LoadBibleInitial event, Emitter<BibleState> emit) async {
+  Future<void> _onLoadBibleInitial(
+      LoadBibleInitial event, Emitter<BibleState> emit) async {
     emit(BibleLoading());
     try {
-      final allVersions = await bibleService.getVersions(languages: ['en', 'af']);
+      final allVersions =
+          await bibleService.getVersions(languages: ['en', 'af']);
 
       if (allVersions.isEmpty) {
         emit(const BibleError('Geen Bybelvertalings gevind nie.'));
         return;
       }
 
-      final defaultVersion = allVersions.firstWhereOrNull((v) => v.name.contains('NIV')) ?? allVersions.first;
+      final defaultVersion = await _getInitialVersion(allVersions);
 
       final books = await bibleService.getBooks(defaultVersion.id);
       if (books.isEmpty) {
@@ -181,17 +219,22 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
         return;
       }
 
-      final defaultBook = books.firstWhereOrNull((b) => b.id == 'JHN' || b.name.contains('Johannes')) ?? books.first;
+      final defaultBook = books.firstWhereOrNull(
+              (b) => b.id == 'JHN' || b.name.contains('Johannes')) ??
+          books.first;
 
-      final chapters = await bibleService.getChapters(defaultVersion.id, defaultBook.id);
+      final chapters =
+          await bibleService.getChapters(defaultVersion.id, defaultBook.id);
       if (chapters.isEmpty) {
         emit(const BibleError('Geen hoofstukke gevind nie.'));
         return;
       }
 
-      final defaultChapter = chapters.firstWhereOrNull((c) => c.number == '1') ?? chapters.first;
+      final defaultChapter =
+          chapters.firstWhereOrNull((c) => c.number == '1') ?? chapters.first;
 
-      final content = await bibleService.getChapterContent(defaultVersion.id, defaultBook.id, defaultChapter.id);
+      final content = await bibleService.getChapterContent(
+          defaultVersion.id, defaultBook.id, defaultChapter.id);
 
       final verses = await _getParsedAndMergedVerses(
         versionId: defaultVersion.id,
@@ -215,19 +258,26 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
     }
   }
 
-  Future<void> _onChangeVersion(ChangeVersion event, Emitter<BibleState> emit) async {
+  Future<void> _onChangeVersion(
+      ChangeVersion event, Emitter<BibleState> emit) async {
     if (state is! BibleLoaded) return;
     final currentState = state as BibleLoaded;
 
     emit(currentState.copyWith(isLoading: true));
     try {
       final books = await bibleService.getBooks(event.version.id);
-      final book = books.firstWhereOrNull((b) => b.id == currentState.currentBook.id) ?? books.first;
+      final book =
+          books.firstWhereOrNull((b) => b.id == currentState.currentBook.id) ??
+              books.first;
 
-      final chapters = await bibleService.getChapters(event.version.id, book.id);
-      final chapter = chapters.firstWhereOrNull((c) => c.number == currentState.currentChapter.number) ?? chapters.first;
+      final chapters =
+          await bibleService.getChapters(event.version.id, book.id);
+      final chapter = chapters.firstWhereOrNull(
+              (c) => c.number == currentState.currentChapter.number) ??
+          chapters.first;
 
-      final content = await bibleService.getChapterContent(event.version.id, book.id, chapter.id);
+      final content = await bibleService.getChapterContent(
+          event.version.id, book.id, chapter.id);
 
       final verses = await _getParsedAndMergedVerses(
         versionId: event.version.id,
@@ -235,6 +285,8 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
         chapterId: chapter.id,
         rawHtml: content.rawHtml,
       );
+
+      await _saveLastVersionId(event.version.id);
 
       emit(currentState.copyWith(
         currentVersion: event.version,
@@ -257,10 +309,12 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
 
     emit(currentState.copyWith(isLoading: true, currentBook: event.book));
     try {
-      final chapters = await bibleService.getChapters(currentState.currentVersion.id, event.book.id);
+      final chapters = await bibleService.getChapters(
+          currentState.currentVersion.id, event.book.id);
       final chapter = chapters.first;
 
-      final content = await bibleService.getChapterContent(currentState.currentVersion.id, event.book.id, chapter.id);
+      final content = await bibleService.getChapterContent(
+          currentState.currentVersion.id, event.book.id, chapter.id);
 
       final verses = await _getParsedAndMergedVerses(
         versionId: currentState.currentVersion.id,
@@ -282,7 +336,8 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
     }
   }
 
-  Future<void> _onChangeChapter(ChangeChapter event, Emitter<BibleState> emit) async {
+  Future<void> _onChangeChapter(
+      ChangeChapter event, Emitter<BibleState> emit) async {
     if (state is! BibleLoaded) return;
     final currentState = state as BibleLoaded;
 
@@ -312,7 +367,8 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
     }
   }
 
-  Future<void> _onLoadChapterInteractions(LoadChapterInteractions event, Emitter<BibleState> emit) async {
+  Future<void> _onLoadChapterInteractions(
+      LoadChapterInteractions event, Emitter<BibleState> emit) async {
     if (state is! BibleLoaded) return;
     final currentState = state as BibleLoaded;
 
@@ -333,11 +389,13 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
     }
   }
 
-  void _onToggleVerseSelection(ToggleVerseSelection event, Emitter<BibleState> emit) {
+  void _onToggleVerseSelection(
+      ToggleVerseSelection event, Emitter<BibleState> emit) {
     if (state is! BibleLoaded) return;
     final currentState = state as BibleLoaded;
 
-    final updatedSelection = Set<String>.from(currentState.selectedVerseNumbers);
+    final updatedSelection =
+        Set<String>.from(currentState.selectedVerseNumbers);
     if (updatedSelection.contains(event.verseNumber)) {
       updatedSelection.remove(event.verseNumber);
     } else {
@@ -353,7 +411,8 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
     emit(currentState.copyWith(selectedVerseNumbers: {}));
   }
 
-  Future<void> _onHighlightSelectedVerses(HighlightSelectedVerses event, Emitter<BibleState> emit) async {
+  Future<void> _onHighlightSelectedVerses(
+      HighlightSelectedVerses event, Emitter<BibleState> emit) async {
     if (state is! BibleLoaded) return;
     final currentState = state as BibleLoaded;
     if (currentState.selectedVerseNumbers.isEmpty) return;
@@ -363,7 +422,8 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
       final versionId = currentState.currentVersion.id;
       final bookId = currentState.currentBook.id;
       final chapterId = currentState.currentChapter.id;
-      final chapterNum = chapterId.contains('.') ? chapterId.split('.').last : chapterId;
+      final chapterNum =
+          chapterId.contains('.') ? chapterId.split('.').last : chapterId;
 
       for (final verseNum in currentState.selectedVerseNumbers) {
         await interactionService.upsertInteraction(
@@ -393,7 +453,8 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
     }
   }
 
-  Future<void> _onToggleBookmarkSelected(ToggleBookmarkSelected event, Emitter<BibleState> emit) async {
+  Future<void> _onToggleBookmarkSelected(
+      ToggleBookmarkSelected event, Emitter<BibleState> emit) async {
     if (state is! BibleLoaded) return;
     final currentState = state as BibleLoaded;
     if (currentState.selectedVerseNumbers.isEmpty) return;
@@ -403,11 +464,14 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
       final versionId = currentState.currentVersion.id;
       final bookId = currentState.currentBook.id;
       final chapterId = currentState.currentChapter.id;
-      final chapterNum = chapterId.contains('.') ? chapterId.split('.').last : chapterId;
+      final chapterNum =
+          chapterId.contains('.') ? chapterId.split('.').last : chapterId;
 
       final firstVerseNum = currentState.selectedVerseNumbers.first;
-      final firstVerse = currentState.verses.firstWhereOrNull((v) => v.verseNumber == firstVerseNum);
-      final newBookmarkState = firstVerse == null ? true : !firstVerse.isBookmarked;
+      final firstVerse = currentState.verses
+          .firstWhereOrNull((v) => v.verseNumber == firstVerseNum);
+      final newBookmarkState =
+          firstVerse == null ? true : !firstVerse.isBookmarked;
 
       for (final verseNum in currentState.selectedVerseNumbers) {
         await interactionService.upsertInteraction(
@@ -436,7 +500,8 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
     }
   }
 
-  Future<void> _onSaveNoteForSelected(SaveNoteForSelected event, Emitter<BibleState> emit) async {
+  Future<void> _onSaveNoteForSelected(
+      SaveNoteForSelected event, Emitter<BibleState> emit) async {
     if (state is! BibleLoaded) return;
     final currentState = state as BibleLoaded;
     if (currentState.selectedVerseNumbers.isEmpty) return;
@@ -446,7 +511,8 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
       final versionId = currentState.currentVersion.id;
       final bookId = currentState.currentBook.id;
       final chapterId = currentState.currentChapter.id;
-      final chapterNum = chapterId.contains('.') ? chapterId.split('.').last : chapterId;
+      final chapterNum =
+          chapterId.contains('.') ? chapterId.split('.').last : chapterId;
 
       final isClear = event.noteText.trim().isEmpty;
 

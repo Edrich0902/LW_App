@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lw_app/Themes/lwp_tokens.dart';
 
 class LightColors {
   static const primary = Color(0xFF11181C);
@@ -6,6 +7,10 @@ class LightColors {
   static const accent = Color(0xFF023059);
   static const background = Color(0xFFFAFAFA);
   static const supporting = Color(0xFF4D4B4B);
+  static const surface = Color(0xFFFFFFFF);
+  static const field = Color(0xFFEEEEEE);
+  static const muted = Color(0xFF77736B);
+  static const outline = Color(0xFFE4E7EA);
 }
 
 class DarkColors {
@@ -15,6 +20,9 @@ class DarkColors {
   static const background = Color(0xFF121212);
   static const tertiary = Color(0xFF1E1E1E);
   static const supporting = Color(0xFF4D4B4B);
+  static const surface = Color(0xFF1E1E1E);
+  static const field = Color(0xFF2A2A2A);
+  static const muted = Color(0xFFB0BEC5);
 }
 
 MaterialColor mainColor = const MaterialColor(0xFF11181C, <int, Color>{
@@ -35,7 +43,8 @@ class AppTheme {
 
   static ThemeData lightTheme = ThemeData(
     primarySwatch: mainColor,
-    colorScheme: ColorScheme.fromSeed(seedColor: mainColor, brightness: Brightness.light),
+    colorScheme: ColorScheme.fromSeed(
+        seedColor: mainColor, brightness: Brightness.light),
     primaryColor: LightColors.secondary,
     scaffoldBackgroundColor: LightColors.background,
     brightness: Brightness.light,
@@ -62,7 +71,7 @@ class AppTheme {
         elevation: 0,
         padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16.0),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24.0),
+          borderRadius: BorderRadius.circular(LwpRadii.lg),
         ),
       ),
     ),
@@ -76,20 +85,21 @@ class AppTheme {
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: const Color(0xFFEEEEEE),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 18.0),
+      fillColor: LightColors.field,
+      contentPadding:
+          const EdgeInsets.symmetric(horizontal: 24.0, vertical: 18.0),
       labelStyle: const TextStyle(color: LightColors.primary),
       floatingLabelStyle: const TextStyle(color: LightColors.secondary),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(24.0),
+        borderRadius: BorderRadius.circular(LwpRadii.lg),
         borderSide: BorderSide.none,
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(24.0),
+        borderRadius: BorderRadius.circular(LwpRadii.lg),
         borderSide: BorderSide.none,
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(24.0),
+        borderRadius: BorderRadius.circular(LwpRadii.lg),
         borderSide: const BorderSide(color: LightColors.secondary, width: 2.0),
       ),
       isDense: true,
@@ -102,7 +112,7 @@ class AppTheme {
         color: Colors.white,
       ),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24.0),
+        borderRadius: BorderRadius.circular(LwpRadii.lg),
       ),
       elevation: 6.0,
     ),
@@ -110,21 +120,21 @@ class AppTheme {
       elevation: 6.0,
       backgroundColor: LightColors.background,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24.0),
+        borderRadius: BorderRadius.circular(LwpRadii.lg),
       ),
     ),
     cardTheme: CardThemeData(
-      color: Colors.white,
-      elevation: 4.0,
-      shadowColor: Colors.black.withValues(alpha: 0.1),
+      color: LightColors.surface,
+      elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24.0),
+        side: const BorderSide(color: LightColors.outline),
+        borderRadius: BorderRadius.circular(LwpRadii.lg),
       ),
     ),
     dialogTheme: DialogThemeData(
       elevation: 6.0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24.0),
+        borderRadius: BorderRadius.circular(LwpRadii.lg),
       ),
       backgroundColor: LightColors.background,
     ),
@@ -146,7 +156,8 @@ class AppTheme {
 
   static ThemeData darkTheme = ThemeData(
     primarySwatch: mainColor,
-    colorScheme: ColorScheme.fromSeed(seedColor: DarkColors.primary, brightness: Brightness.dark),
+    colorScheme: ColorScheme.fromSeed(
+        seedColor: DarkColors.primary, brightness: Brightness.dark),
     primaryColor: DarkColors.primary,
     scaffoldBackgroundColor: DarkColors.background,
     brightness: Brightness.dark,
@@ -173,7 +184,7 @@ class AppTheme {
         elevation: 0,
         padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16.0),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24.0),
+          borderRadius: BorderRadius.circular(LwpRadii.lg),
         ),
       ),
     ),
@@ -187,20 +198,21 @@ class AppTheme {
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: const Color(0xFF2A2A2A),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 18.0),
+      fillColor: DarkColors.field,
+      contentPadding:
+          const EdgeInsets.symmetric(horizontal: 24.0, vertical: 18.0),
       labelStyle: const TextStyle(color: Colors.white70),
       floatingLabelStyle: const TextStyle(color: DarkColors.primary),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(24.0),
+        borderRadius: BorderRadius.circular(LwpRadii.lg),
         borderSide: BorderSide.none,
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(24.0),
+        borderRadius: BorderRadius.circular(LwpRadii.lg),
         borderSide: BorderSide.none,
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(24.0),
+        borderRadius: BorderRadius.circular(LwpRadii.lg),
         borderSide: const BorderSide(color: DarkColors.secondary, width: 2.0),
       ),
       isDense: true,
@@ -213,7 +225,7 @@ class AppTheme {
         color: Colors.white,
       ),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24.0),
+        borderRadius: BorderRadius.circular(LwpRadii.lg),
       ),
       elevation: 6.0,
     ),
@@ -221,21 +233,20 @@ class AppTheme {
       elevation: 6.0,
       backgroundColor: DarkColors.background,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24.0),
+        borderRadius: BorderRadius.circular(LwpRadii.lg),
       ),
     ),
     cardTheme: CardThemeData(
-      color: DarkColors.tertiary,
-      elevation: 4.0,
-      shadowColor: Colors.black.withValues(alpha: 0.3),
+      color: DarkColors.surface,
+      elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24.0),
+        borderRadius: BorderRadius.circular(LwpRadii.lg),
       ),
     ),
     dialogTheme: DialogThemeData(
       elevation: 6.0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24.0),
+        borderRadius: BorderRadius.circular(LwpRadii.lg),
       ),
       backgroundColor: DarkColors.background,
     ),
