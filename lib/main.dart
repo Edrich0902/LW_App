@@ -35,6 +35,7 @@ import 'package:lw_app/Services/Bible/bible_service.dart';
 import 'package:lw_app/Blocs/TithesOfferings/tithes_offerings_bloc.dart';
 import 'package:lw_app/Blocs/PrayerRequests/prayer_requests_bloc.dart';
 import 'package:lw_app/Blocs/MyPrayerRequests/my_prayer_requests_bloc.dart';
+import 'package:lw_app/Blocs/MyFeedback/my_feedback_bloc.dart';
 
 // Cloudinary
 import 'package:cloudinary_flutter/cloudinary_context.dart';
@@ -126,6 +127,9 @@ Future<void> main() async {
         ),
         BlocProvider<MyPrayerRequestsBloc>(
           create: (_) => MyPrayerRequestsBloc(),
+        ),
+        BlocProvider<MyFeedbackBloc>(
+          create: (_) => MyFeedbackBloc(),
         ),
         BlocProvider<ThemeBloc>(
           create: (_) => ThemeBloc()..add(const InitThemeEvent()),

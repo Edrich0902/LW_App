@@ -4,6 +4,7 @@ import 'package:lw_app/Blocs/User/user_bloc.dart';
 import 'package:lw_app/Screens/ProfileEdit/profile_edit.dart';
 import 'package:lw_app/Screens/Notes/notes.dart';
 import 'package:lw_app/Screens/Home/home.dart';
+import 'package:lw_app/Screens/Feedback/my_feedback.dart';
 import 'package:lw_app/Screens/PrayerRequests/my_prayer_requests.dart';
 import 'package:lw_app/Screens/Settings/settings.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -157,6 +158,18 @@ class _ProfilePageState extends State<ProfilePage> {
                   MaterialPageRoute(
                     builder: (context) => const MyPrayerRequestsPage(),
                   ),
+                );
+              },
+            ),
+            const Divider(height: 1, indent: 56),
+            _buildMenuItem(
+              icon: Icons.feedback_outlined,
+              title: 'Terugvoer & Verslae',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const MyFeedbackPage()),
                 );
               },
             ),
