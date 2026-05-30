@@ -60,7 +60,8 @@ class CompareTranslationsLoaded extends CompareTranslationsState {
     return allVersions
         .where((v) =>
             v.name.toLowerCase().contains(q) ||
-            v.language.toLowerCase().contains(q))
+            v.language.toLowerCase().contains(q) ||
+            (v.abbreviation?.toLowerCase().contains(q) ?? false))
         .toList();
   }
 

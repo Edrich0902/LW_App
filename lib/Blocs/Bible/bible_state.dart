@@ -22,6 +22,7 @@ class BibleLoaded extends BibleState {
   final Set<String> selectedVerseNumbers;
   final bool isLoading;
   final bool isSavingInteraction;
+  final String? focusVerseNumber;
 
   const BibleLoaded({
     required this.currentVersion,
@@ -35,6 +36,7 @@ class BibleLoaded extends BibleState {
     this.selectedVerseNumbers = const {},
     this.isLoading = false,
     this.isSavingInteraction = false,
+    this.focusVerseNumber,
   });
 
   BibleLoaded copyWith({
@@ -49,6 +51,8 @@ class BibleLoaded extends BibleState {
     Set<String>? selectedVerseNumbers,
     bool? isLoading,
     bool? isSavingInteraction,
+    String? focusVerseNumber,
+    bool clearFocusVerse = false,
   }) {
     return BibleLoaded(
       currentVersion: currentVersion ?? this.currentVersion,
@@ -62,6 +66,8 @@ class BibleLoaded extends BibleState {
       selectedVerseNumbers: selectedVerseNumbers ?? this.selectedVerseNumbers,
       isLoading: isLoading ?? this.isLoading,
       isSavingInteraction: isSavingInteraction ?? this.isSavingInteraction,
+      focusVerseNumber:
+          clearFocusVerse ? null : (focusVerseNumber ?? this.focusVerseNumber),
     );
   }
 
@@ -78,6 +84,7 @@ class BibleLoaded extends BibleState {
         selectedVerseNumbers,
         isLoading,
         isSavingInteraction,
+        focusVerseNumber,
       ];
 }
 

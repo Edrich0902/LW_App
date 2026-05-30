@@ -26,6 +26,8 @@ import 'package:lw_app/Blocs/Bible/bible_bloc.dart';
 import 'package:lw_app/Blocs/Bible/bible_event.dart';
 import 'package:lw_app/Blocs/Bible/bible_state.dart';
 import 'package:lw_app/Screens/Bible/bible.dart';
+import 'package:lw_app/Screens/Bible/verse_image_editor.dart';
+import 'package:lw_app/Utils/verse_image_formatter.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 
 class DashPage extends StatefulWidget {
@@ -137,15 +139,32 @@ class _DashPageState extends State<DashPage> {
                       return DashboardVotdCard(
                         votd: state.votd,
                         onTap: () {
+                          final parts = state.votd.passageId.split('.');
+                          final verseNum = parts.length > 2
+                              ? parts[2].split('-').first
+                              : null;
                           context.read<BibleBloc>().add(LoadSpecificPassage(
                                 version: state.votd.version,
                                 book: state.votd.book,
                                 chapter: state.votd.chapter,
+                                focusVerseNumber: verseNum,
                               ));
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => const BiblePage()),
+                          );
+                        },
+                        onCreateImage: () {
+                          final draft =
+                              buildVerseImageDraftFromVotd(state.votd);
+                          if (draft == null) return;
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  VerseImageEditorScreen(draft: draft),
+                            ),
                           );
                         },
                       );

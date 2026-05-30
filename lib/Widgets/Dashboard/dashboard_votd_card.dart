@@ -6,11 +6,13 @@ import 'package:lw_app/Themes/lwp_tokens.dart';
 class DashboardVotdCard extends StatelessWidget {
   final Votd votd;
   final VoidCallback onTap;
+  final VoidCallback onCreateImage;
 
   const DashboardVotdCard({
     super.key,
     required this.votd,
     required this.onTap,
+    required this.onCreateImage,
   });
 
   @override
@@ -62,6 +64,12 @@ class DashboardVotdCard extends StatelessWidget {
                         ),
                       ),
                       const Spacer(),
+                      GestureDetector(
+                        onTap: onCreateImage,
+                        child: Icon(Icons.image_outlined,
+                            size: 18, color: theme.hintColor),
+                      ),
+                      const SizedBox(width: 10),
                       Icon(Icons.menu_book, size: 16, color: theme.hintColor),
                     ],
                   ),
@@ -110,7 +118,7 @@ class DashboardVotdCard extends StatelessWidget {
                             shape: const StadiumBorder(),
                           ),
                           child: Text(
-                            votd.version.name,
+                            votd.version.shortLabel,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: theme.textTheme.labelSmall?.copyWith(

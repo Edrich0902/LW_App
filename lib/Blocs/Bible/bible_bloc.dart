@@ -31,6 +31,7 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
     on<HighlightSelectedVerses>(_onHighlightSelectedVerses);
     on<ToggleBookmarkSelected>(_onToggleBookmarkSelected);
     on<SaveNoteForSelected>(_onSaveNoteForSelected);
+    on<ClearVerseFocus>(_onClearVerseFocus);
   }
 
   Future<void> _saveLastVersionId(String versionId) async {
@@ -124,10 +125,16 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
         books: books,
         chapters: chapters,
         verses: verses,
+        focusVerseNumber: event.focusVerseNumber,
       ));
     } catch (e) {
       emit(BibleError('Fout met die laai van die spesifieke vers: $e'));
     }
+  }
+
+  void _onClearVerseFocus(ClearVerseFocus event, Emitter<BibleState> emit) {
+    if (state is! BibleLoaded) return;
+    emit((state as BibleLoaded).copyWith(clearFocusVerse: true));
   }
 
   Future<void> _onNavigateNextChapter(

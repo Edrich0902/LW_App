@@ -14,16 +14,20 @@ class LoadSpecificPassage extends BibleEvent {
   final BibleVersion version;
   final BibleBook book;
   final BibleChapter chapter;
+  final String? focusVerseNumber;
 
   const LoadSpecificPassage({
     required this.version,
     required this.book,
     required this.chapter,
+    this.focusVerseNumber,
   });
 
   @override
-  List<Object?> get props => [version, book, chapter];
+  List<Object?> get props => [version, book, chapter, focusVerseNumber];
 }
+
+class ClearVerseFocus extends BibleEvent {}
 
 class ChangeVersion extends BibleEvent {
   final BibleVersion version;

@@ -73,8 +73,16 @@ Color? highlightColorFromString(String? value, {bool dark = false}) {
   }
 }
 
-class BiblePage extends StatelessWidget {
+class BiblePage extends StatefulWidget {
   const BiblePage({super.key});
+
+  @override
+  State<BiblePage> createState() => _BiblePageState();
+}
+
+class _BiblePageState extends State<BiblePage> {
+  final GlobalKey _focusedVerseKey = GlobalKey();
+  String? _lastHandledFocusVerse;
 
   void _showNavigation(BuildContext context, BibleLoaded state) {
     showModalBottomSheet(
@@ -357,358 +365,408 @@ class BiblePage extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: BlocBuilder<BibleBloc, BibleState>(
-          builder: (context, state) {
-            if (state is BibleLoaded) {
-              return InkWell(
-                onTap: () => _showNavigation(context, state),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                        '${state.currentBook.name} ${state.currentChapter.number}'),
-                    const Icon(Icons.arrow_drop_down),
-                  ],
-                ),
-              );
+    return BlocListener<BibleBloc, BibleState>(
+      listenWhen: (prev, cur) {
+        if (cur is! BibleLoaded || cur.isLoading) return false;
+        if (cur.focusVerseNumber == null) return false;
+        if (prev is BibleLoaded &&
+            prev.focusVerseNumber == cur.focusVerseNumber &&
+            !prev.isLoading) {
+          return false;
+        }
+        return true;
+      },
+      listener: (context, state) {
+        if (state is! BibleLoaded) return;
+        final focus = state.focusVerseNumber;
+        if (focus == null || focus == _lastHandledFocusVerse) return;
+        _lastHandledFocusVerse = focus;
+        final bibleBloc = context.read<BibleBloc>();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          final ctx = _focusedVerseKey.currentContext;
+          if (ctx != null) {
+            Scrollable.ensureVisible(
+              ctx,
+              alignment: 0.3,
+              duration: const Duration(milliseconds: 400),
+              curve: Curves.easeInOut,
+            );
+          }
+          Future.delayed(const Duration(milliseconds: 2500), () {
+            if (mounted) {
+              bibleBloc.add(ClearVerseFocus());
+              _lastHandledFocusVerse = null;
             }
-            return const Text('Bybel');
-          },
-        ),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.bookmarks_outlined),
-            tooltip: 'Gestoorde Verse',
-            onPressed: () {
-              final bibleBloc = context.read<BibleBloc>();
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const SavedVersesPage()),
-              ).then((_) {
-                // Refresh chapter interactions when returning
-                if (bibleBloc.state is BibleLoaded) {
-                  bibleBloc.add(LoadChapterInteractions());
-                }
-              });
+          });
+        });
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: BlocBuilder<BibleBloc, BibleState>(
+            builder: (context, state) {
+              if (state is BibleLoaded) {
+                return InkWell(
+                  onTap: () => _showNavigation(context, state),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                          '${state.currentBook.name} ${state.currentChapter.number}'),
+                      const Icon(Icons.arrow_drop_down),
+                    ],
+                  ),
+                );
+              }
+              return const Text('Bybel');
             },
           ),
-          const LwpAnnouncementButton(),
-          const ProfileActionButton()
-        ],
-      ),
-      body: BlocBuilder<BibleBloc, BibleState>(
-        builder: (context, state) {
-          if (state is BibleLoading) {
-            return const Center(child: LwpLoader(message: "Laai Bybel"));
-          } else if (state is BibleError) {
-            return LwpError(
-              message: state.message,
-              onRetry: () => context.read<BibleBloc>().add(LoadBibleInitial()),
-            );
-          } else if (state is BibleLoaded) {
-            final hasAnyBookmark = state.selectedVerseNumbers.any((verseNum) {
-              final v = state.verses
-                  .firstWhereOrNull((verse) => verse.verseNumber == verseNum);
-              return v?.isBookmarked ?? false;
-            });
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.bookmarks_outlined),
+              tooltip: 'Gestoorde Verse',
+              onPressed: () {
+                final bibleBloc = context.read<BibleBloc>();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const SavedVersesPage()),
+                ).then((_) {
+                  // Refresh chapter interactions when returning
+                  if (bibleBloc.state is BibleLoaded) {
+                    bibleBloc.add(LoadChapterInteractions());
+                  }
+                });
+              },
+            ),
+            const LwpAnnouncementButton(),
+            const ProfileActionButton()
+          ],
+        ),
+        body: BlocBuilder<BibleBloc, BibleState>(
+          builder: (context, state) {
+            if (state is BibleLoading) {
+              return const Center(child: LwpLoader(message: "Laai Bybel"));
+            } else if (state is BibleError) {
+              return LwpError(
+                message: state.message,
+                onRetry: () =>
+                    context.read<BibleBloc>().add(LoadBibleInitial()),
+              );
+            } else if (state is BibleLoaded) {
+              final hasAnyBookmark = state.selectedVerseNumbers.any((verseNum) {
+                final v = state.verses
+                    .firstWhereOrNull((verse) => verse.verseNumber == verseNum);
+                return v?.isBookmarked ?? false;
+              });
 
-            return Stack(
-              children: [
-                Column(
-                  children: [
-                    if (state.isLoading || state.isSavingInteraction)
-                      const LinearProgressIndicator(minHeight: 2),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0, vertical: 8.0),
+              return Stack(
+                children: [
+                  Column(
+                    children: [
+                      if (state.isLoading || state.isSavingInteraction)
+                        const LinearProgressIndicator(minHeight: 2),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                state.currentVersion.displayName,
+                                style: theme.textTheme.bodySmall
+                                    ?.copyWith(fontWeight: FontWeight.bold),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            TextButton(
+                              onPressed: () => _showNavigation(context, state),
+                              child: const Text('Kies Vertaling'),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (state.verses.isEmpty)
+                                const Padding(
+                                  padding: EdgeInsets.all(32.0),
+                                  child: LwpEmpty(
+                                      message:
+                                          'Kon nie hoofstuk-inhoud ontleed nie.'),
+                                )
+                              else
+                                ...state.verses.map((verse) {
+                                  final isSelected = state.selectedVerseNumbers
+                                      .contains(verse.verseNumber);
+                                  final isFocused = verse.verseNumber ==
+                                      state.focusVerseNumber;
+                                  return _VerseItem(
+                                    key: isFocused ? _focusedVerseKey : null,
+                                    verse: verse,
+                                    isSelected: isSelected,
+                                    isFocused: isFocused,
+                                    onTap: () {
+                                      context.read<BibleBloc>().add(
+                                          ToggleVerseSelection(
+                                              verse.verseNumber));
+                                    },
+                                    onLongPress: () {
+                                      context.read<BibleBloc>().add(
+                                          ToggleVerseSelection(
+                                              verse.verseNumber));
+                                    },
+                                  );
+                                }),
+                              const SizedBox(
+                                  height:
+                                      100), // Space for floating bottom toolbar
+                              const Divider(),
+                              Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        state.content.citation,
+                                        style: theme.textTheme.bodyMedium,
+                                      ),
+                                      const SizedBox(height: 8),
+                                      const Text(
+                                        'Verskaf deur YouVersion',
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            fontStyle: FontStyle.italic),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 32),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  // Floating Sequential Navigation Buttons (Only show when NO verses are selected)
+                  if (state.selectedVerseNumbers.isEmpty)
+                    Positioned(
+                      bottom: 24,
+                      left: 16,
+                      right: 16,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Expanded(
-                            child: Text(
-                              state.currentVersion.name,
-                              style: theme.textTheme.bodySmall
-                                  ?.copyWith(fontWeight: FontWeight.bold),
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                            ),
+                          _NavigationButton(
+                            icon: Icons.arrow_back_ios_new,
+                            onPressed: () => context
+                                .read<BibleBloc>()
+                                .add(NavigatePreviousChapter()),
+                            enabled: !state.isLoading,
                           ),
-                          const SizedBox(width: 8),
-                          TextButton(
-                            onPressed: () => _showNavigation(context, state),
-                            child: const Text('Kies Vertaling'),
+                          _NavigationButton(
+                            icon: Icons.arrow_forward_ios,
+                            onPressed: () => context
+                                .read<BibleBloc>()
+                                .add(NavigateNextChapter()),
+                            enabled: !state.isLoading,
                           ),
                         ],
                       ),
                     ),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (state.verses.isEmpty)
-                              const Padding(
-                                padding: EdgeInsets.all(32.0),
-                                child: LwpEmpty(
-                                    message:
-                                        'Kon nie hoofstuk-inhoud ontleed nie.'),
-                              )
-                            else
-                              ...state.verses.map((verse) {
-                                final isSelected = state.selectedVerseNumbers
-                                    .contains(verse.verseNumber);
-                                return _VerseItem(
-                                  verse: verse,
-                                  isSelected: isSelected,
-                                  onTap: () {
-                                    context.read<BibleBloc>().add(
-                                        ToggleVerseSelection(
-                                            verse.verseNumber));
-                                  },
-                                  onLongPress: () {
-                                    context.read<BibleBloc>().add(
-                                        ToggleVerseSelection(
-                                            verse.verseNumber));
-                                  },
-                                );
-                              }),
-                            const SizedBox(
-                                height:
-                                    100), // Space for floating bottom toolbar
-                            const Divider(),
-                            Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      state.content.citation,
-                                      style: theme.textTheme.bodyMedium,
-                                    ),
-                                    const SizedBox(height: 8),
-                                    const Text(
-                                      'Verskaf deur YouVersion',
-                                      style: TextStyle(
-                                          fontSize: 12,
-                                          fontStyle: FontStyle.italic),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                  // Floating Action Bar overlay (Show when one or more verses are selected)
+                  if (state.selectedVerseNumbers.isNotEmpty)
+                    Positioned(
+                      bottom: 24,
+                      left: 16,
+                      right: 16,
+                      child: Material(
+                        elevation: 8,
+                        borderRadius: LwpRadii.lgAll,
+                        color:
+                            isDark ? DarkColors.surface : LightColors.surface,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 12),
+                          decoration: BoxDecoration(
+                            borderRadius: LwpRadii.lgAll,
+                            border: Border.all(
+                              color: theme.primaryColor.withValues(alpha: 0.3),
+                              width: 1,
                             ),
-                            const SizedBox(height: 32),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                // Floating Sequential Navigation Buttons (Only show when NO verses are selected)
-                if (state.selectedVerseNumbers.isEmpty)
-                  Positioned(
-                    bottom: 24,
-                    left: 16,
-                    right: 16,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _NavigationButton(
-                          icon: Icons.arrow_back_ios_new,
-                          onPressed: () => context
-                              .read<BibleBloc>()
-                              .add(NavigatePreviousChapter()),
-                          enabled: !state.isLoading,
-                        ),
-                        _NavigationButton(
-                          icon: Icons.arrow_forward_ios,
-                          onPressed: () => context
-                              .read<BibleBloc>()
-                              .add(NavigateNextChapter()),
-                          enabled: !state.isLoading,
-                        ),
-                      ],
-                    ),
-                  ),
-                // Floating Action Bar overlay (Show when one or more verses are selected)
-                if (state.selectedVerseNumbers.isNotEmpty)
-                  Positioned(
-                    bottom: 24,
-                    left: 16,
-                    right: 16,
-                    child: Material(
-                      elevation: 8,
-                      borderRadius: LwpRadii.lgAll,
-                      color: isDark ? DarkColors.surface : LightColors.surface,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 12),
-                        decoration: BoxDecoration(
-                          borderRadius: LwpRadii.lgAll,
-                          border: Border.all(
-                            color: theme.primaryColor.withValues(alpha: 0.3),
-                            width: 1,
                           ),
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            // Header row: selection count + close
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  '${state.selectedVerseNumbers.length} vers(e) gekies',
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 13),
-                                ),
-                                InkWell(
-                                  onTap: () => context
-                                      .read<BibleBloc>()
-                                      .add(ClearSelection()),
-                                  child: Icon(Icons.close,
-                                      size: 20, color: theme.hintColor),
-                                ),
-                              ],
-                            ),
-                            const Divider(height: 16),
-                            // Row 1: Colour pickers (scrollable)
-                            SizedBox(
-                              height: 44,
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  children: [
-                                    // 10 curated preset colours stored as hex
-                                    ..._kPresetHighlightColors
-                                        .map((entry) => _ColorCircle(
-                                              color: entry.value,
-                                              onTap: () =>
-                                                  context.read<BibleBloc>().add(
-                                                        HighlightSelectedVerses(
-                                                            entry.key),
-                                                      ),
-                                            )),
-                                    // Custom colour picker
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 4.0),
-                                      child: InkWell(
-                                        customBorder: const CircleBorder(),
-                                        onTap: () => _showColorPicker(context),
-                                        child: Container(
-                                          width: 32,
-                                          height: 32,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            gradient: const SweepGradient(
-                                              colors: [
-                                                Colors.red,
-                                                Colors.yellow,
-                                                Colors.green,
-                                                Colors.cyan,
-                                                Colors.blue,
-                                                Colors.purple,
-                                                Colors.red
-                                              ],
-                                            ),
-                                            border: Border.all(
-                                                color: Colors.white, width: 2),
-                                          ),
-                                          child: const Icon(Icons.add,
-                                              size: 14, color: Colors.white),
-                                        ),
-                                      ),
-                                    ),
-                                    // Remove highlight
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 4.0),
-                                      child: InkWell(
-                                        onTap: () => context
-                                            .read<BibleBloc>()
-                                            .add(const HighlightSelectedVerses(
-                                                null)),
-                                        customBorder: const CircleBorder(),
-                                        child: Container(
-                                          width: 32,
-                                          height: 32,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            border: Border.all(
-                                                color: theme.hintColor
-                                                    .withValues(alpha: 0.5)),
-                                          ),
-                                          child: Icon(Icons.format_color_reset,
-                                              size: 16, color: theme.hintColor),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            // Row 2: Actions
-                            SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // Header row: selection count + close
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  _ActionButton(
-                                    icon: hasAnyBookmark
-                                        ? Icons.bookmark
-                                        : Icons.bookmark_border,
-                                    label: 'Stoor',
-                                    onTap: () {
-                                      HapticFeedback.lightImpact();
-                                      context
-                                          .read<BibleBloc>()
-                                          .add(ToggleBookmarkSelected());
-                                      LwpSnackbar.showSuccess(
-                                          context, 'Boekmerk opgedateer');
-                                    },
+                                  Text(
+                                    '${state.selectedVerseNumbers.length} vers(e) gekies',
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 13),
                                   ),
-                                  _ActionButton(
-                                    icon: Icons.note_alt_outlined,
-                                    label: 'Nota',
-                                    onTap: () =>
-                                        _showNoteBottomSheet(context, state),
-                                  ),
-                                  _ActionButton(
-                                    icon: Icons.image_outlined,
-                                    label: 'Beeld',
-                                    onTap: () =>
-                                        _openVerseImageEditor(context, state),
-                                  ),
-                                  _ActionButton(
-                                    icon: Icons.share_outlined,
-                                    label: 'Deel',
-                                    onTap: () =>
-                                        _shareSelectedVerses(context, state),
-                                  ),
-                                  _ActionButton(
-                                    icon: Icons.compare_arrows,
-                                    label: 'Vergelyk',
-                                    onTap: () => _showCompareTranslationsSheet(
-                                        context, state),
+                                  InkWell(
+                                    onTap: () => context
+                                        .read<BibleBloc>()
+                                        .add(ClearSelection()),
+                                    child: Icon(Icons.close,
+                                        size: 20, color: theme.hintColor),
                                   ),
                                 ],
                               ),
-                            ),
-                          ],
+                              const Divider(height: 16),
+                              // Row 1: Colour pickers (scrollable)
+                              SizedBox(
+                                height: 44,
+                                child: SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Row(
+                                    children: [
+                                      // 10 curated preset colours stored as hex
+                                      ..._kPresetHighlightColors
+                                          .map((entry) => _ColorCircle(
+                                                color: entry.value,
+                                                onTap: () => context
+                                                    .read<BibleBloc>()
+                                                    .add(
+                                                      HighlightSelectedVerses(
+                                                          entry.key),
+                                                    ),
+                                              )),
+                                      // Custom colour picker
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 4.0),
+                                        child: InkWell(
+                                          customBorder: const CircleBorder(),
+                                          onTap: () =>
+                                              _showColorPicker(context),
+                                          child: Container(
+                                            width: 32,
+                                            height: 32,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              gradient: const SweepGradient(
+                                                colors: [
+                                                  Colors.red,
+                                                  Colors.yellow,
+                                                  Colors.green,
+                                                  Colors.cyan,
+                                                  Colors.blue,
+                                                  Colors.purple,
+                                                  Colors.red
+                                                ],
+                                              ),
+                                              border: Border.all(
+                                                  color: Colors.white,
+                                                  width: 2),
+                                            ),
+                                            child: const Icon(Icons.add,
+                                                size: 14, color: Colors.white),
+                                          ),
+                                        ),
+                                      ),
+                                      // Remove highlight
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 4.0),
+                                        child: InkWell(
+                                          onTap: () => context
+                                              .read<BibleBloc>()
+                                              .add(
+                                                  const HighlightSelectedVerses(
+                                                      null)),
+                                          customBorder: const CircleBorder(),
+                                          child: Container(
+                                            width: 32,
+                                            height: 32,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              border: Border.all(
+                                                  color: theme.hintColor
+                                                      .withValues(alpha: 0.5)),
+                                            ),
+                                            child: Icon(
+                                                Icons.format_color_reset,
+                                                size: 16,
+                                                color: theme.hintColor),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              // Row 2: Actions
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  children: [
+                                    _ActionButton(
+                                      icon: hasAnyBookmark
+                                          ? Icons.bookmark
+                                          : Icons.bookmark_border,
+                                      label: 'Stoor',
+                                      onTap: () {
+                                        HapticFeedback.lightImpact();
+                                        context
+                                            .read<BibleBloc>()
+                                            .add(ToggleBookmarkSelected());
+                                        LwpSnackbar.showSuccess(
+                                            context, 'Boekmerk opgedateer');
+                                      },
+                                    ),
+                                    _ActionButton(
+                                      icon: Icons.note_alt_outlined,
+                                      label: 'Nota',
+                                      onTap: () =>
+                                          _showNoteBottomSheet(context, state),
+                                    ),
+                                    _ActionButton(
+                                      icon: Icons.image_outlined,
+                                      label: 'Beeld',
+                                      onTap: () =>
+                                          _openVerseImageEditor(context, state),
+                                    ),
+                                    _ActionButton(
+                                      icon: Icons.share_outlined,
+                                      label: 'Deel',
+                                      onTap: () =>
+                                          _shareSelectedVerses(context, state),
+                                    ),
+                                    _ActionButton(
+                                      icon: Icons.compare_arrows,
+                                      label: 'Vergelyk',
+                                      onTap: () =>
+                                          _showCompareTranslationsSheet(
+                                              context, state),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-              ],
-            );
-          }
-          return const Center(child: Text('Begin laai...'));
-        },
+                ],
+              );
+            }
+            return const Center(child: Text('Begin laai...'));
+          },
+        ),
       ),
     );
   }
@@ -756,12 +814,15 @@ class _NavigationButton extends StatelessWidget {
 class _VerseItem extends StatelessWidget {
   final BibleVerse verse;
   final bool isSelected;
+  final bool isFocused;
   final VoidCallback onTap;
   final VoidCallback onLongPress;
 
   const _VerseItem({
+    super.key,
     required this.verse,
     required this.isSelected,
+    this.isFocused = false,
     required this.onTap,
     required this.onLongPress,
   });
@@ -800,13 +861,17 @@ class _VerseItem extends StatelessWidget {
             duration: const Duration(milliseconds: 200),
             // Only add padding/decoration when selected or highlighted;
             // otherwise render flush with no margin so verses flow like a book.
-            padding: (isSelected || highlight != null)
+            padding: (isSelected || highlight != null || isFocused)
                 ? const EdgeInsets.symmetric(horizontal: 6, vertical: 2)
                 : EdgeInsets.zero,
             decoration: BoxDecoration(
               color: isSelected
                   ? theme.primaryColor.withValues(alpha: isDark ? 0.2 : 0.15)
-                  : highlight,
+                  : (highlight ??
+                      (isFocused
+                          ? theme.primaryColor
+                              .withValues(alpha: isDark ? 0.18 : 0.12)
+                          : null)),
               borderRadius: BorderRadius.circular(LwpRadii.xs),
               border: Border.all(
                 color: isSelected ? theme.primaryColor : Colors.transparent,
@@ -981,9 +1046,9 @@ class _BibleNavigationSheetState extends State<BibleNavigationSheet>
           }
 
           final filteredVersions = state.versions.where((v) {
-            return v.name
-                .toLowerCase()
-                .contains(_versionSearchController.text.toLowerCase());
+            final query = _versionSearchController.text.toLowerCase();
+            return v.name.toLowerCase().contains(query) ||
+                (v.abbreviation?.toLowerCase().contains(query) ?? false);
           }).toList();
 
           final filteredBooks = state.books.where((b) {
@@ -1037,7 +1102,7 @@ class _BibleNavigationSheetState extends State<BibleNavigationSheet>
                             itemBuilder: (context, index) {
                               final version = filteredVersions[index];
                               return ListTile(
-                                title: Text(version.name),
+                                title: Text(version.displayName),
                                 trailing: version.id == state.currentVersion.id
                                     ? const Icon(Icons.check,
                                         color: Colors.green)

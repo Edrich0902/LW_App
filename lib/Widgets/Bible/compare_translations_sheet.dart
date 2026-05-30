@@ -255,7 +255,7 @@ class _TranslationCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    version.name,
+                    version.displayName,
                     style: theme.textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),

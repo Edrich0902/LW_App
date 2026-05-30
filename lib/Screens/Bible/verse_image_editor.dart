@@ -157,19 +157,28 @@ class _VerseImageEditorScreenState extends State<VerseImageEditorScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
+            Row(
               children: [
-                ElevatedButton.icon(
-                  onPressed: () => _pickImage(ImageSource.gallery),
-                  icon: const Icon(Icons.photo_library_outlined),
-                  label: const Text('Galery'),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () => _pickImage(ImageSource.gallery),
+                    icon: const Icon(Icons.photo_library_outlined),
+                    label: const Text('Galery'),
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(0, 48),
+                    ),
+                  ),
                 ),
-                OutlinedButton.icon(
-                  onPressed: () => _pickImage(ImageSource.camera),
-                  icon: const Icon(Icons.photo_camera_outlined),
-                  label: const Text('Kamera'),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () => _pickImage(ImageSource.camera),
+                    icon: const Icon(Icons.photo_camera_outlined),
+                    label: const Text('Kamera'),
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(0, 48),
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -331,46 +340,54 @@ class VerseImagePreview extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.all(28),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: _crossAxisAlignment(textAlign),
-                children: [
-                  Text(
-                    draft.verseText,
-                    textAlign: textAlign,
-                    maxLines: 9,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: textColor,
-                      fontSize: textSize,
-                      height: 1.22,
-                      fontWeight: FontWeight.w700,
+              child: LayoutBuilder(
+                builder: (context, constraints) => FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: SizedBox(
+                    width: constraints.maxWidth,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: _crossAxisAlignment(textAlign),
+                      children: [
+                        Text(
+                          draft.verseText,
+                          textAlign: textAlign,
+                          style: TextStyle(
+                            color: textColor,
+                            fontSize: textSize,
+                            height: 1.22,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(height: 18),
+                        Text(
+                          draft.citation,
+                          textAlign: textAlign,
+                          style: TextStyle(
+                            color: textColor.withValues(alpha: 0.88),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        if (draft.footer != null &&
+                            draft.footer!.isNotEmpty) ...[
+                          const SizedBox(height: 28),
+                          Text(
+                            draft.footer!,
+                            textAlign: textAlign,
+                            style: TextStyle(
+                              color: textColor.withValues(alpha: 0.76),
+                              fontSize: 13,
+                              letterSpacing: 0,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 18),
-                  Text(
-                    draft.citation,
-                    textAlign: textAlign,
-                    style: TextStyle(
-                      color: textColor.withValues(alpha: 0.88),
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  if (draft.footer != null && draft.footer!.isNotEmpty) ...[
-                    const SizedBox(height: 28),
-                    Text(
-                      draft.footer!,
-                      textAlign: textAlign,
-                      style: TextStyle(
-                        color: textColor.withValues(alpha: 0.76),
-                        fontSize: 13,
-                        letterSpacing: 0,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ],
+                ),
               ),
             ),
           ],
