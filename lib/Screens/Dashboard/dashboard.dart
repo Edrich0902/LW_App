@@ -25,10 +25,12 @@ import 'package:lw_app/Blocs/Votd/votd_state.dart';
 import 'package:lw_app/Blocs/Bible/bible_bloc.dart';
 import 'package:lw_app/Blocs/Bible/bible_event.dart';
 import 'package:lw_app/Blocs/Bible/bible_state.dart';
+import 'package:lw_app/Blocs/User/user_bloc.dart';
 import 'package:lw_app/Screens/Bible/bible.dart';
 import 'package:lw_app/Screens/Bible/verse_image_editor.dart';
 import 'package:lw_app/Utils/verse_image_formatter.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
+import 'package:lw_app/Widgets/Dashboard/dashboard_greeting.dart';
 
 class DashPage extends StatefulWidget {
   const DashPage({super.key});
@@ -42,6 +44,10 @@ class _DashPageState extends State<DashPage> {
   void initState() {
     super.initState();
     context.read<SermonsBloc>().add(LoadSermons());
+    final userBloc = context.read<UserBloc>();
+    if (userBloc.state is UserInitial) {
+      userBloc.add(LoadUser());
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       _loadVotdForCurrentBibleVersion(context);
@@ -82,6 +88,8 @@ class _DashPageState extends State<DashPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
+              const DashboardGreeting(),
+              const SizedBox(height: 8),
               BlocBuilder<SermonsBloc, SermonsState>(
                 builder: (context, state) {
                   if (state is SermonsSuccess && state.sermons.isNotEmpty) {
