@@ -69,12 +69,13 @@ Improve sermon discoverability and long-term engagement.
 - App: sermon-linked notes
 - App: continue watching / listening progress
 
-### 6. Daily Devotionals
-Create a weekday engagement loop owned by the church team.
-- Portal: devotional authoring and scheduling
-- App: devotional reading experience
-- App: optional devotional push notifications
-- Link devotionals to sermon themes or church campaigns where relevant
+### 6. Pastoral Blog
+A pastoral communications channel where church leaders author and publish blog-style posts from the portal, which appear as a scrollable feed on the mobile app. Members can react to posts.
+- Status: delivered — Supabase schema (pastoral_posts, pastoral_post_reactions, pastoral_posts_view, RPCs), portal list + editor views, LwpQuillEditor component, app feed screen with reactions, BLoC with optimistic updates, and dashboard tile.
+- Backend: `pastoral_posts`, `pastoral_post_reactions`, `pastoral_posts_view`, RPCs for create/update/publish/delete/react
+- Portal: post list (draft/published status), full-page Quill editor with cover image upload and publish toggle
+- App: scrollable post feed with cover images, rich-text body, and amen/prayer/heart reactions
+- Commenting on posts deferred to a future iteration
 
 ### 7. Attendance and Check-In
 Add the next operational layer on top of events and RSVPs.
