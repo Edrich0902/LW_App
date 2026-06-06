@@ -90,6 +90,7 @@ class PrayerRequest extends Equatable {
   final PrayerCategory category;
   final String body;
   final bool isAnonymous;
+  final bool isPrivate;
   final PrayerRequestStatus status;
   final String? displayName;
   final String? moderationNote;
@@ -107,6 +108,7 @@ class PrayerRequest extends Equatable {
     required this.category,
     required this.body,
     required this.isAnonymous,
+    this.isPrivate = false,
     required this.status,
     this.displayName,
     this.moderationNote,
@@ -125,6 +127,7 @@ class PrayerRequest extends Equatable {
     PrayerCategory? category,
     String? body,
     bool? isAnonymous,
+    bool? isPrivate,
     PrayerRequestStatus? status,
     String? displayName,
     String? moderationNote,
@@ -142,6 +145,7 @@ class PrayerRequest extends Equatable {
       category: category ?? this.category,
       body: body ?? this.body,
       isAnonymous: isAnonymous ?? this.isAnonymous,
+      isPrivate: isPrivate ?? this.isPrivate,
       status: status ?? this.status,
       displayName: displayName ?? this.displayName,
       moderationNote: moderationNote ?? this.moderationNote,
@@ -162,6 +166,7 @@ class PrayerRequest extends Equatable {
       category: PrayerCategory.fromValue(json['category']?.toString()),
       body: json['body']?.toString() ?? '',
       isAnonymous: json['is_anonymous'] == true,
+      isPrivate: json['is_private'] == true,
       status: PrayerRequestStatus.fromValue(json['status']?.toString()),
       displayName: json['display_name']?.toString(),
       moderationNote: json['moderation_note']?.toString(),
@@ -181,6 +186,7 @@ class PrayerRequest extends Equatable {
       'category': category.value,
       'body': body,
       'is_anonymous': isAnonymous,
+      'is_private': isPrivate,
       'status': PrayerRequestStatus.pending.value,
     };
   }
@@ -192,6 +198,7 @@ class PrayerRequest extends Equatable {
         category,
         body,
         isAnonymous,
+        isPrivate,
         status,
         displayName,
         moderationNote,

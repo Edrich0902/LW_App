@@ -37,6 +37,8 @@ Always use the project design system instead of hardcoding visual values. Use `T
 
 Cards should inherit `Theme.of(context).cardTheme` so the shared flat elevation, 24px radius, and light-mode outline stay consistent. Chips and pill-like controls should use `StadiumBorder` or `LwpRadii.pill`. Bottom sheets should use `LwpBottomSheet`/`LwpSheetHandle` where practical. Prefer existing wrappers such as `LwpSnackbar`, `LwpError`, `LwpEmpty`, `LwpLoader`, and themed components instead of direct package or base Flutter equivalents when the project already has an abstraction.
 
+**Component-first rule:** Before writing a raw Flutter widget (e.g. a bare `Image`, `CircleAvatar`, `SnackBar`, `Text` for error states), check whether a project `Lwp*` widget in `lib/Widgets/` already covers the use case. If it does, use it. Only fall back to base Flutter widgets when no existing abstraction fits the need.
+
 ## Testing Guidelines
 
 Use `flutter_test`. Name test files with `_test.dart` under `test/`. Add widget tests for screens/widgets and unit tests for BLoC/service logic where practical. Run `flutter test` and `flutter analyze` before opening a PR.
@@ -50,3 +52,7 @@ Pull requests should include a summary, linked issue or task when available, tes
 ## Security & Configuration Tips
 
 Do not hardcode secrets or environment-specific URLs. Access configuration through `lib/Utils/environment.dart`.
+
+
+## Roadmap Sync Rule
+Always keep LW_Portal_2.0/roadmap.md and LW_App/Roadmap.md in sync when adding new features, reprioritizing work, or marking features complete.

@@ -138,6 +138,18 @@ class AppTheme {
       ),
       backgroundColor: LightColors.background,
     ),
+    popupMenuTheme: PopupMenuThemeData(
+      color: LightColors.surface,
+      surfaceTintColor: Colors.transparent,
+      elevation: 4.0,
+      shape: RoundedRectangleBorder(
+        side: const BorderSide(color: LightColors.outline),
+        borderRadius: BorderRadius.circular(LwpRadii.lg),
+      ),
+      labelTextStyle: WidgetStateProperty.all(
+        const TextStyle(color: LightColors.primary),
+      ),
+    ),
     checkboxTheme: CheckboxThemeData(
       fillColor: WidgetStateProperty.all<Color>(LightColors.secondary),
       checkColor: WidgetStateProperty.all<Color>(Colors.white),
@@ -249,6 +261,18 @@ class AppTheme {
         borderRadius: BorderRadius.circular(LwpRadii.lg),
       ),
       backgroundColor: DarkColors.background,
+    ),
+    popupMenuTheme: PopupMenuThemeData(
+      color: DarkColors.surface,
+      surfaceTintColor: Colors.transparent,
+      elevation: 4.0,
+      shape: RoundedRectangleBorder(
+        side: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+        borderRadius: BorderRadius.circular(LwpRadii.lg),
+      ),
+      labelTextStyle: WidgetStateProperty.all(
+        const TextStyle(color: Colors.white),
+      ),
     ),
     checkboxTheme: CheckboxThemeData(
       fillColor: WidgetStateProperty.all<Color>(DarkColors.primary),

@@ -42,11 +42,11 @@ class LwpGroupBottomSheet extends StatelessWidget {
             ),
           ),
           const SizedBox(height: LwpSpacing.xl),
-          if (group.location.isNotEmpty) ...[
+          if ((group.location ?? '').isNotEmpty) ...[
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                onPressed: () => MapsHelper.openLocation(group.location),
+                onPressed: () => MapsHelper.openLocation(group.location ?? ''),
                 icon: const Icon(Icons.location_on_outlined),
                 label: const Text('Maak Oop In Maps'),
               ),
@@ -68,8 +68,8 @@ class LwpGroupBottomSheet extends StatelessWidget {
   }
 
   Future<void> _launchWhatsApp(BuildContext context) async {
-    String link = group.whatsappLink.isNotEmpty
-        ? group.whatsappLink
+    String link = (group.whatsappLink ?? '').isNotEmpty
+        ? group.whatsappLink!
         : "https://wa.me/+27727238406";
 
     if (!link.startsWith('http') && !link.startsWith('whatsapp:')) {

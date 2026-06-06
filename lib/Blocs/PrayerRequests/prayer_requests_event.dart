@@ -15,15 +15,17 @@ class CreatePrayerRequestEvent extends PrayerRequestsEvent {
   final PrayerCategory category;
   final String body;
   final bool isAnonymous;
+  final bool isPrivate;
 
   const CreatePrayerRequestEvent({
     required this.category,
     required this.body,
     required this.isAnonymous,
+    this.isPrivate = false,
   });
 
   @override
-  List<Object?> get props => [category, body, isAnonymous];
+  List<Object?> get props => [category, body, isAnonymous, isPrivate];
 }
 
 class TogglePrayerReaction extends PrayerRequestsEvent {

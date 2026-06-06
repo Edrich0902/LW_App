@@ -1,65 +1,188 @@
-# LW App Roadmap
+# LW Platform Roadmap
 
-This document tracks planned and potential features for the Lewende Woord Paarl mobile application. Features are categorized by their impact on spiritual growth, community engagement, and technical excellence.
+This roadmap is shared by `LW_Portal_2.0` and `LW_App`. The two roadmap files must remain identical so planning and delivery stay aligned across the admin portal and the member-facing app.
 
-## 🌟 Spiritual Growth & Engagement
+## Sync Rule
+- Always keep `LW_Portal_2.0/roadmap.md` and `LW_App/Roadmap.md` in sync when adding new features, reprioritizing work, or marking features complete.
 
-- [x] **Bible Integration** - Seamless reading experience via YouVersion API.
-- [x] **Daily Verse** - Daily encouragement powered by YouVersion.
-- [x] **Prayer Wall (Gebedsmuur)** - A dedicated space for members to post prayer requests and for others to indicate they are praying for them.
-- [ ] **"Ek Het Gebid" Reaction** - Replace generic reactions on prayer requests with a dedicated "I prayed for this" action, more meaningful in a church context.
-- [ ] **Prayer Request Updates (Dankoffer)** - Allow the original poster to add a praise/update to their own prayer request, closing the loop for the community.
-- [ ] **Private Prayer Requests** - Option to submit a prayer request visible only to church leaders, not the public wall.
-- [ ] **Daily Devotionals** - Short daily readings linked to current sermon series or themes.
-- [ ] **Bible Reading Plans** - Integrated plans with progress tracking directly in the app.
-- [ ] **Bible Reading Streak** - Encourage daily habit with a streak counter ("7 dae op 'n ry") visible on the Bible screen.
-- [ ] **Verse of the Day Notifications** - Push notifications to deliver the daily verse to users' lock screens.
-- [x] **Enhanced Bible Interactivity** - Interactive verse selection for highlighting, sharing, and creating images.
-- [x] **Verse Image Generator** - Tool to create beautiful, branded social media images from selected verses.
-- [x] **Personal Verse Notes** - Ability to add and manage personal reflections tied to specific Bible verses.
+## Shared Product Direction
+LW Portal is the operational and content control layer.
+LW App is the congregation-facing experience layer.
+Both products run on the same Supabase backend and should be planned as one platform rather than two separate systems.
 
-## 🎬 Media & Content Enhancements
+## Current Shared Foundation
+These backend domains already exist in the system and should be extended before introducing unrelated new modules:
+- Users and profiles
+- Announcements
+- Sermons
+- Events and event RSVP
+- Groups / Connect and Serve
+- Prayer requests
+- Notes
+- Social media links
+- Tithes and offerings settings
+- Meta data / church information
 
-- [x] **Sermon Library** - Access to latest sermons via YouTube integration.
-- [ ] **Sermon Series Collections** - Grouping sermons into series for better discoverability and sequential listening.
-- [ ] **Sermon Notes** - Allow users to take notes directly against a specific sermon, linked from the sermon detail screen.
-- [ ] **Continue Watching Indicator** - Track watch progress per sermon so users can resume where they left off.
-- [ ] **Background Audio Player** - Dedicated audio player allowing users to listen to sermons while the screen is off or using other apps.
-- [ ] **Offline Mode** - Capability to download sermons or notes for use without data/internet.
-- [ ] **AI Sermon Chat** - A chatbot trained on sermon transcripts to answer user questions about past messages.
+## Now
+These are the next highest-value features because they build directly on existing shared entities and create complete loops between portal operations and app engagement.
 
-## 🤝 Community & Logistics
+### 1. Groups 2.0
+Turn groups into a full discipleship and community workflow.
+- Status: shared Supabase contract, portal admin management, and app member/leader flows are delivered
+- Backend: `group_memberships`, shared views, RPCs, and RLS for join, approve, decline, leave, remove, and leader assignment
+- Portal: group CRUD plus leader assignment, active-member management, pending-request approval, and membership counts
+- App: dedicated group detail screens, join/leave actions, `My Groups`, and leader moderation tools
+- App: group feed with leader-authored rich-text posts and member reactions
 
-- [x] **Connect & Serve Groups** - Lists of community and volunteer groups.
-- [ ] **Group Detail Screen** - Dedicated detail page per group showing meeting time, location, leader info, and a join CTA. Currently groups have no detail page — the WhatsApp link is the only action.
-- [ ] **Group Membership (Sluit Aan)** - Allow users to join a Connect or Serve group in-app. On join, the group appears under "My Groepe" on their profile and the WhatsApp link is surfaced prominently. Includes optional capacity limit with waitlist.
-- [ ] **My Groepe on Profile** - Profile section showing the groups the user has joined, with quick access to group info.
-- [ ] **In-App Group Messaging** - Secure chat rooms for Connect Groups and Serve Groups to facilitate communication.
-- [ ] **Volunteer Scheduling (Roster)** - Integrated scheduling for Serve Groups so volunteers can check their duties.
-- [x] **Events with RSVP** - Event listing with RSVP functionality.
-- [ ] **Add Event to Phone Calendar** - "Voeg by Kalender" button on event detail to add directly to the device's native calendar.
-- [ ] **Event Reminders** - Push notification reminder before an RSVP'd event.
-- [ ] **Upcoming Events on Dashboard** - Surface events within the next 7 days on the dashboard for users who haven't RSVP'd yet.
-- [x] **Tithes & Offerings Screen** - Dynamic giving screen with EFT bank details (copyable) and SnapScan QR code, managed via Supabase.
-- [ ] **Integrated Giving** - Seamless in-app payments (e.g., PayFast, Peach Payments) for one-tap tithes and offerings.
-- [ ] **Event Check-in** - QR-code based check-in for children's ministry and special events.
+### 2. Group Feed Moderation and Notifications
+Extend the new group feed into an operational communications loop.
+- Status: pinned posts (backend, mobile, portal) and portal feed moderation are delivered; push notifications remain pending
+- Backend: `is_pinned` column, `set_group_post_pinned` RPC, and updated `group_posts_view` with pinned-first ordering
+- Portal: feed tab in group manage view — admins can view, pin/unpin, and delete posts via Quill rich-text viewer
+- App: leaders can pin/unpin posts from the group feed; pinned posts are visually badged and float to top
+- App: deep links into specific group posts when notifications are added
+- Add push notification delivery for new group posts
+- Add feed analytics or read-state only if needed later
 
-## 👤 Personalization & Retention
+### 3. Prayer Workflow Completion
+Complete the prayer request lifecycle from submission to care follow-up.
+- Status: portal private requests and pastoral notes trail delivered; app-side and assignment remain
+- Portal: multi-step pastoral notes per request — admins can add/delete internal notes with author + timestamp trail
+- Portal: private request flag — hides the request from the public app view; portal admins see all
+- App: replace generic reaction with `Ek Het Gebid`
+- App: allow request owners to post updates / praise reports
+- App: support private prayer requests visible only to church leadership
+- Portal: assign prayer requests to a leader or team member (deferred)
 
-- [x] **User Notes** - Personal note-taking functionality.
-- [ ] **Contextual Notes** - Link personal notes directly to specific sermons or Bible verses for easy reference later.
-- [ ] **Favorites & Bookmarks** - Save favorite sermons, verses, or resources for quick access.
-- [ ] **Gamification/Streaks** - Encouraging engagement through "reading streaks" or achievement badges.
-- [ ] **Personalised Dashboard Greeting** - "Goeie more, [Naam]" greeting on the dashboard with a contextual summary of the user's week (upcoming RSVPs, group meetings, unread prayer requests).
-- [ ] **Notifications Centre** - In-app screen (bell icon) showing all past announcements and push notifications, so users can catch up on anything they missed.
+### 4. Announcements and Notifications Platform
+Use announcements as the base communications system across the platform.
+- Portal: scheduled announcements
+- Portal: push action for mobile delivery
+- App: notification center for missed announcements and pushes
+- App: event reminder notifications for RSVP'd users
+- Add delivery and read-state tracking where practical
 
-## 🔍 Discovery & Navigation
+### 5. Sermon Series and Contextual Notes
+Improve sermon discoverability and long-term engagement.
+- Portal: sermon series management with artwork and descriptions
+- App: series collections and guided discovery
+- App: sermon-linked notes
+- App: continue watching / listening progress
 
-- [ ] **In-App Search** - Global search across sermons, events, groups, and prayer requests. Single biggest navigation win for a growing content library.
+### 6. Daily Devotionals
+Create a weekday engagement loop owned by the church team.
+- Portal: devotional authoring and scheduling
+- App: devotional reading experience
+- App: optional devotional push notifications
+- Link devotionals to sermon themes or church campaigns where relevant
 
-## 🛠️ Technical Improvements
+### 7. Attendance and Check-In
+Add the next operational layer on top of events and RSVPs.
+- Portal: attendance registers per event or service
+- Portal: first-timer visibility and follow-up flags
+- App: QR or manual event check-in for selected event types
+- Portal: attendance reporting and trends
 
-- [ ] **Deep Linking** - Allow sharing of sermons, events, and specific Bible verses that open directly within the mobile app.
-- [ ] **Local Bible Cache** - Caching frequently read Bible chapters to improve performance and reduce data usage.
-- [ ] **Advanced Theme Customization** - Further refinement of the "Charcoal & Gold" aesthetic for complex UI states.
-- [ ] **Home Screen Widget** - Verse of the Day widget for iOS/Android home screens.
+## Next
+These are strong follow-on features once the "Now" items are in place.
+
+### 8. Member Journey CRM
+Track the path from visitor to engaged member.
+- Journey stages such as visitor, regular, membership class, member, serving
+- Owner assignment for follow-up
+- Notes, tasks, and dashboard summaries
+
+### 9. Volunteer Scheduling and Rosters
+Coordinate service teams more effectively.
+- Portal: roster builder, conflict detection, role assignment
+- App: volunteer schedule visibility and reminders
+- Future option: member availability submission in-app
+
+### 10. Featured Content and Home Screen Curation
+Let the portal intentionally shape what users see first.
+- Pin sermons, events, testimonies, or announcements
+- Add expiry dates and ordering
+- Preview home screen content from the portal
+
+### 11. Resource Library
+Create a managed library for documents and study resources.
+- Portal: upload and organize PDFs and other files
+- App: browse and download resources by category
+- Optional role-based access for restricted resources
+
+### 12. Giving Records and Reporting
+Extend giving from static banking details into structured stewardship data.
+- Portal: record individual giving entries
+- Portal: member and aggregate giving reports
+- App: eventual in-app giving support if payment integration is introduced
+
+### 13. Dashboard Analytics and Reporting
+Make trends visible to leaders and administrators.
+- Attendance trends
+- Member growth and conversion funnels
+- Sermon and announcement engagement
+- Exportable reports
+
+## Later
+These are good platform expansions, but they should follow the shared workflow and engagement work above.
+
+### 14. Global Search
+- Portal: command palette / entity search
+- App: cross-content search for sermons, events, groups, and prayer requests
+
+### 15. Testimonies Module
+- App submission flow
+- Portal moderation queue
+- Featured testimonies and home screen placement
+
+### 16. Live Service Mode
+- Portal `Go Live` control
+- App live-state surfacing and alerts
+
+### 17. Audit Trail and Granular Roles
+- Immutable activity logs
+- More specific admin role permissions
+
+### 18. Media Library
+- Reusable Cloudinary-backed asset management
+- Search, tagging, and reuse across modules
+
+### 19. Settings and Integrations Hub
+- Church profile
+- Firebase / WhatsApp / SMS credentials
+- Admin preferences and operational settings
+
+## New Additions To Include
+These were not cleanly represented in the original roadmaps and should now be considered part of platform planning.
+
+### Households and Family Links
+- Link spouses, parents, and children where relevant
+- Useful for pastoral care, attendance, and ministry follow-up
+
+### Follow-Up Task Engine
+- Generate and assign tasks from first-timer visits, unresolved prayer requests, and join requests
+- Provide due dates, ownership, and completion tracking
+
+### Volunteer Availability
+- Allow members to submit availability in the app
+- Use that data in portal roster planning
+
+### Profile Completeness and Data Quality
+- Prompt members to complete profile details
+- Surface missing key fields to admins for cleanup
+
+### Content Expiry and Archiving Rules
+- Auto-expire stale announcements, pins, and event promotions
+- Reduce manual cleanup in the portal
+
+### Language Preference Targeting
+- Support Afrikaans and English delivery preferences for announcements, devotionals, and notifications if needed later
+
+## Delivery Rule
+When a feature affects shared backend data or a user workflow that spans portal and app, planning must cover:
+- Required Supabase schema changes
+- Portal admin workflows
+- App member workflows
+- Permissions and visibility rules
+- Notifications or follow-up actions
+- Analytics or reporting needs

@@ -121,3 +121,7 @@ Ensure you have the Flutter SDK installed and a valid `.env.development` or `.en
 -   `lib/main.dart`: Application entry point and MultiBlocProvider setup.
 -   `lib/Utils/environment.dart`: Configuration for environment variables.
 -   `analysis_options.yaml`: Linting and static analysis rules.
+
+
+## Roadmap Sync Rule
+Always keep LW_Portal_2.0/roadmap.md and LW_App/Roadmap.md in sync when adding new features, reprioritizing work, or marking features complete.

@@ -31,6 +31,7 @@ class PrayerRequestsBloc
           category: event.category,
           body: event.body,
           isAnonymous: event.isAnonymous,
+          isPrivate: event.isPrivate,
         );
 
         final requests = await _prayerRequestService.getPublicPrayerRequests();

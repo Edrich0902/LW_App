@@ -51,6 +51,7 @@ class PrayerRequestService {
     required PrayerCategory category,
     required String body,
     required bool isAnonymous,
+    bool isPrivate = false,
   }) async {
     try {
       final currentUser = _auth.currentUser;
@@ -62,6 +63,7 @@ class PrayerRequestService {
         category: category,
         body: body,
         isAnonymous: isAnonymous,
+        isPrivate: isPrivate,
         status: PrayerRequestStatus.pending,
       );
 

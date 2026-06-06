@@ -53,6 +53,8 @@ LwpSnackbar.showError(context, 'Iets het verkeerd gegaan');
 
 **Card UI:** Cards should inherit `Theme.of(context).cardTheme` so the shared flat elevation, 24px radius, and light-mode outline stay consistent. Do not override `Card.shape`, `elevation`, or borders locally unless the component intentionally differs from the app standard. For label-value rows, fixed label width `130.0` with `maxLines: 1, overflow: TextOverflow.ellipsis`. Separate sections with `Divider(height: 32)`.
 
+**Popup menus:** `AppTheme` defines `popupMenuTheme` for both light and dark modes (surface colour, `LwpRadii.lg` radius, outline border, transparent tint). Never add per-instance colour, shape, or elevation to a `PopupMenuButton`. Always include an icon alongside the label in each `PopupMenuItem` using `Row(children: [Icon(...), SizedBox(width: LwpSpacing.sm), Text(...)])`. Destructive actions (delete, remove) must use `Icons.delete_outline` and `TextStyle(color: Colors.red)` on both the icon and label.
+
 **Pills, chips, and sheets:** Chips and pill-like controls should use `StadiumBorder` or `LwpRadii.pill`. Bottom sheets should use `LwpBottomSheet`/`LwpSheetHandle` where practical.
 
 **Dashboard pattern:** Hero section (latest content) → 2-column grid of icon-based cards. Show a themed loading placeholder while fetching.
@@ -76,3 +78,7 @@ Share.share(text, sharePositionOrigin: box != null ? box.localToGlobal(Offset.ze
 | Surface / Bottom Nav | — | `#1E1E1E` Charcoal |
 
 Auth screens use a 2:3 split (Hero image top, form bottom) with a `LinearGradient` fade into the scaffold background. Multi-step forms show step progress ("Stap 1 van 3") and navigate between steps without popping the route until the first step.
+
+
+## Roadmap Sync Rule
+Always keep LW_Portal_2.0/roadmap.md and LW_App/Roadmap.md in sync when adding new features, reprioritizing work, or marking features complete.

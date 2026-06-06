@@ -42,6 +42,7 @@ class _PrayerRequestsViewState extends State<_PrayerRequestsView> {
     _bodyController.clear();
     var selectedCategory = PrayerCategory.healing;
     var isAnonymous = true;
+    var isPrivate = false;
 
     await showModalBottomSheet<void>(
       context: context,
@@ -115,6 +116,17 @@ class _PrayerRequestsViewState extends State<_PrayerRequestsView> {
                         setSheetState(() => isAnonymous = value);
                       },
                     ),
+                    SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: const Text('Hou privaat'),
+                      subtitle: const Text(
+                        'Slegs kerkleierskap sal hierdie versoek kan sien.',
+                      ),
+                      value: isPrivate,
+                      onChanged: (value) {
+                        setSheetState(() => isPrivate = value);
+                      },
+                    ),
                     const SizedBox(height: 16),
                     SizedBox(
                       width: double.infinity,
@@ -127,6 +139,7 @@ class _PrayerRequestsViewState extends State<_PrayerRequestsView> {
                                   category: selectedCategory,
                                   body: _bodyController.text.trim(),
                                   isAnonymous: isAnonymous,
+                                  isPrivate: isPrivate,
                                 ),
                               );
                           _formKey.currentState?.reset();
