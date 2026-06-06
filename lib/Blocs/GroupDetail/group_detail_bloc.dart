@@ -4,6 +4,7 @@ import 'package:lw_app/Models/Group/group.dart';
 import 'package:lw_app/Models/Group/group_membership.dart';
 import 'package:lw_app/Models/Group/group_post.dart';
 import 'package:lw_app/Services/Groups/groups_service.dart';
+import 'package:lw_app/Utils/lwp_i18n.dart';
 
 part 'group_detail_event.dart';
 part 'group_detail_state.dart';
@@ -52,7 +53,8 @@ class GroupDetailBloc extends Bloc<GroupDetailEvent, GroupDetailState> {
     await _runAction(
       emit,
       event.groupId,
-      successMessage: 'Versoek gestuur.',
+      successMessage:
+          LwpI18n.current?.groupActionRequestSent ?? 'Request sent.',
       action: () => _groupService.requestGroupJoin(event.groupId),
     );
   }
@@ -64,7 +66,8 @@ class GroupDetailBloc extends Bloc<GroupDetailEvent, GroupDetailState> {
     await _runAction(
       emit,
       event.groupId,
-      successMessage: 'Versoek gekanselleer.',
+      successMessage:
+          LwpI18n.current?.groupActionRequestCancelled ?? 'Request cancelled.',
       action: () => _groupService.cancelGroupJoinRequest(event.groupId),
     );
   }
@@ -76,7 +79,7 @@ class GroupDetailBloc extends Bloc<GroupDetailEvent, GroupDetailState> {
     await _runAction(
       emit,
       event.groupId,
-      successMessage: 'Jy het die groep verlaat.',
+      successMessage: LwpI18n.current?.groupActionLeft ?? 'You left the group.',
       action: () => _groupService.leaveGroup(event.groupId),
     );
   }
@@ -88,7 +91,8 @@ class GroupDetailBloc extends Bloc<GroupDetailEvent, GroupDetailState> {
     await _runAction(
       emit,
       event.groupId,
-      successMessage: 'Versoek goedgekeur.',
+      successMessage:
+          LwpI18n.current?.groupActionApproved ?? 'Request approved.',
       action: () =>
           _groupService.approveGroupMembership(event.groupId, event.userId),
     );
@@ -101,7 +105,8 @@ class GroupDetailBloc extends Bloc<GroupDetailEvent, GroupDetailState> {
     await _runAction(
       emit,
       event.groupId,
-      successMessage: 'Versoek afgekeur.',
+      successMessage:
+          LwpI18n.current?.groupActionDeclined ?? 'Request declined.',
       action: () =>
           _groupService.declineGroupMembership(event.groupId, event.userId),
     );
@@ -114,7 +119,8 @@ class GroupDetailBloc extends Bloc<GroupDetailEvent, GroupDetailState> {
     await _runAction(
       emit,
       event.groupId,
-      successMessage: 'Lid verwyder.',
+      successMessage:
+          LwpI18n.current?.groupActionMemberRemoved ?? 'Member removed.',
       action: () =>
           _groupService.removeGroupMember(event.groupId, event.userId),
     );
@@ -127,7 +133,7 @@ class GroupDetailBloc extends Bloc<GroupDetailEvent, GroupDetailState> {
     await _runAction(
       emit,
       event.groupId,
-      successMessage: 'Groep opgedateer.',
+      successMessage: LwpI18n.current?.groupActionUpdated ?? 'Group updated.',
       action: () => _groupService.updateGroupFromLeader(
         groupId: event.groupId,
         title: event.title,
@@ -147,7 +153,7 @@ class GroupDetailBloc extends Bloc<GroupDetailEvent, GroupDetailState> {
     await _runFeedAction(
       emit,
       event.groupId,
-      successMessage: 'Plasing gedeel.',
+      successMessage: LwpI18n.current?.groupActionPostShared ?? 'Post shared.',
       action: () => _groupService.createGroupPost(
         groupId: event.groupId,
         title: event.title,
@@ -163,7 +169,8 @@ class GroupDetailBloc extends Bloc<GroupDetailEvent, GroupDetailState> {
     await _runFeedAction(
       emit,
       event.groupId,
-      successMessage: 'Plasing opgedateer.',
+      successMessage:
+          LwpI18n.current?.groupActionPostUpdated ?? 'Post updated.',
       action: () => _groupService.updateGroupPost(
         postId: event.postId,
         title: event.title,
@@ -179,7 +186,8 @@ class GroupDetailBloc extends Bloc<GroupDetailEvent, GroupDetailState> {
     await _runFeedAction(
       emit,
       event.groupId,
-      successMessage: 'Plasing verwyder.',
+      successMessage:
+          LwpI18n.current?.groupActionPostDeleted ?? 'Post deleted.',
       action: () => _groupService.deleteGroupPost(event.postId),
     );
   }
@@ -244,8 +252,9 @@ class GroupDetailBloc extends Bloc<GroupDetailEvent, GroupDetailState> {
     await _runFeedAction(
       emit,
       event.groupId,
-      successMessage:
-          event.post.isPinned ? 'Plasing onthef.' : 'Plasing vasgespeld.',
+      successMessage: event.post.isPinned
+          ? (LwpI18n.current?.groupActionPostUnpinned ?? 'Post unpinned.')
+          : (LwpI18n.current?.groupActionPostPinned ?? 'Post pinned.'),
       action: () => _groupService.setGroupPostPinned(
         event.post.id,
         !event.post.isPinned,

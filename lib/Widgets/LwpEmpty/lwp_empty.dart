@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 
 class LwpEmpty extends StatelessWidget {
@@ -13,7 +14,7 @@ class LwpEmpty extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final text = (message == null || message!.isEmpty)
-        ? 'Geen inhoud om te wys nie'
+        ? context.l10n.genericEmptyState
         : message!;
 
     return Center(

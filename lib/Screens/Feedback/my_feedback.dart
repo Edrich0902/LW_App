@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/MyFeedback/my_feedback_bloc.dart';
+import 'package:lw_app/Extensions/app_localizations_x.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/AppFeedback/app_feedback.dart';
 import 'package:lw_app/Widgets/Feedback/feedback_item_card.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
@@ -53,25 +55,25 @@ class _MyFeedbackViewState extends State<_MyFeedbackView> {
     return BlocListener<MyFeedbackBloc, MyFeedbackState>(
       listener: (context, state) {
         if (state is MyFeedbackSubmitSuccess) {
-          LwpSnackbar.showSuccess(context, 'Terugvoer suksesvol gestuur!');
+          LwpSnackbar.showSuccess(context, context.l10n.feedbackSubmitSuccess);
         } else if (state is MyFeedbackError) {
           LwpSnackbar.showError(context, state.error);
         }
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Terugvoer & Verslae'),
+          title: Text(context.l10n.feedbackTitle),
           elevation: 0,
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: _showSubmissionSheet,
-          tooltip: 'Stuur terugvoer',
+          tooltip: context.l10n.feedbackSubmitTooltip,
           child: const Icon(Icons.add),
         ),
         body: BlocBuilder<MyFeedbackBloc, MyFeedbackState>(
           builder: (context, state) {
             if (state is MyFeedbackLoading || state is MyFeedbackInitial) {
-              return const LwpLoader(message: 'Laai terugvoer...');
+              return LwpLoader(message: context.l10n.feedbackLoading);
             }
 
             if (state is MyFeedbackError) {
@@ -87,9 +89,7 @@ class _MyFeedbackViewState extends State<_MyFeedbackView> {
 
             final filtered = _selectedFilter == null
                 ? feedbacks
-                : feedbacks
-                    .where((f) => f.status == _selectedFilter)
-                    .toList();
+                : feedbacks.where((f) => f.status == _selectedFilter).toList();
 
             return Column(
               children: [
@@ -101,7 +101,7 @@ class _MyFeedbackViewState extends State<_MyFeedbackView> {
                       Padding(
                         padding: const EdgeInsets.only(right: 8),
                         child: ChoiceChip(
-                          label: const Text('Alles'),
+                          label: Text(context.l10n.feedbackFilterAll),
                           selected: _selectedFilter == null,
                           shape: const StadiumBorder(),
                           onSelected: (_) =>
@@ -112,7 +112,7 @@ class _MyFeedbackViewState extends State<_MyFeedbackView> {
                         (status) => Padding(
                           padding: const EdgeInsets.only(right: 8),
                           child: ChoiceChip(
-                            label: Text(status.afrikaansLabel),
+                            label: Text(status.label(context.l10n)),
                             selected: _selectedFilter == status,
                             shape: const StadiumBorder(),
                             onSelected: (_) =>
@@ -129,11 +129,10 @@ class _MyFeedbackViewState extends State<_MyFeedbackView> {
                           onRefresh: _refresh,
                           child: ListView(
                             physics: const AlwaysScrollableScrollPhysics(),
-                            children: const [
-                              SizedBox(height: 80),
+                            children: [
+                              const SizedBox(height: 80),
                               LwpEmpty(
-                                message:
-                                    'Geen terugvoer gevind vir hierdie filter nie.',
+                                message: context.l10n.feedbackEmptyFiltered,
                               ),
                             ],
                           ),
@@ -194,6 +193,8 @@ class _FeedbackSubmissionSheetState extends State<_FeedbackSubmissionSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Padding(
       padding: EdgeInsets.only(
         left: 24,
@@ -210,7 +211,7 @@ class _FeedbackSubmissionSheetState extends State<_FeedbackSubmissionSheet> {
             Row(
               children: [
                 Text(
-                  'Stuur Terugvoer',
+                  l10n.feedbackSubmitTitle,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -225,55 +226,55 @@ class _FeedbackSubmissionSheetState extends State<_FeedbackSubmissionSheet> {
             const SizedBox(height: 20),
             DropdownButtonFormField<FeedbackCategory>(
               value: _selectedCategory,
-              decoration: const InputDecoration(
-                labelText: 'Kategorie',
+              decoration: InputDecoration(
+                labelText: l10n.feedbackCategoryLabel,
                 border: OutlineInputBorder(),
               ),
               items: FeedbackCategory.values
                   .map(
                     (c) => DropdownMenuItem(
                       value: c,
-                      child: Text(c.afrikaansLabel),
+                      child: Text(c.label(l10n)),
                     ),
                   )
                   .toList(),
               onChanged: (value) => setState(() => _selectedCategory = value),
               validator: (value) =>
-                  value == null ? 'Kies asseblief \'n kategorie.' : null,
+                  value == null ? l10n.feedbackCategoryRequired : null,
             ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _titleController,
-              decoration: const InputDecoration(
-                labelText: 'Titel',
-                hintText: 'Kort opsomming van jou terugvoer',
+              decoration: InputDecoration(
+                labelText: l10n.feedbackTitleLabel,
+                hintText: l10n.feedbackTitleHint,
                 border: OutlineInputBorder(),
               ),
               maxLength: 100,
               textCapitalization: TextCapitalization.sentences,
               validator: (value) => (value == null || value.trim().isEmpty)
-                  ? 'Voer asseblief \'n titel in.'
+                  ? l10n.feedbackTitleRequired
                   : null,
             ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _bodyController,
-              decoration: const InputDecoration(
-                labelText: 'Beskrywing',
-                hintText: 'Beskryf die probleem of voorstel in detail',
+              decoration: InputDecoration(
+                labelText: l10n.feedbackBodyLabel,
+                hintText: l10n.feedbackBodyHint,
                 border: OutlineInputBorder(),
                 alignLabelWithHint: true,
               ),
               maxLines: 4,
               textCapitalization: TextCapitalization.sentences,
               validator: (value) => (value == null || value.trim().isEmpty)
-                  ? 'Voer asseblief \'n beskrywing in.'
+                  ? l10n.feedbackBodyRequired
                   : null,
             ),
             const SizedBox(height: 24),
             FilledButton(
               onPressed: _submit,
-              child: const Text('Stuur Terugvoer'),
+              child: Text(l10n.feedbackSubmitButton),
             ),
           ],
         ),

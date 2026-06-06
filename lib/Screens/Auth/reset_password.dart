@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/Auth/auth_bloc.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Screens/Container/container.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 
@@ -56,14 +57,14 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
         if (state is AuthErrorState) {
           LwpSnackbar.showError(
             context,
-            "Kon nie jou wagwoord terugstel nie. Probeer asseblief weer.",
+            context.l10n.authResetPasswordFailed,
           );
         }
 
         if (state is PasswordResetSuccessState) {
           LwpSnackbar.showSuccess(
             context,
-            "Jou wagwoord is suksesvol verander!",
+            context.l10n.authResetPasswordSuccess,
           );
           Navigator.pushAndRemoveUntil(
             context,
@@ -99,7 +100,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                           end: Alignment.bottomCenter,
                           colors: [
                             Colors.transparent,
-                            theme.scaffoldBackgroundColor.withValues(alpha: 0.1),
+                            theme.scaffoldBackgroundColor
+                                .withValues(alpha: 0.1),
                             theme.scaffoldBackgroundColor,
                           ],
                         ),
@@ -115,14 +117,15 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
               child: Container(
                 color: theme.scaffoldBackgroundColor,
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 24.0, vertical: 32.0),
                   child: Form(
                     key: _formKey,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Text(
-                          "Nuwe Wagwoord",
+                          context.l10n.authResetPasswordTitle,
                           style: theme.textTheme.headlineLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: theme.primaryColor,
@@ -130,7 +133,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          "Stel jou nuwe wagwoord in",
+                          context.l10n.authResetPasswordSubtitle,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: theme.hintColor,
                           ),
@@ -140,21 +143,23 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                           controller: _passwordController,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Wagwoord is verpligtend';
+                              return context.l10n.validationPasswordRequired;
                             }
                             if (value.length < 6) {
-                              return 'Wagwoord moet ten minste 6 karakters wees';
+                              return context.l10n.validationPasswordMinLength;
                             }
                             return null;
                           },
                           obscureText: !_showPassword,
                           decoration: InputDecoration(
-                            labelText: "Nuwe Wagwoord",
+                            labelText: context.l10n.authResetPasswordTitle,
                             prefixIcon: const Icon(Icons.lock_outline),
                             suffixIcon: IconButton(
                               onPressed: () => setShowPassword(),
                               icon: Icon(
-                                _showPassword ? Icons.visibility : Icons.visibility_off,
+                                _showPassword
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
                               ),
                             ),
                           ),
@@ -164,16 +169,17 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                           controller: _confirmPasswordController,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Bevestig asseblief jou wagwoord';
+                              return context
+                                  .l10n.validationConfirmPasswordRequired;
                             }
                             if (value != _passwordController.text) {
-                              return 'Wagwoorde stem nie ooreen nie';
+                              return context.l10n.validationPasswordsMismatch;
                             }
                             return null;
                           },
                           obscureText: !_showPassword,
-                          decoration: const InputDecoration(
-                            labelText: "Bevestig Nuwe Wagwoord",
+                          decoration: InputDecoration(
+                            labelText: context.l10n.authConfirmNewPassword,
                             prefixIcon: Icon(Icons.lock_reset_outlined),
                           ),
                         ),
@@ -181,7 +187,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                         BlocBuilder<AuthBloc, AuthState>(
                           builder: (context, state) {
                             return ElevatedButton(
-                              onPressed: state is AuthLoadingState ? null : _submit,
+                              onPressed:
+                                  state is AuthLoadingState ? null : _submit,
                               child: state is AuthLoadingState
                                   ? const SizedBox(
                                       width: 20,
@@ -190,7 +197,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                                         strokeWidth: 2,
                                       ),
                                     )
-                                  : const Text("Stel Wagwoord Terug"),
+                                  : Text(context.l10n.authResetPassword),
                             );
                           },
                         ),

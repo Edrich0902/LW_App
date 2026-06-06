@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/SocialMedia/social_media_bloc.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
@@ -33,7 +34,7 @@ class _SocialMediaPageState extends State<SocialMediaPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Volg Ons'),
+          title: Text(context.l10n.dashboardFollowUs),
           actions: const <Widget>[
             LwpAnnouncementButton(),
             ProfileActionButton()
@@ -43,7 +44,7 @@ class _SocialMediaPageState extends State<SocialMediaPage> {
           child: BlocBuilder<SocialMediaBloc, SocialMediaState>(
             builder: (context, state) {
               if (state is SocialMediaLoading) {
-                return const LwpLoader(message: "Laai Volg Ons");
+                return LwpLoader(message: context.l10n.socialMediaLoading);
               } else if (state is SocialMediaSuccess) {
                 if (state.socialMedia.isNotEmpty) {
                   return RefreshIndicator(
@@ -113,7 +114,7 @@ class _SocialMediaPageState extends State<SocialMediaPage> {
                     ),
                   );
                 } else {
-                  return const LwpEmpty(message: "Geen Volg Ons Skakels");
+                  return LwpEmpty(message: context.l10n.socialMediaEmpty);
                 }
               } else {
                 return const LwpError();

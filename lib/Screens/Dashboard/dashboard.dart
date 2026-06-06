@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/Auth/auth_bloc.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Blocs/Sermons/sermons_bloc.dart';
 import 'package:lw_app/Screens/Auth/login.dart';
 import 'package:lw_app/Screens/Sermons/sermons.dart';
@@ -73,12 +74,12 @@ class _DashPageState extends State<DashPage> {
             (route) => false,
           );
         } else if (state is AuthErrorState) {
-          LwpSnackbar.showError(context, "Fout, kon nie uitteken nie");
+          LwpSnackbar.showError(context, context.l10n.profileSignOutFailed);
         }
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Tuis'),
+          title: Text(context.l10n.navHome),
           actions: const <Widget>[
             LwpAnnouncementButton(),
             ProfileActionButton()
@@ -207,7 +208,7 @@ class _DashPageState extends State<DashPage> {
                 childAspectRatio: 1.1,
                 children: [
                   DashboardGridCard(
-                    title: "Opkomende Gebeure",
+                    title: context.l10n.dashboardUpcomingEvents,
                     icon: Icons.event,
                     onTap: () {
                       Navigator.push(
@@ -218,7 +219,7 @@ class _DashPageState extends State<DashPage> {
                     },
                   ),
                   DashboardGridCard(
-                    title: "Tiendes & Offergawes",
+                    title: context.l10n.dashboardTithesOfferings,
                     icon: Icons.volunteer_activism,
                     onTap: () {
                       Navigator.push(
@@ -230,7 +231,7 @@ class _DashPageState extends State<DashPage> {
                     },
                   ),
                   DashboardGridCard(
-                    title: "Eerste Keer Besoeker",
+                    title: context.l10n.dashboardFirstTimeVisitor,
                     icon: Icons.waving_hand,
                     onTap: () {
                       Navigator.push(
@@ -242,7 +243,7 @@ class _DashPageState extends State<DashPage> {
                     },
                   ),
                   DashboardGridCard(
-                    title: "Volg Ons",
+                    title: context.l10n.dashboardFollowUs,
                     icon: Icons.share,
                     onTap: () {
                       Navigator.push(
@@ -253,7 +254,7 @@ class _DashPageState extends State<DashPage> {
                     },
                   ),
                   DashboardGridCard(
-                    title: "Kursusse",
+                    title: context.l10n.dashboardCourses,
                     icon: Icons.school,
                     onTap: () {
                       Navigator.push(
@@ -264,7 +265,7 @@ class _DashPageState extends State<DashPage> {
                     },
                   ),
                   DashboardGridCard(
-                    title: "Gebedsversoeke",
+                    title: context.l10n.dashboardPrayerRequests,
                     icon: Icons.favorite_outline,
                     onTap: () {
                       Navigator.push(
@@ -276,7 +277,7 @@ class _DashPageState extends State<DashPage> {
                     },
                   ),
                   DashboardGridCard(
-                    title: "Blog",
+                    title: context.l10n.dashboardBlog,
                     icon: Icons.article_outlined,
                     onTap: () {
                       Navigator.push(

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:lw_app/Extensions/app_localizations_x.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/PrayerRequest/prayer_request.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
@@ -46,13 +48,13 @@ class PrayerRequestCard extends StatelessWidget {
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 Chip(
-                  label: Text(request.category.afrikaansLabel),
+                  label: Text(request.category.label(context.l10n)),
                   visualDensity: VisualDensity.compact,
                   shape: const StadiumBorder(),
                 ),
                 if (showStatus)
                   Chip(
-                    label: Text(request.status.afrikaansLabel),
+                    label: Text(request.status.label(context.l10n)),
                     backgroundColor:
                         _statusColor(context).withValues(alpha: 0.15),
                     labelStyle: TextStyle(
@@ -74,7 +76,7 @@ class PrayerRequestCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    request.displayName ?? 'Anoniem',
+                    request.displayName ?? context.l10n.prayerAnonymousName,
                     style: theme.textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
@@ -98,7 +100,9 @@ class PrayerRequestCard extends StatelessWidget {
                   borderRadius: LwpRadii.smAll,
                 ),
                 child: Text(
-                  'Nota: ${request.moderationNote!}',
+                  context.l10n.prayerModerationNote(
+                    request.moderationNote!,
+                  ),
                   style: theme.textTheme.bodyMedium,
                 ),
               ),
@@ -119,7 +123,11 @@ class PrayerRequestCard extends StatelessWidget {
                           ? Colors.red
                           : theme.colorScheme.primary,
                     ),
-                    label: Text('Ek bid vir jou (${request.reactionCount})'),
+                    label: Text(
+                      context.l10n.prayerReactionLabel(
+                        request.reactionCount,
+                      ),
+                    ),
                     onPressed: onPrayTap,
                     shape: const StadiumBorder(),
                   ),
@@ -127,7 +135,7 @@ class PrayerRequestCard extends StatelessWidget {
                     request.status != PrayerRequestStatus.resolved)
                   ActionChip(
                     avatar: const Icon(Icons.check_circle_outline, size: 18),
-                    label: const Text('Merk as afgehandel'),
+                    label: Text(context.l10n.prayerResolveAction),
                     onPressed: onResolveTap,
                     shape: const StadiumBorder(),
                   ),

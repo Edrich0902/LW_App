@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/Event/event.dart';
 import 'package:lw_app/Models/Event/event_type.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
@@ -109,26 +110,26 @@ class CourseDetailPage extends StatelessWidget {
                       _buildInfoTile(
                         context,
                         Icons.calendar_today_rounded,
-                        "Begin Datum",
+                        context.l10n.courseStartDate,
                         "${course.day} ${DateFormatter.formatDate(course.startDate)}",
                       ),
                       if (course.endDate != null)
                         _buildInfoTile(
                           context,
                           Icons.event_note_rounded,
-                          "Eind Datum",
+                          context.l10n.courseEndDate,
                           DateFormatter.formatDate(course.endDate),
                         ),
                       _buildInfoTile(
                         context,
                         Icons.access_time_rounded,
-                        "Tyd",
+                        context.l10n.courseTime,
                         DateFormatter.formatTime(course.time),
                       ),
 
                       const SizedBox(height: 32),
                       Text(
-                        "Beskrywing",
+                        context.l10n.courseDescription,
                         style: theme.textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -148,7 +149,7 @@ class CourseDetailPage extends StatelessWidget {
                         child: ElevatedButton.icon(
                           onPressed: () => _addToCalendar(),
                           icon: const Icon(Icons.event_available_rounded),
-                          label: const Text("Voeg by Kalender"),
+                          label: Text(context.l10n.commonAddToCalendar),
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 16),
                           ),

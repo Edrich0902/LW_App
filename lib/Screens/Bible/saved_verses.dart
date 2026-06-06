@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Blocs/Bible/bible_bloc.dart';
 import 'package:lw_app/Blocs/Bible/bible_event.dart';
 import 'package:lw_app/Blocs/Bible/bible_state.dart';
@@ -99,11 +100,10 @@ class _SavedVersesPageState extends State<SavedVersesPage>
       Navigator.pop(context);
 
       // Post-nav snackbar
-      LwpSnackbar.showInfo(
-          context, 'Navigeer na ${book.name} ${interaction.chapterNumber}');
+      LwpSnackbar.showInfo(context,
+          context.l10n.bibleNavigateTo(book.name, interaction.chapterNumber));
     } else {
-      LwpSnackbar.showError(
-          context, 'Boek nie beskikbaar in huidige vertaling nie.');
+      LwpSnackbar.showError(context, context.l10n.bibleBookUnavailable);
     }
   }
 
@@ -120,11 +120,11 @@ class _SavedVersesPageState extends State<SavedVersesPage>
       );
 
       if (!mounted) return;
-      LwpSnackbar.showSuccess(context, 'Item suksesvol opgedateer');
+      LwpSnackbar.showSuccess(context, context.l10n.savedVersesItemUpdated);
       _loadData();
     } catch (e) {
       if (!mounted) return;
-      LwpSnackbar.showError(context, 'Fout met opdatering: $e');
+      LwpSnackbar.showError(context, context.l10n.savedVersesUpdateError('$e'));
     }
   }
 
@@ -155,7 +155,7 @@ class _SavedVersesPageState extends State<SavedVersesPage>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Wysig Bybelnota',
+                      context.l10n.savedVersesEditBibleNote,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: theme.primaryColor,
@@ -173,7 +173,7 @@ class _SavedVersesPageState extends State<SavedVersesPage>
                   maxLines: 5,
                   autofocus: true,
                   decoration: InputDecoration(
-                    hintText: 'Skryf jou gedagtes hier...',
+                    hintText: context.l10n.notesBodyPlaceholder,
                     border: OutlineInputBorder(
                       borderRadius: LwpRadii.lgAll,
                       borderSide: BorderSide(
@@ -192,7 +192,7 @@ class _SavedVersesPageState extends State<SavedVersesPage>
                   children: [
                     TextButton(
                       onPressed: () => Navigator.pop(modalContext),
-                      child: Text('Kanselleer',
+                      child: Text(context.l10n.commonCancel,
                           style: TextStyle(color: theme.hintColor)),
                     ),
                     const SizedBox(width: 8),
@@ -208,12 +208,13 @@ class _SavedVersesPageState extends State<SavedVersesPage>
                           );
                           if (!mounted || !modalContext.mounted) return;
                           Navigator.pop(modalContext);
-                          LwpSnackbar.showSuccess(context, 'Nota opgedateer');
+                          LwpSnackbar.showSuccess(
+                              context, context.l10n.savedVersesNoteUpdated);
                           _loadData();
                         } catch (e) {
                           if (!mounted) return;
                           LwpSnackbar.showError(
-                              context, 'Kon nie nota stoor nie');
+                              context, context.l10n.savedVersesNoteSaveError);
                         }
                       },
                       style: ElevatedButton.styleFrom(
@@ -222,7 +223,7 @@ class _SavedVersesPageState extends State<SavedVersesPage>
                           borderRadius: LwpRadii.lgAll,
                         ),
                       ),
-                      child: const Text('Stoor',
+                      child: Text(context.l10n.commonSave,
                           style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold)),
@@ -247,13 +248,13 @@ class _SavedVersesPageState extends State<SavedVersesPage>
     }
 
     final shareText =
-        'My Bybelnota vir $bookName ${interaction.chapterNumber}:${interaction.verseNumber}:\n\n"${interaction.note}"\n\nGedeel via LW App';
+        '${context.l10n.savedVersesMyBibleNote} $bookName ${interaction.chapterNumber}:${interaction.verseNumber}:\n\n"${interaction.note}"\n\n${context.l10n.bibleSharedViaApp}';
     await ShareHelper.shareText(
       context,
       text: shareText,
       subject:
-          'Bybelnota vir $bookName ${interaction.chapterNumber}:${interaction.verseNumber}',
-      clipboardMessage: 'Nota gekopieër na klembord',
+          '${context.l10n.bibleNoteTitle} $bookName ${interaction.chapterNumber}:${interaction.verseNumber}',
+      clipboardMessage: context.l10n.savedVersesNoteCopied,
     );
   }
 
@@ -263,20 +264,20 @@ class _SavedVersesPageState extends State<SavedVersesPage>
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Bybel Argief'),
+        title: Text(context.l10n.savedVersesTitle),
         bottom: TabBar(
           controller: _tabController,
           labelColor: theme.primaryColor,
           unselectedLabelColor: theme.hintColor,
           indicatorColor: theme.primaryColor,
-          tabs: const [
-            Tab(text: 'Bewaarde Verse'),
-            Tab(text: 'My Notas'),
+          tabs: [
+            Tab(text: context.l10n.savedVersesSavedTab),
+            Tab(text: context.l10n.savedVersesMyNotesTab),
           ],
         ),
       ),
       body: _isLoading
-          ? const Center(child: LwpLoader(message: 'Laai argief...'))
+          ? Center(child: LwpLoader(message: context.l10n.savedVersesLoading))
           : _errorMessage != null
               ? LwpError(message: _errorMessage!, onRetry: _loadData)
               : TabBarView(
@@ -284,9 +285,9 @@ class _SavedVersesPageState extends State<SavedVersesPage>
                   children: [
                     // Saved Verses Tab
                     _savedVerses.isEmpty
-                        ? const LwpEmpty(
-                            message:
-                                'Jy het nog geen verse gestoor of verlig nie.')
+                        ? LwpEmpty(
+                            message: context.l10n.savedVersesEmpty,
+                          )
                         : ListView.builder(
                             padding: const EdgeInsets.all(16.0),
                             itemCount: _savedVerses.length,
@@ -357,7 +358,7 @@ class _SavedVersesPageState extends State<SavedVersesPage>
                                         ),
                                         const SizedBox(height: 8),
                                         Text(
-                                          'Tik om in Bybel te sien...',
+                                          context.l10n.savedVersesTapToView,
                                           style: TextStyle(
                                               fontSize: 12,
                                               fontStyle: FontStyle.italic,
@@ -378,8 +379,9 @@ class _SavedVersesPageState extends State<SavedVersesPage>
                                                     Icons.bookmark_remove,
                                                     size: 16,
                                                     color: Colors.redAccent),
-                                                label: const Text(
-                                                    'Verwyder Boekmerk',
+                                                label: Text(
+                                                    context.l10n
+                                                        .savedVersesRemoveBookmark,
                                                     style: TextStyle(
                                                         color: Colors.redAccent,
                                                         fontSize: 12)),
@@ -396,9 +398,9 @@ class _SavedVersesPageState extends State<SavedVersesPage>
 
                     // Notes Tab
                     _versesWithNotes.isEmpty
-                        ? const LwpEmpty(
-                            message:
-                                'Jy het nog geen persoonlike Bybelnotas bygevoeg nie.')
+                        ? LwpEmpty(
+                            message: context.l10n.savedVersesNotesEmpty,
+                          )
                         : ListView.builder(
                             padding: const EdgeInsets.all(16.0),
                             itemCount: _versesWithNotes.length,
@@ -487,14 +489,16 @@ class _SavedVersesPageState extends State<SavedVersesPage>
                                                 size: 20,
                                                 color: theme.hintColor),
                                             onPressed: () => _shareNote(item),
-                                            tooltip: 'Deel Nota',
+                                            tooltip: context
+                                                .l10n.savedVersesShareNote,
                                           ),
                                           IconButton(
                                             icon: Icon(Icons.edit,
                                                 size: 20,
                                                 color: theme.hintColor),
                                             onPressed: () => _editNote(item),
-                                            tooltip: 'Wysig Nota',
+                                            tooltip: context
+                                                .l10n.savedVersesEditNote,
                                           ),
                                           IconButton(
                                             icon: const Icon(
@@ -504,7 +508,8 @@ class _SavedVersesPageState extends State<SavedVersesPage>
                                             onPressed: () => _deleteInteraction(
                                                 item,
                                                 clearNote: true),
-                                            tooltip: 'Verwyder Nota',
+                                            tooltip: context
+                                                .l10n.savedVersesDeleteNote,
                                           ),
                                         ],
                                       ),

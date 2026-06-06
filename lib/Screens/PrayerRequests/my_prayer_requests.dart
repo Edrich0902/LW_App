@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lw_app/Extensions/app_localizations_x.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Blocs/MyPrayerRequests/my_prayer_requests_bloc.dart';
 import 'package:lw_app/Models/PrayerRequest/prayer_request.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
@@ -46,13 +48,13 @@ class _MyPrayerRequestsViewState extends State<_MyPrayerRequestsView> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('My Gebedsversoeke'),
+          title: Text(context.l10n.profileMyPrayerRequests),
         ),
         body: BlocBuilder<MyPrayerRequestsBloc, MyPrayerRequestsState>(
           builder: (context, state) {
             if (state is MyPrayerRequestsLoading ||
                 state is MyPrayerRequestsInitial) {
-              return const LwpLoader(message: 'Laai gebedsversoeke...');
+              return LwpLoader(message: context.l10n.prayerRequestsLoading);
             }
 
             if (state is MyPrayerRequestsError) {
@@ -79,7 +81,7 @@ class _MyPrayerRequestsViewState extends State<_MyPrayerRequestsView> {
                         Padding(
                           padding: const EdgeInsets.only(right: 8),
                           child: ChoiceChip(
-                            label: const Text('Alles'),
+                            label: Text(context.l10n.feedbackFilterAll),
                             selected: _selectedStatus == null,
                             shape: const StadiumBorder(),
                             onSelected: (_) {
@@ -91,7 +93,7 @@ class _MyPrayerRequestsViewState extends State<_MyPrayerRequestsView> {
                           (status) => Padding(
                             padding: const EdgeInsets.only(right: 8),
                             child: ChoiceChip(
-                              label: Text(status.afrikaansLabel),
+                              label: Text(status.label(context.l10n)),
                               selected: _selectedStatus == status,
                               shape: const StadiumBorder(),
                               onSelected: (_) {
@@ -109,11 +111,11 @@ class _MyPrayerRequestsViewState extends State<_MyPrayerRequestsView> {
                             onRefresh: _refresh,
                             child: ListView(
                               physics: const AlwaysScrollableScrollPhysics(),
-                              children: const [
+                              children: [
                                 SizedBox(height: 80),
                                 LwpEmpty(
                                   message:
-                                      'Geen gebedsversoeke vir hierdie status nie.',
+                                      context.l10n.myPrayerRequestsEmptyForStatus,
                                 ),
                               ],
                             ),
@@ -130,7 +132,9 @@ class _MyPrayerRequestsViewState extends State<_MyPrayerRequestsView> {
                                 return PrayerRequestCard(
                                   request: request.copyWith(
                                     displayName:
-                                        request.isAnonymous ? 'Anoniem' : 'Jy',
+                                        request.isAnonymous
+                                            ? context.l10n.prayerAnonymousName
+                                            : context.l10n.commonYou,
                                   ),
                                   showStatus: true,
                                   onResolveTap: request.status !=

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:gal/gal.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/Bible/verse_image_draft.dart';
 import 'package:lw_app/Utils/share_helper.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
@@ -112,13 +113,13 @@ class _VerseImageEditorScreenState extends State<VerseImageEditorScreen> {
         name: _fileName(),
       );
       if (mounted) {
-        LwpSnackbar.showSuccess(context, 'Beeld is in jou galery gestoor');
+        LwpSnackbar.showSuccess(context, context.l10n.bibleImageSaved);
       }
     } catch (_) {
       if (mounted) {
         LwpSnackbar.showError(
           context,
-          'Kon nie die beeld in jou galery stoor nie',
+          context.l10n.bibleImageSaveError,
         );
       }
     }
@@ -136,7 +137,7 @@ class _VerseImageEditorScreenState extends State<VerseImageEditorScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Skep beeld'),
+        title: Text(context.l10n.bibleCreateImage),
       ),
       body: SafeArea(
         child: ListView(
@@ -163,7 +164,7 @@ class _VerseImageEditorScreenState extends State<VerseImageEditorScreen> {
                   child: ElevatedButton.icon(
                     onPressed: () => _pickImage(ImageSource.gallery),
                     icon: const Icon(Icons.photo_library_outlined),
-                    label: const Text('Galery'),
+                    label: Text(context.l10n.authGallery),
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size(0, 48),
                     ),
@@ -174,7 +175,7 @@ class _VerseImageEditorScreenState extends State<VerseImageEditorScreen> {
                   child: OutlinedButton.icon(
                     onPressed: () => _pickImage(ImageSource.camera),
                     icon: const Icon(Icons.photo_camera_outlined),
-                    label: const Text('Kamera'),
+                    label: Text(context.l10n.authCamera),
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size(0, 48),
                     ),
@@ -183,7 +184,7 @@ class _VerseImageEditorScreenState extends State<VerseImageEditorScreen> {
               ],
             ),
             const SizedBox(height: 20),
-            _ControlLabel('Formaat', theme: theme),
+            _ControlLabel(context.l10n.bibleImageFormat, theme: theme),
             SegmentedButton<VerseImageAspectRatio>(
               segments: VerseImageAspectRatio.values
                   .map(
@@ -199,7 +200,7 @@ class _VerseImageEditorScreenState extends State<VerseImageEditorScreen> {
               },
             ),
             const SizedBox(height: 16),
-            _ControlLabel('Teksgrootte', theme: theme),
+            _ControlLabel(context.l10n.bibleImageTextSize, theme: theme),
             SegmentedButton<VerseImageTextSize>(
               segments: VerseImageTextSize.values
                   .map(
@@ -215,7 +216,7 @@ class _VerseImageEditorScreenState extends State<VerseImageEditorScreen> {
               },
             ),
             const SizedBox(height: 16),
-            _ControlLabel('Belyning', theme: theme),
+            _ControlLabel(context.l10n.bibleImageAlignment, theme: theme),
             SegmentedButton<TextAlign>(
               segments: const [
                 ButtonSegment(
@@ -237,7 +238,7 @@ class _VerseImageEditorScreenState extends State<VerseImageEditorScreen> {
               },
             ),
             const SizedBox(height: 16),
-            _ControlLabel('Oorlaag', theme: theme),
+            _ControlLabel(context.l10n.bibleImageOverlay, theme: theme),
             Slider(
               value: _overlayStrength,
               min: 0.2,
@@ -249,7 +250,7 @@ class _VerseImageEditorScreenState extends State<VerseImageEditorScreen> {
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
               value: _useLightText,
-              title: const Text('Ligte teks'),
+              title: Text(context.l10n.bibleImageLightText),
               onChanged: (value) => setState(() => _useLightText = value),
             ),
             const SizedBox(height: 12),
@@ -263,7 +264,7 @@ class _VerseImageEditorScreenState extends State<VerseImageEditorScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                     ),
                     icon: const Icon(Icons.download_outlined),
-                    label: const Text('Laai af'),
+                    label: Text(context.l10n.bibleImageDownload),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -275,7 +276,11 @@ class _VerseImageEditorScreenState extends State<VerseImageEditorScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                     ),
                     icon: const Icon(Icons.share_outlined),
-                    label: Text(_isExporting ? 'Skep...' : 'Deel'),
+                    label: Text(
+                      _isExporting
+                          ? context.l10n.bibleImageCreating
+                          : context.l10n.commonShare,
+                    ),
                   ),
                 ),
               ],

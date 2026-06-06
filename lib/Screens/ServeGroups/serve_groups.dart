@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:lw_app/Widgets/WhatsappContactFAB/whatsapp_contact_fab.dart';
 import 'package:lw_app/Blocs/ServiceGroups/service_groups_bloc.dart';
@@ -25,7 +26,8 @@ class _ServeGroupsPageState extends State<ServeGroupsPage> {
 
   @override
   Widget build(BuildContext context) {
-    ServiceGroupsBloc serviceGroupsBloc = BlocProvider.of<ServiceGroupsBloc>(context);
+    ServiceGroupsBloc serviceGroupsBloc =
+        BlocProvider.of<ServiceGroupsBloc>(context);
 
     return BlocListener<ServiceGroupsBloc, ServiceGroupsState>(
       listener: (context, state) {
@@ -33,19 +35,23 @@ class _ServeGroupsPageState extends State<ServeGroupsPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Kom Dien'),
-          actions: const <Widget>[LwpAnnouncementButton(), ProfileActionButton()],
+          title: Text(context.l10n.serveGroupsTitle),
+          actions: const <Widget>[
+            LwpAnnouncementButton(),
+            ProfileActionButton()
+          ],
         ),
         floatingActionButton: const WhatsappContactFAB(),
         body: SafeArea(
           child: BlocBuilder<ServiceGroupsBloc, ServiceGroupsState>(
             builder: (context, state) {
               if (state is ServiceGroupsLoading) {
-                return const LwpLoader(message: "Laai Kom Dien Groepe");
+                return LwpLoader(message: context.l10n.serveGroupsLoading);
               } else if (state is ServiceGroupsSuccess) {
                 if (state.serviceGroups.isNotEmpty) {
                   return RefreshIndicator(
-                    onRefresh: () async => serviceGroupsBloc.add(const LoadServiceGroups()),
+                    onRefresh: () async =>
+                        serviceGroupsBloc.add(const LoadServiceGroups()),
                     child: ListView.builder(
                       padding: const EdgeInsets.all(16.0),
                       itemCount: state.serviceGroups.length,
@@ -55,7 +61,7 @@ class _ServeGroupsPageState extends State<ServeGroupsPage> {
                     ),
                   );
                 } else {
-                  return const LwpEmpty(message: "Geen Kom Dien Groepe");
+                  return LwpEmpty(message: context.l10n.serveGroupsEmpty);
                 }
               } else {
                 return const LwpError();

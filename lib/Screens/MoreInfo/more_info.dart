@@ -2,6 +2,7 @@ import 'package:lw_app/Screens/MoreInfo/roleplayer_detail.dart';
 import 'package:lw_app/Widgets/LwpBio/roleplayer_grid_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Blocs/MoreInfo/more_info_bloc.dart';
 import 'package:lw_app/Widgets/WhatsappContactFAB/whatsapp_contact_fab.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
@@ -49,7 +50,7 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
                   scrolledUnderElevation: 0,
                   flexibleSpace: FlexibleSpaceBar(
                     title: Text(
-                      'Meer Oor Ons',
+                      context.l10n.navMoreInfo,
                       style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -70,16 +71,18 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
                   sliver: SliverList(
                     delegate: SliverChildListDelegate([
                       if (mission != null) ...[
-                        _buildSectionHeader(context, 'Ons Misie'),
+                        _buildSectionHeader(
+                            context, context.l10n.moreInfoMission),
                         _buildSectionContent(context, mission.content ?? ''),
                         const SizedBox(height: 24.0),
                       ],
                       if (vision != null) ...[
-                        _buildSectionHeader(context, 'Ons Visie'),
+                        _buildSectionHeader(
+                            context, context.l10n.moreInfoVision),
                         _buildSectionContent(context, vision.content ?? ''),
                         const SizedBox(height: 32.0),
                       ],
-                      _buildSectionHeader(context, 'Ons Span'),
+                      _buildSectionHeader(context, context.l10n.moreInfoTeam),
                     ]),
                   ),
                 ),

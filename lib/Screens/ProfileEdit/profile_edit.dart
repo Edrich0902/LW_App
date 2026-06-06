@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/User/user_bloc.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/User/user_profile.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Widgets/LwpProfileImage/lwp_profile_image.dart';
@@ -73,16 +74,19 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     return BlocListener<UserBloc, UserState>(
       listener: (context, state) {
         if (state is UserUpdateSuccess) {
-          LwpSnackbar.showSuccess(context, "Profiel opgedateer");
+          LwpSnackbar.showSuccess(context, context.l10n.profileEditSuccess);
         }
 
         if (state is UserProfilePictureSuccess) {
-          LwpSnackbar.showSuccess(context, "Profielfoto opgedateer");
+          LwpSnackbar.showSuccess(
+            context,
+            context.l10n.profileEditPhotoSuccess,
+          );
         }
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Wysig Profiel'),
+          title: Text(context.l10n.profileEditTitle),
         ),
         body: SafeArea(
           child: BlocBuilder<UserBloc, UserState>(
@@ -92,7 +96,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
               }
 
               if (!_isInitialized && state is UserLoading) {
-                return const LwpLoader(message: "Laai profiel...");
+                return LwpLoader(message: context.l10n.profileLoading);
               }
 
               if (_isInitialized && _currentUser != null) {
@@ -116,8 +120,8 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                         TextFormField(
                           initialValue: user?.email ?? 'N/A',
                           enabled: false,
-                          decoration: const InputDecoration(
-                            labelText: 'E-pos',
+                          decoration: InputDecoration(
+                            labelText: context.l10n.authEmail,
                             prefixIcon: Icon(Icons.email_outlined),
                           ),
                         ),
@@ -127,12 +131,12 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                           textCapitalization: TextCapitalization.words,
                           validator: (firstName) {
                             if (firstName == null || firstName.isEmpty) {
-                              return 'Naam word benodig';
+                              return context.l10n.profileEditNameRequired;
                             }
                             return null;
                           },
-                          decoration: const InputDecoration(
-                            labelText: 'Naam',
+                          decoration: InputDecoration(
+                            labelText: context.l10n.authFirstName,
                             prefixIcon: Icon(Icons.person_outline),
                           ),
                         ),
@@ -142,12 +146,12 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                           textCapitalization: TextCapitalization.words,
                           validator: (lastName) {
                             if (lastName == null || lastName.isEmpty) {
-                              return 'Van word benodig';
+                              return context.l10n.profileEditLastNameRequired;
                             }
                             return null;
                           },
-                          decoration: const InputDecoration(
-                            labelText: 'Van',
+                          decoration: InputDecoration(
+                            labelText: context.l10n.authLastName,
                             prefixIcon: Icon(Icons.badge_outlined),
                           ),
                         ),
@@ -155,22 +159,22 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                         TextFormField(
                           controller: _addressController,
                           textCapitalization: TextCapitalization.sentences,
-                          decoration: const InputDecoration(
-                            labelText: 'Adres',
+                          decoration: InputDecoration(
+                            labelText: context.l10n.profileEditAddress,
                             prefixIcon: Icon(Icons.location_on_outlined),
                           ),
                         ),
                         const SizedBox(height: 24),
                         LabeledCheckbox(
                           value: _isBaptized,
-                          label: 'Is jy gedoop?',
+                          label: context.l10n.profileEditIsBaptized,
                           onChanged: (bool? newValue) {
                             setState(() => _isBaptized = newValue!);
                           },
                         ),
                         LabeledCheckbox(
                           value: _isMember,
-                          label: 'Is jy n lidmaat?',
+                          label: context.l10n.profileEditIsMember,
                           onChanged: (bool? newValue) {
                             setState(() => _isMember = newValue!);
                           },
@@ -199,7 +203,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                                     strokeWidth: 2,
                                   ),
                                 )
-                              : const Text("Opdateer Profiel"),
+                              : Text(context.l10n.profileEditUpdateButton),
                         ),
                         const SizedBox(height: 24),
                       ],
@@ -279,7 +283,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
             children: [
               ListTile(
                 leading: const Icon(Icons.photo_library_outlined),
-                title: const Text('Galery'),
+                title: Text(context.l10n.authGallery),
                 onTap: () async {
                   Navigator.pop(context);
                   File? image = await _pickImageFromGallery();
@@ -290,7 +294,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
               ),
               ListTile(
                 leading: const Icon(Icons.camera_alt_outlined),
-                title: const Text('Kamera'),
+                title: Text(context.l10n.authCamera),
                 onTap: () async {
                   Navigator.pop(context);
                   File? image = await _pickImageFromCamera();

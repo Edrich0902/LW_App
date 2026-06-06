@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/Group/group_post.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/quill_helper.dart';
@@ -63,11 +64,15 @@ class _GroupPostEditPageState extends State<GroupPostEditPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEdit ? 'Wysig Plasing' : 'Nuwe Plasing'),
+        title: Text(
+          _isEdit ? context.l10n.groupPostEditTitle : context.l10n.groupPostNewTitle,
+        ),
         actions: [
           TextButton(
             onPressed: _isSaving ? null : _submit,
-            child: Text(_isEdit ? 'Stoor' : 'Plaas'),
+            child: Text(
+              _isEdit ? context.l10n.commonSave : context.l10n.groupPostPublish,
+            ),
           ),
         ],
       ),
@@ -84,7 +89,7 @@ class _GroupPostEditPageState extends State<GroupPostEditPage> {
                 controller: _titleController,
                 style: theme.textTheme.titleLarge,
                 decoration: InputDecoration(
-                  hintText: 'Titel (opsioneel)',
+                  hintText: context.l10n.groupPostTitleOptional,
                   hintStyle: theme.textTheme.titleLarge?.copyWith(
                     color: theme.hintColor,
                     fontWeight: FontWeight.normal,
@@ -145,12 +150,42 @@ class _GroupPostEditPageState extends State<GroupPostEditPage> {
                     config: const QuillEditorConfig(
                       expands: true,
                       scrollable: true,
-                      placeholder: 'Skryf jou plasing hier...',
+                      placeholder: '',
                       padding: EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 12,
                       ),
                       autoFocus: false,
+                    ),
+                ),
+                  Positioned.fill(
+                    child: IgnorePointer(
+                      ignoring: true,
+                      child: Align(
+                        alignment: Alignment.topLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          child: ListenableBuilder(
+                            listenable: _quillController,
+                            builder: (context, _) {
+                              final plain = QuillHelper.plainTextPreview(
+                                QuillHelper.toJson(_quillController),
+                                maxLength: 10,
+                              ).trim();
+                              if (plain.isNotEmpty) {
+                                return const SizedBox.shrink();
+                              }
+                              return Text(
+                                context.l10n.groupPostBodyPlaceholder,
+                                style: TextStyle(color: theme.hintColor),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                   if (_isSaving)
@@ -177,7 +212,7 @@ class _GroupPostEditPageState extends State<GroupPostEditPage> {
 
     if (plainText.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Skryf eers iets vir die plasing.')),
+        SnackBar(content: Text(context.l10n.groupPostBodyRequired)),
       );
       return;
     }

@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:lw_app/l10n/app_localizations.dart';
 
 class PastoralPostReactionType {
   static const String amen = 'amen';
@@ -7,14 +8,14 @@ class PastoralPostReactionType {
 
   static const List<String> values = [amen, prayer, heart];
 
-  static String afrikaansLabel(String reactionType) {
+  static String label(AppLocalizations l10n, String reactionType) {
     switch (reactionType) {
       case amen:
-        return 'Amen';
+        return l10n.pastoralReactionAmen;
       case prayer:
-        return 'Gebed';
+        return l10n.pastoralReactionPrayer;
       case heart:
-        return 'Hart';
+        return l10n.pastoralReactionHeart;
       default:
         return reactionType;
     }

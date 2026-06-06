@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lw_app/Screens/Auth/register.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/Auth/auth_bloc.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 import 'package:lw_app/Screens/Container/container.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
@@ -50,15 +51,15 @@ class _LoginPageState extends State<LoginPage> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (!(ModalRoute.of(context)?.isCurrent ?? false)) return;
-        
+
         if (state is AuthErrorState) {
-          LwpSnackbar.showError(context, "Intekening het misluk. Kontroleer asseblief jou besonderhede.");
+          LwpSnackbar.showError(context, context.l10n.authSignInFailed);
         }
 
         if (state is AuthSuccessState) {
           sb.Session? session = sb.Supabase.instance.client.auth.currentSession;
           if (session != null) {
-            LwpSnackbar.showSuccess(context, "Intekening suksesvol");
+            LwpSnackbar.showSuccess(context, context.l10n.authSignInSuccess);
 
             Navigator.pushReplacement(
               context,
@@ -93,7 +94,8 @@ class _LoginPageState extends State<LoginPage> {
                           end: Alignment.bottomCenter,
                           colors: [
                             Colors.transparent,
-                            theme.scaffoldBackgroundColor.withValues(alpha: 0.1),
+                            theme.scaffoldBackgroundColor
+                                .withValues(alpha: 0.1),
                             theme.scaffoldBackgroundColor,
                           ],
                         ),
@@ -108,14 +110,15 @@ class _LoginPageState extends State<LoginPage> {
               child: Container(
                 color: theme.scaffoldBackgroundColor,
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 24.0, vertical: 32.0),
                   child: Form(
                     key: _loginFormKey,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Text(
-                          "Welkom Terug",
+                          context.l10n.authWelcomeBack,
                           style: theme.textTheme.headlineLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: theme.primaryColor,
@@ -123,7 +126,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          "Teken in om voort te gaan",
+                          context.l10n.authSignInSubtitle,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: theme.hintColor,
                           ),
@@ -134,12 +137,12 @@ class _LoginPageState extends State<LoginPage> {
                           keyboardType: TextInputType.emailAddress,
                           validator: (email) {
                             if (email == null || email.isEmpty) {
-                              return 'E-pos is verpligtend';
+                              return context.l10n.validationEmailRequired;
                             }
                             return null;
                           },
-                          decoration: const InputDecoration(
-                            labelText: "E-pos",
+                          decoration: InputDecoration(
+                            labelText: context.l10n.authEmail,
                             prefixIcon: Icon(Icons.email_outlined),
                           ),
                         ),
@@ -148,18 +151,20 @@ class _LoginPageState extends State<LoginPage> {
                           controller: _passwordController,
                           validator: (password) {
                             if (password == null || password.isEmpty) {
-                              return 'Wagwoord is verpligtend';
+                              return context.l10n.validationPasswordRequired;
                             }
                             return null;
                           },
                           obscureText: !_showPassword,
                           decoration: InputDecoration(
-                            labelText: "Wagwoord",
+                            labelText: context.l10n.authPassword,
                             prefixIcon: const Icon(Icons.lock_outline),
                             suffixIcon: IconButton(
                               onPressed: () => setShowPassword(),
                               icon: Icon(
-                                _showPassword ? Icons.visibility : Icons.visibility_off,
+                                _showPassword
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
                               ),
                             ),
                           ),
@@ -171,7 +176,8 @@ class _LoginPageState extends State<LoginPage> {
                               onPressed: state is AuthLoadingState
                                   ? null
                                   : () {
-                                      if (_loginFormKey.currentState!.validate()) {
+                                      if (_loginFormKey.currentState!
+                                          .validate()) {
                                         authBloc.add(
                                           EmailSignInEvent(
                                             _emailController.text,
@@ -188,23 +194,28 @@ class _LoginPageState extends State<LoginPage> {
                                         strokeWidth: 2,
                                       ),
                                     )
-                                  : const Text("Teken In"),
+                                  : Text(context.l10n.authSignIn),
                             );
                           },
                         ),
                         const SizedBox(height: 16),
                         TextButton(
                           onPressed: () async {
-                            final url = Uri.parse('${Environment.authCallbackUrl}/forgot-password');
+                            final url = Uri.parse(
+                                '${Environment.authCallbackUrl}/forgot-password');
                             if (await canLaunchUrl(url)) {
-                              await launchUrl(url, mode: LaunchMode.externalApplication);
+                              await launchUrl(url,
+                                  mode: LaunchMode.externalApplication);
                             } else {
                               if (context.mounted) {
-                                LwpSnackbar.showError(context, "Kon nie die herstelbladsy oopmaak nie.");
+                                LwpSnackbar.showError(
+                                  context,
+                                  context.l10n.authOpenResetPageFailed,
+                                );
                               }
                             }
                           },
-                          child: const Text("Wagwoord vergeet?"),
+                          child: Text(context.l10n.authForgotPassword),
                         ),
                         const SizedBox(height: 8),
                         TextButton(
@@ -214,7 +225,7 @@ class _LoginPageState extends State<LoginPage> {
                               builder: (context) => const RegisterPage(),
                             ),
                           ),
-                          child: const Text("Het jy nie 'n rekening nie? Registreer hier"),
+                          child: Text(context.l10n.authNoAccountRegister),
                         ),
                       ],
                     ),

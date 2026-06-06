@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Blocs/TithesOfferings/tithes_offerings_bloc.dart';
 import 'package:lw_app/Models/TithesOfferings/tithes_offerings_settings.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
@@ -32,7 +33,7 @@ class _TithesOfferingsScreenState extends State<TithesOfferingsScreen> {
     Clipboard.setData(ClipboardData(text: text));
     LwpSnackbar.showSuccess(
       context,
-      '$label gekopieer na knipbord',
+      context.l10n.tithesCopied(label),
     );
   }
 
@@ -40,7 +41,7 @@ class _TithesOfferingsScreenState extends State<TithesOfferingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tiendes & Offergawes'),
+        title: Text(context.l10n.tithesTitle),
         actions: const <Widget>[
           LwpAnnouncementButton(),
           ProfileActionButton(),
@@ -50,13 +51,11 @@ class _TithesOfferingsScreenState extends State<TithesOfferingsScreen> {
         builder: (context, state) {
           if (state is TithesOfferingsLoading ||
               state is TithesOfferingsInitial) {
-            return const LwpLoader(message: 'Laai Tiendes & Offergawes');
+            return LwpLoader(message: context.l10n.tithesLoading);
           } else if (state is TithesOfferingsSuccess) {
             return _buildContent(context, state.settings);
           } else if (state is TithesOfferingsEmpty) {
-            return const LwpEmpty(
-                message:
-                    'Tiendes & Offergawes inligting word binnekort opgedateer.');
+            return LwpEmpty(message: context.l10n.tithesEmpty);
           } else {
             return const LwpError();
           }
@@ -100,7 +99,7 @@ class _TithesOfferingsScreenState extends State<TithesOfferingsScreen> {
                       horizontal: 24.0, vertical: 32.0),
                   alignment: Alignment.bottomLeft,
                   child: Text(
-                    'Gee met \'n Blye Hart',
+                    context.l10n.tithesHeroTitle,
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: theme.textTheme.bodyLarge?.color,
@@ -111,12 +110,12 @@ class _TithesOfferingsScreenState extends State<TithesOfferingsScreen> {
             ),
           ),
 
-          const Padding(
+          Padding(
             padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
             child: Text(
-              'Elkeen moet gee soos hy hom in sy hart voorgeneem het, nie met teensin of uit dwang nie, want God het \'n blymoedige gewer lief.\n— 2 Korintiërs 9:7',
+              context.l10n.tithesVerse,
               textAlign: TextAlign.center,
-              style: TextStyle(fontStyle: FontStyle.italic),
+              style: const TextStyle(fontStyle: FontStyle.italic),
             ),
           ),
 
@@ -146,7 +145,7 @@ class _TithesOfferingsScreenState extends State<TithesOfferingsScreen> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            'Bankbesonderhede (EFT)',
+                            context.l10n.tithesBankDetails,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: theme.textTheme.titleLarge?.copyWith(
@@ -157,31 +156,34 @@ class _TithesOfferingsScreenState extends State<TithesOfferingsScreen> {
                       ],
                     ),
                     const Divider(height: 32),
-                    _buildDetailRow(context, 'Bank', settings.bank,
+                    _buildDetailRow(
+                        context, context.l10n.tithesBankLabel, settings.bank,
                         isCopyable: false),
                     _buildDetailRow(
-                        context, 'Rekeningnaam', settings.accountName,
+                        context,
+                        context.l10n.tithesAccountNameLabel,
+                        settings.accountName,
                         isCopyable: false),
                     _buildDetailRow(
                       context,
-                      'Rekeningnommer',
+                      context.l10n.tithesAccountNumberLabel,
                       settings.accountNumber,
                       isCopyable: true,
-                      copyLabel: 'Rekeningnommer',
+                      copyLabel: context.l10n.tithesAccountNumberLabel,
                     ),
                     _buildDetailRow(
                       context,
-                      'Takkode',
+                      context.l10n.tithesBranchCodeLabel,
                       settings.branchCode,
                       isCopyable: true,
-                      copyLabel: 'Takkode',
+                      copyLabel: context.l10n.tithesBranchCodeLabel,
                     ),
                     _buildDetailRow(
                       context,
-                      'Verwysing',
+                      context.l10n.tithesReferenceLabel,
                       settings.reference,
                       isCopyable: true,
-                      copyLabel: 'Verwysing',
+                      copyLabel: context.l10n.tithesReferenceLabel,
                     ),
                   ],
                 ),
@@ -213,7 +215,7 @@ class _TithesOfferingsScreenState extends State<TithesOfferingsScreen> {
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              'Skandeer met SnapScan',
+                              context.l10n.tithesScanWithSnapScan,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: theme.textTheme.titleLarge?.copyWith(
@@ -245,7 +247,7 @@ class _TithesOfferingsScreenState extends State<TithesOfferingsScreen> {
                       ),
                       const SizedBox(height: 24),
                       Text(
-                        'Maak jou SnapScan of Zapper toep oop en skandeer hierdie kode om vinnig en veilig te gee.',
+                        context.l10n.tithesScanDescription,
                         textAlign: TextAlign.center,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.hintColor,
@@ -311,7 +313,7 @@ class _TithesOfferingsScreenState extends State<TithesOfferingsScreen> {
                     constraints: const BoxConstraints(),
                     splashRadius: 20,
                     color: theme.primaryColor,
-                    tooltip: 'Kopieer $label',
+                    tooltip: context.l10n.tithesCopyTooltip(label),
                   )
                 : null,
           ),

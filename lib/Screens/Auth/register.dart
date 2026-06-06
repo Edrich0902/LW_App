@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lw_app/Blocs/Auth/auth_bloc.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Screens/Container/container.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
@@ -88,7 +89,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   void _submitRegistration() {
     if (_imageFile == null) {
-      LwpSnackbar.showWarning(context, "Kies asseblief 'n profiel foto");
+      LwpSnackbar.showWarning(context, context.l10n.authProfilePhotoRequired);
       return;
     }
 
@@ -112,14 +113,14 @@ class _RegisterPageState extends State<RegisterPage> {
         if (!(ModalRoute.of(context)?.isCurrent ?? false)) return;
 
         if (state is AuthErrorState) {
-          LwpSnackbar.showError(
-              context, "Registrasie het misluk. Probeer asseblief weer.");
+          LwpSnackbar.showError(context, context.l10n.authRegistrationFailed);
         }
 
         if (state is AuthSuccessState) {
           sb.Session? session = sb.Supabase.instance.client.auth.currentSession;
           if (session != null) {
-            LwpSnackbar.showSuccess(context, "Registrasie suksesvol");
+            LwpSnackbar.showSuccess(
+                context, context.l10n.authRegistrationSuccess);
 
             Navigator.pushAndRemoveUntil(
               context,
@@ -219,7 +220,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                   color: theme.primaryColor,
                                   size: 28,
                                 ),
-                                tooltip: "Terug na Intekening",
+                                tooltip: context.l10n.authBackToSignInTooltip,
                               )
                             else
                               IconButton(
@@ -229,7 +230,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                   color: theme.primaryColor,
                                   size: 28,
                                 ),
-                                tooltip: "Vorige Stap",
+                                tooltip: context.l10n.authPreviousStepTooltip,
                               ),
                           ],
                         ),
@@ -250,8 +251,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                       ),
                                     )
                                   : Text(_currentStep < 2
-                                      ? "Volgende"
-                                      : "Registreer"),
+                                      ? context.l10n.commonNext
+                                      : context.l10n.authRegister),
                             );
                           },
                         ),
@@ -259,8 +260,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           const SizedBox(height: 16),
                           TextButton(
                             onPressed: () => Navigator.pop(context),
-                            child: const Text(
-                                "Het jy reeds 'n rekening? Teken hier in"),
+                            child: Text(context.l10n.authExistingAccountSignIn),
                           ),
                         ],
                       ],
@@ -278,11 +278,11 @@ class _RegisterPageState extends State<RegisterPage> {
   String _getStepTitle() {
     switch (_currentStep) {
       case 0:
-        return "Skep Rekening";
+        return context.l10n.authStepOneTitle;
       case 1:
-        return "Jou Besonderhede";
+        return context.l10n.authStepTwoTitle;
       case 2:
-        return "Profiel Foto";
+        return context.l10n.authStepThreeTitle;
       default:
         return "";
     }
@@ -291,11 +291,11 @@ class _RegisterPageState extends State<RegisterPage> {
   String _getStepSubtitle() {
     switch (_currentStep) {
       case 0:
-        return "Stap 1 van 3: Toegang";
+        return context.l10n.authStepOneSubtitle;
       case 1:
-        return "Stap 2 van 3: Persoonlik";
+        return context.l10n.authStepTwoSubtitle;
       case 2:
-        return "Stap 3 van 3: Identiteit";
+        return context.l10n.authStepThreeSubtitle;
       default:
         return "";
     }
@@ -322,12 +322,12 @@ class _RegisterPageState extends State<RegisterPage> {
           keyboardType: TextInputType.emailAddress,
           validator: (email) {
             if (email == null || email.isEmpty) {
-              return 'E-pos is verpligtend';
+              return context.l10n.validationEmailRequired;
             }
             return null;
           },
-          decoration: const InputDecoration(
-            labelText: "E-pos",
+          decoration: InputDecoration(
+            labelText: context.l10n.authEmail,
             prefixIcon: Icon(Icons.email_outlined),
           ),
         ),
@@ -336,16 +336,16 @@ class _RegisterPageState extends State<RegisterPage> {
           controller: _passwordController,
           validator: (password) {
             if (password == null || password.isEmpty) {
-              return 'Wagwoord is verpligtend';
+              return context.l10n.validationPasswordRequired;
             }
             if (password.length < 6) {
-              return 'Wagwoord moet ten minste 6 karakters wees';
+              return context.l10n.validationPasswordMinLength;
             }
             return null;
           },
           obscureText: !_showPassword,
           decoration: InputDecoration(
-            labelText: "Wagwoord",
+            labelText: context.l10n.authPassword,
             prefixIcon: const Icon(Icons.lock_outline),
             suffixIcon: IconButton(
               onPressed: () => setShowPassword(),
@@ -360,16 +360,16 @@ class _RegisterPageState extends State<RegisterPage> {
           controller: _confirmPasswordController,
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return 'Bevestig asseblief jou wagwoord';
+              return context.l10n.validationConfirmPasswordRequired;
             }
             if (value != _passwordController.text) {
-              return 'Wagwoorde stem nie ooreen nie';
+              return context.l10n.validationPasswordsMismatch;
             }
             return null;
           },
           obscureText: !_showPassword,
-          decoration: const InputDecoration(
-            labelText: "Bevestig Wagwoord",
+          decoration: InputDecoration(
+            labelText: context.l10n.authConfirmPassword,
             prefixIcon: Icon(Icons.lock_reset_outlined),
           ),
         ),
@@ -385,12 +385,12 @@ class _RegisterPageState extends State<RegisterPage> {
           textCapitalization: TextCapitalization.words,
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return 'Voornaam is verpligtend';
+              return context.l10n.validationFirstNameRequired;
             }
             return null;
           },
-          decoration: const InputDecoration(
-            labelText: "Voornaam",
+          decoration: InputDecoration(
+            labelText: context.l10n.authFirstName,
             prefixIcon: Icon(Icons.person_outline),
           ),
         ),
@@ -400,12 +400,12 @@ class _RegisterPageState extends State<RegisterPage> {
           textCapitalization: TextCapitalization.words,
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return 'Van is verpligtend';
+              return context.l10n.validationLastNameRequired;
             }
             return null;
           },
-          decoration: const InputDecoration(
-            labelText: "Van",
+          decoration: InputDecoration(
+            labelText: context.l10n.authLastName,
             prefixIcon: Icon(Icons.badge_outlined),
           ),
         ),
@@ -452,7 +452,7 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
         const SizedBox(height: 24),
         Text(
-          "Kies 'n foto sodat ons jou kan herken",
+          context.l10n.authChooseProfilePhotoDescription,
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodyMedium,
         ),
@@ -472,7 +472,7 @@ class _RegisterPageState extends State<RegisterPage> {
             children: [
               ListTile(
                 leading: const Icon(Icons.photo_library),
-                title: const Text('Galery'),
+                title: Text(context.l10n.authGallery),
                 onTap: () {
                   Navigator.pop(context);
                   _pickImage(ImageSource.gallery);
@@ -480,7 +480,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               ListTile(
                 leading: const Icon(Icons.camera_alt),
-                title: const Text('Kamera'),
+                title: Text(context.l10n.authCamera),
                 onTap: () {
                   Navigator.pop(context);
                   _pickImage(ImageSource.camera);

@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:lw_app/Blocs/NoteEdit/note_edit_bloc.dart';
 import 'package:lw_app/Blocs/Notes/notes_bloc.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/Note/note.dart';
 import 'package:lw_app/Utils/quill_helper.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
@@ -90,14 +91,14 @@ class _NotesEditPageState extends State<NotesEditPage> {
   void _performSave() {
     if (_currentNote == null || !mounted) return;
     context.read<NoteEditBloc>().add(UpdateNote(
-      note: Note(
-        id: _currentNote!.id,
-        userId: _currentNote!.userId,
-        title: _titleController.text,
-        content: QuillHelper.toJson(_quillController!),
-        createdAt: _currentNote!.createdAt,
-      ),
-    ));
+          note: Note(
+            id: _currentNote!.id,
+            userId: _currentNote!.userId,
+            title: _titleController.text,
+            content: QuillHelper.toJson(_quillController!),
+            createdAt: _currentNote!.createdAt,
+          ),
+        ));
   }
 
   void _handleBack() {
@@ -134,8 +135,9 @@ class _NotesEditPageState extends State<NotesEditPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final iconColor = (theme.appBarTheme.foregroundColor ?? theme.colorScheme.onSurface)
-        .withValues(alpha: 0.6);
+    final iconColor =
+        (theme.appBarTheme.foregroundColor ?? theme.colorScheme.onSurface)
+            .withValues(alpha: 0.6);
 
     return PopScope(
       canPop: false,
@@ -156,12 +158,16 @@ class _NotesEditPageState extends State<NotesEditPage> {
             });
           }
           if (state is NoteError) {
-            LwpSnackbar.showError(context, 'Iets het fout gegaan');
+            LwpSnackbar.showError(context, context.l10n.notesGenericError);
           }
         },
         child: Scaffold(
           appBar: AppBar(
-            title: Text(_isEdit ? 'Wysig Nota' : 'Skep Nota'),
+            title: Text(
+              _isEdit
+                  ? context.l10n.notesEditTitle
+                  : context.l10n.notesCreateTitle,
+            ),
             actions: [
               if (_isInitialized)
                 Padding(
@@ -208,7 +214,7 @@ class _NotesEditPageState extends State<NotesEditPage> {
             controller: _titleController,
             style: theme.textTheme.titleLarge,
             decoration: InputDecoration(
-              hintText: 'Titel',
+              hintText: context.l10n.notesTitleHint,
               hintStyle: theme.textTheme.titleLarge?.copyWith(
                 color: theme.hintColor,
                 fontWeight: FontWeight.normal,
@@ -265,11 +271,11 @@ class _NotesEditPageState extends State<NotesEditPage> {
             controller: _quillController!,
             focusNode: _editorFocusNode,
             scrollController: _editorScrollController,
-            config: const QuillEditorConfig(
+            config: QuillEditorConfig(
               expands: true,
               scrollable: true,
-              placeholder: 'Skryf jou nota hier...',
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              placeholder: context.l10n.notesBodyPlaceholder,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               autoFocus: false,
             ),
           ),

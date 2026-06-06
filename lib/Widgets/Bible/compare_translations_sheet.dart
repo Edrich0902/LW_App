@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Blocs/CompareTranslations/compare_translations_bloc.dart';
 import 'package:lw_app/Blocs/CompareTranslations/compare_translations_event.dart';
 import 'package:lw_app/Blocs/CompareTranslations/compare_translations_state.dart';
@@ -67,7 +68,7 @@ class _CompareTranslationsSheetState extends State<CompareTranslationsSheet> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Vergelyk vertalings',
+                      context.l10n.bibleCompareTranslationsTitle,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: theme.primaryColor,
@@ -106,7 +107,7 @@ class _CompareTranslationsSheetState extends State<CompareTranslationsSheet> {
                   controller: _filterController,
                   onChanged: _onFilterChanged,
                   decoration: InputDecoration(
-                    hintText: 'Soek vertaling...',
+                    hintText: context.l10n.bibleSearchTranslationHint,
                     prefixIcon: const Icon(Icons.search, size: 20),
                     contentPadding: const EdgeInsets.symmetric(
                         vertical: 10, horizontal: 16),
@@ -140,7 +141,7 @@ class _CompareTranslationsSheetState extends State<CompareTranslationsSheet> {
                     if (versions.isEmpty) {
                       return Center(
                         child: Text(
-                          'Geen vertalings gevind nie',
+                          context.l10n.bibleNoTranslationsFound,
                           style: TextStyle(color: theme.hintColor),
                         ),
                       );
@@ -209,14 +210,14 @@ class _TranslationCard extends StatelessWidget {
       return Column(
         children: [
           Text(
-            'Kon nie laai nie',
+            context.l10n.bibleCompareLoadFailed,
             style: TextStyle(color: theme.hintColor, fontSize: 13),
           ),
           const SizedBox(height: 8),
           TextButton.icon(
             onPressed: onRetry,
             icon: const Icon(Icons.refresh, size: 16),
-            label: const Text('Probeer weer'),
+            label: Text(context.l10n.commonRetry),
             style: TextButton.styleFrom(
               foregroundColor: theme.primaryColor,
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),

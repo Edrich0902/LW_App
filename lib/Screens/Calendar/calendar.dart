@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:lw_app/Blocs/Calendar/calendar_bloc.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/Event/event_type.dart';
 import 'package:lw_app/Models/Event/event.dart';
 import 'package:lw_app/Widgets/LwpEvent/lwp_event.dart';
@@ -21,7 +22,8 @@ class CalendarPage extends StatefulWidget {
 class _CalendarPageState extends State<CalendarPage> {
   @override
   void initState() {
-    context.read<CalendarBloc>().add(LoadCalendar(eventType: EventType.WEEKLY, eventCategory: EventCategory.GENERAL));
+    context.read<CalendarBloc>().add(LoadCalendar(
+        eventType: EventType.WEEKLY, eventCategory: EventCategory.GENERAL));
     super.initState();
   }
 
@@ -36,15 +38,18 @@ class _CalendarPageState extends State<CalendarPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Kalender'),
-          actions: const <Widget>[LwpAnnouncementButton(), ProfileActionButton()],
+          title: Text(context.l10n.navCalendar),
+          actions: const <Widget>[
+            LwpAnnouncementButton(),
+            ProfileActionButton()
+          ],
           centerTitle: true,
         ),
         body: SafeArea(
           child: BlocBuilder<CalendarBloc, CalendarState>(
             builder: (context, state) {
               if (state is CalendarLoading) {
-                return const LwpLoader(message: "Laai Kalender");
+                return LwpLoader(message: context.l10n.calendarLoading);
               } else if (state is CalendarSuccess) {
                 if (state.eventsMap.isNotEmpty) {
                   // Flatten the map into a list of items for the timeline
@@ -55,9 +60,12 @@ class _CalendarPageState extends State<CalendarPage> {
                   });
 
                   return RefreshIndicator(
-                    onRefresh: () async => calendarBloc.add(LoadCalendar(eventType: EventType.WEEKLY, eventCategory: EventCategory.GENERAL)),
+                    onRefresh: () async => calendarBloc.add(LoadCalendar(
+                        eventType: EventType.WEEKLY,
+                        eventCategory: EventCategory.GENERAL)),
                     child: ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 24.0),
                       itemCount: timelineItems.length,
                       itemBuilder: (BuildContext context, int index) {
                         final item = timelineItems[index];
@@ -76,11 +84,12 @@ class _CalendarPageState extends State<CalendarPage> {
                                 visible: !isLast,
                                 child: Container(
                                   width: 2,
-                                  color: theme.primaryColor.withValues(alpha: 0.2),
+                                  color:
+                                      theme.primaryColor.withValues(alpha: 0.2),
                                 ),
                               ),
                             ),
-                            
+
                             // 2. Content with padding to make room for the line
                             Padding(
                               padding: const EdgeInsets.only(left: 28.0),
@@ -90,7 +99,8 @@ class _CalendarPageState extends State<CalendarPage> {
                                   if (isDayHeader) ...[
                                     Text(
                                       item.toUpperCase(),
-                                      style: theme.textTheme.titleSmall?.copyWith(
+                                      style:
+                                          theme.textTheme.titleSmall?.copyWith(
                                         color: theme.primaryColor,
                                         fontWeight: FontWeight.bold,
                                         letterSpacing: 1.2,
@@ -117,7 +127,8 @@ class _CalendarPageState extends State<CalendarPage> {
                                     color: theme.primaryColor,
                                     shape: BoxShape.circle,
                                     border: Border.all(
-                                      color: theme.primaryColor.withValues(alpha: 0.2),
+                                      color: theme.primaryColor
+                                          .withValues(alpha: 0.2),
                                       width: 4,
                                     ),
                                   ),
@@ -129,7 +140,7 @@ class _CalendarPageState extends State<CalendarPage> {
                     ),
                   );
                 } else {
-                  return const LwpEmpty(message: "Geen Kalender Items");
+                  return LwpEmpty(message: context.l10n.calendarEmpty);
                 }
               } else {
                 return const LwpError();

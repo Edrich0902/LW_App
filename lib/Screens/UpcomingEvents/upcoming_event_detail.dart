@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cloudinary_flutter/image/cld_image.dart';
 import 'package:add_2_calendar_new/add_2_calendar_new.dart' as calendar;
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Blocs/EventRsvp/event_rsvp_bloc.dart';
 import 'package:lw_app/Blocs/Events/events_bloc.dart';
 import 'package:lw_app/Models/Event/event.dart';
@@ -128,19 +129,19 @@ class UpcomingEventDetailPage extends StatelessWidget {
                         _buildInfoTile(
                           context,
                           Icons.calendar_today_rounded,
-                          "Datum",
+                          context.l10n.upcomingEventDate,
                           "${event.day} ${DateFormatter.formatDate(event.startDate)}",
                         ),
                         _buildInfoTile(
                           context,
                           Icons.access_time_rounded,
-                          "Tyd",
+                          context.l10n.courseTime,
                           DateFormatter.formatTime(event.time),
                         ),
 
                         const SizedBox(height: 32),
                         Text(
-                          "Beskrywing",
+                          context.l10n.groupDescriptionTitle,
                           style: theme.textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -166,7 +167,7 @@ class UpcomingEventDetailPage extends StatelessWidget {
                           child: ElevatedButton.icon(
                             onPressed: () => _addToCalendar(),
                             icon: const Icon(Icons.event_available_rounded),
-                            label: const Text("Voeg by Kalender"),
+                            label: Text(context.l10n.commonAddToCalendar),
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 16),
                             ),
@@ -219,7 +220,7 @@ class UpcomingEventDetailPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Gaan jy?",
+              context.l10n.upcomingEventAreYouGoing,
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -253,7 +254,7 @@ class UpcomingEventDetailPage extends StatelessWidget {
                   }
 
                   final label = isDisabled
-                      ? 'Vol Bespreek'
+                      ? context.l10n.upcomingEventSoldOut
                       : '${status.afrikaansLabel} $count';
 
                   return ActionChip(
@@ -286,7 +287,10 @@ class UpcomingEventDetailPage extends StatelessWidget {
             if (rsvpState.capacity != null) ...[
               const SizedBox(height: 8),
               Text(
-                '${rsvpState.attendingCount} / ${rsvpState.capacity} plekke bespreek',
+                context.l10n.upcomingEventCapacity(
+                  rsvpState.attendingCount,
+                  rsvpState.capacity!,
+                ),
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.hintColor,
                 ),

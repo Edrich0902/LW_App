@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:lw_app/Widgets/WhatsappContactFAB/whatsapp_contact_fab.dart';
 import 'package:lw_app/Screens/ConnectGroups/connect_groups.dart';
@@ -19,7 +20,7 @@ class _ConnectPageState extends State<ConnectPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Skakel In'),
+        title: Text(context.l10n.navConnect),
         actions: const <Widget>[LwpAnnouncementButton(), ProfileActionButton()],
       ),
       floatingActionButton: const WhatsappContactFAB(),
@@ -39,7 +40,7 @@ class _ConnectPageState extends State<ConnectPage> {
               childAspectRatio: 1.1,
               children: [
                 DashboardGridCard(
-                  title: "Konneksie Groepe",
+                  title: context.l10n.connectGroupsTitle,
                   icon: Icons.people,
                   onTap: () {
                     Navigator.push(
@@ -50,7 +51,7 @@ class _ConnectPageState extends State<ConnectPage> {
                   },
                 ),
                 DashboardGridCard(
-                  title: "Kom Dien",
+                  title: context.l10n.serveGroupsTitle,
                   icon: Icons.volunteer_activism,
                   onTap: () {
                     Navigator.push(

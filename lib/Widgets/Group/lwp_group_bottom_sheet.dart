@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/Group/group.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/maps_helper.dart';
@@ -28,7 +29,7 @@ class LwpGroupBottomSheet extends StatelessWidget {
           ),
           const SizedBox(height: LwpSpacing.md),
           Text(
-            "Beskrywing",
+            context.l10n.groupDescriptionTitle,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
             ),
@@ -48,7 +49,7 @@ class LwpGroupBottomSheet extends StatelessWidget {
               child: ElevatedButton.icon(
                 onPressed: () => MapsHelper.openLocation(group.location ?? ''),
                 icon: const Icon(Icons.location_on_outlined),
-                label: const Text('Maak Oop In Maps'),
+                label: Text(context.l10n.groupOpenMaps),
               ),
             ),
             const SizedBox(height: LwpSpacing.sm),
@@ -58,7 +59,7 @@ class LwpGroupBottomSheet extends StatelessWidget {
             child: ElevatedButton.icon(
               onPressed: () => _launchWhatsApp(context),
               icon: const Icon(Icons.chat_bubble_outline),
-              label: const Text('Sluit aan op WhatsApp'),
+              label: Text(context.l10n.groupJoinWhatsapp),
             ),
           ),
           const SizedBox(height: LwpSpacing.lg),
@@ -87,13 +88,15 @@ class LwpGroupBottomSheet extends StatelessWidget {
         await launchUrl(uri, mode: LaunchMode.externalApplication);
       } else {
         if (context.mounted) {
-          LwpSnackbar.showError(context,
-              'Kon nie WhatsApp oopmaak nie. Maak seker die app is geïnstalleer.');
+          LwpSnackbar.showError(
+            context,
+            context.l10n.groupOpenWhatsappFailed,
+          );
         }
       }
     } catch (e) {
       if (context.mounted) {
-        LwpSnackbar.showError(context, 'Fout met die oopmaak van WhatsApp.');
+        LwpSnackbar.showError(context, context.l10n.groupOpenWhatsappError);
       }
     }
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/Event/event.dart';
 import 'package:lw_app/Blocs/Courses/courses_bloc.dart';
 import 'package:lw_app/Models/Event/event_category.dart';
@@ -39,7 +40,7 @@ class _CoursesPageState extends State<CoursesPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Kursusse"),
+          title: Text(context.l10n.dashboardCourses),
           actions: const <Widget>[
             LwpAnnouncementButton(),
             ProfileActionButton()
@@ -49,7 +50,7 @@ class _CoursesPageState extends State<CoursesPage> {
           child: BlocBuilder<CoursesBloc, CoursesState>(
             builder: (context, state) {
               if (state is CoursesLoading) {
-                return const LwpLoader(message: "Laai Kursusse");
+                return LwpLoader(message: context.l10n.coursesLoading);
               } else if (state is CoursesSuccess) {
                 if (state.courses.isNotEmpty) {
                   return RefreshIndicator(
@@ -76,7 +77,7 @@ class _CoursesPageState extends State<CoursesPage> {
                     ),
                   );
                 } else {
-                  return const LwpEmpty(message: "Geen Kursusse");
+                  return LwpEmpty(message: context.l10n.coursesEmpty);
                 }
               } else {
                 return const LwpError();

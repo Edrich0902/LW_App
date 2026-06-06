@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Blocs/Events/events_bloc.dart';
 import 'package:lw_app/Models/Event/event.dart';
 import 'package:lw_app/Models/Event/event_type.dart';
@@ -39,7 +40,7 @@ class _FirstTimeVisitorScreenState extends State<FirstTimeVisitorScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Welkom!'),
+        title: Text(context.l10n.visitorWelcomeTitle),
         actions: const [LwpAnnouncementButton(), ProfileActionButton()],
       ),
       body: SingleChildScrollView(
@@ -54,7 +55,7 @@ class _FirstTimeVisitorScreenState extends State<FirstTimeVisitorScreen> {
             _buildQuickLinksGrid(context),
             const SizedBox(height: 32),
             Text(
-              'Opkomende Gebeure',
+              context.l10n.visitorUpcomingEventsTitle,
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -85,7 +86,7 @@ class _FirstTimeVisitorScreenState extends State<FirstTimeVisitorScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            'Welkom by Lewende Woord Paarl!',
+            context.l10n.visitorWelcomeHeadline,
             style: theme.textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.bold,
               color: theme.primaryColor,
@@ -93,7 +94,7 @@ class _FirstTimeVisitorScreenState extends State<FirstTimeVisitorScreen> {
           ),
           const SizedBox(height: 12),
           Text(
-            'Ons is opgewonde om jou hier te hê. Hier is \'n paar vinnige skakels en inligting om jou te help inskakel.',
+            context.l10n.visitorWelcomeBody,
             style: theme.textTheme.bodyLarge,
           ),
         ],
@@ -113,7 +114,7 @@ class _FirstTimeVisitorScreenState extends State<FirstTimeVisitorScreen> {
                 Icon(Icons.schedule, color: theme.primaryColor),
                 const SizedBox(width: 12),
                 Text(
-                  'Sondag Dienste',
+                  context.l10n.visitorSundayServices,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -121,9 +122,17 @@ class _FirstTimeVisitorScreenState extends State<FirstTimeVisitorScreen> {
               ],
             ),
             const Divider(height: 32),
-            _buildServiceTimeRow('Oggend Diens', '09:30', theme),
+            _buildServiceTimeRow(
+              context.l10n.visitorMorningService,
+              '09:30',
+              theme,
+            ),
             const SizedBox(height: 12),
-            _buildServiceTimeRow('Aand Diens', '18:00', theme),
+            _buildServiceTimeRow(
+              context.l10n.visitorEveningService,
+              '18:00',
+              theme,
+            ),
           ],
         ),
       ),
@@ -156,12 +165,12 @@ class _FirstTimeVisitorScreenState extends State<FirstTimeVisitorScreen> {
       childAspectRatio: 0.9,
       children: [
         DashboardGridCard(
-          title: "Vind Ons",
+          title: context.l10n.visitorFindUs,
           icon: Icons.location_on,
           onTap: () => MapsHelper.openLocation("6 Mill Street Paarl"),
         ),
         DashboardGridCard(
-          title: "Kontak Ons",
+          title: context.l10n.visitorContactUs,
           icon: Icons.chat_bubble,
           onTap: () {
             final Uri whatsappUri = Uri.parse("https://wa.me/+27727238406");
@@ -169,7 +178,7 @@ class _FirstTimeVisitorScreenState extends State<FirstTimeVisitorScreen> {
           },
         ),
         DashboardGridCard(
-          title: "Meer Oor Ons",
+          title: context.l10n.visitorMoreAboutUs,
           icon: Icons.info,
           onTap: () {
             Navigator.push(
@@ -186,11 +195,11 @@ class _FirstTimeVisitorScreenState extends State<FirstTimeVisitorScreen> {
     return BlocBuilder<EventsBloc, EventsState>(
       builder: (context, state) {
         if (state is EventsLoading) {
-          return const LwpLoader(message: "Laai Gebeure...");
+          return LwpLoader(message: context.l10n.upcomingEventsLoading);
         } else if (state is EventsSuccess) {
           final upcoming = state.events.take(3).toList();
           if (upcoming.isEmpty) {
-            return const Text('Geen opkomende gebeure tans nie.');
+            return Text(context.l10n.visitorNoUpcomingEvents);
           }
           return ListView.separated(
             shrinkWrap: true,
@@ -202,7 +211,7 @@ class _FirstTimeVisitorScreenState extends State<FirstTimeVisitorScreen> {
             },
           );
         } else {
-          return const LwpError(message: "Kon nie gebeure laai nie.");
+          return LwpError(message: context.l10n.visitorUpcomingEventsError);
         }
       },
     );

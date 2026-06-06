@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cloudinary_flutter/image/cld_image.dart';
 import 'package:lw_app/Blocs/Events/events_bloc.dart';
 import 'package:lw_app/Blocs/EventRsvp/event_rsvp_bloc.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/Event/event.dart';
 import 'package:lw_app/Models/Event/event_type.dart';
 import 'package:lw_app/Screens/UpcomingEvents/upcoming_event_detail.dart';
@@ -41,7 +42,7 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
       listener: (context, state) {},
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Opkomende Gebeure'),
+          title: Text(context.l10n.dashboardUpcomingEvents),
           actions: const <Widget>[
             LwpAnnouncementButton(),
             ProfileActionButton()
@@ -51,7 +52,7 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
           child: BlocBuilder<EventsBloc, EventsState>(
             builder: (context, state) {
               if (state is EventsLoading) {
-                return const LwpLoader(message: "Laai Opkomende Gebeure");
+                return LwpLoader(message: context.l10n.upcomingEventsLoading);
               } else if (state is EventsSuccess) {
                 if (state.events.isNotEmpty) {
                   return RefreshIndicator(
@@ -83,7 +84,7 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
                     ),
                   );
                 } else {
-                  return const LwpEmpty(message: "Geen Opkomende Gebeure");
+                  return LwpEmpty(message: context.l10n.upcomingEventsEmpty);
                 }
               } else {
                 return const LwpError();
@@ -171,7 +172,9 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
                             size: 14.0, color: theme.hintColor),
                         const SizedBox(width: 4.0),
                         Text(
-                          '${event.attendingCount} kom',
+                          context.l10n.upcomingEventsAttendingCount(
+                            event.attendingCount,
+                          ),
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.hintColor,
                           ),
@@ -187,7 +190,9 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
                               size: 14.0, color: theme.hintColor),
                           const SizedBox(width: 4.0),
                           Text(
-                            '${event.interestedCount} stel belang',
+                            context.l10n.upcomingEventsInterestedCount(
+                              event.interestedCount,
+                            ),
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.hintColor,
                             ),

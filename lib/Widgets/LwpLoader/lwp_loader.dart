@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 
 class LwpLoader extends StatelessWidget {
@@ -22,7 +23,9 @@ class LwpLoader extends StatelessWidget {
             const CircularProgressIndicator(),
             const SizedBox(height: LwpSpacing.md),
             Text(
-              (message == null || message!.isEmpty) ? "Laai" : message!,
+              (message == null || message!.isEmpty)
+                  ? context.l10n.commonLoad
+                  : message!,
               style: theme.textTheme.titleLarge,
             ),
           ],

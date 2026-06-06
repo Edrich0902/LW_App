@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Themes/custom_theme.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 
@@ -68,31 +69,36 @@ class _ContainerPageState extends State<ContainerPage> {
           child: GNav(
             selectedIndex: _selectedIndex,
             onTabChange: (index) => itemChanged(index),
-            tabs: const [
+            tabs: [
               GButton(
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                 icon: Icons.home,
-                text: 'Tuis',
+                text: context.l10n.navHome,
               ),
               GButton(
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                 icon: Icons.calendar_month,
-                text: 'Kalender',
+                text: context.l10n.navCalendar,
               ),
               GButton(
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                 icon: Icons.menu_book,
-                text: 'Bybel',
+                text: context.l10n.navBible,
               ),
               GButton(
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                 icon: Icons.info_outline,
-                text: 'Meer Oor Ons',
+                text: context.l10n.navMoreInfo,
               ),
               GButton(
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                 icon: Icons.group,
-                text: 'Skakel In',
+                text: context.l10n.navConnect,
               ),
             ],
             gap: 4,

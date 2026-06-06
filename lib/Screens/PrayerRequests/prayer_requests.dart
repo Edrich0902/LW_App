@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/PrayerRequests/prayer_requests_bloc.dart';
+import 'package:lw_app/Extensions/app_localizations_x.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/PrayerRequest/prayer_request.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
@@ -64,21 +66,21 @@ class _PrayerRequestsViewState extends State<_PrayerRequestsView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Stuur \'n gebedsversoek',
+                      context.l10n.prayerRequestsCreateTitle,
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<PrayerCategory>(
                       initialValue: selectedCategory,
-                      decoration: const InputDecoration(
-                        labelText: 'Kategorie',
+                      decoration: InputDecoration(
+                        labelText: context.l10n.feedbackCategoryLabel,
                         border: OutlineInputBorder(),
                       ),
                       items: PrayerCategory.values
                           .map(
                             (category) => DropdownMenuItem(
                               value: category,
-                              child: Text(category.afrikaansLabel),
+                              child: Text(category.label(context.l10n)),
                             ),
                           )
                           .toList(),
@@ -92,14 +94,14 @@ class _PrayerRequestsViewState extends State<_PrayerRequestsView> {
                       controller: _bodyController,
                       minLines: 4,
                       maxLines: 6,
-                      decoration: const InputDecoration(
-                        labelText: 'Gebedsversoek',
+                      decoration: InputDecoration(
+                        labelText: context.l10n.prayerRequestsBodyLabel,
                         border: OutlineInputBorder(),
                         alignLabelWithHint: true,
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return 'Voer asseblief \'n gebedsversoek in.';
+                          return context.l10n.prayerRequestsBodyRequired;
                         }
                         return null;
                       },
@@ -107,10 +109,9 @@ class _PrayerRequestsViewState extends State<_PrayerRequestsView> {
                     const SizedBox(height: 12),
                     SwitchListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: const Text('Plaas as anoniem'),
-                      subtitle: const Text(
-                        'Wanneer hierdie versoek goedgekeur word, sal dit as "Anoniem" wys.',
-                      ),
+                      title: Text(context.l10n.prayerRequestsAnonymousTitle),
+                      subtitle:
+                          Text(context.l10n.prayerRequestsAnonymousSubtitle),
                       value: isAnonymous,
                       onChanged: (value) {
                         setSheetState(() => isAnonymous = value);
@@ -118,10 +119,9 @@ class _PrayerRequestsViewState extends State<_PrayerRequestsView> {
                     ),
                     SwitchListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: const Text('Hou privaat'),
-                      subtitle: const Text(
-                        'Slegs kerkleierskap sal hierdie versoek kan sien.',
-                      ),
+                      title: Text(context.l10n.prayerRequestsPrivateTitle),
+                      subtitle:
+                          Text(context.l10n.prayerRequestsPrivateSubtitle),
                       value: isPrivate,
                       onChanged: (value) {
                         setSheetState(() => isPrivate = value);
@@ -146,7 +146,7 @@ class _PrayerRequestsViewState extends State<_PrayerRequestsView> {
                           _bodyController.clear();
                           Navigator.pop(context);
                         },
-                        child: const Text('Stuur versoek'),
+                        child: Text(context.l10n.prayerRequestsSubmitButton),
                       ),
                     ),
                   ],
@@ -171,7 +171,7 @@ class _PrayerRequestsViewState extends State<_PrayerRequestsView> {
           _bodyController.clear();
           LwpSnackbar.showSuccess(
             context,
-            'Gebedsversoek gestuur. Dit wag nou vir goedkeuring.',
+            context.l10n.prayerRequestsSubmitSuccess,
           );
         } else if (state is PrayerRequestsError) {
           LwpSnackbar.showError(context, state.error);
@@ -179,12 +179,12 @@ class _PrayerRequestsViewState extends State<_PrayerRequestsView> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Gebedsversoeke'),
+          title: Text(context.l10n.prayerRequestsTitle),
         ),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: _showCreatePrayerSheet,
           icon: const Icon(Icons.add),
-          label: const Text('Nuwe versoek'),
+          label: Text(context.l10n.prayerRequestsNew),
           shape: const StadiumBorder(),
         ),
         body: BlocBuilder<PrayerRequestsBloc, PrayerRequestsState>(
@@ -192,7 +192,7 @@ class _PrayerRequestsViewState extends State<_PrayerRequestsView> {
             if (state is PrayerRequestsLoading ||
                 state is PrayerRequestSubmitting ||
                 state is PrayerRequestsInitial) {
-              return const LwpLoader(message: 'Laai gebedsversoeke...');
+              return LwpLoader(message: context.l10n.prayerRequestsLoading);
             }
 
             if (state is PrayerRequestsError) {
@@ -208,11 +208,9 @@ class _PrayerRequestsViewState extends State<_PrayerRequestsView> {
                   onRefresh: _refresh,
                   child: ListView(
                     physics: const AlwaysScrollableScrollPhysics(),
-                    children: const [
-                      SizedBox(height: 80),
-                      LwpEmpty(
-                        message: 'Daar is nog geen oop gebedsversoeke nie.',
-                      ),
+                    children: [
+                      const SizedBox(height: 80),
+                      LwpEmpty(message: context.l10n.prayerRequestsEmpty),
                     ],
                   ),
                 );

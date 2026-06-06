@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/User/user_bloc.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Themes/custom_theme.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 
 class DashboardGreeting extends StatelessWidget {
   const DashboardGreeting({super.key});
 
-  static String _greetingPhrase() {
+  static String _greetingPhrase(BuildContext context) {
     final hour = DateTime.now().hour;
-    if (hour >= 5 && hour < 12) return 'Goeie More';
-    if (hour >= 12 && hour < 18) return 'Goeie Middag';
-    if (hour >= 18 && hour < 22) return 'Goeie Naand';
-    return 'Goeie Nag';
+    if (hour >= 5 && hour < 12) return context.l10n.dashboardMorningGreeting;
+    if (hour >= 12 && hour < 18) return context.l10n.dashboardAfternoonGreeting;
+    if (hour >= 18 && hour < 22) return context.l10n.dashboardEveningGreeting;
+    return context.l10n.dashboardNightGreeting;
   }
 
   static IconData _greetingIcon() {
@@ -24,16 +25,15 @@ class DashboardGreeting extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final phrase = _greetingPhrase();
+    final phrase = _greetingPhrase(context);
     final icon = _greetingIcon();
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final mutedColor = isDark ? DarkColors.muted : LightColors.muted;
 
     return BlocBuilder<UserBloc, UserState>(
       builder: (context, state) {
-        final String greetingText = state is UserSuccess
-            ? '$phrase, ${state.user.firstName}'
-            : phrase;
+        final String greetingText =
+            state is UserSuccess ? '$phrase, ${state.user.firstName}' : phrase;
 
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: LwpSpacing.sm),
@@ -57,7 +57,7 @@ class DashboardGreeting extends StatelessWidget {
                         ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    'Lewende Woord Paarl',
+                    context.l10n.dashboardChurchName,
                     style: Theme.of(context)
                         .textTheme
                         .bodyMedium

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/YoutubeVideo/youtube_video.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Widgets/LwpYoutubePlayer/lwp_youtube_player.dart';
@@ -16,7 +17,7 @@ class SermonDetailPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Preek Besonderhede'),
+        title: Text(context.l10n.sermonDetailTitle),
         actions: [
           if (video.youtubeLink != null)
             IconButton(
@@ -65,8 +66,7 @@ class SermonDetailPage extends StatelessWidget {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          video.description ??
-                              'Geen beskrywing beskikbaar nie.',
+                          video.description ?? context.l10n.sermonNoDescription,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             height: 1.5,
                           ),
@@ -80,7 +80,7 @@ class SermonDetailPage extends StatelessWidget {
                     child: OutlinedButton.icon(
                       onPressed: () => _launchVideo(),
                       icon: const Icon(Icons.open_in_new),
-                      label: const Text("Kyk op YouTube"),
+                      label: Text(context.l10n.sermonWatchOnYoutube),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
@@ -91,7 +91,7 @@ class SermonDetailPage extends StatelessWidget {
                   ),
                   const Divider(height: 64),
                   Text(
-                    "Video Inligting",
+                    context.l10n.sermonVideoInfo,
                     style: theme.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -100,7 +100,7 @@ class SermonDetailPage extends StatelessWidget {
                   _buildMetadataTile(
                     context,
                     Icons.business,
-                    "Verskaffer",
+                    context.l10n.sermonProviderLabel,
                     video.providerName,
                   ),
                   if (video.youtubeLink != null) ...[
@@ -108,7 +108,7 @@ class SermonDetailPage extends StatelessWidget {
                     _buildMetadataTile(
                       context,
                       Icons.link,
-                      "Skakel",
+                      context.l10n.sermonLinkLabel,
                       video.youtubeLink!,
                     ),
                   ],

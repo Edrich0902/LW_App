@@ -2,6 +2,7 @@ import 'package:cloudinary_flutter/image/cld_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_quill/flutter_quill.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Blocs/PastoralBlog/pastoral_blog_bloc.dart';
 import 'package:lw_app/Models/PastoralBlog/pastoral_post.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
@@ -35,14 +36,14 @@ class PastoralBlogReaderPage extends StatelessWidget {
               state.posts.where((p) => p.id == postId).firstOrNull;
 
           if (state.status == PastoralBlogStatus.loading && post == null) {
-            return const Scaffold(
-              body: LwpLoader(message: 'Laai pos...'),
+            return Scaffold(
+              body: LwpLoader(message: context.l10n.pastoralBlogPostLoading),
             );
           }
 
           if (post == null) {
-            return const Scaffold(
-              body: LwpEmpty(message: 'Pos nie gevind nie.'),
+            return Scaffold(
+              body: LwpEmpty(message: context.l10n.pastoralBlogPostNotFound),
             );
           }
 
@@ -183,7 +184,7 @@ class _ReaderScaffold extends StatelessWidget {
 
                   // Reactions
                   Text(
-                    'Reageer',
+                    context.l10n.pastoralBlogReact,
                     style: theme.textTheme.labelLarge?.copyWith(
                       color: theme.hintColor,
                       fontWeight: FontWeight.w600,
@@ -196,7 +197,7 @@ class _ReaderScaffold extends StatelessWidget {
                     children: PastoralPostReactionType.values
                         .map(
                           (type) => _ReactionChip(
-                            label: PastoralPostReactionType.afrikaansLabel(type),
+                            label: PastoralPostReactionType.label(context.l10n, type),
                             count: post.reactionCountFor(type),
                             icon: _reactionIcon(type),
                             isSelected: post.currentUserReaction == type,

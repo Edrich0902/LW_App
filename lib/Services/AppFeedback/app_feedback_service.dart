@@ -1,4 +1,5 @@
 import 'package:lw_app/Models/AppFeedback/app_feedback.dart';
+import 'package:lw_app/Utils/lwp_i18n.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AppFeedbackService {
@@ -35,7 +36,8 @@ class AppFeedbackService {
     try {
       final currentUser = _auth.currentUser;
       if (currentUser == null) {
-        throw 'Jy moet ingeteken wees om terugvoer te stuur.';
+        throw LwpI18n.current?.feedbackAuthRequired ??
+            'You must be signed in to send feedback.';
       }
 
       await supabase.from('app_feedback').insert({

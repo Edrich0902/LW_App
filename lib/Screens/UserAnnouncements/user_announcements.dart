@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
@@ -30,7 +31,7 @@ class _UserAnnouncementsPageState extends State<UserAnnouncementsPage> {
       listener: (context, state) {},
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Aankondigings'),
+          title: Text(context.l10n.announcementsTitle),
         ),
         body: SafeArea(
           child: BlocBuilder<UserAnnouncementBloc, UserAnnouncementState>(
@@ -70,12 +71,12 @@ class _UserAnnouncementsPageState extends State<UserAnnouncementsPage> {
                     },
                   );
                 } else {
-                  return const LwpEmpty(message: "Geen Aankondigings");
+                  return LwpEmpty(message: context.l10n.announcementsEmpty);
                 }
               } else if (state is UserAnnouncementError) {
                 return const LwpError();
               } else {
-                return const LwpLoader(message: "Laai Aankondigings");
+                return LwpLoader(message: context.l10n.announcementsLoading);
               }
             },
           ),

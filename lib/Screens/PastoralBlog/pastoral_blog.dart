@@ -1,6 +1,7 @@
 import 'package:cloudinary_flutter/image/cld_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Blocs/PastoralBlog/pastoral_blog_bloc.dart';
 import 'package:lw_app/Models/PastoralBlog/pastoral_post.dart';
 import 'package:lw_app/Screens/PastoralBlog/pastoral_blog_reader.dart';
@@ -31,7 +32,7 @@ class _PastoralBlogView extends StatelessWidget {
     return BlocBuilder<PastoralBlogBloc, PastoralBlogState>(
       builder: (context, state) {
         return Scaffold(
-          appBar: AppBar(title: const Text('Blog')),
+          appBar: AppBar(title: Text(context.l10n.pastoralBlogTitle)),
           body: _buildBody(context, state),
         );
       },
@@ -40,12 +41,12 @@ class _PastoralBlogView extends StatelessWidget {
 
   Widget _buildBody(BuildContext context, PastoralBlogState state) {
     if (state.status == PastoralBlogStatus.loading && !state.isRefreshing) {
-      return const LwpLoader(message: 'Laai blog...');
+      return LwpLoader(message: context.l10n.pastoralBlogLoading);
     }
 
     if (state.status == PastoralBlogStatus.error) {
       return LwpError(
-        message: state.message ?? 'Kon nie blog laai nie.',
+        message: state.message ?? context.l10n.pastoralBlogLoadError,
         onRetry: () =>
             context.read<PastoralBlogBloc>().add(const LoadPastoralBlog()),
       );
@@ -59,12 +60,12 @@ class _PastoralBlogView extends StatelessWidget {
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
           if (state.posts.isEmpty)
-            const SliverFillRemaining(
+            SliverFillRemaining(
               hasScrollBody: false,
               child: Center(
                 child: Padding(
-                  padding: EdgeInsets.all(LwpSpacing.xl),
-                  child: LwpEmpty(message: 'Geen blogplasings beskikbaar nie.'),
+                  padding: const EdgeInsets.all(LwpSpacing.xl),
+                  child: LwpEmpty(message: context.l10n.pastoralBlogEmpty),
                 ),
               ),
             )
@@ -227,7 +228,7 @@ class _PastoralPostCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Lees meer',
+                        context.l10n.pastoralBlogReadMore,
                         style: theme.textTheme.labelMedium?.copyWith(
                           color: theme.primaryColor,
                           fontWeight: FontWeight.w600,

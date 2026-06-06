@@ -1,4 +1,3 @@
-
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:lw_app/Models/User/user_profile.dart';
 
@@ -8,13 +7,12 @@ class ProfileService {
 
   ProfileService();
 
-  Future<void> updateUser({
-    required String firstName,
-    required String lastName,
-    String? address,
-    bool? isMember,
-    bool? isBaptized
-  }) async {
+  Future<void> updateUser(
+      {required String firstName,
+      required String lastName,
+      String? address,
+      bool? isMember,
+      bool? isBaptized}) async {
     try {
       final User? currentUser = _auth.currentUser;
       if (currentUser == null) return;
@@ -30,16 +28,26 @@ class ProfileService {
     }
   }
 
-  Future<void> updateUserProfileImage({
-    required String profilePublicId,
-    required String profileUrl
-  }) async {
+  Future<void> updateUserProfileImage(
+      {required String profilePublicId, required String profileUrl}) async {
     try {
       final User? currentUser = _auth.currentUser;
       if (currentUser == null) return;
       await supabase.from('user_profile').update({
         'profile_public_id': profilePublicId,
         'profile_url': profileUrl
+      }).eq('id', currentUser.id);
+    } catch (error) {
+      throw error.toString();
+    }
+  }
+
+  Future<void> updatePreferredLanguage({required String languageCode}) async {
+    try {
+      final User? currentUser = _auth.currentUser;
+      if (currentUser == null) return;
+      await supabase.from('user_profile').update({
+        'preferred_language': languageCode,
       }).eq('id', currentUser.id);
     } catch (error) {
       throw error.toString();

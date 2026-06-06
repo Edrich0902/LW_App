@@ -1,5 +1,6 @@
 import 'package:cloudinary_flutter/image/cld_image.dart';
 import 'package:flutter/material.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/Group/group.dart';
 import 'package:lw_app/Screens/GroupDetail/group_detail.dart';
 import 'package:lw_app/Themes/custom_theme.dart';
@@ -80,29 +81,38 @@ class LwpGroupCard extends StatelessWidget {
                       children: [
                         _chip(
                           context,
-                          label: '${group.leaderCount} leiers',
+                          label: context.l10n.groupLeadersCount(
+                            group.leaderCount,
+                          ),
                         ),
                         _chip(
                           context,
-                          label: '${group.memberCount} lede',
+                          label: context.l10n.groupMembersCount(
+                            group.memberCount,
+                          ),
                         ),
                         if (group.pendingCount > 0)
                           _chip(
                             context,
-                            label: '${group.pendingCount} hangend',
+                            label: context.l10n.groupPendingCount(
+                              group.pendingCount,
+                            ),
                             color: Colors.orange.shade700,
                           ),
                         if (group.membershipStatus != null &&
                             group.membershipStatus != 'removed')
                           _chip(
                             context,
-                            label: _membershipLabel(group.membershipStatus!),
+                            label: _membershipLabel(
+                              context,
+                              group.membershipStatus!,
+                            ),
                             color: _membershipColor(group.membershipStatus!),
                           ),
                         if (group.isLeader)
                           _chip(
                             context,
-                            label: 'Leier',
+                            label: context.l10n.groupLeaderBadge,
                             color: Colors.amber.shade800,
                           ),
                       ],
@@ -153,16 +163,16 @@ class LwpGroupCard extends StatelessWidget {
     );
   }
 
-  String _membershipLabel(String status) {
+  String _membershipLabel(BuildContext context, String status) {
     switch (status) {
       case 'pending':
-        return 'Versoek Hangend';
+        return context.l10n.groupMembershipPending;
       case 'active':
-        return 'Lid';
+        return context.l10n.groupMembershipActive;
       case 'declined':
-        return 'Afgekeur';
+        return context.l10n.groupMembershipDeclined;
       case 'left':
-        return 'Verlaat';
+        return context.l10n.groupMembershipLeft;
       default:
         return status;
     }

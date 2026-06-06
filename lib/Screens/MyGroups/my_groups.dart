@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Blocs/MyGroups/my_groups_bloc.dart';
 import 'package:lw_app/Screens/GroupDetail/group_detail.dart';
 import 'package:lw_app/Widgets/Group/lwp_group_card.dart';
@@ -32,7 +33,7 @@ class _MyGroupsView extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Groepe'),
+        title: Text(context.l10n.myGroupsTitle),
         actions: const <Widget>[LwpAnnouncementButton(), ProfileActionButton()],
       ),
       floatingActionButton: const WhatsappContactFAB(),
@@ -40,19 +41,19 @@ class _MyGroupsView extends StatelessWidget {
         child: BlocBuilder<MyGroupsBloc, MyGroupsState>(
           builder: (context, state) {
             if (state.status == MyGroupsStatus.loading && !state.isRefreshing) {
-              return const LwpLoader(message: 'Laai my groepe...');
+              return LwpLoader(message: context.l10n.myGroupsLoading);
             }
 
             if (state.status == MyGroupsStatus.error) {
               return LwpError(
-                message: state.error ?? 'Kon nie my groepe laai nie.',
+                message: state.error ?? context.l10n.myGroupsLoadError,
                 onRetry: () =>
                     context.read<MyGroupsBloc>().add(const LoadMyGroups()),
               );
             }
 
             if (!state.hasGroups) {
-              return const LwpEmpty(message: 'Jy het nog geen groepe nie');
+              return LwpEmpty(message: context.l10n.myGroupsEmpty);
             }
 
             return RefreshIndicator(
@@ -63,9 +64,9 @@ class _MyGroupsView extends StatelessWidget {
                 padding: const EdgeInsets.all(LwpSpacing.md),
                 children: [
                   if (state.activeGroups.isNotEmpty) ...[
-                    const _SectionHeader(
-                      title: 'Aktiewe Groepe',
-                      subtitle: 'Groepe waarvan jy tans deel is.',
+                    _SectionHeader(
+                      title: context.l10n.myGroupsActiveSectionTitle,
+                      subtitle: context.l10n.myGroupsActiveSectionSubtitle,
                     ),
                     const SizedBox(height: LwpSpacing.sm),
                     ...state.activeGroups.map(
@@ -85,9 +86,9 @@ class _MyGroupsView extends StatelessWidget {
                     const SizedBox(height: LwpSpacing.lg),
                   ],
                   if (state.pendingGroups.isNotEmpty) ...[
-                    const _SectionHeader(
-                      title: 'Hangende Versoeke',
-                      subtitle: 'Aansluitings wat nog op goedkeuring wag.',
+                    _SectionHeader(
+                      title: context.l10n.myGroupsPendingSectionTitle,
+                      subtitle: context.l10n.myGroupsPendingSectionSubtitle,
                     ),
                     const SizedBox(height: LwpSpacing.sm),
                     ...state.pendingGroups.map(

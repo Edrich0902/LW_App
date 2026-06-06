@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 
 class ConnectHero extends StatelessWidget {
@@ -54,7 +55,7 @@ class ConnectHero extends StatelessWidget {
                 borderRadius: LwpRadii.smAll,
               ),
               child: Text(
-                "SKAKEL IN",
+                context.l10n.connectHeroTag,
                 style: TextStyle(
                   color: isDark ? Colors.black : Colors.white,
                   fontSize: 10,
@@ -65,7 +66,7 @@ class ConnectHero extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              "Word deel van ons familie",
+              context.l10n.connectHeroTitle,
               style: theme.textTheme.headlineSmall?.copyWith(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,

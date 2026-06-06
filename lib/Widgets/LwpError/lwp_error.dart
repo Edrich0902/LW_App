@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 
 class LwpError extends StatelessWidget {
@@ -30,7 +31,7 @@ class LwpError extends StatelessWidget {
             ),
             const SizedBox(height: LwpSpacing.xl),
             Text(
-              "Oeps! Iets het fout gegaan.",
+              context.l10n.genericErrorTitle,
               style: theme.textTheme.titleLarge
                   ?.copyWith(fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
@@ -47,7 +48,7 @@ class LwpError extends StatelessWidget {
               ElevatedButton.icon(
                 onPressed: onRetry,
                 icon: const Icon(Icons.refresh),
-                label: const Text('Probeer Weer'),
+                label: Text(context.l10n.commonRetry),
               ),
             ],
           ],

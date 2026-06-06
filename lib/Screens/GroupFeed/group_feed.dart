@@ -2,6 +2,7 @@ import 'package:cloudinary_flutter/image/cld_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_quill/flutter_quill.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Blocs/GroupDetail/group_detail_bloc.dart';
 import 'package:lw_app/Models/Group/group_post.dart';
 import 'package:lw_app/Screens/GroupPostEdit/group_post_edit.dart';
@@ -64,7 +65,7 @@ class _GroupFeedViewState extends State<_GroupFeedView> {
 
           return Scaffold(
             appBar: AppBar(
-              title: Text(group?.title ?? 'Groepfeed'),
+              title: Text(group?.title ?? context.l10n.groupFeedTitle),
             ),
             floatingActionButton: group?.isLeader == true
                 ? FloatingActionButton.extended(
@@ -72,7 +73,7 @@ class _GroupFeedViewState extends State<_GroupFeedView> {
                         ? null
                         : () => _openCreatePost(context),
                     icon: const Icon(Icons.post_add_outlined),
-                    label: const Text('Nuwe Plasing'),
+                    label: Text(context.l10n.groupPostNewTitle),
                   )
                 : null,
             body: _buildBody(context, state),
@@ -86,7 +87,7 @@ class _GroupFeedViewState extends State<_GroupFeedView> {
     if (state.status == GroupDetailStatus.loading &&
         state.group == null &&
         !state.isRefreshing) {
-      return const LwpLoader(message: 'Laai groepfeed...');
+      return LwpLoader(message: context.l10n.groupFeedLoading);
     }
 
     if (state.status == GroupDetailStatus.error && state.group == null) {
@@ -100,7 +101,7 @@ class _GroupFeedViewState extends State<_GroupFeedView> {
 
     final group = state.group;
     if (group == null) {
-      return const LwpEmpty(message: 'Geen groep gevind nie');
+      return LwpEmpty(message: context.l10n.groupFeedGroupNotFound);
     }
 
     if (!group.isActiveMember && !group.isLeader) {
@@ -231,9 +232,9 @@ class _GroupFeedViewState extends State<_GroupFeedView> {
     final confirmed = await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Verwyder plasing'),
+            title: Text(context.l10n.groupFeedDeletePostTitle),
             content: Text(
-              'Is jy seker jy wil ${_postTitle(post)} verwyder?',
+              context.l10n.groupFeedDeletePostBody(_postTitle(context, post)),
             ),
             actions: [
               TextButton(
@@ -242,7 +243,7 @@ class _GroupFeedViewState extends State<_GroupFeedView> {
               ),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context, true),
-                child: const Text('Verwyder'),
+                child: Text(context.l10n.commonDelete),
               ),
             ],
           ),
@@ -325,11 +326,11 @@ class _GroupFeedHeader extends StatelessWidget {
                     runSpacing: LwpSpacing.xs,
                     children: [
                       _HeaderChip(
-                        label: '$memberCount lede',
+                    label: context.l10n.groupMembersCount(memberCount),
                         icon: Icons.people_outline,
                       ),
                       _HeaderChip(
-                        label: '$postCount plasings',
+                        label: context.l10n.groupFeedPostCount(postCount),
                         icon: Icons.dynamic_feed_outlined,
                       ),
                       if (isLeader)
@@ -453,7 +454,7 @@ class _GroupFeedPostCard extends StatelessWidget {
                 Icon(Icons.push_pin, size: 14, color: theme.primaryColor),
                 const SizedBox(width: LwpSpacing.xxs),
                 Text(
-                  'Vasgespeld',
+                  context.l10n.groupFeedPinned,
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: theme.primaryColor,
                     fontWeight: FontWeight.w700,
@@ -514,31 +515,35 @@ class _GroupFeedPostCard extends StatelessWidget {
                               size: 20,
                             ),
                             const SizedBox(width: LwpSpacing.sm),
-                            Text(post.isPinned ? 'Onthef' : 'Speld'),
+                            Text(
+                              post.isPinned
+                                  ? context.l10n.groupFeedUnpin
+                                  : context.l10n.groupFeedPin,
+                            ),
                           ],
                         ),
                       ),
                     if (onEdit != null)
-                      const PopupMenuItem<String>(
+                      PopupMenuItem<String>(
                         value: 'edit',
                         child: Row(
                           children: [
-                            Icon(Icons.edit_outlined, size: 20),
-                            SizedBox(width: LwpSpacing.sm),
-                            Text('Wysig'),
+                            const Icon(Icons.edit_outlined, size: 20),
+                            const SizedBox(width: LwpSpacing.sm),
+                            Text(context.l10n.notesEditTitle),
                           ],
                         ),
                       ),
                     if (onDelete != null)
-                      const PopupMenuItem<String>(
+                      PopupMenuItem<String>(
                         value: 'delete',
                         child: Row(
                           children: [
-                            Icon(Icons.delete_outline, size: 20, color: Colors.red),
-                            SizedBox(width: LwpSpacing.sm),
+                            const Icon(Icons.delete_outline, size: 20, color: Colors.red),
+                            const SizedBox(width: LwpSpacing.sm),
                             Text(
-                              'Verwyder',
-                              style: TextStyle(color: Colors.red),
+                              context.l10n.commonDelete,
+                              style: const TextStyle(color: Colors.red),
                             ),
                           ],
                         ),
@@ -567,7 +572,10 @@ class _GroupFeedPostCard extends StatelessWidget {
             children: GroupPostReactionType.values
                 .map(
                   (reactionType) => _ReactionChip(
-                    label: GroupPostReactionType.afrikaansLabel(reactionType),
+                    label: GroupPostReactionType.label(
+                      context.l10n,
+                      reactionType,
+                    ),
                     count: post.reactionCountFor(reactionType),
                     icon: _reactionIcon(reactionType),
                     isSelected: post.currentUserReaction == reactionType,
@@ -693,11 +701,11 @@ class _GroupPostContentState extends State<_GroupPostContent> {
   }
 }
 
-String _postTitle(GroupPost post) {
+String _postTitle(BuildContext context, GroupPost post) {
   final title = (post.title ?? '').trim();
   if (title.isNotEmpty) return '"$title"';
 
-  return 'hierdie plasing';
+  return context.l10n.groupFeedThisPost;
 }
 
 String _formatOptionalDate(String? date) {

@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lw_app/Blocs/Locale/locale_bloc.dart';
+import 'package:lw_app/Blocs/Locale/locale_event.dart';
+import 'package:lw_app/Blocs/Locale/locale_state.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Blocs/Theme/theme_bloc.dart';
 import 'package:lw_app/Blocs/Theme/theme_event.dart';
 import 'package:lw_app/Blocs/Theme/theme_state.dart';
+import 'package:lw_app/Themes/lwp_tokens.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -13,16 +18,17 @@ class SettingsPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Instellings'),
+        title: Text(context.l10n.settingsTitle),
       ),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(LwpSpacing.md),
           children: [
             Padding(
-              padding: const EdgeInsets.only(left: 8.0, bottom: 8.0),
+              padding: const EdgeInsets.only(
+                  left: LwpSpacing.xs, bottom: LwpSpacing.xs),
               child: Text(
-                'Voorkoms',
+                context.l10n.settingsAppearanceSection,
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -37,7 +43,7 @@ class SettingsPage extends StatelessWidget {
                     children: [
                       _themeOption(
                         context,
-                        'Stelsel',
+                        context.l10n.settingsThemeSystem,
                         Icons.brightness_auto,
                         ThemeMode.system,
                         state.themeMode == ThemeMode.system,
@@ -45,7 +51,7 @@ class SettingsPage extends StatelessWidget {
                       const Divider(height: 1, indent: 56),
                       _themeOption(
                         context,
-                        'Lig',
+                        context.l10n.settingsThemeLight,
                         Icons.light_mode,
                         ThemeMode.light,
                         state.themeMode == ThemeMode.light,
@@ -53,7 +59,7 @@ class SettingsPage extends StatelessWidget {
                       const Divider(height: 1, indent: 56),
                       _themeOption(
                         context,
-                        'Donker',
+                        context.l10n.settingsThemeDark,
                         Icons.dark_mode,
                         ThemeMode.dark,
                         state.themeMode == ThemeMode.dark,
@@ -61,6 +67,62 @@ class SettingsPage extends StatelessWidget {
                     ],
                   );
                 },
+              ),
+            ),
+            const SizedBox(height: LwpSpacing.lg),
+            Padding(
+              padding: const EdgeInsets.only(
+                  left: LwpSpacing.xs, bottom: LwpSpacing.xs),
+              child: Text(
+                context.l10n.settingsLanguageSection,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: theme.hintColor,
+                ),
+              ),
+            ),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(LwpSpacing.md),
+                child: BlocBuilder<LocaleBloc, LocaleState>(
+                  builder: (context, state) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          context.l10n.settingsLanguageDescription,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.hintColor,
+                          ),
+                        ),
+                        const SizedBox(height: LwpSpacing.md),
+                        SegmentedButton<String>(
+                          showSelectedIcon: false,
+                          segments: [
+                            ButtonSegment(
+                              value: 'af',
+                              label:
+                                  Text(context.l10n.settingsLanguageAfrikaans),
+                            ),
+                            ButtonSegment(
+                              value: 'en',
+                              label: Text(context.l10n.settingsLanguageEnglish),
+                            ),
+                          ],
+                          selected: {state.locale.languageCode},
+                          onSelectionChanged: (selected) {
+                            context.read<LocaleBloc>().add(
+                                  UpdateLocaleEvent(
+                                    Locale(selected.first),
+                                  ),
+                                );
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                ),
               ),
             ),
           ],

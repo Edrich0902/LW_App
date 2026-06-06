@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/Auth/auth_bloc.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
@@ -45,14 +46,14 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         if (state is AuthErrorState) {
           LwpSnackbar.showError(
             context,
-            "Kon nie terugstelskakel stuur nie. Kontroleer asseblief jou e-pos.",
+            context.l10n.authSendResetLinkFailed,
           );
         }
 
         if (state is PasswordResetEmailSentState) {
           LwpSnackbar.showSuccess(
             context,
-            "Terugstelskakel is na jou e-pos gestuur.",
+            context.l10n.authSendResetLinkSuccess,
           );
           Navigator.pop(context);
         }
@@ -84,7 +85,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                           end: Alignment.bottomCenter,
                           colors: [
                             Colors.transparent,
-                            theme.scaffoldBackgroundColor.withValues(alpha: 0.1),
+                            theme.scaffoldBackgroundColor
+                                .withValues(alpha: 0.1),
                             theme.scaffoldBackgroundColor,
                           ],
                         ),
@@ -100,7 +102,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               child: Container(
                 color: theme.scaffoldBackgroundColor,
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 24.0, vertical: 32.0),
                   child: Form(
                     key: _formKey,
                     child: Column(
@@ -113,15 +116,16 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    "Wagwoord Vergeet",
-                                    style: theme.textTheme.headlineLarge?.copyWith(
+                                    context.l10n.authForgotPasswordTitle,
+                                    style:
+                                        theme.textTheme.headlineLarge?.copyWith(
                                       fontWeight: FontWeight.bold,
                                       color: theme.primaryColor,
                                     ),
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    "Stel jou wagwoord terug",
+                                    context.l10n.authForgotPasswordSubtitle,
                                     style: theme.textTheme.bodyMedium?.copyWith(
                                       color: theme.hintColor,
                                     ),
@@ -136,13 +140,13 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                 color: theme.primaryColor,
                                 size: 28,
                               ),
-                              tooltip: "Terug na Intekening",
+                              tooltip: context.l10n.authBackToSignInTooltip,
                             )
                           ],
                         ),
                         const SizedBox(height: 32),
                         Text(
-                          "Voer jou geregistreerde e-posadres in en ons sal vir jou 'n skakel stuur om jou wagwoord terug te stel.",
+                          context.l10n.authForgotPasswordDescription,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: theme.hintColor,
                           ),
@@ -153,12 +157,12 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                           keyboardType: TextInputType.emailAddress,
                           validator: (value) {
                             if (value == null || value.trim().isEmpty) {
-                              return 'E-pos is verpligtend';
+                              return context.l10n.validationEmailRequired;
                             }
                             return null;
                           },
-                          decoration: const InputDecoration(
-                            labelText: "E-pos adres",
+                          decoration: InputDecoration(
+                            labelText: context.l10n.authEmailAddress,
                             prefixIcon: Icon(Icons.email_outlined),
                           ),
                         ),
@@ -166,7 +170,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                         BlocBuilder<AuthBloc, AuthState>(
                           builder: (context, state) {
                             return ElevatedButton(
-                              onPressed: state is AuthLoadingState ? null : _submit,
+                              onPressed:
+                                  state is AuthLoadingState ? null : _submit,
                               child: state is AuthLoadingState
                                   ? const SizedBox(
                                       width: 20,
@@ -175,7 +180,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                         strokeWidth: 2,
                                       ),
                                     )
-                                  : const Text("Stuur Terugstel Skakel"),
+                                  : Text(context.l10n.authSendResetLink),
                             );
                           },
                         ),

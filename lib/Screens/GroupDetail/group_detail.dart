@@ -4,6 +4,8 @@ import 'package:cloudinary_flutter/image/cld_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lw_app/Extensions/app_localizations_x.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Blocs/GroupDetail/group_detail_bloc.dart';
 import 'package:lw_app/Models/Group/group.dart';
 import 'package:lw_app/Models/Group/group_membership.dart';
@@ -69,13 +71,13 @@ class _GroupDetailViewState extends State<_GroupDetailView> {
 
           return Scaffold(
             appBar: AppBar(
-              title: Text(group?.title ?? 'Groep'),
+              title: Text(group?.title ?? context.l10n.groupDetailTitle),
               actions: [
                 if (group != null && (group.isActiveMember || group.isLeader))
                   IconButton(
                     onPressed: () => _openFeed(context, group),
                     icon: const Icon(Icons.dynamic_feed_outlined),
-                    tooltip: 'Open groepfeed',
+                    tooltip: context.l10n.groupDetailOpenFeedTooltip,
                   ),
                 if (group?.isLeader == true)
                   IconButton(
@@ -83,7 +85,7 @@ class _GroupDetailViewState extends State<_GroupDetailView> {
                         ? null
                         : () => _showEditSheet(context, group!),
                     icon: const Icon(Icons.edit_outlined),
-                    tooltip: 'Wysig groep',
+                    tooltip: context.l10n.groupDetailEditTooltip,
                   ),
               ],
             ),
@@ -98,7 +100,7 @@ class _GroupDetailViewState extends State<_GroupDetailView> {
     if (state.status == GroupDetailStatus.loading &&
         state.group == null &&
         !state.isRefreshing) {
-      return const LwpLoader(message: 'Laai groep...');
+      return LwpLoader(message: context.l10n.groupDetailLoading);
     }
 
     if (state.status == GroupDetailStatus.error && state.group == null) {
@@ -112,7 +114,7 @@ class _GroupDetailViewState extends State<_GroupDetailView> {
 
     final group = state.group;
     if (group == null) {
-      return const LwpEmpty(message: 'Geen groep gevind nie');
+      return LwpEmpty(message: context.l10n.groupFeedGroupNotFound);
     }
 
     return RefreshIndicator(
@@ -153,10 +155,10 @@ class _GroupDetailViewState extends State<_GroupDetailView> {
           if (group.isLeader) ...[
             const SizedBox(height: LwpSpacing.lg),
             _MembershipSection(
-              title: 'Hangende Versoeke',
-              subtitle: 'Keur nuwe aansluitings goed of af.',
+              title: context.l10n.groupDetailPendingRequestsTitle,
+              subtitle: context.l10n.groupDetailPendingRequestsSubtitle,
               memberships: state.pendingMembers,
-              emptyMessage: 'Geen hangende versoeke nie',
+              emptyMessage: context.l10n.groupDetailPendingRequestsEmpty,
               actionBuilder: (membership) => Wrap(
                 spacing: LwpSpacing.xs,
                 runSpacing: LwpSpacing.xs,
@@ -170,7 +172,7 @@ class _GroupDetailViewState extends State<_GroupDetailView> {
                                 membership.userId,
                               ),
                             ),
-                    child: const Text('Keur Af'),
+                    child: Text(context.l10n.groupDetailDecline),
                   ),
                   ElevatedButton(
                     onPressed: state.isActionInProgress
@@ -181,17 +183,17 @@ class _GroupDetailViewState extends State<_GroupDetailView> {
                                 membership.userId,
                               ),
                             ),
-                    child: const Text('Keur Goed'),
+                    child: Text(context.l10n.groupDetailApprove),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: LwpSpacing.lg),
             _MembershipSection(
-              title: 'Aktiewe Lede',
-              subtitle: 'Verwyder lede indien nodig.',
+              title: context.l10n.groupDetailActiveMembersTitle,
+              subtitle: context.l10n.groupDetailActiveMembersSubtitle,
               memberships: state.activeMembers,
-              emptyMessage: 'Geen aktiewe lede nie',
+              emptyMessage: context.l10n.groupDetailActiveMembersEmpty,
               actionBuilder: (membership) => OutlinedButton.icon(
                 onPressed: state.isActionInProgress
                     ? null
@@ -201,7 +203,7 @@ class _GroupDetailViewState extends State<_GroupDetailView> {
                           context.read<GroupDetailBloc>(),
                         ),
                 icon: const Icon(Icons.person_remove_outlined),
-                label: const Text('Verwyder'),
+                label: Text(context.l10n.commonDelete),
               ),
             ),
           ],
@@ -229,8 +231,8 @@ class _GroupDetailViewState extends State<_GroupDetailView> {
     final confirmed = await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Verlaat groep'),
-            content: const Text('Is jy seker jy wil hierdie groep verlaat?'),
+            title: Text(context.l10n.groupDetailLeaveTitle),
+            content: Text(context.l10n.groupDetailLeaveBody),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
@@ -238,7 +240,7 @@ class _GroupDetailViewState extends State<_GroupDetailView> {
               ),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context, true),
-                child: const Text('Verlaat'),
+                child: Text(context.l10n.groupDetailLeaveButton),
               ),
             ],
           ),
@@ -257,9 +259,11 @@ class _GroupDetailViewState extends State<_GroupDetailView> {
     final confirmed = await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Verwyder lid'),
+            title: Text(context.l10n.groupDetailRemoveMemberTitle),
             content: Text(
-              'Is jy seker jy wil ${_displayName(membership)} uit hierdie groep verwyder?',
+              context.l10n.groupDetailRemoveMemberBody(
+                _displayName(membership),
+              ),
             ),
             actions: [
               TextButton(
@@ -268,7 +272,7 @@ class _GroupDetailViewState extends State<_GroupDetailView> {
               ),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context, true),
-                child: const Text('Verwyder'),
+                child: Text(context.l10n.commonDelete),
               ),
             ],
           ),
@@ -296,7 +300,7 @@ class _GroupDetailViewState extends State<_GroupDetailView> {
     if (link.isEmpty) {
       LwpSnackbar.showWarning(
         context,
-        'WhatsApp-skakel is nog nie beskikbaar vir hierdie groep nie.',
+        context.l10n.groupDetailWhatsappUnavailable,
       );
       return;
     }
@@ -319,7 +323,7 @@ class _GroupDetailViewState extends State<_GroupDetailView> {
     if (context.mounted) {
       LwpSnackbar.showError(
         context,
-        'Kon nie WhatsApp oopmaak nie. Maak seker die app is geïnstalleer.',
+        context.l10n.groupOpenWhatsappFailed,
       );
     }
   }
@@ -359,22 +363,23 @@ class _GroupHero extends StatelessWidget {
                   runSpacing: LwpSpacing.xs,
                   children: [
                     _PillChip(
-                      label:
-                          group.isConnectGroup ? 'Konneksie Groep' : 'Kom Dien',
+                      label: group.isConnectGroup
+                          ? context.l10n.connectGroupsTitle
+                          : context.l10n.serveGroupsTitle,
                       backgroundColor:
                           theme.primaryColor.withValues(alpha: 0.12),
                       foregroundColor: theme.primaryColor,
                     ),
                     if (group.membershipStatus != null)
                       _PillChip(
-                        label: _membershipLabel(group),
+                        label: _membershipLabel(context, group),
                         backgroundColor: _membershipTone(group, theme)
                             .withValues(alpha: 0.14),
                         foregroundColor: _membershipTone(group, theme),
                       ),
                     if (group.isLeader)
                       _PillChip(
-                        label: 'Leier',
+                        label: context.l10n.groupLeaderBadge,
                         backgroundColor: Colors.amber.withValues(alpha: 0.18),
                         foregroundColor: Colors.orange.shade800,
                       ),
@@ -417,7 +422,7 @@ class _GroupStatusCard extends StatelessWidget {
       children: [
         Expanded(
           child: _CountCard(
-            label: 'Leiers',
+            label: context.l10n.groupDetailLeadersLabel,
             value: group.leaderCount,
             icon: Icons.shield_outlined,
           ),
@@ -425,7 +430,7 @@ class _GroupStatusCard extends StatelessWidget {
         const SizedBox(width: LwpSpacing.sm),
         Expanded(
           child: _CountCard(
-            label: 'Lede',
+            label: context.l10n.groupDetailMembersLabel,
             value: group.memberCount,
             icon: Icons.people_outline,
           ),
@@ -433,7 +438,7 @@ class _GroupStatusCard extends StatelessWidget {
         const SizedBox(width: LwpSpacing.sm),
         Expanded(
           child: _CountCard(
-            label: 'Hangend',
+            label: context.l10n.groupDetailPendingLabel,
             value: group.pendingCount,
             icon: Icons.schedule_outlined,
           ),
@@ -473,12 +478,12 @@ class _GroupActionCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Aksies',
+              context.l10n.groupDetailActionsTitle,
               style: theme.textTheme.titleMedium,
             ),
             const SizedBox(height: LwpSpacing.xs),
             Text(
-              _actionDescription(group),
+              _actionDescription(context, group),
               style:
                   theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor),
             ),
@@ -489,7 +494,7 @@ class _GroupActionCard extends StatelessWidget {
                 child: OutlinedButton.icon(
                   onPressed: isBusy ? null : onOpenMaps,
                   icon: const Icon(Icons.location_on_outlined),
-                  label: const Text('Maak Oop In Maps'),
+                  label: Text(context.l10n.groupOpenMaps),
                 ),
               ),
             if (onOpenMaps != null) const SizedBox(height: LwpSpacing.sm),
@@ -509,7 +514,7 @@ class _GroupActionCard extends StatelessWidget {
             child: ElevatedButton.icon(
               onPressed: isBusy ? null : onOpenWhatsApp,
               icon: const Icon(Icons.chat_bubble_outline),
-              label: const Text('Open WhatsApp Groep'),
+              label: Text(context.l10n.groupDetailOpenWhatsappGroup),
             ),
           ),
       ];
@@ -522,7 +527,7 @@ class _GroupActionCard extends StatelessWidget {
           child: ElevatedButton.icon(
             onPressed: null,
             icon: const Icon(Icons.schedule),
-            label: const Text('Versoek Hangend'),
+            label: Text(context.l10n.groupMembershipPending),
           ),
         ),
         const SizedBox(height: LwpSpacing.sm),
@@ -531,7 +536,7 @@ class _GroupActionCard extends StatelessWidget {
           child: OutlinedButton.icon(
             onPressed: isBusy ? null : onCancelRequest,
             icon: const Icon(Icons.close),
-            label: const Text('Kanselleer Versoek'),
+            label: Text(context.l10n.groupDetailCancelRequest),
           ),
         ),
       ];
@@ -545,7 +550,7 @@ class _GroupActionCard extends StatelessWidget {
             child: ElevatedButton.icon(
               onPressed: isBusy ? null : onOpenWhatsApp,
               icon: const Icon(Icons.chat_bubble_outline),
-              label: const Text('Open WhatsApp Groep'),
+              label: Text(context.l10n.groupDetailOpenWhatsappGroup),
             ),
           ),
         if (group.hasWhatsappLink) const SizedBox(height: LwpSpacing.sm),
@@ -554,7 +559,7 @@ class _GroupActionCard extends StatelessWidget {
           child: OutlinedButton.icon(
             onPressed: isBusy ? null : onLeaveGroup,
             icon: const Icon(Icons.logout),
-            label: const Text('Verlaat Groep'),
+            label: Text(context.l10n.groupDetailLeaveGroup),
           ),
         ),
       ];
@@ -566,26 +571,26 @@ class _GroupActionCard extends StatelessWidget {
         child: ElevatedButton.icon(
           onPressed: isBusy ? null : onRequestJoin,
           icon: const Icon(Icons.group_add_outlined),
-          label: const Text('Versoek Om Aan Te Sluit'),
+          label: Text(context.l10n.groupDetailRequestJoin),
         ),
       ),
     ];
   }
 
-  String _actionDescription(Group group) {
+  String _actionDescription(BuildContext context, Group group) {
     if (group.isLeader) {
-      return 'Jy bestuur hierdie groep as leier. Lede en versoeke verskyn hieronder.';
+      return context.l10n.groupDetailLeaderDescription;
     }
 
     if (group.isPending) {
-      return 'Jou versoek is gestuur en wag vir goedkeuring.';
+      return context.l10n.groupDetailPendingDescription;
     }
 
     if (group.isActiveMember) {
-      return 'Jy is reeds deel van hierdie groep.';
+      return context.l10n.groupDetailMemberDescription;
     }
 
-    return 'Sluit by hierdie groep aan om toegang tot die WhatsApp-skakel en groepdeelname te kry.';
+    return context.l10n.groupDetailJoinDescription;
   }
 }
 
@@ -632,22 +637,22 @@ class _GroupFeedEntryCard extends StatelessWidget {
                   children: [
                     _WhitePillChip(
                       icon: Icons.dynamic_feed_outlined,
-                      label: '$postCount plasings',
+                      label: context.l10n.groupFeedPostCount(postCount),
                     ),
                     _WhitePillChip(
                       icon: Icons.people_outline,
-                      label: '${group.memberCount} lede',
+                      label: context.l10n.groupMembersCount(group.memberCount),
                     ),
                     if (group.isLeader)
-                      const _WhitePillChip(
+                      _WhitePillChip(
                         icon: Icons.shield_outlined,
-                        label: 'Leier kan plaas',
+                        label: context.l10n.groupDetailLeaderCanPost,
                       ),
                   ],
                 ),
                 const SizedBox(height: LwpSpacing.md),
                 Text(
-                  'Groepfeed',
+                  context.l10n.groupFeedTitle,
                   style: theme.textTheme.headlineSmall?.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w800,
@@ -655,7 +660,7 @@ class _GroupFeedEntryCard extends StatelessWidget {
                 ),
                 const SizedBox(height: LwpSpacing.xs),
                 Text(
-                  'Maak die feed volskerm oop vir opdaterings, reaksies en beter interaksie.',
+                  context.l10n.groupDetailFeedDescription,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: Colors.white.withValues(alpha: 0.9),
                     height: 1.45,
@@ -665,7 +670,7 @@ class _GroupFeedEntryCard extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      'Open Feed',
+                      context.l10n.groupDetailOpenFeed,
                       style: theme.textTheme.titleSmall?.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.w700,
@@ -848,7 +853,10 @@ class _MembershipTile extends StatelessWidget {
                       runSpacing: LwpSpacing.xs,
                       children: [
                         _PillChip(
-                          label: _membershipStatusLabel(membership.status),
+                          label: _membershipStatusLabel(
+                            context,
+                            membership.status,
+                          ),
                           backgroundColor:
                               _membershipStatusColor(membership.status)
                                   .withValues(alpha: 0.14),
@@ -858,8 +866,11 @@ class _MembershipTile extends StatelessWidget {
                         if (membership.requestedAt != null &&
                             membership.status == GroupMembershipStatus.pending)
                           _PillChip(
-                            label:
-                                'Versoek ${DateFormatter.formatDate(membership.requestedAt)}',
+                            label: context.l10n.groupDetailRequestDate(
+                              DateFormatter.formatDate(
+                                membership.requestedAt,
+                              ),
+                            ),
                             backgroundColor:
                                 theme.hintColor.withValues(alpha: 0.14),
                             foregroundColor: theme.hintColor,
@@ -1035,10 +1046,11 @@ class _EditGroupSheetState extends State<_EditGroupSheet> {
                 ),
               ),
               const SizedBox(height: LwpSpacing.md),
-              Text('Wysig Groep', style: theme.textTheme.titleLarge),
+              Text(context.l10n.groupDetailEditTitle,
+                  style: theme.textTheme.titleLarge),
               const SizedBox(height: LwpSpacing.sm),
               Text(
-                'Werk net die lidgerigte groepinligting op.',
+                context.l10n.groupDetailEditSubtitle,
                 style: theme.textTheme.bodyMedium
                     ?.copyWith(color: theme.hintColor),
               ),
@@ -1064,17 +1076,17 @@ class _EditGroupSheetState extends State<_EditGroupSheet> {
               OutlinedButton.icon(
                 onPressed: isBusy ? null : _pickBanner,
                 icon: const Icon(Icons.image_outlined),
-                label: const Text('Kies Nuwe Banier'),
+                label: Text(context.l10n.groupDetailChooseNewBanner),
               ),
               const SizedBox(height: LwpSpacing.md),
               TextFormField(
                 controller: _titleController,
                 validator: (value) => value == null || value.trim().isEmpty
-                    ? 'Titel word benodig'
+                    ? context.l10n.profileEditNameRequired
                     : null,
-                decoration: const InputDecoration(
-                  labelText: 'Titel',
-                  prefixIcon: Icon(Icons.title),
+                decoration: InputDecoration(
+                  labelText: context.l10n.notesTitleHint,
+                  prefixIcon: const Icon(Icons.title),
                 ),
               ),
               const SizedBox(height: LwpSpacing.md),
@@ -1083,28 +1095,28 @@ class _EditGroupSheetState extends State<_EditGroupSheet> {
                 minLines: 4,
                 maxLines: 6,
                 validator: (value) => value == null || value.trim().isEmpty
-                    ? 'Beskrywing word benodig'
+                    ? context.l10n.groupDetailDescriptionRequired
                     : null,
-                decoration: const InputDecoration(
-                  labelText: 'Beskrywing',
+                decoration: InputDecoration(
+                  labelText: context.l10n.groupDescriptionTitle,
                   alignLabelWithHint: true,
-                  prefixIcon: Icon(Icons.notes_outlined),
+                  prefixIcon: const Icon(Icons.notes_outlined),
                 ),
               ),
               const SizedBox(height: LwpSpacing.md),
               TextFormField(
                 controller: _whatsappController,
-                decoration: const InputDecoration(
-                  labelText: 'WhatsApp Skakel',
-                  prefixIcon: Icon(Icons.chat_bubble_outline),
+                decoration: InputDecoration(
+                  labelText: context.l10n.groupDetailWhatsappLink,
+                  prefixIcon: const Icon(Icons.chat_bubble_outline),
                 ),
               ),
               const SizedBox(height: LwpSpacing.md),
               TextFormField(
                 controller: _locationController,
-                decoration: const InputDecoration(
-                  labelText: 'Ligging',
-                  prefixIcon: Icon(Icons.location_on_outlined),
+                decoration: InputDecoration(
+                  labelText: context.l10n.groupDetailLocation,
+                  prefixIcon: const Icon(Icons.location_on_outlined),
                 ),
               ),
               const SizedBox(height: LwpSpacing.lg),
@@ -1119,7 +1131,7 @@ class _EditGroupSheetState extends State<_EditGroupSheet> {
                           color: Colors.white,
                         ),
                       )
-                    : const Text('Stoor Veranderinge'),
+                    : Text(context.l10n.groupDetailSaveChanges),
               ),
             ],
           ),
@@ -1172,7 +1184,8 @@ class _EditGroupSheetState extends State<_EditGroupSheet> {
       Navigator.pop(context);
     } catch (error) {
       if (mounted) {
-        LwpSnackbar.showError(context, 'Kon nie banier oplaai nie.');
+        LwpSnackbar.showError(
+            context, context.l10n.groupDetailBannerUploadError);
       }
     } finally {
       if (mounted) {
@@ -1184,20 +1197,20 @@ class _EditGroupSheetState extends State<_EditGroupSheet> {
   }
 }
 
-String _membershipLabel(Group group) {
+String _membershipLabel(BuildContext context, Group group) {
   switch (group.membershipStatus) {
     case 'pending':
-      return 'Versoek Hangend';
+      return context.l10n.groupMembershipPending;
     case 'active':
-      return 'Lid';
+      return context.l10n.groupMembershipActive;
     case 'declined':
-      return 'Afgekeur';
+      return context.l10n.groupMembershipDeclined;
     case 'left':
-      return 'Verlaat';
+      return context.l10n.groupMembershipLeft;
     case 'removed':
-      return 'Verwyder';
+      return context.l10n.commonDelete;
     default:
-      return 'Publiek';
+      return context.l10n.groupDetailPublic;
   }
 }
 
@@ -1212,21 +1225,8 @@ Color _membershipTone(Group group, ThemeData theme) {
   }
 }
 
-String _membershipStatusLabel(String status) {
-  switch (status) {
-    case GroupMembershipStatus.pending:
-      return 'Hangend';
-    case GroupMembershipStatus.active:
-      return 'Aktief';
-    case GroupMembershipStatus.declined:
-      return 'Afgekeur';
-    case GroupMembershipStatus.left:
-      return 'Verlaat';
-    case GroupMembershipStatus.removed:
-      return 'Verwyder';
-    default:
-      return status;
-  }
+String _membershipStatusLabel(BuildContext context, String status) {
+  return status.groupMembershipLabel(context.l10n);
 }
 
 Color _membershipStatusColor(String status) {
@@ -1251,7 +1251,7 @@ String _displayName(GroupMembership membership) {
       .trim();
   if (combined.isNotEmpty) return combined;
 
-  return membership.email ?? 'Onbekende lid';
+  return membership.email ?? 'Unknown member';
 }
 
 String _initials(GroupMembership membership) {

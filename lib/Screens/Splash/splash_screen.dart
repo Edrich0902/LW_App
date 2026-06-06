@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:lw_app/Screens/Container/container.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Screens/Home/home.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 
@@ -20,9 +21,10 @@ class _LwpSplashScreenState extends State<LwpSplashScreen> {
   void initState() {
     super.initState();
 
-    _authSubscription = Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+    _authSubscription =
+        Supabase.instance.client.auth.onAuthStateChange.listen((data) {
       if (!mounted || _hasNavigated) return;
-      
+
       final event = data.event;
       if (event == AuthChangeEvent.signedIn) {
         _hasNavigated = true;
@@ -76,8 +78,14 @@ class _LwpSplashScreenState extends State<LwpSplashScreen> {
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: isDark
-                            ? [theme.cardTheme.color!, theme.cardTheme.color!.withValues(alpha: 0.8)]
-                            : [theme.primaryColor, theme.primaryColor.withValues(alpha: 0.85)],
+                            ? [
+                                theme.cardTheme.color!,
+                                theme.cardTheme.color!.withValues(alpha: 0.8)
+                              ]
+                            : [
+                                theme.primaryColor,
+                                theme.primaryColor.withValues(alpha: 0.85)
+                              ],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
@@ -108,12 +116,12 @@ class _LwpSplashScreenState extends State<LwpSplashScreen> {
             ),
           ),
           // Bottom Section - Loading indicator and message
-          const Expanded(
+          Expanded(
             flex: 3,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                LwpLoader(message: "Welkom"),
+                LwpLoader(message: context.l10n.splashWelcome),
               ],
             ),
           ),

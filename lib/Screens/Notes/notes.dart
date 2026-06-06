@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:lw_app/Blocs/Notes/notes_bloc.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 import 'package:lw_app/Models/Note/note.dart';
 import 'package:lw_app/Screens/NotesEdit/notes_edit.dart';
@@ -50,15 +51,15 @@ class _NotesPageState extends State<NotesPage> {
       listener: (context, state) {
         if (state is NotesDeleteSuccess) {
           HapticFeedback.mediumImpact();
-          LwpSnackbar.showSuccess(context, 'Nota verwyder');
+          LwpSnackbar.showSuccess(context, context.l10n.notesDeleteSuccess);
         }
         if (state is NotesError) {
-          LwpSnackbar.showError(context, 'Iets het fout gegaan');
+          LwpSnackbar.showError(context, context.l10n.notesGenericError);
         }
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Notas'),
+          title: Text(context.l10n.notesTitle),
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
@@ -87,7 +88,7 @@ class _NotesPageState extends State<NotesPage> {
                         controller: _searchController,
                         onChanged: (_) => setState(() {}),
                         decoration: InputDecoration(
-                          hintText: 'Soek notas...',
+                          hintText: context.l10n.notesSearchHint,
                           prefixIcon: const Icon(Icons.search),
                           filled: true,
                           contentPadding: const EdgeInsets.symmetric(
@@ -112,7 +113,7 @@ class _NotesPageState extends State<NotesPage> {
                     ),
                     Expanded(
                       child: filtered.isEmpty
-                          ? const LwpEmpty(message: 'Geen notas gevind nie')
+                          ? LwpEmpty(message: context.l10n.notesEmpty)
                           : RefreshIndicator(
                               onRefresh: () async =>
                                   notesBloc.add(const LoadNotes()),
@@ -250,12 +251,12 @@ class _NotesPageState extends State<NotesPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Verwyder Nota'),
-          content: const Text('Is jy seker jy wil hierdie nota verwyder?'),
+          title: Text(context.l10n.notesDeleteTitle),
+          content: Text(context.l10n.notesDeleteBody),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
-              child: const Text('Kanselleer'),
+              child: Text(context.l10n.commonCancel),
             ),
             ElevatedButton(
               onPressed: () {
@@ -266,7 +267,7 @@ class _NotesPageState extends State<NotesPage> {
                 backgroundColor: Colors.redAccent,
                 foregroundColor: Colors.white,
               ),
-              child: const Text('Bevestig'),
+              child: Text(context.l10n.commonConfirm),
             ),
           ],
         );

@@ -1,10 +1,11 @@
 import 'package:lw_app/Screens/Splash/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:lw_app/Themes/custom_theme.dart';
+import 'package:lw_app/Utils/quill_localizations_delegate.dart';
 import 'package:lw_app/Utils/environment.dart';
+import 'package:lw_app/Utils/navigation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
@@ -26,6 +27,9 @@ import 'package:lw_app/Blocs/UserAnnouncements/user_announcement_bloc.dart';
 import 'package:lw_app/Blocs/Theme/theme_bloc.dart';
 import 'package:lw_app/Blocs/Theme/theme_event.dart';
 import 'package:lw_app/Blocs/Theme/theme_state.dart';
+import 'package:lw_app/Blocs/Locale/locale_bloc.dart';
+import 'package:lw_app/Blocs/Locale/locale_event.dart';
+import 'package:lw_app/Blocs/Locale/locale_state.dart';
 import 'package:lw_app/Blocs/Bible/bible_bloc.dart';
 import 'package:lw_app/Blocs/Bible/bible_event.dart';
 import 'package:lw_app/Blocs/CompareTranslations/compare_translations_bloc.dart';
@@ -40,9 +44,7 @@ import 'package:lw_app/Blocs/MyFeedback/my_feedback_bloc.dart';
 // Cloudinary
 import 'package:cloudinary_flutter/cloudinary_context.dart';
 import 'package:cloudinary_url_gen/cloudinary.dart';
-
-// Global navigation key
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+import 'package:lw_app/l10n/app_localizations.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -71,8 +73,13 @@ Future<void> main() async {
         BlocProvider<AuthBloc>(
           create: (_) => AuthBloc(),
         ),
+        BlocProvider<LocaleBloc>(
+          create: (_) => LocaleBloc()..add(const InitLocaleEvent()),
+        ),
         BlocProvider<UserBloc>(
-          create: (_) => UserBloc(),
+          create: (context) => UserBloc(
+            localeBloc: context.read<LocaleBloc>(),
+          ),
         ),
         BlocProvider<MoreInfoBloc>(
           create: (_) => MoreInfoBloc(),
@@ -133,7 +140,7 @@ Future<void> main() async {
         ),
         BlocProvider<ThemeBloc>(
           create: (_) => ThemeBloc()..add(const InitThemeEvent()),
-        )
+        ),
       ],
       child: const App(),
     ),
@@ -145,25 +152,29 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ThemeBloc, ThemeState>(
-      builder: (context, state) {
-        return MaterialApp(
-          navigatorKey: navigatorKey,
-          title: 'Lewende Woord Paarl',
-          theme: AppTheme.lightTheme,
-          darkTheme: AppTheme.darkTheme,
-          themeMode: state.themeMode,
-          localizationsDelegates: const [
-            GlobalMaterialLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            FlutterQuillLocalizations.delegate,
-          ],
-          supportedLocales: const [
-            Locale('en'),
-            Locale('af'),
-          ],
-          home: const LwpSplashScreen(),
+    return BlocBuilder<LocaleBloc, LocaleState>(
+      builder: (context, localeState) {
+        return BlocBuilder<ThemeBloc, ThemeState>(
+          builder: (context, themeState) {
+            return MaterialApp(
+              navigatorKey: navigatorKey,
+              onGenerateTitle: (context) =>
+                  AppLocalizations.of(context)!.appTitle,
+              locale: localeState.locale,
+              theme: AppTheme.lightTheme,
+              darkTheme: AppTheme.darkTheme,
+              themeMode: themeState.themeMode,
+              localizationsDelegates: [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                const LwpQuillLocalizationsDelegate(),
+              ],
+              supportedLocales: AppLocalizations.supportedLocales,
+              home: const LwpSplashScreen(),
+            );
+          },
         );
       },
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/Event/event.dart';
 import 'package:lw_app/Models/Event/event_type.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
@@ -138,7 +139,7 @@ class LwpEvent extends StatelessWidget {
             ),
             const Divider(height: 32),
             Text(
-              "Beskrywing",
+              context.l10n.groupDescriptionTitle,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -156,7 +157,7 @@ class LwpEvent extends StatelessWidget {
               child: ElevatedButton.icon(
                 onPressed: () => _addToCalendar(context),
                 icon: const Icon(Icons.event_available_rounded),
-                label: const Text("Voeg by Kalender"),
+                label: Text(context.l10n.commonAddToCalendar),
               ),
             ),
             const SizedBox(height: LwpSpacing.lg),

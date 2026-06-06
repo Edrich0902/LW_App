@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/YoutubeVideo/youtube_video.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
@@ -50,7 +51,7 @@ class _SermonsPageState extends State<SermonsPage> {
       listener: (context, state) {},
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Preke'),
+          title: Text(context.l10n.sermonsTitle),
           actions: const <Widget>[
             LwpAnnouncementButton(),
             ProfileActionButton()
@@ -60,7 +61,7 @@ class _SermonsPageState extends State<SermonsPage> {
           child: BlocBuilder<SermonsBloc, SermonsState>(
             builder: (context, state) {
               if (state is SermonsLoading) {
-                return const LwpLoader(message: "Laai Preke");
+                return LwpLoader(message: context.l10n.sermonsLoading);
               } else if (state is SermonsSuccess) {
                 if (state.youtubeVideos.isNotEmpty) {
                   return StatefulBuilder(
@@ -80,7 +81,7 @@ class _SermonsPageState extends State<SermonsPage> {
                                   controller: _searchController,
                                   onChanged: (_) => setInnerState(() {}),
                                   decoration: InputDecoration(
-                                    hintText: 'Soek preke...',
+                                    hintText: context.l10n.sermonsSearchHint,
                                     prefixIcon: const Icon(Icons.search),
                                     suffixIcon:
                                         _searchController.text.isNotEmpty
@@ -117,7 +118,7 @@ class _SermonsPageState extends State<SermonsPage> {
                     },
                   );
                 } else {
-                  return const LwpEmpty(message: "Geen Preke Beskikbaar");
+                  return LwpEmpty(message: context.l10n.sermonsEmpty);
                 }
               } else {
                 return const LwpError();

@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:lw_app/l10n/app_localizations.dart';
 
 class GroupPostReactionType {
   static const String amen = 'amen';
@@ -7,14 +8,14 @@ class GroupPostReactionType {
 
   static const List<String> values = [amen, prayer, heart];
 
-  static String afrikaansLabel(String reactionType) {
+  static String label(AppLocalizations l10n, String reactionType) {
     switch (reactionType) {
       case amen:
-        return 'Amen';
+        return l10n.groupReactionAmen;
       case prayer:
-        return 'Gebed';
+        return l10n.groupReactionPrayer;
       case heart:
-        return 'Hart';
+        return l10n.groupReactionHeart;
       default:
         return reactionType;
     }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Screens/Auth/login.dart';
 
 class EmailConfirmationPage extends StatelessWidget {
@@ -57,12 +58,13 @@ class EmailConfirmationPage extends StatelessWidget {
             child: Container(
               color: theme.scaffoldBackgroundColor,
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 24.0, vertical: 32.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      "Bevestig jou E-pos",
+                      context.l10n.authConfirmEmailTitle,
                       style: theme.textTheme.headlineLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: theme.primaryColor,
@@ -70,7 +72,7 @@ class EmailConfirmationPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      "Ons het vir jou 'n e-pos gestuur",
+                      context.l10n.authConfirmEmailSubtitle,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.hintColor,
                       ),
@@ -83,7 +85,7 @@ class EmailConfirmationPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
                     Text(
-                      "Dankie vir jou registrasie! Ons het 'n bevestigings-e-pos gestuur na:",
+                      context.l10n.authConfirmEmailDescription,
                       textAlign: TextAlign.center,
                       style: theme.textTheme.bodyLarge?.copyWith(
                         color: isDark ? Colors.white70 : Colors.black87,
@@ -100,7 +102,7 @@ class EmailConfirmationPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
                     Text(
-                      "Kliek asseblief op die skakel in die e-pos om jou rekening te aktiveer. Daarna kan jy inteken.",
+                      context.l10n.authConfirmEmailInstructions,
                       textAlign: TextAlign.center,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.hintColor,
@@ -111,11 +113,12 @@ class EmailConfirmationPage extends StatelessWidget {
                       onPressed: () {
                         Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(builder: (context) => const LoginPage()),
+                          MaterialPageRoute(
+                              builder: (context) => const LoginPage()),
                           (route) => false,
                         );
                       },
-                      child: const Text("Gaan na Intekenskerm"),
+                      child: Text(context.l10n.authGoToSignIn),
                     ),
                   ],
                 ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:lw_app/Extensions/app_localizations_x.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/AppFeedback/app_feedback.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 
@@ -82,7 +84,7 @@ class _CategoryChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Chip(
       label: Text(
-        category.afrikaansLabel,
+        category.label(context.l10n),
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
               fontWeight: FontWeight.w600,
             ),
@@ -129,7 +131,7 @@ class _StatusChip extends StatelessWidget {
         border: Border.all(color: color.withOpacity(0.4)),
       ),
       child: Text(
-        status.afrikaansLabel,
+        status.label(context.l10n),
         style: TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w600,

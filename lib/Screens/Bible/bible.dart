@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Blocs/Bible/bible_bloc.dart';
 import 'package:lw_app/Blocs/Bible/bible_event.dart';
 import 'package:lw_app/Blocs/Bible/bible_state.dart';
@@ -130,7 +131,7 @@ class _BiblePageState extends State<BiblePage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Bybelnota (Bible Note)',
+                      context.l10n.bibleNoteTitle,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: theme.primaryColor,
@@ -144,7 +145,11 @@ class _BiblePageState extends State<BiblePage> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Skryf \'n persoonlike nota vir ${state.currentBook.name} ${state.currentChapter.number}:${state.selectedVerseNumbers.join(', ')}',
+                  context.l10n.bibleNoteDescription(
+                    state.currentBook.name,
+                    state.currentChapter.number,
+                    state.selectedVerseNumbers.join(', '),
+                  ),
                   style: TextStyle(color: theme.hintColor, fontSize: 13),
                 ),
                 const SizedBox(height: 16),
@@ -153,7 +158,7 @@ class _BiblePageState extends State<BiblePage> {
                   maxLines: 5,
                   autofocus: true,
                   decoration: InputDecoration(
-                    hintText: 'Skryf jou gedagtes hier...',
+                    hintText: context.l10n.notesBodyPlaceholder,
                     border: OutlineInputBorder(
                       borderRadius: LwpRadii.lgAll,
                       borderSide: BorderSide(
@@ -173,7 +178,7 @@ class _BiblePageState extends State<BiblePage> {
                   children: [
                     TextButton(
                       onPressed: () => Navigator.pop(modalContext),
-                      child: Text('Kanselleer',
+                      child: Text(context.l10n.commonCancel,
                           style: TextStyle(color: theme.hintColor)),
                     ),
                     const SizedBox(width: 8),
@@ -184,7 +189,7 @@ class _BiblePageState extends State<BiblePage> {
                             .add(SaveNoteForSelected(textController.text));
                         Navigator.pop(modalContext);
                         LwpSnackbar.showSuccess(
-                            context, 'Nota suksesvol gestoor');
+                            context, context.l10n.bibleNoteSaved);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: theme.primaryColor,
@@ -194,8 +199,8 @@ class _BiblePageState extends State<BiblePage> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 24, vertical: 12),
                       ),
-                      child: const Text(
-                        'Stoor',
+                      child: Text(
+                        context.l10n.commonSave,
                         style: TextStyle(
                             color: Colors.white, fontWeight: FontWeight.bold),
                       ),
@@ -216,13 +221,13 @@ class _BiblePageState extends State<BiblePage> {
     if (draft == null) return;
 
     final shareText =
-        '"${draft.verseText}"\n\n- ${draft.citation}\n\nGedeel via LW App';
+        '"${draft.verseText}"\n\n- ${draft.citation}\n\n${context.l10n.bibleSharedViaApp}';
 
     await ShareHelper.shareText(
       context,
       text: shareText,
       subject: draft.citation,
-      clipboardMessage: 'Vers gekopieër na klembord',
+      clipboardMessage: context.l10n.bibleVerseCopied,
     );
 
     if (context.mounted) context.read<BibleBloc>().add(ClearSelection());
@@ -417,13 +422,13 @@ class _BiblePageState extends State<BiblePage> {
                   ),
                 );
               }
-              return const Text('Bybel');
+              return Text(context.l10n.navBible);
             },
           ),
           actions: <Widget>[
             IconButton(
               icon: const Icon(Icons.bookmarks_outlined),
-              tooltip: 'Gestoorde Verse',
+              tooltip: context.l10n.bibleSavedVersesTooltip,
               onPressed: () {
                 final bibleBloc = context.read<BibleBloc>();
                 Navigator.push(
@@ -445,7 +450,8 @@ class _BiblePageState extends State<BiblePage> {
         body: BlocBuilder<BibleBloc, BibleState>(
           builder: (context, state) {
             if (state is BibleLoading) {
-              return const Center(child: LwpLoader(message: "Laai Bybel"));
+              return Center(
+                  child: LwpLoader(message: context.l10n.bibleLoading));
             } else if (state is BibleError) {
               return LwpError(
                 message: state.message,
@@ -483,7 +489,7 @@ class _BiblePageState extends State<BiblePage> {
                             const SizedBox(width: 8),
                             TextButton(
                               onPressed: () => _showNavigation(context, state),
-                              child: const Text('Kies Vertaling'),
+                              child: Text(context.l10n.bibleChooseTranslation),
                             ),
                           ],
                         ),
@@ -495,11 +501,11 @@ class _BiblePageState extends State<BiblePage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               if (state.verses.isEmpty)
-                                const Padding(
+                                Padding(
                                   padding: EdgeInsets.all(32.0),
                                   child: LwpEmpty(
                                       message:
-                                          'Kon nie hoofstuk-inhoud ontleed nie.'),
+                                          context.l10n.bibleChapterParseError),
                                 )
                               else
                                 ...state.verses.map((verse) {
@@ -538,8 +544,8 @@ class _BiblePageState extends State<BiblePage> {
                                         style: theme.textTheme.bodyMedium,
                                       ),
                                       const SizedBox(height: 8),
-                                      const Text(
-                                        'Verskaf deur YouVersion',
+                                      Text(
+                                        context.l10n.bibleProvidedByYouVersion,
                                         style: TextStyle(
                                             fontSize: 12,
                                             fontStyle: FontStyle.italic),
@@ -611,7 +617,9 @@ class _BiblePageState extends State<BiblePage> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    '${state.selectedVerseNumbers.length} vers(e) gekies',
+                                    context.l10n.bibleVersesSelected(
+                                      state.selectedVerseNumbers.length,
+                                    ),
                                     style: const TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 13),
@@ -718,37 +726,37 @@ class _BiblePageState extends State<BiblePage> {
                                       icon: hasAnyBookmark
                                           ? Icons.bookmark
                                           : Icons.bookmark_border,
-                                      label: 'Stoor',
+                                      label: context.l10n.commonSave,
                                       onTap: () {
                                         HapticFeedback.lightImpact();
                                         context
                                             .read<BibleBloc>()
                                             .add(ToggleBookmarkSelected());
-                                        LwpSnackbar.showSuccess(
-                                            context, 'Boekmerk opgedateer');
+                                        LwpSnackbar.showSuccess(context,
+                                            context.l10n.bibleBookmarkUpdated);
                                       },
                                     ),
                                     _ActionButton(
                                       icon: Icons.note_alt_outlined,
-                                      label: 'Nota',
+                                      label: context.l10n.notesTitle,
                                       onTap: () =>
                                           _showNoteBottomSheet(context, state),
                                     ),
                                     _ActionButton(
                                       icon: Icons.image_outlined,
-                                      label: 'Beeld',
+                                      label: context.l10n.bibleImageLabel,
                                       onTap: () =>
                                           _openVerseImageEditor(context, state),
                                     ),
                                     _ActionButton(
                                       icon: Icons.share_outlined,
-                                      label: 'Deel',
+                                      label: context.l10n.commonShare,
                                       onTap: () =>
                                           _shareSelectedVerses(context, state),
                                     ),
                                     _ActionButton(
                                       icon: Icons.compare_arrows,
-                                      label: 'Vergelyk',
+                                      label: context.l10n.bibleCompareLabel,
                                       onTap: () =>
                                           _showCompareTranslationsSheet(
                                               context, state),
@@ -764,7 +772,7 @@ class _BiblePageState extends State<BiblePage> {
                 ],
               );
             }
-            return const Center(child: Text('Begin laai...'));
+            return Center(child: Text(context.l10n.commonLoad));
           },
         ),
       ),
@@ -1042,7 +1050,7 @@ class _BibleNavigationSheetState extends State<BibleNavigationSheet>
       child: BlocBuilder<BibleBloc, BibleState>(
         builder: (context, state) {
           if (state is! BibleLoaded) {
-            return const Center(child: LwpLoader(message: "Laai..."));
+            return Center(child: LwpLoader(message: context.l10n.commonLoad));
           }
 
           final filteredVersions = state.versions.where((v) {
@@ -1066,10 +1074,10 @@ class _BibleNavigationSheetState extends State<BibleNavigationSheet>
                   labelColor: Theme.of(context).primaryColor,
                   unselectedLabelColor: Theme.of(context).hintColor,
                   indicatorColor: Theme.of(context).primaryColor,
-                  tabs: const [
-                    Tab(text: 'Vertaling'),
-                    Tab(text: 'Boek'),
-                    Tab(text: 'Hoofstuk'),
+                  tabs: [
+                    Tab(text: context.l10n.bibleTranslationTab),
+                    Tab(text: context.l10n.bibleBookTab),
+                    Tab(text: context.l10n.bibleChapterTab),
                   ],
                 ),
               ),
@@ -1085,7 +1093,7 @@ class _BibleNavigationSheetState extends State<BibleNavigationSheet>
                           child: TextField(
                             controller: _versionSearchController,
                             decoration: InputDecoration(
-                              hintText: 'Soek vertaling...',
+                              hintText: context.l10n.bibleSearchTranslationHint,
                               prefixIcon: const Icon(Icons.search),
                               border: OutlineInputBorder(
                                 borderRadius: LwpRadii.lgAll,
@@ -1126,7 +1134,7 @@ class _BibleNavigationSheetState extends State<BibleNavigationSheet>
                           child: TextField(
                             controller: _bookSearchController,
                             decoration: InputDecoration(
-                              hintText: 'Soek boek...',
+                              hintText: context.l10n.bibleSearchBookHint,
                               prefixIcon: const Icon(Icons.search),
                               border: OutlineInputBorder(
                                 borderRadius: LwpRadii.lgAll,

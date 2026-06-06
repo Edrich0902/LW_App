@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lw_app/Blocs/Auth/auth_bloc.dart';
 import 'package:lw_app/Blocs/User/user_bloc.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Screens/ProfileEdit/profile_edit.dart';
 import 'package:lw_app/Screens/Notes/notes.dart';
 import 'package:lw_app/Screens/Home/home.dart';
@@ -35,7 +36,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profiel'),
+        title: Text(context.l10n.profileTitle),
       ),
       floatingActionButton: const WhatsappContactFAB(),
       body: SafeArea(
@@ -58,20 +59,20 @@ class _ProfilePageState extends State<ProfilePage> {
     return BlocBuilder<UserBloc, UserState>(
       builder: (context, state) {
         if (state is UserLoading || state is UserInitial) {
-          return const Padding(
-            padding: EdgeInsets.symmetric(vertical: 20.0),
-            child: LwpLoader(message: 'Laai profiel...'),
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20.0),
+            child: LwpLoader(message: context.l10n.profileLoading),
           );
         }
 
         if (state is UserError) {
           return LwpError(
-            message: 'Kon nie profiel laai nie.',
+            message: context.l10n.profileLoadError,
             onRetry: () => context.read<UserBloc>().add(LoadUser()),
           );
         }
 
-        String fullName = 'Gebruiker';
+        String fullName = context.l10n.profileDefaultName;
         String publicId = '';
         String? role;
 
@@ -129,7 +130,7 @@ class _ProfilePageState extends State<ProfilePage> {
           children: [
             _buildMenuItem(
               icon: Icons.person_outline,
-              title: 'My Profiel',
+              title: context.l10n.profileMyProfile,
               onTap: () {
                 Navigator.push(
                   context,
@@ -141,7 +142,7 @@ class _ProfilePageState extends State<ProfilePage> {
             const Divider(height: 1, indent: 56),
             _buildMenuItem(
               icon: Icons.notes_outlined,
-              title: 'My Notas',
+              title: context.l10n.profileMyNotes,
               onTap: () {
                 Navigator.push(
                   context,
@@ -152,7 +153,7 @@ class _ProfilePageState extends State<ProfilePage> {
             const Divider(height: 1, indent: 56),
             _buildMenuItem(
               icon: Icons.favorite_outline,
-              title: 'My Gebedsversoeke',
+              title: context.l10n.profileMyPrayerRequests,
               onTap: () {
                 Navigator.push(
                   context,
@@ -165,7 +166,7 @@ class _ProfilePageState extends State<ProfilePage> {
             const Divider(height: 1, indent: 56),
             _buildMenuItem(
               icon: Icons.groups_outlined,
-              title: 'My Groepe',
+              title: context.l10n.profileMyGroups,
               onTap: () {
                 Navigator.push(
                   context,
@@ -178,7 +179,7 @@ class _ProfilePageState extends State<ProfilePage> {
             const Divider(height: 1, indent: 56),
             _buildMenuItem(
               icon: Icons.feedback_outlined,
-              title: 'Terugvoer & Verslae',
+              title: context.l10n.profileFeedbackReports,
               onTap: () {
                 Navigator.push(
                   context,
@@ -190,7 +191,7 @@ class _ProfilePageState extends State<ProfilePage> {
             const Divider(height: 1, indent: 56),
             _buildMenuItem(
               icon: Icons.settings_outlined,
-              title: 'Instellings',
+              title: context.l10n.profileSettings,
               onTap: () {
                 Navigator.push(
                   context,
@@ -201,7 +202,7 @@ class _ProfilePageState extends State<ProfilePage> {
             const Divider(height: 1, indent: 56),
             _buildMenuItem(
               icon: Icons.logout,
-              title: 'Teken Uit',
+              title: context.l10n.profileSignOut,
               titleColor: Colors.red,
               iconColor: Colors.red,
               onTap: () {
@@ -209,12 +210,12 @@ class _ProfilePageState extends State<ProfilePage> {
                   context: context,
                   builder: (BuildContext context) {
                     return AlertDialog(
-                      title: const Text('Teken Uit'),
-                      content: const Text('Is u seker u wil uitteken?'),
+                      title: Text(context.l10n.profileSignOutConfirmTitle),
+                      content: Text(context.l10n.profileSignOutConfirmBody),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(context),
-                          child: const Text('Kanseleer'),
+                          child: Text(context.l10n.commonCancel),
                         ),
                         TextButton(
                           onPressed: () {
@@ -227,8 +228,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                   builder: (context) => const HomePage()),
                             );
                           },
-                          child: const Text(
-                            'Teken Uit',
+                          child: Text(
+                            context.l10n.profileSignOut,
                             style: TextStyle(color: Colors.red),
                           ),
                         ),
