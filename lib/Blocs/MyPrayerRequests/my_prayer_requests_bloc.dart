@@ -26,7 +26,10 @@ class MyPrayerRequestsBloc
 
       final currentState = state as MyPrayerRequestsSuccess;
       try {
-        await _prayerRequestService.resolvePrayerRequest(event.requestId);
+        await _prayerRequestService.resolvePrayerRequest(
+          event.requestId,
+          praiseReport: event.praiseReport,
+        );
         final requests = await _prayerRequestService.getMyPrayerRequests();
         emit(MyPrayerRequestActionSuccess(
             message: 'Gebedsversoek is afgehandel.'));

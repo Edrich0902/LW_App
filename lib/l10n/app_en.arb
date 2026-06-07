@@ -512,5 +512,11 @@
   "dashboardFollowUs": "Follow Us",
   "dashboardCourses": "Courses",
   "dashboardPrayerRequests": "Prayer Requests",
-  "dashboardBlog": "Blog"
+  "dashboardBlog": "Blog",
+  "prayerPraiseReportLabel": "Answered Prayer (Praise Report)",
+  "prayerResolveDialogTitle": "Mark as resolved",
+  "prayerResolveDialogPrompt": "Would you like to share a testimony of how this prayer was answered? This will encourage the congregation.",
+  "prayerResolveDialogPlaceholder": "Write your testimony here (optional)...",
+  "prayerResolveShareButton": "Share",
+  "prayerResolveSkipButton": "Skip"
 }

@@ -46,12 +46,12 @@ Extend the new group feed into an operational communications loop.
 
 ### 3. Prayer Workflow Completion
 Complete the prayer request lifecycle from submission to care follow-up.
-- Status: portal private requests and pastoral notes trail delivered; app-side and assignment remain
+- Status: private requests (portal/app), portal pastoral notes trail, and app reactions are delivered; other app-side actions and assignment remain
 - Portal: multi-step pastoral notes per request — admins can add/delete internal notes with author + timestamp trail
 - Portal: private request flag — hides the request from the public app view; portal admins see all
-- App: replace generic reaction with `Ek Het Gebid`
+- App: replace generic reaction with `Ek Het Gebid` (delivered as 'Ek bid vir jou')
 - App: allow request owners to post updates / praise reports
-- App: support private prayer requests visible only to church leadership
+- App: support private prayer requests visible only to church leadership (delivered)
 - Portal: assign prayer requests to a leader or team member (deferred)
 
 ### 4. Announcements and Notifications Platform

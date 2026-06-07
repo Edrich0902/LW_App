@@ -101,6 +101,7 @@ class PrayerRequest extends Equatable {
   final String? updatedAt;
   final int reactionCount;
   final bool hasReacted;
+  final String? praiseReport;
 
   const PrayerRequest({
     this.id,
@@ -119,6 +120,7 @@ class PrayerRequest extends Equatable {
     this.updatedAt,
     this.reactionCount = 0,
     this.hasReacted = false,
+    this.praiseReport,
   });
 
   PrayerRequest copyWith({
@@ -138,6 +140,7 @@ class PrayerRequest extends Equatable {
     String? updatedAt,
     int? reactionCount,
     bool? hasReacted,
+    String? praiseReport,
   }) {
     return PrayerRequest(
       id: id ?? this.id,
@@ -156,6 +159,7 @@ class PrayerRequest extends Equatable {
       updatedAt: updatedAt ?? this.updatedAt,
       reactionCount: reactionCount ?? this.reactionCount,
       hasReacted: hasReacted ?? this.hasReacted,
+      praiseReport: praiseReport ?? this.praiseReport,
     );
   }
 
@@ -177,6 +181,7 @@ class PrayerRequest extends Equatable {
       updatedAt: json['updated_at']?.toString(),
       reactionCount: (json['reaction_count'] as num?)?.toInt() ?? 0,
       hasReacted: json['has_reacted'] == true,
+      praiseReport: json['praise_report']?.toString(),
     );
   }
 
@@ -209,5 +214,6 @@ class PrayerRequest extends Equatable {
         updatedAt,
         reactionCount,
         hasReacted,
+        praiseReport,
       ];
 }

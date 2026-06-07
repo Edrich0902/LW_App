@@ -1339,4 +1339,24 @@ class AppLocalizationsAf extends AppLocalizations {
 
   @override
   String get dashboardBlog => 'Blog';
+
+  @override
+  String get prayerPraiseReportLabel => 'Beantwoorde Gebed (Lofgetuienis)';
+
+  @override
+  String get prayerResolveDialogTitle => 'Merk as afgehandel';
+
+  @override
+  String get prayerResolveDialogPrompt =>
+      'Wil jy \'n lofgetuienis (praise report) deel oor hoe hierdie gebed beantwoord is? Dit sal die gemeente bemoedig.';
+
+  @override
+  String get prayerResolveDialogPlaceholder =>
+      'Skryf jou getuienis hier (opsioneel)...';
+
+  @override
+  String get prayerResolveShareButton => 'Deel';
+
+  @override
+  String get prayerResolveSkipButton => 'Oorslaan';
 }

@@ -13,9 +13,10 @@ class LoadMyPrayerRequests extends MyPrayerRequestsEvent {
 
 class ResolveMyPrayerRequest extends MyPrayerRequestsEvent {
   final String requestId;
+  final String? praiseReport;
 
-  const ResolveMyPrayerRequest(this.requestId);
+  const ResolveMyPrayerRequest(this.requestId, {this.praiseReport});
 
   @override
-  List<Object?> get props => [requestId];
+  List<Object?> get props => [requestId, praiseReport];
 }

@@ -35,6 +35,9 @@ class PrayerRequestCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isPraiseReport = request.status == PrayerRequestStatus.resolved &&
+        request.praiseReport != null &&
+        request.praiseReport!.trim().isNotEmpty;
 
     return Card(
       child: Padding(
@@ -60,6 +63,23 @@ class PrayerRequestCard extends StatelessWidget {
                     labelStyle: TextStyle(
                       color: _statusColor(context),
                       fontWeight: FontWeight.w600,
+                    ),
+                    visualDensity: VisualDensity.compact,
+                    shape: const StadiumBorder(),
+                  ),
+                if (isPraiseReport)
+                  Chip(
+                    avatar: Icon(
+                      Icons.check_circle,
+                      size: 14,
+                      color: theme.colorScheme.primary,
+                    ),
+                    label: Text(
+                      context.l10n.prayerPraiseReportLabel,
+                      style: TextStyle(
+                        color: theme.colorScheme.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     visualDensity: VisualDensity.compact,
                     shape: const StadiumBorder(),
@@ -107,12 +127,41 @@ class PrayerRequestCard extends StatelessWidget {
                 ),
               ),
             ],
+            if (isPraiseReport) ...[
+              const SizedBox(height: 12),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceContainerHighest,
+                  borderRadius: LwpRadii.smAll,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      context.l10n.prayerPraiseReportLabel,
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: theme.colorScheme.primary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      request.praiseReport!,
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                  ],
+                ),
+              ),
+            ],
             const SizedBox(height: 12),
             Wrap(
               spacing: 8,
               runSpacing: 8,
               children: [
-                if (onPrayTap != null)
+                if (onPrayTap != null &&
+                    request.status != PrayerRequestStatus.resolved)
                   ActionChip(
                     avatar: Icon(
                       request.hasReacted
@@ -130,6 +179,22 @@ class PrayerRequestCard extends StatelessWidget {
                     ),
                     onPressed: onPrayTap,
                     shape: const StadiumBorder(),
+                  ),
+                if (request.status == PrayerRequestStatus.resolved &&
+                    request.reactionCount > 0)
+                  Chip(
+                    avatar: const Icon(
+                      Icons.favorite,
+                      size: 18,
+                      color: Colors.red,
+                    ),
+                    label: Text(
+                      context.l10n.prayerReactionLabel(
+                        request.reactionCount,
+                      ),
+                    ),
+                    shape: const StadiumBorder(),
+                    backgroundColor: theme.colorScheme.surfaceContainerLow,
                   ),
                 if (onResolveTap != null &&
                     request.status != PrayerRequestStatus.resolved)

@@ -513,5 +513,11 @@
   "dashboardFollowUs": "Volg Ons",
   "dashboardCourses": "Kursusse",
   "dashboardPrayerRequests": "Gebedsversoeke",
-  "dashboardBlog": "Blog"
+  "dashboardBlog": "Blog",
+  "prayerPraiseReportLabel": "Beantwoorde Gebed (Lofgetuienis)",
+  "prayerResolveDialogTitle": "Merk as afgehandel",
+  "prayerResolveDialogPrompt": "Wil jy 'n lofgetuienis (praise report) deel oor hoe hierdie gebed beantwoord is? Dit sal die gemeente bemoedig.",
+  "prayerResolveDialogPlaceholder": "Skryf jou getuienis hier (opsioneel)...",
+  "prayerResolveShareButton": "Deel",
+  "prayerResolveSkipButton": "Oorslaan"
 }

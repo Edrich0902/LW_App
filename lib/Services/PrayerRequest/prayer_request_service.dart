@@ -75,7 +75,7 @@ class PrayerRequestService {
     }
   }
 
-  Future<void> resolvePrayerRequest(String requestId) async {
+  Future<void> resolvePrayerRequest(String requestId, {String? praiseReport}) async {
     try {
       final currentUser = _auth.currentUser;
       if (currentUser == null) {
@@ -87,6 +87,7 @@ class PrayerRequestService {
         'resolved_at': DateTime.now().toUtc().toIso8601String(),
         'resolved_by': currentUser.id,
         'updated_at': DateTime.now().toUtc().toIso8601String(),
+        'praise_report': praiseReport,
       }).eq('id', requestId);
     } catch (error) {
       throw error.toString();

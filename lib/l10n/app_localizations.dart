@@ -2611,6 +2611,42 @@ abstract class AppLocalizations {
   /// In af, this message translates to:
   /// **'Blog'**
   String get dashboardBlog;
+
+  /// No description provided for @prayerPraiseReportLabel.
+  ///
+  /// In af, this message translates to:
+  /// **'Beantwoorde Gebed (Lofgetuienis)'**
+  String get prayerPraiseReportLabel;
+
+  /// No description provided for @prayerResolveDialogTitle.
+  ///
+  /// In af, this message translates to:
+  /// **'Merk as afgehandel'**
+  String get prayerResolveDialogTitle;
+
+  /// No description provided for @prayerResolveDialogPrompt.
+  ///
+  /// In af, this message translates to:
+  /// **'Wil jy \'n lofgetuienis (praise report) deel oor hoe hierdie gebed beantwoord is? Dit sal die gemeente bemoedig.'**
+  String get prayerResolveDialogPrompt;
+
+  /// No description provided for @prayerResolveDialogPlaceholder.
+  ///
+  /// In af, this message translates to:
+  /// **'Skryf jou getuienis hier (opsioneel)...'**
+  String get prayerResolveDialogPlaceholder;
+
+  /// No description provided for @prayerResolveShareButton.
+  ///
+  /// In af, this message translates to:
+  /// **'Deel'**
+  String get prayerResolveShareButton;
+
+  /// No description provided for @prayerResolveSkipButton.
+  ///
+  /// In af, this message translates to:
+  /// **'Oorslaan'**
+  String get prayerResolveSkipButton;
 }
 
 class _AppLocalizationsDelegate

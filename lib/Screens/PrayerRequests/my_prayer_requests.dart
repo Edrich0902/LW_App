@@ -4,6 +4,7 @@ import 'package:lw_app/Extensions/app_localizations_x.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Blocs/MyPrayerRequests/my_prayer_requests_bloc.dart';
 import 'package:lw_app/Models/PrayerRequest/prayer_request.dart';
+import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
@@ -34,6 +35,112 @@ class _MyPrayerRequestsViewState extends State<_MyPrayerRequestsView> {
 
   Future<void> _refresh() async {
     context.read<MyPrayerRequestsBloc>().add(const LoadMyPrayerRequests());
+  }
+
+  void _showResolveBottomSheet(BuildContext context, String requestId) {
+    final textController = TextEditingController();
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (modalContext) {
+        final theme = Theme.of(context);
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(modalContext).viewInsets.bottom,
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              color: theme.scaffoldBackgroundColor,
+              borderRadius: LwpRadii.lgTop,
+            ),
+            padding: const EdgeInsets.all(24.0),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        context.l10n.prayerResolveDialogTitle,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: theme.primaryColor,
+                        ),
+                      ),
+                      InkWell(
+                        onTap: () => Navigator.pop(modalContext),
+                        child: const Icon(Icons.close),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    context.l10n.prayerResolveDialogPrompt,
+                    style: theme.textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: textController,
+                    maxLines: 4,
+                    autofocus: true,
+                    decoration: InputDecoration(
+                      hintText: context.l10n.prayerResolveDialogPlaceholder,
+                      border: OutlineInputBorder(
+                        borderRadius: LwpRadii.lgAll,
+                        borderSide: BorderSide(
+                          color: theme.primaryColor.withValues(alpha: 0.5),
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: LwpRadii.lgAll,
+                        borderSide: BorderSide(
+                          color: theme.primaryColor,
+                          width: 2,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Wrap(
+                    spacing: 12,
+                    runSpacing: 8,
+                    alignment: WrapAlignment.end,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          context.read<MyPrayerRequestsBloc>().add(
+                                ResolveMyPrayerRequest(requestId),
+                              );
+                          Navigator.pop(modalContext);
+                        },
+                        child: Text(context.l10n.prayerResolveSkipButton),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          final text = textController.text.trim();
+                          context.read<MyPrayerRequestsBloc>().add(
+                                ResolveMyPrayerRequest(
+                                  requestId,
+                                  praiseReport: text.isNotEmpty ? text : null,
+                                ),
+                              );
+                          Navigator.pop(modalContext);
+                        },
+                        child: Text(context.l10n.prayerResolveShareButton),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -139,15 +246,7 @@ class _MyPrayerRequestsViewState extends State<_MyPrayerRequestsView> {
                                   showStatus: true,
                                   onResolveTap: request.status !=
                                           PrayerRequestStatus.resolved
-                                      ? () {
-                                          context
-                                              .read<MyPrayerRequestsBloc>()
-                                              .add(
-                                                ResolveMyPrayerRequest(
-                                                  request.id!,
-                                                ),
-                                              );
-                                        }
+                                      ? () => _showResolveBottomSheet(context, request.id!)
                                       : null,
                                 );
                               },

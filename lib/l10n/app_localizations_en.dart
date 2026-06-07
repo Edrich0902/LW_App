@@ -1335,4 +1335,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dashboardBlog => 'Blog';
+
+  @override
+  String get prayerPraiseReportLabel => 'Answered Prayer (Praise Report)';
+
+  @override
+  String get prayerResolveDialogTitle => 'Mark as resolved';
+
+  @override
+  String get prayerResolveDialogPrompt =>
+      'Would you like to share a testimony of how this prayer was answered? This will encourage the congregation.';
+
+  @override
+  String get prayerResolveDialogPlaceholder =>
+      'Write your testimony here (optional)...';
+
+  @override
+  String get prayerResolveShareButton => 'Share';
+
+  @override
+  String get prayerResolveSkipButton => 'Skip';
 }
