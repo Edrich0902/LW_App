@@ -1355,4 +1355,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get prayerResolveSkipButton => 'Skip';
+
+  @override
+  String get dashboardLatestSermonLabel => 'LATEST SERMON';
+
+  @override
+  String get dashboardLatestBlogLabel => 'LATEST BLOG';
+
+  @override
+  String get dashboardWatchAllButton => 'Watch All';
+
+  @override
+  String get dashboardReadAllButton => 'Read All';
+
+  @override
+  String get dashboardVotdLabel => 'VERSE OF THE DAY';
 }

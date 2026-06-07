@@ -13,6 +13,9 @@ import 'package:lw_app/Screens/FirstTimeVisitor/first_time_visitor_screen.dart';
 import 'package:lw_app/Screens/TithesOfferings/tithes_offerings.dart';
 import 'package:lw_app/Screens/PrayerRequests/prayer_requests.dart';
 import 'package:lw_app/Screens/PastoralBlog/pastoral_blog.dart';
+import 'package:lw_app/Screens/PastoralBlog/pastoral_blog_reader.dart';
+import 'package:lw_app/Blocs/PastoralBlog/pastoral_blog_bloc.dart';
+import 'package:lw_app/Widgets/Dashboard/dashboard_hero_blog.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:lw_app/Widgets/LwpAnnouncement/lwp_announcement.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
@@ -46,6 +49,7 @@ class _DashPageState extends State<DashPage> {
   void initState() {
     super.initState();
     context.read<SermonsBloc>().add(LoadSermons());
+    context.read<PastoralBlogBloc>().add(const LoadPastoralBlog());
     final userBloc = context.read<UserBloc>();
     if (userBloc.state is UserInitial) {
       userBloc.add(LoadUser());
@@ -122,6 +126,31 @@ class _DashPageState extends State<DashPage> {
                     return _DashboardPlaceholder(
                       child: LwpError(
                         message: state.error,
+                      ),
+                    );
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
+
+              BlocBuilder<PastoralBlogBloc, PastoralBlogState>(
+                builder: (context, state) {
+                  if (state.status == PastoralBlogStatus.success && state.posts.isNotEmpty) {
+                    final latestPost = state.posts.first;
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 16.0),
+                      child: DashboardHeroBlog(
+                        post: latestPost,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PastoralBlogReaderPage(
+                                postId: latestPost.id,
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     );
                   }

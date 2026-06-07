@@ -17,10 +17,11 @@ class PastoralBlogPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => PastoralBlogBloc()..add(const LoadPastoralBlog()),
-      child: const _PastoralBlogView(),
-    );
+    final bloc = context.read<PastoralBlogBloc>();
+    if (bloc.state.status == PastoralBlogStatus.initial) {
+      bloc.add(const LoadPastoralBlog());
+    }
+    return const _PastoralBlogView();
   }
 }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/Bible/votd_model.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 
@@ -54,7 +55,7 @@ class DashboardVotdCard extends StatelessWidget {
                           borderRadius: LwpRadii.smAll,
                         ),
                         child: Text(
-                          "VERS VAN DIE DAG",
+                          context.l10n.dashboardVotdLabel,
                           style: TextStyle(
                             color: theme.primaryColor,
                             fontSize: 10,

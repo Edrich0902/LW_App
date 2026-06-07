@@ -17,6 +17,7 @@ import 'package:lw_app/Blocs/MoreInfo/more_info_bloc.dart';
 import 'package:lw_app/Blocs/Notes/notes_bloc.dart';
 import 'package:lw_app/Blocs/NoteEdit/note_edit_bloc.dart';
 import 'package:lw_app/Blocs/Sermons/sermons_bloc.dart';
+import 'package:lw_app/Blocs/PastoralBlog/pastoral_blog_bloc.dart';
 import 'package:lw_app/Blocs/SocialMedia/social_media_bloc.dart';
 import 'package:lw_app/Blocs/Events/events_bloc.dart';
 import 'package:lw_app/Blocs/Calendar/calendar_bloc.dart';
@@ -92,6 +93,9 @@ Future<void> main() async {
         ),
         BlocProvider<SermonsBloc>(
           create: (_) => SermonsBloc(),
+        ),
+        BlocProvider<PastoralBlogBloc>(
+          create: (_) => PastoralBlogBloc(),
         ),
         BlocProvider<SocialMediaBloc>(
           create: (_) => SocialMediaBloc(),

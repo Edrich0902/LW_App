@@ -518,5 +518,10 @@
   "prayerResolveDialogPrompt": "Would you like to share a testimony of how this prayer was answered? This will encourage the congregation.",
   "prayerResolveDialogPlaceholder": "Write your testimony here (optional)...",
   "prayerResolveShareButton": "Share",
-  "prayerResolveSkipButton": "Skip"
+  "prayerResolveSkipButton": "Skip",
+  "dashboardLatestSermonLabel": "LATEST SERMON",
+  "dashboardLatestBlogLabel": "LATEST BLOG",
+  "dashboardWatchAllButton": "Watch All",
+  "dashboardReadAllButton": "Read All",
+  "dashboardVotdLabel": "VERSE OF THE DAY"
 }

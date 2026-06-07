@@ -2647,6 +2647,36 @@ abstract class AppLocalizations {
   /// In af, this message translates to:
   /// **'Oorslaan'**
   String get prayerResolveSkipButton;
+
+  /// No description provided for @dashboardLatestSermonLabel.
+  ///
+  /// In af, this message translates to:
+  /// **'NUUTSTE PREEK'**
+  String get dashboardLatestSermonLabel;
+
+  /// No description provided for @dashboardLatestBlogLabel.
+  ///
+  /// In af, this message translates to:
+  /// **'NUUTSTE BLOG'**
+  String get dashboardLatestBlogLabel;
+
+  /// No description provided for @dashboardWatchAllButton.
+  ///
+  /// In af, this message translates to:
+  /// **'Kyk Alle'**
+  String get dashboardWatchAllButton;
+
+  /// No description provided for @dashboardReadAllButton.
+  ///
+  /// In af, this message translates to:
+  /// **'Lees Alle'**
+  String get dashboardReadAllButton;
+
+  /// No description provided for @dashboardVotdLabel.
+  ///
+  /// In af, this message translates to:
+  /// **'VERS VAN DIE DAG'**
+  String get dashboardVotdLabel;
 }
 
 class _AppLocalizationsDelegate

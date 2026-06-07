@@ -71,7 +71,7 @@ Improve sermon discoverability and long-term engagement.
 
 ### 6. Pastoral Blog
 A pastoral communications channel where church leaders author and publish blog-style posts from the portal, which appear as a scrollable feed on the mobile app. Members can react to posts.
-- Status: delivered — Supabase schema (pastoral_posts, pastoral_post_reactions, pastoral_posts_view, RPCs), portal list + editor views, LwpQuillEditor component, app feed screen with reactions, BLoC with optimistic updates, and dashboard tile.
+- Status: delivered — Supabase schema (pastoral_posts, pastoral_post_reactions, pastoral_posts_view, RPCs), portal list + editor views, LwpQuillEditor component, app feed screen with reactions, BLoC with optimistic updates, dashboard tile, and featured latest blog post card on both web and mobile home screens.
 - Backend: `pastoral_posts`, `pastoral_post_reactions`, `pastoral_posts_view`, RPCs for create/update/publish/delete/react
 - Portal: post list (draft/published status), full-page Quill editor with cover image upload and publish toggle
 - App: scrollable post feed with cover images, rich-text body, and amen/prayer/heart reactions

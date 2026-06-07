@@ -1359,4 +1359,19 @@ class AppLocalizationsAf extends AppLocalizations {
 
   @override
   String get prayerResolveSkipButton => 'Oorslaan';
+
+  @override
+  String get dashboardLatestSermonLabel => 'NUUTSTE PREEK';
+
+  @override
+  String get dashboardLatestBlogLabel => 'NUUTSTE BLOG';
+
+  @override
+  String get dashboardWatchAllButton => 'Kyk Alle';
+
+  @override
+  String get dashboardReadAllButton => 'Lees Alle';
+
+  @override
+  String get dashboardVotdLabel => 'VERS VAN DIE DAG';
 }

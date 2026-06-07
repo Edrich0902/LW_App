@@ -519,5 +519,10 @@
   "prayerResolveDialogPrompt": "Wil jy 'n lofgetuienis (praise report) deel oor hoe hierdie gebed beantwoord is? Dit sal die gemeente bemoedig.",
   "prayerResolveDialogPlaceholder": "Skryf jou getuienis hier (opsioneel)...",
   "prayerResolveShareButton": "Deel",
-  "prayerResolveSkipButton": "Oorslaan"
+  "prayerResolveSkipButton": "Oorslaan",
+  "dashboardLatestSermonLabel": "NUUTSTE PREEK",
+  "dashboardLatestBlogLabel": "NUUTSTE BLOG",
+  "dashboardWatchAllButton": "Kyk Alle",
+  "dashboardReadAllButton": "Lees Alle",
+  "dashboardVotdLabel": "VERS VAN DIE DAG"
 }

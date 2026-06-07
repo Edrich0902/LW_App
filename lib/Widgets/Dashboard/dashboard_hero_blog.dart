@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
-import 'package:lw_app/Models/Sermon/sermon.dart';
+import 'package:lw_app/Models/PastoralBlog/pastoral_post.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
-import 'package:lw_app/Screens/Sermons/sermons.dart';
+import 'package:lw_app/Screens/PastoralBlog/pastoral_blog.dart';
 
-class DashboardHeroSermon extends StatelessWidget {
-  final Sermon sermon;
+class DashboardHeroBlog extends StatelessWidget {
+  final PastoralPost post;
   final VoidCallback onTap;
 
-  const DashboardHeroSermon({
+  const DashboardHeroBlog({
     super.key,
-    required this.sermon,
+    required this.post,
     required this.onTap,
   });
 
@@ -20,13 +20,15 @@ class DashboardHeroSermon extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final cardColor = theme.cardTheme.color ?? theme.colorScheme.surface;
+    
+    // Emerald / Teal themed gradients to contrast with the Blue Sermon card
     final heroStartColor = isDark
-        ? Color.lerp(cardColor, theme.primaryColor, 0.4)!
-        : theme.primaryColor;
+        ? Color.lerp(cardColor, const Color(0xFF10B981), 0.25)!
+        : Colors.teal;
     final heroEndColor = isDark
-        ? Color.lerp(cardColor, theme.primaryColor, 0.22)!
-        : theme.primaryColor.withValues(alpha: 0.85);
-    final accentColor = isDark ? theme.primaryColor : Colors.white;
+        ? Color.lerp(cardColor, Colors.teal, 0.15)!
+        : Colors.teal.withValues(alpha: 0.85);
+    final accentColor = isDark ? const Color(0xFF10B981) : Colors.white;
 
     return Container(
       width: double.infinity,
@@ -38,12 +40,12 @@ class DashboardHeroSermon extends StatelessWidget {
           end: Alignment.bottomRight,
         ),
         border: isDark
-            ? Border.all(color: theme.primaryColor.withValues(alpha: 0.35))
+            ? Border.all(color: const Color(0xFF10B981).withValues(alpha: 0.3))
             : null,
         boxShadow: [
           BoxShadow(
             color: isDark
-                ? theme.primaryColor.withValues(alpha: 0.22)
+                ? const Color(0xFF10B981).withValues(alpha: 0.15)
                 : Colors.black.withValues(alpha: 0.1),
             blurRadius: isDark ? 16 : 10,
             offset: const Offset(0, 4),
@@ -70,9 +72,9 @@ class DashboardHeroSermon extends StatelessWidget {
                         borderRadius: LwpRadii.smAll,
                       ),
                       child: Text(
-                        context.l10n.dashboardLatestSermonLabel,
-                        style: TextStyle(
-                          color: accentColor,
+                        context.l10n.dashboardLatestBlogLabel,
+                        style: const TextStyle(
+                          color: Colors.white,
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 1.2,
@@ -85,7 +87,7 @@ class DashboardHeroSermon extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const SermonsPage()),
+                              builder: (context) => const PastoralBlogPage()),
                         );
                       },
                       style: TextButton.styleFrom(
@@ -96,15 +98,15 @@ class DashboardHeroSermon extends StatelessWidget {
                       child: Row(
                         children: [
                           Text(
-                            context.l10n.dashboardWatchAllButton,
-                            style: TextStyle(
-                              color: isDark ? Colors.white70 : Colors.white70,
+                            context.l10n.dashboardReadAllButton,
+                            style: const TextStyle(
+                              color: Colors.white70,
                               fontSize: 12,
                             ),
                           ),
-                          Icon(
+                          const Icon(
                             Icons.chevron_right,
-                            color: isDark ? Colors.white70 : Colors.white70,
+                            color: Colors.white70,
                             size: 16,
                           ),
                         ],
@@ -114,9 +116,9 @@ class DashboardHeroSermon extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  sermon.title ?? "Geen Titel",
+                  post.title,
                   style: theme.textTheme.headlineSmall?.copyWith(
-                    color: isDark ? Colors.white : Colors.white,
+                    color: Colors.white,
                     fontWeight: FontWeight.bold,
                   ),
                   maxLines: 2,
@@ -125,31 +127,31 @@ class DashboardHeroSermon extends StatelessWidget {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.person_outline,
                       size: 14,
-                      color: isDark ? Colors.white70 : Colors.white70,
+                      color: Colors.white70,
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      sermon.pastor ?? "Onbekend",
+                      post.displayAuthorName,
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: isDark ? Colors.white70 : Colors.white70,
+                        color: Colors.white70,
                       ),
                     ),
                     const SizedBox(width: 16),
-                    Icon(
+                    const Icon(
                       Icons.calendar_today_outlined,
                       size: 14,
-                      color: isDark ? Colors.white70 : Colors.white70,
+                      color: Colors.white70,
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      sermon.createdAt != null && sermon.createdAt!.isNotEmpty
-                          ? DateFormatter.formatDate(sermon.createdAt!)
+                      post.createdAt != null && post.createdAt!.isNotEmpty
+                          ? DateFormatter.formatDate(post.createdAt!)
                           : "",
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: isDark ? Colors.white70 : Colors.white70,
+                        color: Colors.white70,
                       ),
                     ),
                   ],
