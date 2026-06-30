@@ -962,6 +962,53 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bibleChapterParseError => 'Could not parse chapter content.';
 
   @override
+  String bibleErrorLoadSpecificVerse(Object error) {
+    return 'Error loading the specific verse: $error';
+  }
+
+  @override
+  String bibleErrorNavigatePreviousBook(Object error) {
+    return 'Error navigating to the previous book: $error';
+  }
+
+  @override
+  String bibleErrorLoadBible(Object error) {
+    return 'Error loading the Bible: $error';
+  }
+
+  @override
+  String bibleErrorChangeTranslation(Object error) {
+    return 'Error changing translation: $error';
+  }
+
+  @override
+  String bibleErrorChangeBook(Object error) {
+    return 'Error changing book: $error';
+  }
+
+  @override
+  String bibleErrorChangeChapter(Object error) {
+    return 'Error changing chapter: $error';
+  }
+
+  @override
+  String get bibleErrorNoTranslations => 'No Bible translations found.';
+
+  @override
+  String get bibleErrorNoBooks => 'No books found.';
+
+  @override
+  String get bibleErrorNoChapters => 'No chapters found.';
+
+  @override
+  String votdErrorLoad(Object error) {
+    return 'Could not load the Verse of the Day: $error';
+  }
+
+  @override
+  String get votdErrorNoTranslations => 'No Bible translations found.';
+
+  @override
   String get bibleProvidedByYouVersion => 'Provided by YouVersion';
 
   @override
@@ -1088,6 +1135,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bibleImageSaveError => 'Could not save the image to your gallery';
 
   @override
+  String get bibleImageFormatSquare => 'Square';
+
+  @override
+  String get bibleImageFormatPortrait => 'Portrait';
+
+  @override
+  String get bibleImageFormatStory => 'Story';
+
+  @override
+  String get bibleImageTextSizeSmall => 'Small';
+
+  @override
+  String get bibleImageTextSizeMedium => 'Medium';
+
+  @override
+  String get bibleImageTextSizeLarge => 'Large';
+
+  @override
   String get myPrayerRequestsEmptyForStatus =>
       'No prayer requests for this status.';
 
@@ -1193,6 +1258,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String upcomingEventCapacity(Object attending, Object capacity) {
     return '$attending / $capacity spots booked';
   }
+
+  @override
+  String get rsvpStatusAttending => 'Yes';
+
+  @override
+  String get rsvpStatusInterested => 'Maybe';
+
+  @override
+  String get rsvpStatusNotAttending => 'No';
 
   @override
   String get groupMembershipStatusPending => 'Pending';
@@ -1370,4 +1444,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dashboardVotdLabel => 'VERSE OF THE DAY';
+
+  @override
+  String get weekdayMonday => 'Monday';
+
+  @override
+  String get weekdayTuesday => 'Tuesday';
+
+  @override
+  String get weekdayWednesday => 'Wednesday';
+
+  @override
+  String get weekdayThursday => 'Thursday';
+
+  @override
+  String get weekdayFriday => 'Friday';
+
+  @override
+  String get weekdaySaturday => 'Saturday';
+
+  @override
+  String get weekdaySunday => 'Sunday';
 }

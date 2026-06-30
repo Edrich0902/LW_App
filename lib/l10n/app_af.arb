@@ -355,6 +355,52 @@
   "bibleLoading": "Laai Bybel",
   "bibleChooseTranslation": "Kies Vertaling",
   "bibleChapterParseError": "Kon nie hoofstuk-inhoud ontleed nie.",
+  "bibleErrorLoadSpecificVerse": "Fout met die laai van die spesifieke vers: {error}",
+  "@bibleErrorLoadSpecificVerse": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "bibleErrorNavigatePreviousBook": "Fout met die navigasie na vorige boek: {error}",
+  "@bibleErrorNavigatePreviousBook": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "bibleErrorLoadBible": "Fout met die laai van die Bybel: {error}",
+  "@bibleErrorLoadBible": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "bibleErrorChangeTranslation": "Fout met die verandering van vertaling: {error}",
+  "@bibleErrorChangeTranslation": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "bibleErrorChangeBook": "Fout met die verandering van boek: {error}",
+  "@bibleErrorChangeBook": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "bibleErrorChangeChapter": "Fout met die verandering van hoofstuk: {error}",
+  "@bibleErrorChangeChapter": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "bibleErrorNoTranslations": "Geen Bybelvertalings gevind nie.",
+  "bibleErrorNoBooks": "Geen boeke gevind nie.",
+  "bibleErrorNoChapters": "Geen hoofstukke gevind nie.",
+  "votdErrorLoad": "Kon nie die Vers van die Dag laai nie: {error}",
+  "@votdErrorLoad": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "votdErrorNoTranslations": "Geen Bybelvertalings gevind nie.",
   "bibleProvidedByYouVersion": "Verskaf deur YouVersion",
   "bibleVersesSelected": "{count} vers(e) gekies",
   "@bibleVersesSelected": {
@@ -411,6 +457,12 @@
   "bibleImageCreating": "Skep...",
   "bibleImageSaved": "Beeld is in jou galery gestoor",
   "bibleImageSaveError": "Kon nie die beeld in jou galery stoor nie",
+  "bibleImageFormatSquare": "Vierkant",
+  "bibleImageFormatPortrait": "Portret",
+  "bibleImageFormatStory": "Storie",
+  "bibleImageTextSizeSmall": "Klein",
+  "bibleImageTextSizeMedium": "Medium",
+  "bibleImageTextSizeLarge": "Groot",
   "myPrayerRequestsEmptyForStatus": "Geen gebedsversoeke vir hierdie status nie.",
   "visitorWelcomeTitle": "Welkom!",
   "visitorUpcomingEventsTitle": "Opkomende Gebeure",
@@ -459,6 +511,9 @@
       "capacity": {}
     }
   },
+  "rsvpStatusAttending": "Ja",
+  "rsvpStatusInterested": "Dalk",
+  "rsvpStatusNotAttending": "Nee",
   "groupMembershipStatusPending": "Hangend",
   "groupMembershipStatusActive": "Aktief",
   "groupMembershipStatusDeclined": "Afgekeur",
@@ -524,5 +579,12 @@
   "dashboardLatestBlogLabel": "NUUTSTE BLOG",
   "dashboardWatchAllButton": "Kyk Alle",
   "dashboardReadAllButton": "Lees Alle",
-  "dashboardVotdLabel": "VERS VAN DIE DAG"
+  "dashboardVotdLabel": "VERS VAN DIE DAG",
+  "weekdayMonday": "Maandag",
+  "weekdayTuesday": "Dinsdag",
+  "weekdayWednesday": "Woensdag",
+  "weekdayThursday": "Donderdag",
+  "weekdayFriday": "Vrydag",
+  "weekdaySaturday": "Saterdag",
+  "weekdaySunday": "Sondag"
 }

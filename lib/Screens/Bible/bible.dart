@@ -454,7 +454,7 @@ class _BiblePageState extends State<BiblePage> {
                   child: LwpLoader(message: context.l10n.bibleLoading));
             } else if (state is BibleError) {
               return LwpError(
-                message: state.message,
+                message: state.getLocalizedMessage(context),
                 onRetry: () =>
                     context.read<BibleBloc>().add(LoadBibleInitial()),
               );

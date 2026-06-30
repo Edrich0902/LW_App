@@ -355,6 +355,52 @@
   "bibleLoading": "Loading Bible",
   "bibleChooseTranslation": "Choose Translation",
   "bibleChapterParseError": "Could not parse chapter content.",
+  "bibleErrorLoadSpecificVerse": "Error loading the specific verse: {error}",
+  "@bibleErrorLoadSpecificVerse": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "bibleErrorNavigatePreviousBook": "Error navigating to the previous book: {error}",
+  "@bibleErrorNavigatePreviousBook": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "bibleErrorLoadBible": "Error loading the Bible: {error}",
+  "@bibleErrorLoadBible": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "bibleErrorChangeTranslation": "Error changing translation: {error}",
+  "@bibleErrorChangeTranslation": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "bibleErrorChangeBook": "Error changing book: {error}",
+  "@bibleErrorChangeBook": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "bibleErrorChangeChapter": "Error changing chapter: {error}",
+  "@bibleErrorChangeChapter": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "bibleErrorNoTranslations": "No Bible translations found.",
+  "bibleErrorNoBooks": "No books found.",
+  "bibleErrorNoChapters": "No chapters found.",
+  "votdErrorLoad": "Could not load the Verse of the Day: {error}",
+  "@votdErrorLoad": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "votdErrorNoTranslations": "No Bible translations found.",
   "bibleProvidedByYouVersion": "Provided by YouVersion",
   "bibleVersesSelected": "{count} verse(s) selected",
   "@bibleVersesSelected": {
@@ -410,6 +456,12 @@
   "bibleImageCreating": "Creating...",
   "bibleImageSaved": "Image saved to your gallery",
   "bibleImageSaveError": "Could not save the image to your gallery",
+  "bibleImageFormatSquare": "Square",
+  "bibleImageFormatPortrait": "Portrait",
+  "bibleImageFormatStory": "Story",
+  "bibleImageTextSizeSmall": "Small",
+  "bibleImageTextSizeMedium": "Medium",
+  "bibleImageTextSizeLarge": "Large",
   "myPrayerRequestsEmptyForStatus": "No prayer requests for this status.",
   "visitorWelcomeTitle": "Welcome!",
   "visitorUpcomingEventsTitle": "Upcoming Events",
@@ -458,6 +510,9 @@
       "capacity": {}
     }
   },
+  "rsvpStatusAttending": "Yes",
+  "rsvpStatusInterested": "Maybe",
+  "rsvpStatusNotAttending": "No",
   "groupMembershipStatusPending": "Pending",
   "groupMembershipStatusActive": "Active",
   "groupMembershipStatusDeclined": "Declined",
@@ -523,5 +578,12 @@
   "dashboardLatestBlogLabel": "LATEST BLOG",
   "dashboardWatchAllButton": "Watch All",
   "dashboardReadAllButton": "Read All",
-  "dashboardVotdLabel": "VERSE OF THE DAY"
+  "dashboardVotdLabel": "VERSE OF THE DAY",
+  "weekdayMonday": "Monday",
+  "weekdayTuesday": "Tuesday",
+  "weekdayWednesday": "Wednesday",
+  "weekdayThursday": "Thursday",
+  "weekdayFriday": "Friday",
+  "weekdaySaturday": "Saturday",
+  "weekdaySunday": "Sunday"
 }

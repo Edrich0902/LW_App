@@ -128,7 +128,7 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
         focusVerseNumber: event.focusVerseNumber,
       ));
     } catch (e) {
-      emit(BibleError('Fout met die laai van die spesifieke vers: $e'));
+      emit(BibleError('bibleErrorLoadSpecificVerse', arg: e.toString()));
     }
   }
 
@@ -200,7 +200,7 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
             isLoading: false,
           ));
         } catch (e) {
-          emit(BibleError('Fout met die navigasie na vorige boek: $e'));
+          emit(BibleError('bibleErrorNavigatePreviousBook', arg: e.toString()));
         }
       }
     }
@@ -214,7 +214,7 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
           await bibleService.getVersions(languages: ['en', 'af']);
 
       if (allVersions.isEmpty) {
-        emit(const BibleError('Geen Bybelvertalings gevind nie.'));
+        emit(const BibleError('bibleErrorNoTranslations'));
         return;
       }
 
@@ -222,7 +222,7 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
 
       final books = await bibleService.getBooks(defaultVersion.id);
       if (books.isEmpty) {
-        emit(const BibleError('Geen boeke gevind nie.'));
+        emit(const BibleError('bibleErrorNoBooks'));
         return;
       }
 
@@ -233,7 +233,7 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
       final chapters =
           await bibleService.getChapters(defaultVersion.id, defaultBook.id);
       if (chapters.isEmpty) {
-        emit(const BibleError('Geen hoofstukke gevind nie.'));
+        emit(const BibleError('bibleErrorNoChapters'));
         return;
       }
 
@@ -261,7 +261,7 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
         verses: verses,
       ));
     } catch (e) {
-      emit(BibleError('Fout met die laai van die Bybel: $e'));
+      emit(BibleError('bibleErrorLoadBible', arg: e.toString()));
     }
   }
 
@@ -306,7 +306,7 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
         isLoading: false,
       ));
     } catch (e) {
-      emit(BibleError('Fout met die verandering van vertaling: $e'));
+      emit(BibleError('bibleErrorChangeTranslation', arg: e.toString()));
     }
   }
 
@@ -339,7 +339,7 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
         isLoading: false,
       ));
     } catch (e) {
-      emit(BibleError('Fout met die verandering van boek: $e'));
+      emit(BibleError('bibleErrorChangeBook', arg: e.toString()));
     }
   }
 
@@ -370,7 +370,7 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
         isLoading: false,
       ));
     } catch (e) {
-      emit(BibleError('Fout met die verandering van hoofstuk: $e'));
+      emit(BibleError('bibleErrorChangeChapter', arg: e.toString()));
     }
   }
 

@@ -51,14 +51,19 @@ class VotdBloc extends Bloc<VotdEvent, VotdState> {
         chapter: chapter,
       )));
     } catch (e) {
-      emit(VotdError('Kon nie die Vers van die Dag laai nie: $e'));
+      final errMsg = e.toString().replaceFirst('Exception: ', '');
+      if (errMsg == 'votdErrorNoTranslations') {
+        emit(const VotdError('votdErrorNoTranslations'));
+      } else {
+        emit(VotdError('votdErrorLoad', arg: errMsg));
+      }
     }
   }
 
   Future<BibleVersion> _getDefaultVersion() async {
     final allVersions = await bibleService.getVersions(languages: ['en', 'af']);
     if (allVersions.isEmpty) {
-      throw Exception('Geen Bybelvertalings gevind nie.');
+      throw Exception('votdErrorNoTranslations');
     }
 
     return allVersions.firstWhereOrNull((v) => v.name.contains('NIV')) ??

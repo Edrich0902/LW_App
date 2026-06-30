@@ -1,4 +1,6 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/widgets.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/Bible/bible_models.dart';
 
 abstract class BibleState extends Equatable {
@@ -90,8 +92,34 @@ class BibleLoaded extends BibleState {
 
 class BibleError extends BibleState {
   final String message;
-  const BibleError(this.message);
+  final String? arg;
+  const BibleError(this.message, {this.arg});
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [message, arg];
+
+  String getLocalizedMessage(BuildContext context) {
+    switch (message) {
+      case 'bibleErrorLoadSpecificVerse':
+        return context.l10n.bibleErrorLoadSpecificVerse(arg ?? '');
+      case 'bibleErrorNavigatePreviousBook':
+        return context.l10n.bibleErrorNavigatePreviousBook(arg ?? '');
+      case 'bibleErrorLoadBible':
+        return context.l10n.bibleErrorLoadBible(arg ?? '');
+      case 'bibleErrorChangeTranslation':
+        return context.l10n.bibleErrorChangeTranslation(arg ?? '');
+      case 'bibleErrorChangeBook':
+        return context.l10n.bibleErrorChangeBook(arg ?? '');
+      case 'bibleErrorChangeChapter':
+        return context.l10n.bibleErrorChangeChapter(arg ?? '');
+      case 'bibleErrorNoTranslations':
+        return context.l10n.bibleErrorNoTranslations;
+      case 'bibleErrorNoBooks':
+        return context.l10n.bibleErrorNoBooks;
+      case 'bibleErrorNoChapters':
+        return context.l10n.bibleErrorNoChapters;
+      default:
+        return message;
+    }
+  }
 }

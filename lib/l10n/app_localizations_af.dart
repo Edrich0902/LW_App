@@ -966,6 +966,53 @@ class AppLocalizationsAf extends AppLocalizations {
   String get bibleChapterParseError => 'Kon nie hoofstuk-inhoud ontleed nie.';
 
   @override
+  String bibleErrorLoadSpecificVerse(Object error) {
+    return 'Fout met die laai van die spesifieke vers: $error';
+  }
+
+  @override
+  String bibleErrorNavigatePreviousBook(Object error) {
+    return 'Fout met die navigasie na vorige boek: $error';
+  }
+
+  @override
+  String bibleErrorLoadBible(Object error) {
+    return 'Fout met die laai van die Bybel: $error';
+  }
+
+  @override
+  String bibleErrorChangeTranslation(Object error) {
+    return 'Fout met die verandering van vertaling: $error';
+  }
+
+  @override
+  String bibleErrorChangeBook(Object error) {
+    return 'Fout met die verandering van boek: $error';
+  }
+
+  @override
+  String bibleErrorChangeChapter(Object error) {
+    return 'Fout met die verandering van hoofstuk: $error';
+  }
+
+  @override
+  String get bibleErrorNoTranslations => 'Geen Bybelvertalings gevind nie.';
+
+  @override
+  String get bibleErrorNoBooks => 'Geen boeke gevind nie.';
+
+  @override
+  String get bibleErrorNoChapters => 'Geen hoofstukke gevind nie.';
+
+  @override
+  String votdErrorLoad(Object error) {
+    return 'Kon nie die Vers van die Dag laai nie: $error';
+  }
+
+  @override
+  String get votdErrorNoTranslations => 'Geen Bybelvertalings gevind nie.';
+
+  @override
   String get bibleProvidedByYouVersion => 'Verskaf deur YouVersion';
 
   @override
@@ -1091,6 +1138,24 @@ class AppLocalizationsAf extends AppLocalizations {
   String get bibleImageSaveError => 'Kon nie die beeld in jou galery stoor nie';
 
   @override
+  String get bibleImageFormatSquare => 'Vierkant';
+
+  @override
+  String get bibleImageFormatPortrait => 'Portret';
+
+  @override
+  String get bibleImageFormatStory => 'Storie';
+
+  @override
+  String get bibleImageTextSizeSmall => 'Klein';
+
+  @override
+  String get bibleImageTextSizeMedium => 'Medium';
+
+  @override
+  String get bibleImageTextSizeLarge => 'Groot';
+
+  @override
   String get myPrayerRequestsEmptyForStatus =>
       'Geen gebedsversoeke vir hierdie status nie.';
 
@@ -1196,6 +1261,15 @@ class AppLocalizationsAf extends AppLocalizations {
   String upcomingEventCapacity(Object attending, Object capacity) {
     return '$attending / $capacity plekke bespreek';
   }
+
+  @override
+  String get rsvpStatusAttending => 'Ja';
+
+  @override
+  String get rsvpStatusInterested => 'Dalk';
+
+  @override
+  String get rsvpStatusNotAttending => 'Nee';
 
   @override
   String get groupMembershipStatusPending => 'Hangend';
@@ -1374,4 +1448,25 @@ class AppLocalizationsAf extends AppLocalizations {
 
   @override
   String get dashboardVotdLabel => 'VERS VAN DIE DAG';
+
+  @override
+  String get weekdayMonday => 'Maandag';
+
+  @override
+  String get weekdayTuesday => 'Dinsdag';
+
+  @override
+  String get weekdayWednesday => 'Woensdag';
+
+  @override
+  String get weekdayThursday => 'Donderdag';
+
+  @override
+  String get weekdayFriday => 'Vrydag';
+
+  @override
+  String get weekdaySaturday => 'Saterdag';
+
+  @override
+  String get weekdaySunday => 'Sondag';
 }

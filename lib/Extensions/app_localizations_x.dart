@@ -1,6 +1,7 @@
 import 'package:lw_app/Models/AppFeedback/app_feedback.dart';
 import 'package:lw_app/Models/Group/group_membership.dart';
 import 'package:lw_app/Models/PrayerRequest/prayer_request.dart';
+import 'package:lw_app/Models/Event/rsvp_status.dart';
 import 'package:lw_app/l10n/app_localizations.dart';
 
 extension FeedbackCategoryL10n on FeedbackCategory {
@@ -89,3 +90,17 @@ extension GroupMembershipStatusL10n on String {
     }
   }
 }
+
+extension RsvpStatusL10n on RsvpStatus {
+  String label(AppLocalizations l10n) {
+    switch (this) {
+      case RsvpStatus.attending:
+        return l10n.rsvpStatusAttending;
+      case RsvpStatus.interested:
+        return l10n.rsvpStatusInterested;
+      case RsvpStatus.notAttending:
+        return l10n.rsvpStatusNotAttending;
+    }
+  }
+}
+

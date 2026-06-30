@@ -17,23 +17,12 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
         List<Event> events = await _eventService.getEvents(type: event.eventType, category: event.eventCategory);
         Map<String, List<Event>> eventsMap = groupBy(events, (obj) => obj.day);
         
-        final Map<String, String> dayTranslation = {
-          "Monday": "Maandag",
-          "Tuesday": "Dinsdag",
-          "Wednesday": "Woensdag",
-          "Thursday": "Donderdag",
-          "Friday": "Vrydag",
-          "Saturday": "Saterdag",
-          "Sunday": "Sondag",
-        };
-
         List<String> englishDays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
         Map<String, List<Event>> sortedEvents = {};
         for (String day in englishDays) {
           if (eventsMap[day] != null) {
-            String afrikaansDay = dayTranslation[day] ?? day;
-            sortedEvents[afrikaansDay] = eventsMap[day]!;
+            sortedEvents[day] = eventsMap[day]!;
           }
         }
 

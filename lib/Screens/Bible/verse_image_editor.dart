@@ -11,26 +11,51 @@ import 'package:lw_app/Utils/share_helper.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 
 enum VerseImageAspectRatio {
-  square('Vierkant', 1),
-  portrait('Portret', 4 / 5),
-  story('Storie', 9 / 16);
+  square(1),
+  portrait(4 / 5),
+  story(9 / 16);
 
-  const VerseImageAspectRatio(this.label, this.value);
+  const VerseImageAspectRatio(this.value);
 
-  final String label;
   final double value;
 }
 
 enum VerseImageTextSize {
-  small('Klein', 24),
-  medium('Medium', 30),
-  large('Groot', 36);
+  small(24),
+  medium(30),
+  large(36);
 
-  const VerseImageTextSize(this.label, this.fontSize);
+  const VerseImageTextSize(this.fontSize);
 
-  final String label;
   final double fontSize;
 }
+
+extension VerseImageAspectRatioExtension on VerseImageAspectRatio {
+  String getLocalizedLabel(BuildContext context) {
+    switch (this) {
+      case VerseImageAspectRatio.square:
+        return context.l10n.bibleImageFormatSquare;
+      case VerseImageAspectRatio.portrait:
+        return context.l10n.bibleImageFormatPortrait;
+      case VerseImageAspectRatio.story:
+        return context.l10n.bibleImageFormatStory;
+    }
+  }
+}
+
+extension VerseImageTextSizeExtension on VerseImageTextSize {
+  String getLocalizedLabel(BuildContext context) {
+    switch (this) {
+      case VerseImageTextSize.small:
+        return context.l10n.bibleImageTextSizeSmall;
+      case VerseImageTextSize.medium:
+        return context.l10n.bibleImageTextSizeMedium;
+      case VerseImageTextSize.large:
+        return context.l10n.bibleImageTextSizeLarge;
+    }
+  }
+}
+
 
 class VerseImageEditorScreen extends StatefulWidget {
   final VerseImageDraft draft;
@@ -190,7 +215,7 @@ class _VerseImageEditorScreenState extends State<VerseImageEditorScreen> {
                   .map(
                     (ratio) => ButtonSegment(
                       value: ratio,
-                      label: Text(ratio.label),
+                      label: Text(ratio.getLocalizedLabel(context)),
                     ),
                   )
                   .toList(),
@@ -206,7 +231,7 @@ class _VerseImageEditorScreenState extends State<VerseImageEditorScreen> {
                   .map(
                     (size) => ButtonSegment(
                       value: size,
-                      label: Text(size.label),
+                      label: Text(size.getLocalizedLabel(context)),
                     ),
                   )
                   .toList(),

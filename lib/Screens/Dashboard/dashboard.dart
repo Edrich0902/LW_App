@@ -216,7 +216,7 @@ class _DashPageState extends State<DashPage> {
                         height: null,
                         padding: const EdgeInsets.all(LwpSpacing.md),
                         child: LwpError(
-                          message: state.message,
+                          message: state.getLocalizedMessage(context),
                           onRetry: () =>
                               _loadVotdForCurrentBibleVersion(context),
                         ),

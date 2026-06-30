@@ -530,7 +530,7 @@ class _GroupFeedPostCard extends StatelessWidget {
                           children: [
                             const Icon(Icons.edit_outlined, size: 20),
                             const SizedBox(width: LwpSpacing.sm),
-                            Text(context.l10n.notesEditTitle),
+                            Text(context.l10n.groupPostEditTitle),
                           ],
                         ),
                       ),

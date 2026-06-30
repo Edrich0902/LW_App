@@ -98,7 +98,7 @@ class _CalendarPageState extends State<CalendarPage> {
                                 children: [
                                   if (isDayHeader) ...[
                                     Text(
-                                      item.toUpperCase(),
+                                      _getLocalizedDay(context, item).toUpperCase(),
                                       style:
                                           theme.textTheme.titleSmall?.copyWith(
                                         color: theme.primaryColor,
@@ -150,5 +150,26 @@ class _CalendarPageState extends State<CalendarPage> {
         ),
       ),
     );
+  }
+
+  String _getLocalizedDay(BuildContext context, String day) {
+    switch (day) {
+      case 'Monday':
+        return context.l10n.weekdayMonday;
+      case 'Tuesday':
+        return context.l10n.weekdayTuesday;
+      case 'Wednesday':
+        return context.l10n.weekdayWednesday;
+      case 'Thursday':
+        return context.l10n.weekdayThursday;
+      case 'Friday':
+        return context.l10n.weekdayFriday;
+      case 'Saturday':
+        return context.l10n.weekdaySaturday;
+      case 'Sunday':
+        return context.l10n.weekdaySunday;
+      default:
+        return day;
+    }
   }
 }

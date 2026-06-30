@@ -1916,6 +1916,72 @@ abstract class AppLocalizations {
   /// **'Kon nie hoofstuk-inhoud ontleed nie.'**
   String get bibleChapterParseError;
 
+  /// No description provided for @bibleErrorLoadSpecificVerse.
+  ///
+  /// In af, this message translates to:
+  /// **'Fout met die laai van die spesifieke vers: {error}'**
+  String bibleErrorLoadSpecificVerse(Object error);
+
+  /// No description provided for @bibleErrorNavigatePreviousBook.
+  ///
+  /// In af, this message translates to:
+  /// **'Fout met die navigasie na vorige boek: {error}'**
+  String bibleErrorNavigatePreviousBook(Object error);
+
+  /// No description provided for @bibleErrorLoadBible.
+  ///
+  /// In af, this message translates to:
+  /// **'Fout met die laai van die Bybel: {error}'**
+  String bibleErrorLoadBible(Object error);
+
+  /// No description provided for @bibleErrorChangeTranslation.
+  ///
+  /// In af, this message translates to:
+  /// **'Fout met die verandering van vertaling: {error}'**
+  String bibleErrorChangeTranslation(Object error);
+
+  /// No description provided for @bibleErrorChangeBook.
+  ///
+  /// In af, this message translates to:
+  /// **'Fout met die verandering van boek: {error}'**
+  String bibleErrorChangeBook(Object error);
+
+  /// No description provided for @bibleErrorChangeChapter.
+  ///
+  /// In af, this message translates to:
+  /// **'Fout met die verandering van hoofstuk: {error}'**
+  String bibleErrorChangeChapter(Object error);
+
+  /// No description provided for @bibleErrorNoTranslations.
+  ///
+  /// In af, this message translates to:
+  /// **'Geen Bybelvertalings gevind nie.'**
+  String get bibleErrorNoTranslations;
+
+  /// No description provided for @bibleErrorNoBooks.
+  ///
+  /// In af, this message translates to:
+  /// **'Geen boeke gevind nie.'**
+  String get bibleErrorNoBooks;
+
+  /// No description provided for @bibleErrorNoChapters.
+  ///
+  /// In af, this message translates to:
+  /// **'Geen hoofstukke gevind nie.'**
+  String get bibleErrorNoChapters;
+
+  /// No description provided for @votdErrorLoad.
+  ///
+  /// In af, this message translates to:
+  /// **'Kon nie die Vers van die Dag laai nie: {error}'**
+  String votdErrorLoad(Object error);
+
+  /// No description provided for @votdErrorNoTranslations.
+  ///
+  /// In af, this message translates to:
+  /// **'Geen Bybelvertalings gevind nie.'**
+  String get votdErrorNoTranslations;
+
   /// No description provided for @bibleProvidedByYouVersion.
   ///
   /// In af, this message translates to:
@@ -2150,6 +2216,42 @@ abstract class AppLocalizations {
   /// **'Kon nie die beeld in jou galery stoor nie'**
   String get bibleImageSaveError;
 
+  /// No description provided for @bibleImageFormatSquare.
+  ///
+  /// In af, this message translates to:
+  /// **'Vierkant'**
+  String get bibleImageFormatSquare;
+
+  /// No description provided for @bibleImageFormatPortrait.
+  ///
+  /// In af, this message translates to:
+  /// **'Portret'**
+  String get bibleImageFormatPortrait;
+
+  /// No description provided for @bibleImageFormatStory.
+  ///
+  /// In af, this message translates to:
+  /// **'Storie'**
+  String get bibleImageFormatStory;
+
+  /// No description provided for @bibleImageTextSizeSmall.
+  ///
+  /// In af, this message translates to:
+  /// **'Klein'**
+  String get bibleImageTextSizeSmall;
+
+  /// No description provided for @bibleImageTextSizeMedium.
+  ///
+  /// In af, this message translates to:
+  /// **'Medium'**
+  String get bibleImageTextSizeMedium;
+
+  /// No description provided for @bibleImageTextSizeLarge.
+  ///
+  /// In af, this message translates to:
+  /// **'Groot'**
+  String get bibleImageTextSizeLarge;
+
   /// No description provided for @myPrayerRequestsEmptyForStatus.
   ///
   /// In af, this message translates to:
@@ -2341,6 +2443,24 @@ abstract class AppLocalizations {
   /// In af, this message translates to:
   /// **'{attending} / {capacity} plekke bespreek'**
   String upcomingEventCapacity(Object attending, Object capacity);
+
+  /// No description provided for @rsvpStatusAttending.
+  ///
+  /// In af, this message translates to:
+  /// **'Ja'**
+  String get rsvpStatusAttending;
+
+  /// No description provided for @rsvpStatusInterested.
+  ///
+  /// In af, this message translates to:
+  /// **'Dalk'**
+  String get rsvpStatusInterested;
+
+  /// No description provided for @rsvpStatusNotAttending.
+  ///
+  /// In af, this message translates to:
+  /// **'Nee'**
+  String get rsvpStatusNotAttending;
 
   /// No description provided for @groupMembershipStatusPending.
   ///
@@ -2677,6 +2797,48 @@ abstract class AppLocalizations {
   /// In af, this message translates to:
   /// **'VERS VAN DIE DAG'**
   String get dashboardVotdLabel;
+
+  /// No description provided for @weekdayMonday.
+  ///
+  /// In af, this message translates to:
+  /// **'Maandag'**
+  String get weekdayMonday;
+
+  /// No description provided for @weekdayTuesday.
+  ///
+  /// In af, this message translates to:
+  /// **'Dinsdag'**
+  String get weekdayTuesday;
+
+  /// No description provided for @weekdayWednesday.
+  ///
+  /// In af, this message translates to:
+  /// **'Woensdag'**
+  String get weekdayWednesday;
+
+  /// No description provided for @weekdayThursday.
+  ///
+  /// In af, this message translates to:
+  /// **'Donderdag'**
+  String get weekdayThursday;
+
+  /// No description provided for @weekdayFriday.
+  ///
+  /// In af, this message translates to:
+  /// **'Vrydag'**
+  String get weekdayFriday;
+
+  /// No description provided for @weekdaySaturday.
+  ///
+  /// In af, this message translates to:
+  /// **'Saterdag'**
+  String get weekdaySaturday;
+
+  /// No description provided for @weekdaySunday.
+  ///
+  /// In af, this message translates to:
+  /// **'Sondag'**
+  String get weekdaySunday;
 }
 
 class _AppLocalizationsDelegate
