@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Blocs/Events/events_bloc.dart';
 import 'package:lw_app/Models/Event/event.dart';
+import 'package:lw_app/Blocs/EventRsvp/event_rsvp_bloc.dart';
 import 'package:lw_app/Models/Event/event_type.dart';
 import 'package:lw_app/Screens/MoreInfo/more_info.dart';
 import 'package:lw_app/Screens/UpcomingEvents/upcoming_event_detail.dart';
@@ -231,7 +232,10 @@ class _FirstTimeVisitorScreenState extends State<FirstTimeVisitorScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => UpcomingEventDetailPage(event: event),
+              builder: (context) => BlocProvider(
+                create: (_) => EventRsvpBloc()..add(InitEventRsvp(event)),
+                child: UpcomingEventDetailPage(event: event),
+              ),
             ),
           );
         },
