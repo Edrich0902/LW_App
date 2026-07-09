@@ -1,58 +1,92 @@
-# Repository Guidelines
+# LW App — Agent Guide
 
-## Project Structure & Module Organization
+Flutter mobile app for **Lewende Woord Paarl** — sermons, notes, events, Bible, groups, prayer, pastoral blog. Platform context: see `../AGENTS.md`. Roadmap: `../roadmap.md`.
 
-This is a Flutter app for Lewende Woord Paarl. Application code lives in `lib/`:
+**UI language:** Afrikaans for all user-facing text. Code identifiers in English.
 
-- `lib/Blocs/`: feature BLoCs, events, and states, grouped by feature such as `Auth`, `Events`, and `Notes`.
-- `lib/Models/`: typed data models and enums.
-- `lib/Screens/`: route and screen-level UI.
-- `lib/Services/`: Supabase, API, auth, storage, and external integration access.
-- `lib/Widgets/`: reusable UI components.
-- `lib/Utils/`: environment, formatting, Cloudinary, and map helpers.
-- `lib/Themes/`: app theme definitions.
+**Stack:** Flutter, BLoC, Supabase, Cloudinary, `flutter_dotenv`.
 
-Tests are in `test/`. Static assets are in `assets/`. Platform projects are under `android/`, `ios/`, and `web/`.
+## Project Structure
 
-## Build, Test, and Development Commands
+- `lib/Screens/` — route-level UI (dispatches BLoC events, renders states only)
+- `lib/Blocs/` — `*_bloc.dart`, `*_event.dart`, `*_state.dart`
+- `lib/Services/` — all Supabase and external API calls
+- `lib/Models/` — immutable typed models
+- `lib/Widgets/` — reusable UI (`Lwp*` prefix)
+- `lib/Utils/` — `environment.dart`, Cloudinary, formatters
+- `lib/Themes/` — `AppTheme`, `LightColors`, `DarkColors`, `LwpRadii`, `LwpSpacing`
 
-- `flutter pub get`: install Dart and Flutter dependencies.
-- `flutter run --dart-define-from-file=.env.development`: run locally with development configuration.
-- `flutter analyze`: run Dart analyzer and project lints.
-- `flutter test`: run widget and unit tests.
-- `flutter build apk`: build an Android APK.
-- `flutter build ios`: build the iOS app from macOS with Xcode configured.
+**Data flow:** `UI → BLoC → Service → Supabase`. Never call Supabase from widgets.
 
-Keep `.env.development` and `.env.production` local, but do not commit secrets.
+`lib/main.dart` bootstraps Supabase, Cloudinary, dotenv, and `MultiBlocProvider`.
 
-## Coding Style & Naming Conventions
+Navigation: bottom tabs in `lib/Screens/Container/container.dart` — Tuis, Kalender, Bybel, Meer Oor Ons, Skakel In.
 
-Use `flutter_lints` from `analysis_options.yaml`. Format Dart with `dart format .` before broad changes. Use `snake_case.dart` for filenames, `UpperCamelCase` for classes/enums, and `lowerCamelCase` for variables/methods.
+## Commands
 
-Keep business logic out of widgets. UI dispatches BLoC events and renders states; BLoCs call `Services`; `Services` handle Supabase or external APIs. Use explicit types and avoid `dynamic` unless required. UI-facing text should remain in Afrikaans; code identifiers stay English.
+```bash
+flutter pub get
+flutter run --dart-define-from-file=.env.development
+flutter analyze                    # run after every code change
+dart format .
+flutter test
+flutter build apk
+flutter build ios                  # macOS + Xcode
+```
 
-## UI Standards & Design Tokens
+## Environment
 
-Always use the project design system instead of hardcoding visual values. Use `Theme.of(context)`, `LightColors`/`DarkColors`, `LwpRadii`, and `LwpSpacing` from `lib/Themes/` for colours, radii, spacing, card shape, and component styling. Do not introduce raw hex colours, ad-hoc `Colors.grey`, numeric border radii, custom card outlines, or one-off spacing unless there is a clear component-specific reason.
+Read config via `lib/Utils/environment.dart`. Never hardcode secrets or URLs.
+`.env.development` / `.env.production` are bundled as assets in `pubspec.yaml`.
 
-Cards should inherit `Theme.of(context).cardTheme` so the shared flat elevation, 24px radius, and light-mode outline stay consistent. Chips and pill-like controls should use `StadiumBorder` or `LwpRadii.pill`. Bottom sheets should use `LwpBottomSheet`/`LwpSheetHandle` where practical. Prefer existing wrappers such as `LwpSnackbar`, `LwpError`, `LwpEmpty`, `LwpLoader`, and themed components instead of direct package or base Flutter equivalents when the project already has an abstraction.
+## UI & Theming
 
-**Component-first rule:** Before writing a raw Flutter widget (e.g. a bare `Image`, `CircleAvatar`, `SnackBar`, `Text` for error states), check whether a project `Lwp*` widget in `lib/Widgets/` already covers the use case. If it does, use it. Only fall back to base Flutter widgets when no existing abstraction fits the need.
+Full branding reference: `THEME.md`.
 
-## Testing Guidelines
+- Use `Theme.of(context)`, `LightColors`/`DarkColors`, `LwpRadii`, `LwpSpacing` — no raw hex, ad-hoc `Colors.grey`, or one-off radii/spacing
+- Cards inherit `Theme.of(context).cardTheme` (flat elevation, 24px radius, light outline)
+- AppBars and buttons: `elevation: 0`
+- Snackbars: always `LwpSnackbar` — never base `SnackBar` or `animated_snack_bar` directly
+- Bottom sheets: `LwpBottomSheet` / `LwpSheetHandle`
+- Chips/pills: `StadiumBorder` or `LwpRadii.pill`
+- Popup menus: inherit `AppTheme.popupMenuTheme` — no per-instance colour/shape; always `Row(Icon, SizedBox, Text)` in items; destructive actions use red + `Icons.delete_outline`
+- Dashboard: hero section → 2-column icon grid; themed loading placeholders
+- Auth: 2:3 split (hero image + form), gradient fade, multi-step wizards with "Stap X van Y"
 
-Use `flutter_test`. Name test files with `_test.dart` under `test/`. Add widget tests for screens/widgets and unit tests for BLoC/service logic where practical. Run `flutter test` and `flutter analyze` before opening a PR.
+### Component-first rule
 
-## Commit & Pull Request Guidelines
+Check `lib/Widgets/` for `Lwp*` abstractions before using raw Flutter widgets (`Image`, `CircleAvatar`, `SnackBar`, etc.).
 
-Recent commits use short, imperative messages with prefixes such as `feature:`, `refactor:`, and `chore:`. Follow that pattern, for example `feature: add sermon details view`.
+## Conventions
 
-Pull requests should include a summary, linked issue or task when available, test results, and screenshots or recordings for UI changes. Note environment, Supabase, or asset changes explicitly.
+- Files: `snake_case.dart`; classes: `UpperCamelCase`; members: `lowerCamelCase`
+- Explicit types; avoid `dynamic`; immutable models; sealed classes/enums for states
+- `share_plus`: always pass `sharePositionOrigin` (iOS crashes without it)
+- Format technical values for display (e.g. `super_admin` → `Super Admin`)
+- Card detail rows: label width `130.0`, `maxLines: 1`, `overflow: TextOverflow.ellipsis`; section dividers `Divider(height: 32)`
 
-## Security & Configuration Tips
+## Groups & Feed
 
-Do not hardcode secrets or environment-specific URLs. Access configuration through `lib/Utils/environment.dart`.
+Full contract and file map: `docs/groups-feed-handoff.md`.
 
+- Group feed is full-screen (not inline in group detail)
+- Leader-authored posts with member reactions; not a chat
+- Pin/unpin via popup menu ("Speld"/"Onthef"); pinned posts badge "Vasgespeld"
+- Feed uses `GroupDetailBloc` (reuses group-detail fetch flow)
 
-## Roadmap Sync Rule
-Always keep LW_Portal_2.0/roadmap.md and LW_App/Roadmap.md in sync when adding new features, reprioritizing work, or marking features complete.
+## Feature Docs
+
+| Doc | When to read |
+|-----|--------------|
+| `docs/groups-feed-handoff.md` | Groups 2.0 feed work |
+| `THEME.md` | Any UI change |
+| `docs/i18n-plan.md` | Future localization |
+| `docs/ui-consistency-plan.md` | Design token rollout (in progress) |
+| `lib/Screens/Bible/BIBLE_IMPLEMENTATION.md` | Bible feature |
+| `you_version_integration.md` | YouVersion API notes |
+
+Delivered plans are in `docs/archive/`.
+
+## Testing
+
+`flutter test` + `flutter analyze` before PR. Tests in `test/` named `*_test.dart`.

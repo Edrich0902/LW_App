@@ -13,7 +13,7 @@ pick up any phase without prior context. Each phase is independent and ships on 
 
 ## 1. Why
 
-The design values are *documented* in `CLAUDE.md` (radius 24, 8pt spacing, theme colours)
+The design values are *documented* in `AGENTS.md` and `THEME.md` (radius 24, 8pt spacing, theme colours)
 but they are hand-typed at every call site. With no shared constants, values drift:
 the same button appears with two radii, cards float in one list and lie flat in the next,
 and the brand colour is re-typed as a raw hex in a dozen files. The fix is to introduce
