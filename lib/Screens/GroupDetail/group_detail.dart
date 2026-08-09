@@ -11,6 +11,7 @@ import 'package:lw_app/Models/Group/group.dart';
 import 'package:lw_app/Models/Group/group_membership.dart';
 import 'package:lw_app/Screens/GroupFeed/group_feed.dart';
 import 'package:lw_app/Themes/custom_theme.dart';
+import 'package:lw_app/Themes/lwp_icons.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/cloudinary_helper.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
@@ -513,7 +514,7 @@ class _GroupActionCard extends StatelessWidget {
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: isBusy ? null : onOpenWhatsApp,
-              icon: const Icon(Icons.chat_bubble_outline),
+              icon: const Icon(LwpIcons.whatsapp),
               label: Text(context.l10n.groupDetailOpenWhatsappGroup),
             ),
           ),
@@ -549,7 +550,7 @@ class _GroupActionCard extends StatelessWidget {
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: isBusy ? null : onOpenWhatsApp,
-              icon: const Icon(Icons.chat_bubble_outline),
+              icon: const Icon(LwpIcons.whatsapp),
               label: Text(context.l10n.groupDetailOpenWhatsappGroup),
             ),
           ),
@@ -1108,7 +1109,7 @@ class _EditGroupSheetState extends State<_EditGroupSheet> {
                 controller: _whatsappController,
                 decoration: InputDecoration(
                   labelText: context.l10n.groupDetailWhatsappLink,
-                  prefixIcon: const Icon(Icons.chat_bubble_outline),
+                  prefixIcon: const Icon(LwpIcons.whatsapp),
                 ),
               ),
               const SizedBox(height: LwpSpacing.md),

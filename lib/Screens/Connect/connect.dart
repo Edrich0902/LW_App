@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
-import 'package:lw_app/Widgets/WhatsappContactFAB/whatsapp_contact_fab.dart';
 import 'package:lw_app/Screens/ConnectGroups/connect_groups.dart';
 import 'package:lw_app/Screens/ServeGroups/serve_groups.dart';
 import 'package:lw_app/Widgets/LwpAnnouncement/lwp_announcement.dart';
@@ -23,7 +22,6 @@ class _ConnectPageState extends State<ConnectPage> {
         title: Text(context.l10n.navConnect),
         actions: const <Widget>[LwpAnnouncementButton(), ProfileActionButton()],
       ),
-      floatingActionButton: const WhatsappContactFAB(),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(

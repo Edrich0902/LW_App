@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Blocs/MoreInfo/more_info_bloc.dart';
-import 'package:lw_app/Widgets/WhatsappContactFAB/whatsapp_contact_fab.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
@@ -40,7 +39,6 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
               state.data.firstWhereOrNull((v) => v.key == 'vision_statement');
 
           return Scaffold(
-            floatingActionButton: const WhatsappContactFAB(),
             body: CustomScrollView(
               slivers: [
                 SliverAppBar(

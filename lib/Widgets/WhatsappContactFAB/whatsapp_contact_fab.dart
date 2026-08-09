@@ -1,30 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:lw_app/Themes/lwp_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class WhatsappContactFAB extends StatefulWidget {
+class WhatsappContactFAB extends StatelessWidget {
   const WhatsappContactFAB({super.key});
 
-  @override
-  State<WhatsappContactFAB> createState() => _WhatsappContactFABState();
-}
-
-class _WhatsappContactFABState extends State<WhatsappContactFAB> {
-  final String url = "https://wa.me/";
-  final String number = "+27727238406";
-
-  @override
-  void initState() {
-    super.initState();
-  }
+  static const String _url = 'https://wa.me/';
+  static const String _number = '+27727238406';
 
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
-      child: const Icon(Icons.message),
       onPressed: () {
-        String link = url + number;
-        launchUrl(Uri.parse(link), mode: LaunchMode.externalApplication);
+        launchUrl(
+          Uri.parse('$_url$_number'),
+          mode: LaunchMode.externalApplication,
+        );
       },
+      child: const Icon(LwpIcons.whatsapp),
     );
   }
 }

@@ -7,6 +7,7 @@ import 'package:lw_app/Blocs/EventRsvp/event_rsvp_bloc.dart';
 import 'package:lw_app/Models/Event/event_type.dart';
 import 'package:lw_app/Screens/MoreInfo/more_info.dart';
 import 'package:lw_app/Screens/UpcomingEvents/upcoming_event_detail.dart';
+import 'package:lw_app/Themes/lwp_icons.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
 import 'package:lw_app/Utils/maps_helper.dart';
@@ -172,7 +173,7 @@ class _FirstTimeVisitorScreenState extends State<FirstTimeVisitorScreen> {
         ),
         DashboardGridCard(
           title: context.l10n.visitorContactUs,
-          icon: Icons.chat_bubble,
+          icon: LwpIcons.whatsapp,
           onTap: () {
             final Uri whatsappUri = Uri.parse("https://wa.me/+27727238406");
             launchUrl(whatsappUri, mode: LaunchMode.externalApplication);

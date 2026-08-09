@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/Group/group.dart';
+import 'package:lw_app/Themes/lwp_icons.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/maps_helper.dart';
 import 'package:lw_app/Widgets/LwpBottomSheet/lwp_bottom_sheet.dart';
@@ -58,7 +59,7 @@ class LwpGroupBottomSheet extends StatelessWidget {
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: () => _launchWhatsApp(context),
-              icon: const Icon(Icons.chat_bubble_outline),
+              icon: const Icon(LwpIcons.whatsapp),
               label: Text(context.l10n.groupJoinWhatsapp),
             ),
           ),
