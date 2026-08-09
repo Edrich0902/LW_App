@@ -290,6 +290,60 @@ abstract class AppLocalizations {
   /// **'Kies jou voorkeurtaal vir die toepassing.'**
   String get settingsLanguageDescription;
 
+  /// No description provided for @settingsNotificationsSection.
+  ///
+  /// In af, this message translates to:
+  /// **'Kennisgewings'**
+  String get settingsNotificationsSection;
+
+  /// No description provided for @settingsNotificationsStatusEnabled.
+  ///
+  /// In af, this message translates to:
+  /// **'Kennisgewings is aangeskakel'**
+  String get settingsNotificationsStatusEnabled;
+
+  /// No description provided for @settingsNotificationsStatusDenied.
+  ///
+  /// In af, this message translates to:
+  /// **'Kennisgewings is afgeskakel of geblokkeer'**
+  String get settingsNotificationsStatusDenied;
+
+  /// No description provided for @settingsNotificationsStatusUnknown.
+  ///
+  /// In af, this message translates to:
+  /// **'Kennisgewingstatus onbekend'**
+  String get settingsNotificationsStatusUnknown;
+
+  /// No description provided for @settingsNotificationsActionEnable.
+  ///
+  /// In af, this message translates to:
+  /// **'Aktiveer kennisgewings'**
+  String get settingsNotificationsActionEnable;
+
+  /// No description provided for @settingsNotificationsActionOpenSettings.
+  ///
+  /// In af, this message translates to:
+  /// **'Maak stelselinstellings oop'**
+  String get settingsNotificationsActionOpenSettings;
+
+  /// No description provided for @settingsNotificationsDescription.
+  ///
+  /// In af, this message translates to:
+  /// **'Ontvang aankondigings, groepopdaterings en blogposings. Tik om toestemming te herstel of stelselinstellings oop te maak.'**
+  String get settingsNotificationsDescription;
+
+  /// No description provided for @settingsNotificationsEnabledSnack.
+  ///
+  /// In af, this message translates to:
+  /// **'Kennisgewings is aangeskakel'**
+  String get settingsNotificationsEnabledSnack;
+
+  /// No description provided for @settingsNotificationsDeniedSnack.
+  ///
+  /// In af, this message translates to:
+  /// **'Stel kennisgewings toe in jou foon se instellings om te ontvang.'**
+  String get settingsNotificationsDeniedSnack;
+
   /// No description provided for @authWelcomeBack.
   ///
   /// In af, this message translates to:

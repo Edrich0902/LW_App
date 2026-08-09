@@ -8,6 +8,9 @@ import 'package:lw_app/Utils/environment.dart';
 import 'package:lw_app/Utils/navigation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:lw_app/firebase_options.dart';
+import 'package:lw_app/Services/Push/push_notification_service.dart';
 
 // Blocs
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -53,6 +56,11 @@ Future<void> main() async {
   // Load environment variables
   await dotenv.load(fileName: Environment.fileName);
 
+  // Init Firebase (FlutterFire options)
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   // Init locale
   initializeDateFormatting();
 
@@ -66,6 +74,9 @@ Future<void> main() async {
   CloudinaryContext.cloudinary = Cloudinary.fromCloudName(
     cloudName: Environment.cloudinaryCloud,
   );
+
+  // Push: local banners, token lifecycle, deep links
+  await PushNotificationService.instance.initialize();
 
   // Start app
   runApp(

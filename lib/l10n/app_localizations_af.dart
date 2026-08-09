@@ -106,6 +106,40 @@ class AppLocalizationsAf extends AppLocalizations {
       'Kies jou voorkeurtaal vir die toepassing.';
 
   @override
+  String get settingsNotificationsSection => 'Kennisgewings';
+
+  @override
+  String get settingsNotificationsStatusEnabled =>
+      'Kennisgewings is aangeskakel';
+
+  @override
+  String get settingsNotificationsStatusDenied =>
+      'Kennisgewings is afgeskakel of geblokkeer';
+
+  @override
+  String get settingsNotificationsStatusUnknown =>
+      'Kennisgewingstatus onbekend';
+
+  @override
+  String get settingsNotificationsActionEnable => 'Aktiveer kennisgewings';
+
+  @override
+  String get settingsNotificationsActionOpenSettings =>
+      'Maak stelselinstellings oop';
+
+  @override
+  String get settingsNotificationsDescription =>
+      'Ontvang aankondigings, groepopdaterings en blogposings. Tik om toestemming te herstel of stelselinstellings oop te maak.';
+
+  @override
+  String get settingsNotificationsEnabledSnack =>
+      'Kennisgewings is aangeskakel';
+
+  @override
+  String get settingsNotificationsDeniedSnack =>
+      'Stel kennisgewings toe in jou foon se instellings om te ontvang.';
+
+  @override
   String get authWelcomeBack => 'Welkom Terug';
 
   @override

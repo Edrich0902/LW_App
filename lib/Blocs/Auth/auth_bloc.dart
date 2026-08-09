@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:lw_app/Services/Auth/auth_service.dart';
+import 'package:lw_app/Services/Push/push_notification_service.dart';
 import 'package:lw_app/Utils/cloudinary_helper.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -67,9 +68,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthLoadingState());
       try {
         await _authService.signInWithEmail(
-            email: event.email,
-            password: event.password
-        );
+            email: event.email, password: event.password);
 
         emit(AuthSuccessState());
       } catch (error) {
@@ -77,9 +76,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     });
 
-    //Sign Out Event
+    // Sign Out Event
     on<SignOutEvent>((event, emit) async {
       try {
+        await PushNotificationService.instance.clearTokenOnLogout();
         await _authService.signOut();
         emit(const UnAuthedState());
       } catch (error) {

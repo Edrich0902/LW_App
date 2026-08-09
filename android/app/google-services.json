@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "8657744202",
+    "project_id": "lwp-app",
+    "storage_bucket": "lwp-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:8657744202:android:b98ce084e53ab67f0351b3",
+        "android_client_info": {
+          "package_name": "com.lw.app.lw_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBB-g3b0fONV80rziRzdsAOiUN1L9PwwKo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -126,7 +126,7 @@ This document captures the current state of Groups 2.0 and the group feed so ano
 - It is a leader-authored post/update feed with member reactions.
 - Rich text is required for posts and reuses the existing Notes-style Quill implementation.
 - Feed authoring is mobile-first. Portal can moderate but does not author.
-- Push notifications are deferred to a later phase.
+- Push notifications for group posts are implemented via FCM (active members excluding author; audience resolved at send time).
 - Comments, attachments, read receipts are not implemented.
 
 ## Important Known Constraints
@@ -139,18 +139,13 @@ This document captures the current state of Groups 2.0 and the group feed so ano
 ## Known Issues Already Solved
 - The earlier `permission denied for table users` error on group management came from `security_invoker = on` on views that joined `auth.users`. Fixed in `20260606143000_fix_groups_view_permissions.sql`.
 
-## Next Recommended Feature: Push Notifications
-This is the last remaining item in roadmap item #2.
-- Trigger: when a leader creates a new group post
-- Audience: all active members of that group
-- Required backend changes:
-  - Add a push notification trigger or function that fires on `group_posts` insert
-  - Requires Firebase Cloud Messaging credentials in Supabase secrets or edge function config
-- Required portal changes:
-  - None required for basic delivery; optionally surface notification delivery status per post in the feed tab
-- Required mobile changes:
-  - Handle the FCM push payload and deep-link into the relevant `GroupFeedPage(groupId: ...)`
-  - Requires the notification routing pattern already used elsewhere in the app
+## Next Recommended Feature: Push Notification Polish
+Group post push is live. Remaining product polish:
+- Deep-link into a specific feed post (`post_id`) when opening from a notification
+- Optional portal “resend” for pastoral blog after unpublish/republish
+- Delivery logging / admin observability
+
+Earlier blueprint (backend trigger + FCM + mobile routing) is implemented. See `supabase/DEPLOYMENT_GUIDE.md` section 3 and `supabase/functions/send-push/`.
 
 ## Verification Status
 - `dart format` was run on the changed app files.

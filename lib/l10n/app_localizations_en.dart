@@ -106,6 +106,37 @@ class AppLocalizationsEn extends AppLocalizations {
       'Choose your preferred app language.';
 
   @override
+  String get settingsNotificationsSection => 'Notifications';
+
+  @override
+  String get settingsNotificationsStatusEnabled => 'Notifications are enabled';
+
+  @override
+  String get settingsNotificationsStatusDenied =>
+      'Notifications are off or blocked';
+
+  @override
+  String get settingsNotificationsStatusUnknown =>
+      'Notification status unknown';
+
+  @override
+  String get settingsNotificationsActionEnable => 'Enable notifications';
+
+  @override
+  String get settingsNotificationsActionOpenSettings => 'Open system settings';
+
+  @override
+  String get settingsNotificationsDescription =>
+      'Receive announcements, group updates, and blog posts. Tap to restore permission or open system settings.';
+
+  @override
+  String get settingsNotificationsEnabledSnack => 'Notifications enabled';
+
+  @override
+  String get settingsNotificationsDeniedSnack =>
+      'Allow notifications in your phone settings to receive them.';
+
+  @override
   String get authWelcomeBack => 'Welcome Back';
 
   @override

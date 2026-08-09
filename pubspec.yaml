@@ -66,12 +66,15 @@ dependencies:
   animated_snack_bar: ^0.4.0
   add_2_calendar_new: ^1.0.4
   shared_preferences: ^2.5.5
-  share_plus: ^7.2.1
+  share_plus: ^12.0.2
   gal: ^2.3.2
   flutter_quill: ^11.5.0
   device_info_plus: ^10.0.0
   package_info_plus: ^8.0.0
   font_awesome_flutter: ^10.8.0
+  firebase_core: ^4.13.0
+  firebase_messaging: ^16.5.0
+  flutter_local_notifications: ^20.1.0
 
 flutter_icons:
   android: "launcher_icon"
