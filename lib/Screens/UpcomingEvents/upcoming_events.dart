@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cloudinary_flutter/image/cld_image.dart';
 import 'package:lw_app/Blocs/Events/events_bloc.dart';
+import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
 import 'package:lw_app/Blocs/EventRsvp/event_rsvp_bloc.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/Event/event.dart';
@@ -9,7 +10,6 @@ import 'package:lw_app/Models/Event/event_type.dart';
 import 'package:lw_app/Screens/UpcomingEvents/upcoming_event_detail.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
-import 'package:lw_app/Widgets/LwpAnnouncement/lwp_announcement.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
@@ -40,16 +40,10 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
 
     return BlocListener<EventsBloc, EventsState>(
       listener: (context, state) {},
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(context.l10n.dashboardUpcomingEvents),
-          actions: const <Widget>[
-            LwpAnnouncementButton(),
-            ProfileActionButton()
-          ],
-        ),
-        body: SafeArea(
-          child: BlocBuilder<EventsBloc, EventsState>(
+      child: LwpChromeScaffold(
+        title: context.l10n.dashboardUpcomingEvents,
+        showDefaultActions: true,
+        body: BlocBuilder<EventsBloc, EventsState>(
             builder: (context, state) {
               if (state is EventsLoading) {
                 return LwpLoader(message: context.l10n.upcomingEventsLoading);
@@ -91,7 +85,6 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
               }
             },
           ),
-        ),
       ),
     );
   }

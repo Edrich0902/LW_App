@@ -40,45 +40,46 @@ class LwpBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Container(
-      height: MediaQuery.of(context).size.height * heightFactor,
-      decoration: BoxDecoration(
-        color: theme.scaffoldBackgroundColor,
-        borderRadius: LwpRadii.lgTop,
-      ),
-      child: Column(
-        children: [
-          Stack(
-            children: [
-              ClipRRect(
-                borderRadius: LwpRadii.lgTop,
-                child: CldImageWidget(
-                  publicId: bannerPublicId ?? 'samples/cloudinary-icon',
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                  height: 200,
-                ),
-              ),
-              Positioned(
-                top: LwpSpacing.sm,
-                right: LwpSpacing.sm,
-                child: CircleAvatar(
-                  backgroundColor: Colors.black.withValues(alpha: 0.3),
-                  child: IconButton(
-                    icon: const Icon(Icons.close, color: Colors.white),
-                    onPressed: () => Navigator.pop(context),
+    return Material(
+      color: theme.scaffoldBackgroundColor,
+      borderRadius: LwpRadii.lgTop,
+      clipBehavior: Clip.antiAlias,
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height * heightFactor,
+        child: Column(
+          children: [
+            Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: LwpRadii.lgTop,
+                  child: CldImageWidget(
+                    publicId: bannerPublicId ?? 'samples/cloudinary-icon',
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    height: 200,
                   ),
                 ),
-              ),
-            ],
-          ),
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(LwpSpacing.lg),
-              child: child,
+                Positioned(
+                  top: LwpSpacing.sm,
+                  right: LwpSpacing.sm,
+                  child: CircleAvatar(
+                    backgroundColor: Colors.black.withValues(alpha: 0.3),
+                    child: IconButton(
+                      icon: const Icon(Icons.close, color: Colors.white),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(LwpSpacing.lg),
+                child: child,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -9,6 +9,7 @@ import 'package:lw_app/Blocs/Notes/notes_bloc.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/Note/note.dart';
 import 'package:lw_app/Utils/quill_helper.dart';
+import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
@@ -161,32 +162,29 @@ class _NotesEditPageState extends State<NotesEditPage> {
             LwpSnackbar.showError(context, context.l10n.notesGenericError);
           }
         },
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text(
-              _isEdit
-                  ? context.l10n.notesEditTitle
-                  : context.l10n.notesCreateTitle,
-            ),
-            actions: [
-              if (_isInitialized)
-                Padding(
-                  padding: const EdgeInsets.only(right: 16),
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 250),
-                    child: _showSaved
-                        ? Icon(
-                            Icons.cloud_done_outlined,
-                            key: const ValueKey(true),
-                            size: 20,
-                            color: iconColor,
-                          )
-                        : SizedBox.shrink(key: const ValueKey(false)),
-                  ),
+        child: LwpChromeScaffold(
+          title: _isEdit
+              ? context.l10n.notesEditTitle
+              : context.l10n.notesCreateTitle,
+          actions: [
+            if (_isInitialized)
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 250),
+                  child: _showSaved
+                      ? Icon(
+                          Icons.cloud_done_outlined,
+                          key: const ValueKey(true),
+                          size: 20,
+                          color: iconColor,
+                        )
+                      : const SizedBox.shrink(key: ValueKey(false)),
                 ),
-            ],
-          ),
+              ),
+          ],
           body: SafeArea(
+            top: false,
             child: BlocBuilder<NoteEditBloc, NoteEditState>(
               buildWhen: (previous, current) =>
                   current is NoteLoading || current is NoteError,

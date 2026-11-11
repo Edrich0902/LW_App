@@ -85,7 +85,12 @@ class PushNotificationService {
     });
 
     if (Supabase.instance.client.auth.currentSession != null) {
-      await registerForPush();
+      try {
+        await registerForPush();
+      } catch (e, st) {
+        // Simulator / cold start often has no APNs token yet — never block app boot.
+        debugPrint('Push register skipped: $e\n$st');
+      }
     }
 
     final initial = await _messaging.getInitialMessage();
@@ -182,7 +187,13 @@ class PushNotificationService {
       await Future<void>.delayed(const Duration(milliseconds: 500));
     }
 
-    final token = await _messaging.getToken();
+    final String? token;
+    try {
+      token = await _messaging.getToken();
+    } catch (e) {
+      debugPrint('FCM getToken failed: $e');
+      return false;
+    }
     if (token == null || token.isEmpty) return false;
 
     _currentToken = token;

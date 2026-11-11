@@ -52,11 +52,10 @@ class _CompareTranslationsSheetState extends State<CompareTranslationsSheet> {
       minChildSize: 0.5,
       maxChildSize: 0.95,
       builder: (context, scrollController) {
-        return Container(
-          decoration: BoxDecoration(
-            color: theme.scaffoldBackgroundColor,
-            borderRadius: LwpRadii.lgTop,
-          ),
+        return Material(
+          color: theme.scaffoldBackgroundColor,
+          borderRadius: LwpRadii.lgTop,
+          clipBehavior: Clip.antiAlias,
           child: Column(
             children: [
               const SizedBox(height: LwpSpacing.xs),
@@ -110,11 +109,14 @@ class _CompareTranslationsSheetState extends State<CompareTranslationsSheet> {
                     hintText: context.l10n.bibleSearchTranslationHint,
                     prefixIcon: const Icon(Icons.search, size: 20),
                     contentPadding: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 16),
+                      vertical: 10,
+                      horizontal: 16,
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: LwpRadii.lgAll,
                       borderSide: BorderSide(
-                          color: theme.primaryColor.withValues(alpha: 0.3)),
+                        color: theme.primaryColor.withValues(alpha: 0.3),
+                      ),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: LwpRadii.lgAll,
@@ -122,52 +124,60 @@ class _CompareTranslationsSheetState extends State<CompareTranslationsSheet> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: LwpRadii.lgAll,
-                      borderSide:
-                          BorderSide(color: theme.primaryColor, width: 2),
+                      borderSide: BorderSide(
+                        color: theme.primaryColor,
+                        width: 2,
+                      ),
                     ),
                   ),
                 ),
               ),
               const SizedBox(height: 12),
               Expanded(
-                child: BlocBuilder<CompareTranslationsBloc,
-                    CompareTranslationsState>(
-                  builder: (context, state) {
-                    if (state is! CompareTranslationsLoaded) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
+                child:
+                    BlocBuilder<
+                      CompareTranslationsBloc,
+                      CompareTranslationsState
+                    >(
+                      builder: (context, state) {
+                        if (state is! CompareTranslationsLoaded) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
 
-                    final versions = state.filteredVersions;
-                    if (versions.isEmpty) {
-                      return Center(
-                        child: Text(
-                          context.l10n.bibleNoTranslationsFound,
-                          style: TextStyle(color: theme.hintColor),
-                        ),
-                      );
-                    }
+                        final versions = state.filteredVersions;
+                        if (versions.isEmpty) {
+                          return Center(
+                            child: Text(
+                              context.l10n.bibleNoTranslationsFound,
+                              style: TextStyle(color: theme.hintColor),
+                            ),
+                          );
+                        }
 
-                    return ListView.builder(
-                      controller: scrollController,
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
-                      itemCount: versions.length,
-                      itemBuilder: (context, index) {
-                        final version = versions[index];
-                        final status = state.resultsByVersionId[version.id] ??
-                            const CompareItemLoading();
-                        return _TranslationCard(
-                          version: version,
-                          status: status,
-                          book: widget.book,
-                          chapter: widget.chapter,
-                          onRetry: () => context
-                              .read<CompareTranslationsBloc>()
-                              .add(RetryComparisonItem(version.id)),
+                        return ListView.builder(
+                          controller: scrollController,
+                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+                          itemCount: versions.length,
+                          itemBuilder: (context, index) {
+                            final version = versions[index];
+                            final status =
+                                state.resultsByVersionId[version.id] ??
+                                const CompareItemLoading();
+                            return _TranslationCard(
+                              version: version,
+                              status: status,
+                              book: widget.book,
+                              chapter: widget.chapter,
+                              onRetry: () => context
+                                  .read<CompareTranslationsBloc>()
+                                  .add(RetryComparisonItem(version.id)),
+                            );
+                          },
                         );
                       },
-                    );
-                  },
-                ),
+                    ),
               ),
             ],
           ),
@@ -235,10 +245,7 @@ class _TranslationCard extends StatelessWidget {
     final text = verses.isEmpty
         ? content.rawHtml.replaceAll(RegExp(r'<[^>]*>'), '').trim()
         : verses.map((v) => '${v.verseNumber} ${v.text}').join('  ');
-    return Text(
-      text,
-      style: theme.textTheme.bodyMedium?.copyWith(height: 1.7),
-    );
+    return Text(text, style: theme.textTheme.bodyMedium?.copyWith(height: 1.7));
   }
 
   @override
@@ -263,8 +270,10 @@ class _TranslationCard extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: theme.primaryColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(LwpRadii.pill),

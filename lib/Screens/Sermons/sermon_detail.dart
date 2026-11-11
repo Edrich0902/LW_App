@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
+import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
 import 'package:lw_app/Models/YoutubeVideo/youtube_video.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Widgets/LwpYoutubePlayer/lwp_youtube_player.dart';
@@ -15,18 +16,9 @@ class SermonDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(context.l10n.sermonDetailTitle),
-        actions: [
-          if (video.youtubeLink != null)
-            IconButton(
-              icon: const Icon(Icons.share),
-              onPressed: () => _shareVideo(context),
-            ),
-        ],
-      ),
-      body: SingleChildScrollView(
+    return LwpChromeScaffold(
+        title: context.l10n.sermonDetailTitle,
+        body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -131,10 +123,12 @@ class SermonDetailPage extends StatelessWidget {
     if (video.youtubeLink != null) {
       final title = video.customTitle ?? video.title;
       final box = context.findRenderObject() as RenderBox?;
-      Share.share(
-        '$title\n${video.youtubeLink}',
-        sharePositionOrigin:
-            box != null ? box.localToGlobal(Offset.zero) & box.size : null,
+      SharePlus.instance.share(
+        ShareParams(
+          text: '$title\n${video.youtubeLink}',
+          sharePositionOrigin:
+              box != null ? box.localToGlobal(Offset.zero) & box.size : null,
+        ),
       );
     }
   }

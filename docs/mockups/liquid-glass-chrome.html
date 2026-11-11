@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="af">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LWP chrome — Nexus-inspired floating glass</title>
+  <style>
+    /*
+      Inspired by nexus-mobile shell (readonly):
+      - TopBar: floating glass islands (left capsule + right cluster), not a full bar
+      - PhoneBar: floating glass tab dock + separate orb, inset from edges
+      - NxGlass: blur + saturate, ambient fill gradient, specular rim, outer shadow
+      LWP keeps its own colours, Afrikaans labels, and GNav-style selected pill.
+    */
+    :root {
+      --bg: #fafafa;
+      --ink: #11181c;
+      --navy: #023059;
+      --amb: #f3f5f7;
+      --muted: #77736b;
+      --outline: #e4e7ea;
+      --surface: #ffffff;
+      --acc: #023059;
+      --blue: #2e86c1;
+      --side: 14px;
+      --dock-h: 62px;
+      --cap-h: 44px;
+      --gap: 10px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #d8dde3;
+      color: var(--ink);
+      min-height: 100vh;
+      padding: 28px 16px 48px;
+    }
+    h1 { text-align: center; font-size: 15px; font-weight: 650; margin-bottom: 6px; }
+    .note {
+      text-align: center; font-size: 12px; color: var(--muted);
+      max-width: 520px; margin: 0 auto 22px; line-height: 1.45;
+    }
+    .phones { display: flex; flex-wrap: wrap; gap: 28px; justify-content: center; }
+    .phone-wrap { width: 340px; }
+    .label {
+      font-size: 11px; font-weight: 650; letter-spacing: 0.07em;
+      text-transform: uppercase; color: var(--muted); text-align: center; margin-bottom: 10px;
+    }
+
+    .phone {
+      width: 340px; height: 720px; border-radius: 42px;
+      border: 1px solid #c5cad1; background: var(--bg);
+      box-shadow: 0 1px 0 rgba(255,255,255,.7) inset, 0 24px 60px rgba(17,24,28,.18);
+      position: relative; overflow: hidden;
+    }
+    .phone.dark { background: #121212; border-color: #2c2c2c; }
+
+    .status {
+      position: absolute; top: 0; left: 0; right: 0; height: 48px;
+      padding: 16px 24px 0; display: flex; justify-content: space-between;
+      font-size: 12px; font-weight: 650; z-index: 50; pointer-events: none;
+    }
+    .phone.dark .status { color: #f2f2f2; }
+
+    /* Content scrolls under floating chrome */
+    .scene {
+      position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden;
+      padding: 108px 16px 120px; scrollbar-width: none;
+    }
+    .scene::-webkit-scrollbar { display: none; }
+
+    .hero {
+      height: 170px; margin: -16px -16px 14px;
+      background:
+        linear-gradient(180deg, transparent 35%, var(--bg) 100%),
+        linear-gradient(135deg, #023059 0%, #2e86c1 45%, #9fd0ef 72%, #efe8dc 100%);
+    }
+    .phone.dark .hero {
+      background:
+        linear-gradient(180deg, transparent 35%, #121212 100%),
+        linear-gradient(135deg, #0a1620, #023059 45%, #2e86c1 80%);
+    }
+    .greeting { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+    .phone.dark .greeting { color: #f5f5f5; }
+    .sub { font-size: 13px; color: var(--muted); margin-bottom: 14px; }
+    .card {
+      background: var(--surface); border: 1px solid var(--outline);
+      border-radius: 24px; padding: 16px; margin-bottom: 12px;
+    }
+    .phone.dark .card { background: #1e1e1e; border-color: #2a2a2a; color: #eee; }
+    .card h3 { font-size: 14px; margin-bottom: 6px; }
+    .card p { font-size: 12px; color: var(--muted); line-height: 1.45; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .tile {
+      background: var(--surface); border: 1px solid var(--outline);
+      border-radius: 24px; padding: 16px 10px; text-align: center;
+      font-size: 11px; font-weight: 650;
+    }
+    .phone.dark .tile { background: #1e1e1e; border-color: #2a2a2a; color: #eee; }
+    .tile .ico {
+      width: 28px; height: 28px; margin: 0 auto 8px; border-radius: 8px;
+      background: rgba(2,48,89,.08); color: var(--navy);
+      display: grid; place-items: center; font-size: 14px;
+    }
+    .phone.dark .tile .ico { background: rgba(46,134,193,.15); color: var(--blue); }
+    .stripe {
+      height: 72px; border-radius: 18px; margin-bottom: 12px;
+      background: linear-gradient(90deg, #11181c, #023059 50%, #2e86c1);
+    }
+    .stripe.warm { background: linear-gradient(90deg, #c4a574, #f0ebe3 40%, #8ec5e8); }
+
+    /* —— NxGlass-like material (ambient tint + blur + rim + outer shadow) —— */
+    .nx-glass {
+      position: relative;
+      isolation: isolate;
+      border-radius: 999px;
+      /* Outer drop shadow only (doesn’t muddy the blur) */
+      filter: drop-shadow(0 12px 14px rgba(0,0,0,.22));
+    }
+    .nx-glass > .pane {
+      position: relative;
+      border-radius: inherit;
+      overflow: hidden;
+      height: 100%;
+      background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.62) 0%,
+        rgba(243, 245, 247, 0.52) 45%,
+        rgba(243, 245, 247, 0.48) 100%
+      );
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+    }
+    /* Specular rim: light top → edge → shade bottom (NxGlassBorder.raised) */
+    .nx-glass > .pane::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(
+        180deg,
+        rgba(255,255,255,.55) 0%,
+        rgba(17,24,28,.12) 30%,
+        rgba(17,24,28,.12) 70%,
+        rgba(0,0,0,.28) 100%
+      );
+      -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+    .phone.dark .nx-glass > .pane {
+      background: linear-gradient(
+        180deg,
+        rgba(255,255,255,.14) 0%,
+        rgba(30,30,30,.55) 45%,
+        rgba(24,24,24,.58) 100%
+      );
+    }
+
+    /* ========== CURRENT (solid, for compare) ========== */
+    .current .appbar {
+      position: absolute; top: 48px; left: 0; right: 0; height: 48px;
+      background: var(--bg); z-index: 40;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .current .appbar .title { font-size: 16px; font-weight: 650; }
+    .current .appbar .action {
+      position: absolute; right: 12px; width: 36px; height: 36px;
+      display: grid; place-items: center;
+    }
+    .current .bottom {
+      position: absolute; left: 0; right: 0; bottom: 0; z-index: 40;
+      background: var(--navy); border-radius: 24px 24px 0 0;
+      padding: 15px 12px 18px;
+    }
+    .current .gnav { display: flex; gap: 2px; }
+    .current .tab {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      gap: 4px; padding: 8px 4px; border-radius: 16px; color: rgba(255,255,255,.88); font-size: 10px;
+    }
+    .current .tab .lbl { display: none; }
+    .current .tab.on { background: #fff; color: var(--navy); padding: 8px 10px; }
+    .current .tab.on .lbl { display: inline; }
+    .current .home-ind {
+      width: 118px; height: 4px; border-radius: 2px; margin: 12px auto 0;
+      background: rgba(255,255,255,.4);
+    }
+
+    /* ========== NEXUS-STYLE FLOATING TOP ========== */
+    .float-top {
+      position: absolute;
+      top: 52px;
+      left: var(--side);
+      right: var(--side);
+      z-index: 40;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      pointer-events: none;
+    }
+    .float-top .nx-glass { pointer-events: auto; }
+
+    .cap-left .pane {
+      height: var(--cap-h);
+      padding: 0 16px 0 14px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+    .cap-left .dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--acc); flex-shrink: 0;
+    }
+    .phone.dark .cap-left .dot { background: var(--blue); }
+    .cap-left .title {
+      font-size: 15px; font-weight: 600; color: var(--ink);
+      white-space: nowrap;
+    }
+    .phone.dark .cap-left .title { color: #f3f3f3; }
+
+    .cap-right .pane {
+      height: var(--cap-h);
+      padding: 0 4px;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+    .icon-btn {
+      width: 36px; height: 36px; border-radius: 18px;
+      display: grid; place-items: center;
+      font-size: 15px; color: var(--ink);
+    }
+    .phone.dark .icon-btn { color: #f3f3f3; }
+    .avatar {
+      width: 30px; height: 30px; border-radius: 15px;
+      background: linear-gradient(135deg, var(--navy), var(--blue));
+      margin-right: 4px;
+    }
+
+    /* ========== NEXUS-STYLE FLOATING PHONE BAR ========== */
+    .float-dock {
+      position: absolute;
+      left: var(--side);
+      right: var(--side);
+      bottom: 16px;
+      height: var(--dock-h);
+      z-index: 40;
+      display: flex;
+      align-items: stretch;
+      gap: var(--gap);
+    }
+
+    .tab-dock {
+      flex: 1;
+      min-width: 0;
+      height: var(--dock-h);
+    }
+    .tab-dock > .pane {
+      display: flex;
+      align-items: center;
+      padding: 4px;
+      gap: 0;
+    }
+
+    .tab {
+      flex: 1;
+      height: 100%;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(17, 24, 28, 0.55);
+      font-size: 17px;
+      position: relative;
+      z-index: 1;
+    }
+    .phone.dark .tab { color: rgba(255,255,255,.55); }
+    .tab.on {
+      color: var(--ink);
+    }
+    .phone.dark .tab.on { color: #f5f5f5; }
+
+    /* Sliding glass lens under selected tab (NxGlassLens) */
+    .lens {
+      position: absolute;
+      top: 4px; bottom: 4px;
+      width: calc((100% - 8px) / 5);
+      left: 4px;
+      border-radius: 999px;
+      background: rgba(17, 24, 28, 0.10);
+      box-shadow:
+        0 4px 14px rgba(0,0,0,.28),
+        inset 0 1px 0 rgba(255,255,255,.45);
+      border: 1px solid rgba(255,255,255,.22);
+      z-index: 0;
+      transition: transform .35s cubic-bezier(.2, .9, .2, 1.15);
+    }
+    .phone.dark .lens {
+      background: rgba(46, 134, 193, 0.22);
+      border-color: rgba(255,255,255,.12);
+    }
+    .tab-dock > .pane { position: relative; }
+    /* lens position via data-index on pane */
+    .tab-dock > .pane[data-i="0"] .lens { transform: translateX(0); }
+    .tab-dock > .pane[data-i="1"] .lens { transform: translateX(100%); }
+    .tab-dock > .pane[data-i="2"] .lens { transform: translateX(200%); }
+    .tab-dock > .pane[data-i="3"] .lens { transform: translateX(300%); }
+    .tab-dock > .pane[data-i="4"] .lens { transform: translateX(400%); }
+
+    /* Separate orb (Nexus search → LWP WhatsApp) */
+    .orb {
+      width: var(--dock-h);
+      height: var(--dock-h);
+      flex-shrink: 0;
+    }
+    .orb > .pane {
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      color: var(--ink);
+    }
+    .phone.dark .orb > .pane { color: #f3f3f3; }
+
+    .hint {
+      margin-top: 18px; text-align: center; font-size: 11px; color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <h1>LWP chrome — Nexus-inspired floating glass</h1>
+  <p class="note">
+    Same idea as Nexus <code>TopBar</code> + <code>PhoneBar</code>: separated floating capsules on top,
+    inset glass tab dock + separate orb at the bottom. Content scrolls underneath.
+    LWP colours / Afrikaans labels kept. Scroll the glass phones to see frost.
+  </p>
+
+  <div class="phones">
+    <!-- Current -->
+    <div class="phone-wrap">
+      <div class="label">Current · solid</div>
+      <div class="phone current">
+        <div class="status"><span>9:41</span><span>5G ■■■</span></div>
+        <header class="appbar"><span class="title">Tuis</span><span class="action">🔔</span></header>
+        <div class="scene">
+          <div class="hero"></div>
+          <div class="greeting">Goeie dag</div>
+          <div class="sub">Welkom by Lewende Woord Paarl</div>
+          <div class="card"><h3>Aankondiging</h3><p>Sondag se diens begin 09:00.</p></div>
+          <div class="stripe"></div>
+          <div class="grid">
+            <div class="tile"><div class="ico">📅</div>Gebeure</div>
+            <div class="tile"><div class="ico">🙏</div>Gebed</div>
+          </div>
+        </div>
+        <nav class="bottom">
+          <div class="gnav">
+            <div class="tab on"><span>🏠</span><span class="lbl">Tuis</span></div>
+            <div class="tab">📅</div>
+            <div class="tab">📖</div>
+            <div class="tab">ℹ️</div>
+            <div class="tab">👥</div>
+          </div>
+          <div class="home-ind"></div>
+        </nav>
+      </div>
+    </div>
+
+    <!-- Glass light -->
+    <div class="phone-wrap">
+      <div class="label">Nexus-style · lig</div>
+      <div class="phone" id="p-light">
+        <div class="status"><span>9:41</span><span>5G ■■■</span></div>
+
+        <div class="float-top">
+          <div class="nx-glass cap-left">
+            <div class="pane">
+              <span class="dot"></span>
+              <span class="title">Tuis</span>
+            </div>
+          </div>
+          <div class="nx-glass cap-right">
+            <div class="pane">
+              <span class="icon-btn" title="Kennisgewings">🔔</span>
+              <span class="avatar" title="Profiel"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="scene">
+          <div class="hero"></div>
+          <div class="greeting">Goeie dag</div>
+          <div class="sub">Welkom by Lewende Woord Paarl</div>
+          <div class="card"><h3>Aankondiging</h3><p>Sondag se diens begin 09:00. Bring ’n vriend saam.</p></div>
+          <div class="stripe"></div>
+          <div class="grid">
+            <div class="tile"><div class="ico">📅</div>Gebeure</div>
+            <div class="tile"><div class="ico">🙏</div>Gebed</div>
+            <div class="tile"><div class="ico">📖</div>Kursusse</div>
+            <div class="tile"><div class="ico">✍️</div>Blog</div>
+          </div>
+          <div class="card" style="margin-top:12px"><h3>Volgende diens</h3><p>Sondag · 09:00 · Hoofsaal</p></div>
+          <div class="stripe warm"></div>
+        </div>
+
+        <div class="float-dock">
+          <div class="nx-glass tab-dock">
+            <div class="pane" data-i="0">
+              <div class="lens"></div>
+              <button class="tab on" data-i="0" type="button">🏠</button>
+              <button class="tab" data-i="1" type="button">📅</button>
+              <button class="tab" data-i="2" type="button">📖</button>
+              <button class="tab" data-i="3" type="button">ℹ️</button>
+              <button class="tab" data-i="4" type="button">👥</button>
+            </div>
+          </div>
+          <div class="nx-glass orb" title="WhatsApp">
+            <div class="pane">💬</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Glass dark -->
+    <div class="phone-wrap">
+      <div class="label">Nexus-style · donker</div>
+      <div class="phone dark" id="p-dark">
+        <div class="status"><span>9:41</span><span>5G ■■■</span></div>
+
+        <div class="float-top">
+          <div class="nx-glass cap-left">
+            <div class="pane">
+              <span class="dot"></span>
+              <span class="title">Tuis</span>
+            </div>
+          </div>
+          <div class="nx-glass cap-right">
+            <div class="pane">
+              <span class="icon-btn">🔔</span>
+              <span class="avatar"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="scene">
+          <div class="hero"></div>
+          <div class="greeting">Goeie dag</div>
+          <div class="sub">Welkom by Lewende Woord Paarl</div>
+          <div class="card"><h3>Aankondiging</h3><p>Sondag se diens begin 09:00.</p></div>
+          <div class="stripe"></div>
+          <div class="grid">
+            <div class="tile"><div class="ico">📅</div>Gebeure</div>
+            <div class="tile"><div class="ico">🙏</div>Gebed</div>
+          </div>
+          <div class="stripe warm"></div>
+          <div class="card"><h3>Pastorale blog</h3><p>Nuwe pos beskikbaar.</p></div>
+        </div>
+
+        <div class="float-dock">
+          <div class="nx-glass tab-dock">
+            <div class="pane" data-i="0">
+              <div class="lens"></div>
+              <button class="tab on" data-i="0" type="button">🏠</button>
+              <button class="tab" data-i="1" type="button">📅</button>
+              <button class="tab" data-i="2" type="button">📖</button>
+              <button class="tab" data-i="3" type="button">ℹ️</button>
+              <button class="tab" data-i="4" type="button">👥</button>
+            </div>
+          </div>
+          <div class="nx-glass orb"><div class="pane">💬</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="hint">Tap tabs to move the glass lens · scroll to see backdrop frost through the chrome.</p>
+
+  <script>
+    document.querySelectorAll('.phone:not(.current) .scene').forEach((el) => { el.scrollTop = 40; });
+
+    document.querySelectorAll('.tab-dock').forEach((dock) => {
+      const pane = dock.querySelector('.pane');
+      dock.querySelectorAll('.tab').forEach((tab) => {
+        tab.addEventListener('click', () => {
+          const i = tab.dataset.i;
+          pane.dataset.i = i;
+          dock.querySelectorAll('.tab').forEach((t) => t.classList.toggle('on', t === tab));
+          const titles = ['Tuis', 'Kalender', 'Bybel', 'Meer', 'Skakel'];
+          const phone = dock.closest('.phone');
+          const titleEl = phone.querySelector('.cap-left .title');
+          if (titleEl) titleEl.textContent = titles[i] || 'Tuis';
+        });
+      });
+    });
+  </script>
+</body>
+</html>

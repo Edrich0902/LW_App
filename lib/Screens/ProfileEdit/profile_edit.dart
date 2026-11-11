@@ -8,6 +8,7 @@ import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Widgets/LwpProfileImage/lwp_profile_image.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 import 'package:lw_app/Widgets/LabeledCheckbox/labeled_checkbox.dart';
+import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 import 'package:image_picker/image_picker.dart';
@@ -84,11 +85,10 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
           );
         }
       },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(context.l10n.profileEditTitle),
-        ),
+      child: LwpChromeScaffold(
+        title: context.l10n.profileEditTitle,
         body: SafeArea(
+          top: false,
           child: BlocBuilder<UserBloc, UserState>(
             builder: (context, state) {
               if (state is UserSuccess) {

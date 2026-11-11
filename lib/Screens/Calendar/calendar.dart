@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:lw_app/Blocs/Calendar/calendar_bloc.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/Event/event_type.dart';
@@ -10,7 +9,7 @@ import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 import 'package:lw_app/Models/Event/event_category.dart';
-import 'package:lw_app/Widgets/LwpAnnouncement/lwp_announcement.dart';
+import 'package:lw_app/Widgets/Glass/lwp_shell_insets.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});
@@ -37,19 +36,13 @@ class _CalendarPageState extends State<CalendarPage> {
         // Listen to state updates and execute logic here
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(context.l10n.navCalendar),
-          actions: const <Widget>[
-            LwpAnnouncementButton(),
-            ProfileActionButton()
-          ],
-          centerTitle: true,
-        ),
-        body: SafeArea(
-          child: BlocBuilder<CalendarBloc, CalendarState>(
+        body: BlocBuilder<CalendarBloc, CalendarState>(
             builder: (context, state) {
               if (state is CalendarLoading) {
-                return LwpLoader(message: context.l10n.calendarLoading);
+                return Padding(
+                  padding: LwpShellInsets.paddingOf(context),
+                  child: LwpLoader(message: context.l10n.calendarLoading),
+                );
               } else if (state is CalendarSuccess) {
                 if (state.eventsMap.isNotEmpty) {
                   // Flatten the map into a list of items for the timeline
@@ -64,8 +57,12 @@ class _CalendarPageState extends State<CalendarPage> {
                         eventType: EventType.WEEKLY,
                         eventCategory: EventCategory.GENERAL)),
                     child: ListView.builder(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0, vertical: 24.0),
+                      padding: EdgeInsets.fromLTRB(
+                        16,
+                        LwpShellInsets.top(context) + 24,
+                        16,
+                        LwpShellInsets.bottom(context) + 24,
+                      ),
                       itemCount: timelineItems.length,
                       itemBuilder: (BuildContext context, int index) {
                         final item = timelineItems[index];
@@ -140,14 +137,19 @@ class _CalendarPageState extends State<CalendarPage> {
                     ),
                   );
                 } else {
-                  return LwpEmpty(message: context.l10n.calendarEmpty);
+                  return Padding(
+                    padding: LwpShellInsets.paddingOf(context),
+                    child: LwpEmpty(message: context.l10n.calendarEmpty),
+                  );
                 }
               } else {
-                return const LwpError();
+                return Padding(
+                  padding: LwpShellInsets.paddingOf(context),
+                  child: const LwpError(),
+                );
               }
             },
           ),
-        ),
       ),
     );
   }

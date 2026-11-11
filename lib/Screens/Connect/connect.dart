@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
-import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:lw_app/Screens/ConnectGroups/connect_groups.dart';
 import 'package:lw_app/Screens/ServeGroups/serve_groups.dart';
-import 'package:lw_app/Widgets/LwpAnnouncement/lwp_announcement.dart';
 import 'package:lw_app/Widgets/Connect/connect_hero.dart';
 import 'package:lw_app/Widgets/Dashboard/dashboard_grid_card.dart';
+import 'package:lw_app/Widgets/Glass/lwp_shell_insets.dart';
 
 class ConnectPage extends StatefulWidget {
   const ConnectPage({super.key});
@@ -18,12 +17,13 @@ class _ConnectPageState extends State<ConnectPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(context.l10n.navConnect),
-        actions: const <Widget>[LwpAnnouncementButton(), ProfileActionButton()],
-      ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.fromLTRB(
+          16,
+          LwpShellInsets.top(context) + 8,
+          16,
+          LwpShellInsets.bottom(context) + 16,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -31,6 +31,7 @@ class _ConnectPageState extends State<ConnectPage> {
             const SizedBox(height: 16),
             GridView.count(
               shrinkWrap: true,
+              padding: EdgeInsets.zero,
               physics: const NeverScrollableScrollPhysics(),
               crossAxisCount: 2,
               crossAxisSpacing: 16,

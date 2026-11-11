@@ -4,6 +4,7 @@ import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/Group/group_post.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/quill_helper.dart';
+import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
 
 class GroupPostDraft {
   final String title;
@@ -62,21 +63,20 @@ class _GroupPostEditPageState extends State<GroupPostEditPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          _isEdit ? context.l10n.groupPostEditTitle : context.l10n.groupPostNewTitle,
-        ),
-        actions: [
-          TextButton(
-            onPressed: _isSaving ? null : _submit,
-            child: Text(
-              _isEdit ? context.l10n.commonSave : context.l10n.groupPostPublish,
-            ),
+    return LwpChromeScaffold(
+      title: _isEdit
+          ? context.l10n.groupPostEditTitle
+          : context.l10n.groupPostNewTitle,
+      actions: [
+        TextButton(
+          onPressed: _isSaving ? null : _submit,
+          child: Text(
+            _isEdit ? context.l10n.commonSave : context.l10n.groupPostPublish,
           ),
-        ],
-      ),
+        ),
+      ],
       body: SafeArea(
+        top: false,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

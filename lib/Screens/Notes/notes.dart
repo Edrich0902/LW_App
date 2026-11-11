@@ -11,6 +11,8 @@ import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
+import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
+import 'package:lw_app/Widgets/Glass/lwp_glass_fab.dart';
 import 'package:lw_app/Utils/quill_helper.dart';
 
 class NotesPage extends StatefulWidget {
@@ -57,11 +59,10 @@ class _NotesPageState extends State<NotesPage> {
           LwpSnackbar.showError(context, context.l10n.notesGenericError);
         }
       },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(context.l10n.notesTitle),
-        ),
-        floatingActionButton: FloatingActionButton(
+      child: LwpChromeScaffold(
+        title: context.l10n.notesTitle,
+        floatingActionButton: LwpGlassFab(
+          heroTag: 'notes-fab',
           onPressed: () {
             Navigator.push(
               context,
@@ -72,8 +73,7 @@ class _NotesPageState extends State<NotesPage> {
           },
           child: const Icon(Icons.add),
         ),
-        body: SafeArea(
-          child: BlocBuilder<NotesBloc, NotesState>(
+        body: BlocBuilder<NotesBloc, NotesState>(
             builder: (context, state) {
               if (state is NotesLoading) {
                 return const LwpLoader();
@@ -151,7 +151,6 @@ class _NotesPageState extends State<NotesPage> {
               }
             },
           ),
-        ),
       ),
     );
   }

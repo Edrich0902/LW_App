@@ -2,6 +2,7 @@ import 'package:cloudinary_flutter/image/cld_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
+import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
 import 'package:lw_app/Blocs/PastoralBlog/pastoral_blog_bloc.dart';
 import 'package:lw_app/Models/PastoralBlog/pastoral_post.dart';
 import 'package:lw_app/Screens/PastoralBlog/pastoral_blog_reader.dart';
@@ -32,8 +33,8 @@ class _PastoralBlogView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<PastoralBlogBloc, PastoralBlogState>(
       builder: (context, state) {
-        return Scaffold(
-          appBar: AppBar(title: Text(context.l10n.pastoralBlogTitle)),
+        return LwpChromeScaffold(
+          title: context.l10n.pastoralBlogTitle,
           body: _buildBody(context, state),
         );
       },

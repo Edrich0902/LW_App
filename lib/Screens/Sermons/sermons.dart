@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
+import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
 import 'package:lw_app/Models/YoutubeVideo/youtube_video.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
@@ -8,7 +9,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
-import 'package:lw_app/Widgets/LwpAnnouncement/lwp_announcement.dart';
 import 'package:lw_app/Screens/Sermons/sermon_detail.dart';
 
 class SermonsPage extends StatefulWidget {
@@ -49,16 +49,10 @@ class _SermonsPageState extends State<SermonsPage> {
 
     return BlocListener<SermonsBloc, SermonsState>(
       listener: (context, state) {},
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(context.l10n.sermonsTitle),
-          actions: const <Widget>[
-            LwpAnnouncementButton(),
-            ProfileActionButton()
-          ],
-        ),
-        body: SafeArea(
-          child: BlocBuilder<SermonsBloc, SermonsState>(
+      child: LwpChromeScaffold(
+        title: context.l10n.sermonsTitle,
+        showDefaultActions: true,
+        body: BlocBuilder<SermonsBloc, SermonsState>(
             builder: (context, state) {
               if (state is SermonsLoading) {
                 return LwpLoader(message: context.l10n.sermonsLoading);
@@ -125,7 +119,6 @@ class _SermonsPageState extends State<SermonsPage> {
               }
             },
           ),
-        ),
       ),
     );
   }

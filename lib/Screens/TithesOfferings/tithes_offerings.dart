@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
+import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
 import 'package:lw_app/Blocs/TithesOfferings/tithes_offerings_bloc.dart';
 import 'package:lw_app/Models/TithesOfferings/tithes_offerings_settings.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
-import 'package:lw_app/Widgets/LwpAnnouncement/lwp_announcement.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
@@ -39,15 +39,10 @@ class _TithesOfferingsScreenState extends State<TithesOfferingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(context.l10n.tithesTitle),
-        actions: const <Widget>[
-          LwpAnnouncementButton(),
-          ProfileActionButton(),
-        ],
-      ),
-      body: BlocBuilder<TithesOfferingsBloc, TithesOfferingsState>(
+    return LwpChromeScaffold(
+        title: context.l10n.tithesTitle,
+        showDefaultActions: true,
+        body: BlocBuilder<TithesOfferingsBloc, TithesOfferingsState>(
         builder: (context, state) {
           if (state is TithesOfferingsLoading ||
               state is TithesOfferingsInitial) {

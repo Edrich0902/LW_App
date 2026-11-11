@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cloudinary_flutter/image/cld_image.dart';
-import 'package:add_2_calendar_new/add_2_calendar_new.dart' as calendar;
+import 'package:add_2_calendar/add_2_calendar.dart' as calendar;
 import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Extensions/app_localizations_x.dart';
 import 'package:lw_app/Blocs/EventRsvp/event_rsvp_bloc.dart';

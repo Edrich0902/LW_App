@@ -4,10 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Blocs/MoreInfo/more_info_bloc.dart';
-import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
-import 'package:lw_app/Widgets/LwpAnnouncement/lwp_announcement.dart';
+import 'package:lw_app/Widgets/Glass/lwp_shell_insets.dart';
 import 'package:collection/collection.dart';
 
 class MoreInfoPage extends StatefulWidget {
@@ -26,12 +25,15 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return BlocBuilder<MoreInfoBloc, MoreInfoState>(
       builder: (context, state) {
         if (state is MoreInfoLoading) {
-          return const Scaffold(body: LwpLoader());
+          return Scaffold(
+            body: Padding(
+              padding: LwpShellInsets.paddingOf(context),
+              child: const LwpLoader(),
+            ),
+          );
         } else if (state is MoreInfoSuccess) {
           final mission =
               state.data.firstWhereOrNull((m) => m.key == 'mission_statement');
@@ -41,31 +43,13 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
           return Scaffold(
             body: CustomScrollView(
               slivers: [
-                SliverAppBar(
-                  expandedHeight: 120.0,
-                  floating: false,
-                  pinned: true,
-                  scrolledUnderElevation: 0,
-                  flexibleSpace: FlexibleSpaceBar(
-                    title: Text(
-                      context.l10n.navMoreInfo,
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    centerTitle: false,
-                    titlePadding: const EdgeInsetsDirectional.only(
-                      start: 16,
-                      bottom: 16,
-                    ),
-                  ),
-                  actions: const <Widget>[
-                    LwpAnnouncementButton(),
-                    ProfileActionButton()
-                  ],
-                ),
                 SliverPadding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: EdgeInsets.fromLTRB(
+                    16,
+                    LwpShellInsets.top(context) + 8,
+                    16,
+                    16,
+                  ),
                   sliver: SliverList(
                     delegate: SliverChildListDelegate([
                       if (mission != null) ...[
@@ -115,8 +99,8 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
                     ),
                   ),
                 ),
-                const SliverToBoxAdapter(
-                  child: SizedBox(height: 100.0), // Padding for FAB
+                SliverToBoxAdapter(
+                  child: SizedBox(height: LwpShellInsets.bottom(context) + 16),
                 ),
               ],
             ),

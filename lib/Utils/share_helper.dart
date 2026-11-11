@@ -13,10 +13,12 @@ class ShareHelper {
     String clipboardMessage = 'Gekopieër na klembord',
   }) async {
     try {
-      await Share.share(
-        text,
-        subject: subject,
-        sharePositionOrigin: _sharePositionOrigin(context),
+      await SharePlus.instance.share(
+        ShareParams(
+          text: text,
+          subject: subject,
+          sharePositionOrigin: _sharePositionOrigin(context),
+        ),
       );
     } on PlatformException {
       // ignore: use_build_context_synchronously
@@ -34,16 +36,18 @@ class ShareHelper {
     String? subject,
   }) async {
     try {
-      await Share.shareXFiles(
-        [
-          XFile.fromData(
-            bytes,
-            name: fileName,
-            mimeType: 'image/png',
-          ),
-        ],
-        subject: subject,
-        sharePositionOrigin: _sharePositionOrigin(context),
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [
+            XFile.fromData(
+              bytes,
+              name: fileName,
+              mimeType: 'image/png',
+            ),
+          ],
+          subject: subject,
+          sharePositionOrigin: _sharePositionOrigin(context),
+        ),
       );
     } catch (_) {
       if (context.mounted) {

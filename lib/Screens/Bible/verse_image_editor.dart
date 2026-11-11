@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/Bible/verse_image_draft.dart';
 import 'package:lw_app/Utils/share_helper.dart';
+import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 
 enum VerseImageAspectRatio {
@@ -160,11 +161,10 @@ class _VerseImageEditorScreenState extends State<VerseImageEditorScreen> {
     final theme = Theme.of(context);
     final canExport = _backgroundImage != null && !_isExporting;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(context.l10n.bibleCreateImage),
-      ),
+    return LwpChromeScaffold(
+      title: context.l10n.bibleCreateImage,
       body: SafeArea(
+        top: false,
         child: ListView(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
           children: [

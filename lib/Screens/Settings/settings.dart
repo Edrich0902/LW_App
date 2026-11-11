@@ -2,6 +2,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/Locale/locale_bloc.dart';
+import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
 import 'package:lw_app/Blocs/Locale/locale_event.dart';
 import 'package:lw_app/Blocs/Locale/locale_state.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
@@ -120,11 +121,10 @@ class _SettingsPageState extends State<SettingsPage>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(context.l10n.settingsTitle),
-      ),
+    return LwpChromeScaffold(
+      title: context.l10n.settingsTitle,
       body: SafeArea(
+        top: false,
         child: ListView(
           padding: const EdgeInsets.all(LwpSpacing.md),
           children: [

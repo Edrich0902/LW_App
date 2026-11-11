@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/MyFeedback/my_feedback_bloc.dart';
+import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
 import 'package:lw_app/Extensions/app_localizations_x.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/AppFeedback/app_feedback.dart';
@@ -8,6 +9,7 @@ import 'package:lw_app/Widgets/Feedback/feedback_item_card.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
+import 'package:lw_app/Widgets/Glass/lwp_glass_fab.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 
 class MyFeedbackPage extends StatelessWidget {
@@ -60,12 +62,10 @@ class _MyFeedbackViewState extends State<_MyFeedbackView> {
           LwpSnackbar.showError(context, state.error);
         }
       },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(context.l10n.feedbackTitle),
-          elevation: 0,
-        ),
-        floatingActionButton: FloatingActionButton(
+      child: LwpChromeScaffold(
+        title: context.l10n.feedbackTitle,
+        floatingActionButton: LwpGlassFab(
+          heroTag: 'feedback-fab',
           onPressed: _showSubmissionSheet,
           tooltip: context.l10n.feedbackSubmitTooltip,
           child: const Icon(Icons.add),

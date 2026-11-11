@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Extensions/app_localizations_x.dart';
+import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Blocs/MyPrayerRequests/my_prayer_requests_bloc.dart';
 import 'package:lw_app/Models/PrayerRequest/prayer_request.dart';
@@ -153,10 +154,8 @@ class _MyPrayerRequestsViewState extends State<_MyPrayerRequestsView> {
           LwpSnackbar.showError(context, state.error);
         }
       },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(context.l10n.profileMyPrayerRequests),
-        ),
+      child: LwpChromeScaffold(
+        title: context.l10n.profileMyPrayerRequests,
         body: BlocBuilder<MyPrayerRequestsBloc, MyPrayerRequestsState>(
           builder: (context, state) {
             if (state is MyPrayerRequestsLoading ||

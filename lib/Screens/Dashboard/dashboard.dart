@@ -16,8 +16,6 @@ import 'package:lw_app/Screens/PastoralBlog/pastoral_blog.dart';
 import 'package:lw_app/Screens/PastoralBlog/pastoral_blog_reader.dart';
 import 'package:lw_app/Blocs/PastoralBlog/pastoral_blog_bloc.dart';
 import 'package:lw_app/Widgets/Dashboard/dashboard_hero_blog.dart';
-import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
-import 'package:lw_app/Widgets/LwpAnnouncement/lwp_announcement.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
@@ -36,6 +34,7 @@ import 'package:lw_app/Screens/Bible/verse_image_editor.dart';
 import 'package:lw_app/Utils/verse_image_formatter.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Widgets/Dashboard/dashboard_greeting.dart';
+import 'package:lw_app/Widgets/Glass/lwp_shell_insets.dart';
 
 class DashPage extends StatefulWidget {
   const DashPage({super.key});
@@ -44,12 +43,22 @@ class DashPage extends StatefulWidget {
   State<DashPage> createState() => _DashPageState();
 }
 
-class _DashPageState extends State<DashPage> {
+class _DashPageState extends State<DashPage>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   void initState() {
     super.initState();
-    context.read<SermonsBloc>().add(LoadSermons());
-    context.read<PastoralBlogBloc>().add(const LoadPastoralBlog());
+    final sermonsBloc = context.read<SermonsBloc>();
+    if (sermonsBloc.state is! SermonsSuccess) {
+      sermonsBloc.add(LoadSermons());
+    }
+    final blogBloc = context.read<PastoralBlogBloc>();
+    if (blogBloc.state.status != PastoralBlogStatus.success) {
+      blogBloc.add(const LoadPastoralBlog());
+    }
     final userBloc = context.read<UserBloc>();
     if (userBloc.state is UserInitial) {
       userBloc.add(LoadUser());
@@ -61,14 +70,17 @@ class _DashPageState extends State<DashPage> {
   }
 
   void _loadVotdForCurrentBibleVersion(BuildContext context) {
+    final votdBloc = context.read<VotdBloc>();
+    if (votdBloc.state is VotdSuccess) return;
     final bibleState = context.read<BibleBloc>().state;
-    context.read<VotdBloc>().add(LoadVotd(
-          version: bibleState is BibleLoaded ? bibleState.currentVersion : null,
-        ));
+    votdBloc.add(LoadVotd(
+      version: bibleState is BibleLoaded ? bibleState.currentVersion : null,
+    ));
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is UnAuthedState) {
@@ -82,15 +94,13 @@ class _DashPageState extends State<DashPage> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(context.l10n.navHome),
-          actions: const <Widget>[
-            LwpAnnouncementButton(),
-            ProfileActionButton()
-          ],
-        ),
         body: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.fromLTRB(
+            16,
+            LwpShellInsets.top(context) + 8,
+            16,
+            LwpShellInsets.bottom(context) + 16,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -230,6 +240,7 @@ class _DashPageState extends State<DashPage> {
               const SizedBox(height: 16),
               GridView.count(
                 shrinkWrap: true,
+                padding: EdgeInsets.zero,
                 physics: const NeverScrollableScrollPhysics(),
                 crossAxisCount: 2,
                 crossAxisSpacing: 16,

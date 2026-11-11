@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
-import 'package:lw_app/Themes/custom_theme.dart';
-import 'package:lw_app/Themes/lwp_tokens.dart';
-import 'package:lw_app/Widgets/WhatsappContactFAB/whatsapp_contact_fab.dart';
-
-// Screens
+import 'package:lw_app/Screens/Bible/bible.dart';
+import 'package:lw_app/Screens/Calendar/calendar.dart';
+import 'package:lw_app/Screens/Connect/connect.dart';
 import 'package:lw_app/Screens/Dashboard/dashboard.dart';
 import 'package:lw_app/Screens/MoreInfo/more_info.dart';
-import 'package:lw_app/Screens/Bible/bible.dart';
-import 'package:lw_app/Screens/Connect/connect.dart';
-import 'package:lw_app/Screens/Calendar/calendar.dart';
+import 'package:lw_app/Widgets/Glass/lwp_phone_bar.dart';
+import 'package:lw_app/Widgets/Glass/lwp_top_bar.dart';
 
 class ContainerPage extends StatefulWidget {
   const ContainerPage({super.key});
@@ -20,106 +16,105 @@ class ContainerPage extends StatefulWidget {
 }
 
 class _ContainerPageState extends State<ContainerPage> {
-  /// Index of the Bible tab in PageView / GNav (FAB is hidden here).
+  /// Bible tab keeps its own AppBar (book/chapter chrome).
   static const int _bibleTabIndex = 2;
 
   final _pageViewController = PageController();
+  final _backdrop = BackdropKey();
   int _selectedIndex = 0;
 
   void itemChanged(int index) {
     setState(() {
       _selectedIndex = index;
-      _pageViewController.animateToPage(index,
-          duration: const Duration(milliseconds: 300), curve: Curves.ease);
+      _pageViewController.animateToPage(
+        index,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.ease,
+      );
     });
   }
 
   void pageChanged(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    setState(() => _selectedIndex = index);
   }
 
-  /// WhatsApp contact FAB on all bottom-nav roots except Bible (reading chrome).
-  bool get _showWhatsappFab => _selectedIndex != _bibleTabIndex;
+  bool get _showFloatingTop => _selectedIndex != _bibleTabIndex;
+
+  String _titleForIndex(BuildContext context) {
+    final l10n = context.l10n;
+    switch (_selectedIndex) {
+      case 1:
+        return l10n.navCalendar;
+      case 2:
+        return l10n.navBible;
+      case 3:
+        return l10n.navMoreInfo;
+      case 4:
+        return l10n.navConnect;
+      case 0:
+      default:
+        return l10n.navHome;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    ThemeData theme = Theme.of(context);
-    final bool isDark = theme.brightness == Brightness.dark;
+    final l10n = context.l10n;
+    final tabs = [
+      LwpNavTab(icon: Icons.home, label: l10n.navHome),
+      LwpNavTab(icon: Icons.calendar_month, label: l10n.navCalendar),
+      LwpNavTab(icon: Icons.menu_book, label: l10n.navBible),
+      LwpNavTab(icon: Icons.info_outline, label: l10n.navMoreInfo),
+      LwpNavTab(icon: Icons.group, label: l10n.navConnect),
+    ];
 
     return Scaffold(
-      body: PageView(
-        controller: _pageViewController,
-        children: const <Widget>[
-          DashPage(),
-          CalendarPage(),
-          BiblePage(),
-          MoreInfoPage(),
-          ConnectPage(),
-        ],
-        onPageChanged: (index) => pageChanged(index),
-      ),
-      floatingActionButton:
-          _showWhatsappFab ? const WhatsappContactFAB() : null,
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: isDark ? DarkColors.surface : theme.primaryColor,
-          borderRadius: LwpRadii.lgTop,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(15, 15, 15, 20),
-          child: GNav(
-            selectedIndex: _selectedIndex,
-            onTabChange: (index) => itemChanged(index),
-            tabs: [
-              GButton(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                icon: Icons.home,
-                text: context.l10n.navHome,
+      extendBody: true,
+      resizeToAvoidBottomInset: false,
+      body: BackdropGroup(
+        backdropKey: _backdrop,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Positioned.fill(
+              child: PageView(
+                controller: _pageViewController,
+                onPageChanged: pageChanged,
+                children: const <Widget>[
+                  DashPage(),
+                  CalendarPage(),
+                  BiblePage(),
+                  MoreInfoPage(),
+                  ConnectPage(),
+                ],
               ),
-              GButton(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                icon: Icons.calendar_month,
-                text: context.l10n.navCalendar,
+            ),
+            // Keep slot stable so the phone-bar State (lens spring) is never remounted.
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: IgnorePointer(
+                ignoring: !_showFloatingTop,
+                child: Opacity(
+                  opacity: _showFloatingTop ? 1 : 0,
+                  child: LwpTopBar(title: _titleForIndex(context)),
+                ),
               ),
-              GButton(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                icon: Icons.menu_book,
-                text: context.l10n.navBible,
+            ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: LwpPhoneBar(
+                tabs: tabs,
+                selectedIndex: _selectedIndex,
+                onTabSelected: itemChanged,
               ),
-              GButton(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                icon: Icons.info_outline,
-                text: context.l10n.navMoreInfo,
-              ),
-              GButton(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                icon: Icons.group,
-                text: context.l10n.navConnect,
-              ),
-            ],
-            gap: 4,
-            padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
-            curve: Curves.easeInOut,
-            duration: const Duration(milliseconds: 300),
-            haptic: true,
-            tabBorderRadius: LwpRadii.lg,
-            tabBackgroundColor: isDark
-                ? theme.primaryColor.withValues(alpha: 0.1)
-                : Colors.white,
-            activeColor: theme.primaryColor,
-            color: isDark ? Colors.white70 : Colors.white,
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
-
-// bottomNavigationBar: AppBottomNav(),

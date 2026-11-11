@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
+import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
 import 'package:lw_app/Models/Event/event.dart';
 import 'package:lw_app/Blocs/Courses/courses_bloc.dart';
 import 'package:lw_app/Models/Event/event_category.dart';
@@ -11,7 +12,6 @@ import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
 import 'package:cloudinary_flutter/image/cld_image.dart';
-import 'package:lw_app/Widgets/LwpAnnouncement/lwp_announcement.dart';
 import 'package:lw_app/Screens/Courses/course_detail.dart';
 
 class CoursesPage extends StatefulWidget {
@@ -38,16 +38,10 @@ class _CoursesPageState extends State<CoursesPage> {
       listener: (context, state) {
         // Listen to state updates and execute logic here
       },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(context.l10n.dashboardCourses),
-          actions: const <Widget>[
-            LwpAnnouncementButton(),
-            ProfileActionButton()
-          ],
-        ),
-        body: SafeArea(
-          child: BlocBuilder<CoursesBloc, CoursesState>(
+      child: LwpChromeScaffold(
+        title: context.l10n.dashboardCourses,
+        showDefaultActions: true,
+        body: BlocBuilder<CoursesBloc, CoursesState>(
             builder: (context, state) {
               if (state is CoursesLoading) {
                 return LwpLoader(message: context.l10n.coursesLoading);
@@ -84,7 +78,6 @@ class _CoursesPageState extends State<CoursesPage> {
               }
             },
           ),
-        ),
       ),
     );
   }

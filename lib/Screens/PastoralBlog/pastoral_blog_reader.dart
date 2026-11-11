@@ -8,6 +8,9 @@ import 'package:lw_app/Models/PastoralBlog/pastoral_post.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
 import 'package:lw_app/Utils/quill_helper.dart';
+import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
+import 'package:lw_app/Widgets/Glass/lwp_shell_insets.dart';
+import 'package:lw_app/Widgets/Glass/lwp_top_bar.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
@@ -36,13 +39,15 @@ class PastoralBlogReaderPage extends StatelessWidget {
               state.posts.where((p) => p.id == postId).firstOrNull;
 
           if (state.status == PastoralBlogStatus.loading && post == null) {
-            return Scaffold(
+            return LwpChromeScaffold(
+              title: context.l10n.pastoralBlogTitle,
               body: LwpLoader(message: context.l10n.pastoralBlogPostLoading),
             );
           }
 
           if (post == null) {
-            return Scaffold(
+            return LwpChromeScaffold(
+              title: context.l10n.pastoralBlogTitle,
               body: LwpEmpty(message: context.l10n.pastoralBlogPostNotFound),
             );
           }
@@ -80,22 +85,22 @@ class _ReaderScaffold extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          // Collapsing header — cover image if available, plain AppBar otherwise
-          SliverAppBar(
-            expandedHeight: post.coverImagePublicId != null ? 260.0 : null,
-            pinned: true,
-            flexibleSpace: post.coverImagePublicId != null
-                ? FlexibleSpaceBar(
-                    background: Stack(
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          CustomScrollView(
+            slivers: [
+              if (post.coverImagePublicId != null)
+                SliverToBoxAdapter(
+                  child: SizedBox(
+                    height: 260,
+                    child: Stack(
                       fit: StackFit.expand,
                       children: [
                         CldImageWidget(
                           publicId: post.coverImagePublicId!,
                           fit: BoxFit.cover,
                         ),
-                        // Gradient so the back arrow stays legible
                         DecoratedBox(
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
@@ -111,19 +116,24 @@ class _ReaderScaffold extends StatelessWidget {
                         ),
                       ],
                     ),
-                  )
-                : null,
-          ),
+                  ),
+                )
+              else
+                SliverToBoxAdapter(
+                  child: SizedBox(height: LwpShellInsets.top(context)),
+                ),
 
-          // Post body
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(
-                LwpSpacing.lg,
-                LwpSpacing.lg,
-                LwpSpacing.lg,
-                LwpSpacing.xxl,
-              ),
+              // Post body
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    LwpSpacing.lg,
+                    post.coverImagePublicId != null
+                        ? LwpSpacing.lg
+                        : LwpSpacing.sm,
+                    LwpSpacing.lg,
+                    LwpSpacing.xxl,
+                  ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -209,6 +219,18 @@ class _ReaderScaffold extends StatelessWidget {
                   ),
                 ],
               ),
+            ),
+          ),
+            ],
+          ),
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: LwpTopBar(
+              title: post.title,
+              showBack: true,
+              showActions: false,
             ),
           ),
         ],

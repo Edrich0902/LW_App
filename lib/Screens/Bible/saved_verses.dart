@@ -13,6 +13,7 @@ import 'package:lw_app/Utils/share_helper.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
+import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 import 'package:collection/collection.dart';
 
@@ -262,27 +263,30 @@ class _SavedVersesPageState extends State<SavedVersesPage>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(context.l10n.savedVersesTitle),
-        bottom: TabBar(
-          controller: _tabController,
-          labelColor: theme.primaryColor,
-          unselectedLabelColor: theme.hintColor,
-          indicatorColor: theme.primaryColor,
-          tabs: [
-            Tab(text: context.l10n.savedVersesSavedTab),
-            Tab(text: context.l10n.savedVersesMyNotesTab),
-          ],
-        ),
-      ),
-      body: _isLoading
-          ? Center(child: LwpLoader(message: context.l10n.savedVersesLoading))
-          : _errorMessage != null
-              ? LwpError(message: _errorMessage!, onRetry: _loadData)
-              : TabBarView(
-                  controller: _tabController,
-                  children: [
+    return LwpChromeScaffold(
+      title: context.l10n.savedVersesTitle,
+      body: Column(
+        children: [
+          TabBar(
+            controller: _tabController,
+            labelColor: theme.primaryColor,
+            unselectedLabelColor: theme.hintColor,
+            indicatorColor: theme.primaryColor,
+            tabs: [
+              Tab(text: context.l10n.savedVersesSavedTab),
+              Tab(text: context.l10n.savedVersesMyNotesTab),
+            ],
+          ),
+          Expanded(
+            child: _isLoading
+                ? Center(
+                    child: LwpLoader(message: context.l10n.savedVersesLoading),
+                  )
+                : _errorMessage != null
+                    ? LwpError(message: _errorMessage!, onRetry: _loadData)
+                    : TabBarView(
+                        controller: _tabController,
+                        children: [
                     // Saved Verses Tab
                     _savedVerses.isEmpty
                         ? LwpEmpty(
@@ -519,8 +523,11 @@ class _SavedVersesPageState extends State<SavedVersesPage>
                               );
                             },
                           ),
-                  ],
-                ),
+                        ],
+                      ),
+              ),
+            ],
+      ),
     );
   }
 }

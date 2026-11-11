@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
+import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
 import 'package:lw_app/Blocs/MyGroups/my_groups_bloc.dart';
 import 'package:lw_app/Screens/GroupDetail/group_detail.dart';
 import 'package:lw_app/Widgets/Group/lwp_group_card.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
-import 'package:lw_app/Widgets/LwpAnnouncement/lwp_announcement.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:lw_app/Widgets/WhatsappContactFAB/whatsapp_contact_fab.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
@@ -31,14 +31,11 @@ class _MyGroupsView extends StatelessWidget {
   Widget build(BuildContext context) {
     final myGroupsBloc = context.read<MyGroupsBloc>();
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(context.l10n.myGroupsTitle),
-        actions: const <Widget>[LwpAnnouncementButton(), ProfileActionButton()],
-      ),
-      floatingActionButton: const WhatsappContactFAB(),
-      body: SafeArea(
-        child: BlocBuilder<MyGroupsBloc, MyGroupsState>(
+    return LwpChromeScaffold(
+        title: context.l10n.myGroupsTitle,
+        showDefaultActions: true,
+        floatingActionButton: const WhatsappContactFAB(),
+        body: BlocBuilder<MyGroupsBloc, MyGroupsState>(
           builder: (context, state) {
             if (state.status == MyGroupsStatus.loading && !state.isRefreshing) {
               return LwpLoader(message: context.l10n.myGroupsLoading);
@@ -111,7 +108,7 @@ class _MyGroupsView extends StatelessWidget {
             );
           },
         ),
-      ),
+
     );
   }
 }

@@ -17,6 +17,7 @@ import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/cloudinary_helper.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
 import 'package:lw_app/Utils/maps_helper.dart';
+import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
@@ -71,26 +72,24 @@ class _GroupDetailViewState extends State<_GroupDetailView> {
         builder: (context, state) {
           final group = state.group;
 
-          return Scaffold(
-            appBar: AppBar(
-              title: Text(group?.title ?? context.l10n.groupDetailTitle),
-              actions: [
-                if (group != null && (group.isActiveMember || group.isLeader))
-                  IconButton(
-                    onPressed: () => _openFeed(context, group),
-                    icon: const Icon(Icons.dynamic_feed_outlined),
-                    tooltip: context.l10n.groupDetailOpenFeedTooltip,
-                  ),
-                if (group?.isLeader == true)
-                  IconButton(
-                    onPressed: state.isActionInProgress
-                        ? null
-                        : () => _showEditSheet(context, group!),
-                    icon: const Icon(Icons.edit_outlined),
-                    tooltip: context.l10n.groupDetailEditTooltip,
-                  ),
-              ],
-            ),
+          return LwpChromeScaffold(
+            title: group?.title ?? context.l10n.groupDetailTitle,
+            actions: [
+              if (group != null && (group.isActiveMember || group.isLeader))
+                IconButton(
+                  onPressed: () => _openFeed(context, group),
+                  icon: const Icon(Icons.dynamic_feed_outlined),
+                  tooltip: context.l10n.groupDetailOpenFeedTooltip,
+                ),
+              if (group?.isLeader == true)
+                IconButton(
+                  onPressed: state.isActionInProgress
+                      ? null
+                      : () => _showEditSheet(context, group!),
+                  icon: const Icon(Icons.edit_outlined),
+                  tooltip: context.l10n.groupDetailEditTooltip,
+                ),
+            ],
             body: _buildBody(context, state),
           );
         },

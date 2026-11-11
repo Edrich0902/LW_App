@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lw_app/Blocs/Auth/auth_bloc.dart';
+import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
 import 'package:lw_app/Blocs/User/user_bloc.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Screens/ProfileEdit/profile_edit.dart';
@@ -34,13 +35,10 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(context.l10n.profileTitle),
-      ),
-      floatingActionButton: const WhatsappContactFAB(),
-      body: SafeArea(
-        child: SingleChildScrollView(
+    return LwpChromeScaffold(
+        title: context.l10n.profileTitle,
+        floatingActionButton: const WhatsappContactFAB(),
+        body: SingleChildScrollView(
           child: Column(
             children: [
               const SizedBox(height: 24),
@@ -50,7 +48,6 @@ class _ProfilePageState extends State<ProfilePage> {
               const SizedBox(height: 24),
             ],
           ),
-        ),
       ),
     );
   }

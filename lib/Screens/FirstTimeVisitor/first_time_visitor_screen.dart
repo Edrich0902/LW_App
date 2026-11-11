@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:lw_app/Blocs/EventRsvp/event_rsvp_bloc.dart';
+import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
 import 'package:lw_app/Blocs/Events/events_bloc.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/Event/event.dart';
@@ -14,7 +15,6 @@ import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
 import 'package:lw_app/Utils/maps_helper.dart';
 import 'package:lw_app/Widgets/Dashboard/dashboard_grid_card.dart';
-import 'package:lw_app/Widgets/LwpAnnouncement/lwp_announcement.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
@@ -41,12 +41,10 @@ class _FirstTimeVisitorScreenState extends State<FirstTimeVisitorScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(context.l10n.visitorWelcomeTitle),
-        actions: const [LwpAnnouncementButton(), ProfileActionButton()],
-      ),
-      body: SingleChildScrollView(
+    return LwpChromeScaffold(
+        title: context.l10n.visitorWelcomeTitle,
+        showDefaultActions: true,
+        body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -161,6 +159,7 @@ class _FirstTimeVisitorScreenState extends State<FirstTimeVisitorScreen> {
   Widget _buildQuickLinksGrid(BuildContext context) {
     return GridView.count(
       shrinkWrap: true,
+      padding: EdgeInsets.zero,
       physics: const NeverScrollableScrollPhysics(),
       crossAxisCount: 3,
       crossAxisSpacing: 12,

@@ -4,7 +4,7 @@ import 'package:lw_app/Models/Event/event.dart';
 import 'package:lw_app/Models/Event/event_type.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
-import 'package:add_2_calendar_new/add_2_calendar_new.dart' as calendar;
+import 'package:add_2_calendar/add_2_calendar.dart' as calendar;
 import 'package:cloudinary_flutter/image/cld_image.dart';
 
 class CourseDetailPage extends StatelessWidget {

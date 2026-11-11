@@ -13,6 +13,8 @@ import 'package:lw_app/Utils/quill_helper.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
+import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
+import 'package:lw_app/Widgets/Glass/lwp_glass_fab.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 
 class GroupFeedPage extends StatelessWidget {
@@ -63,12 +65,11 @@ class _GroupFeedViewState extends State<_GroupFeedView> {
         builder: (context, state) {
           final group = state.group;
 
-          return Scaffold(
-            appBar: AppBar(
-              title: Text(group?.title ?? context.l10n.groupFeedTitle),
-            ),
+          return LwpChromeScaffold(
+            title: group?.title ?? context.l10n.groupFeedTitle,
             floatingActionButton: group?.isLeader == true
-                ? FloatingActionButton.extended(
+                ? LwpGlassFab.extended(
+                    heroTag: 'group-feed-fab',
                     onPressed: state.isFeedActionInProgress
                         ? null
                         : () => _openCreatePost(context),

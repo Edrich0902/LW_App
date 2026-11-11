@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
+import 'package:lw_app/Models/Bible/bible_models.dart';
 import 'package:lw_app/Models/Bible/votd_model.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 
@@ -19,6 +19,13 @@ class DashboardVotdCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final imageUrl = votd.imageUrl?.trim();
+    final hasImage = imageUrl != null && imageUrl.isNotEmpty;
+    final verses = BibleParser.parseChapterHtml(
+      rawHtml: votd.content.rawHtml,
+      bookId: votd.book.id,
+      chapterId: votd.chapter.id,
+    );
 
     return Card(
       margin: EdgeInsets.zero,
@@ -26,13 +33,14 @@ class DashboardVotdCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: LwpRadii.lgAll,
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (votd.imageUrl != null)
+            if (hasImage)
               ClipRRect(
                 borderRadius: LwpRadii.lgTop,
                 child: Image.network(
-                  votd.imageUrl!,
+                  imageUrl,
                   width: double.infinity,
                   height: 200,
                   fit: BoxFit.cover,
@@ -43,6 +51,7 @@ class DashboardVotdCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(24.0),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
@@ -75,24 +84,29 @@ class DashboardVotdCard extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  Html(
-                    data: votd.content.html,
-                    style: {
-                      "body": Style(
-                        fontSize: FontSize(18.0),
-                        lineHeight: LineHeight.em(1.5),
-                        margin: Margins.zero,
-                        padding: HtmlPaddings.zero,
-                        color: theme.textTheme.bodyLarge?.color,
-                      ),
-                      ".yv-vlbl, .v, sup": Style(
-                        fontSize: FontSize(11.0),
-                        fontWeight: FontWeight.bold,
-                        verticalAlign: VerticalAlign.sup,
-                        color: theme.primaryColor.withValues(alpha: 0.8),
-                        padding: HtmlPaddings.only(right: 4),
-                      ),
-                    },
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        for (final verse in verses) ...[
+                          TextSpan(
+                            text: verse.verseNumber,
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: theme.primaryColor.withValues(alpha: 0.8),
+                              height: 1.5,
+                            ),
+                          ),
+                          TextSpan(
+                            text: ' ${verse.text} ',
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              fontSize: 18,
+                              height: 1.5,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 12),
                   Wrap(

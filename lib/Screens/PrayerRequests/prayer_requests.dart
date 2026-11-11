@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/PrayerRequests/prayer_requests_bloc.dart';
+import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
 import 'package:lw_app/Extensions/app_localizations_x.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/PrayerRequest/prayer_request.dart';
@@ -8,6 +9,7 @@ import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
+import 'package:lw_app/Widgets/Glass/lwp_glass_fab.dart';
 import 'package:lw_app/Widgets/PrayerRequest/prayer_request_card.dart';
 
 class PrayerRequestsPage extends StatelessWidget {
@@ -177,15 +179,13 @@ class _PrayerRequestsViewState extends State<_PrayerRequestsView> {
           LwpSnackbar.showError(context, state.error);
         }
       },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(context.l10n.prayerRequestsTitle),
-        ),
-        floatingActionButton: FloatingActionButton.extended(
+      child: LwpChromeScaffold(
+        title: context.l10n.prayerRequestsTitle,
+        floatingActionButton: LwpGlassFab.extended(
+          heroTag: 'prayer-requests-fab',
           onPressed: _showCreatePrayerSheet,
           icon: const Icon(Icons.add),
           label: Text(context.l10n.prayerRequestsNew),
-          shape: const StadiumBorder(),
         ),
         body: BlocBuilder<PrayerRequestsBloc, PrayerRequestsState>(
           builder: (context, state) {
