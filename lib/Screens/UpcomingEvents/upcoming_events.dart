@@ -12,8 +12,7 @@ import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
-import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
-import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
+import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
 
 class UpcomingEventsPage extends StatefulWidget {
   const UpcomingEventsPage({super.key});
@@ -46,7 +45,7 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
         body: BlocBuilder<EventsBloc, EventsState>(
             builder: (context, state) {
               if (state is EventsLoading) {
-                return LwpLoader(message: context.l10n.upcomingEventsLoading);
+                return LwpSkeletonList.thumb();
               } else if (state is EventsSuccess) {
                 if (state.events.isNotEmpty) {
                   return RefreshIndicator(

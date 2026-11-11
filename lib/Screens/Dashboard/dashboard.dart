@@ -17,8 +17,8 @@ import 'package:lw_app/Screens/PastoralBlog/pastoral_blog_reader.dart';
 import 'package:lw_app/Blocs/PastoralBlog/pastoral_blog_bloc.dart';
 import 'package:lw_app/Widgets/Dashboard/dashboard_hero_blog.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
-import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
+import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
 import 'package:lw_app/Widgets/Dashboard/dashboard_grid_card.dart';
 import 'package:lw_app/Widgets/Dashboard/dashboard_hero_sermon.dart';
 import 'package:lw_app/Widgets/Dashboard/dashboard_votd_card.dart';
@@ -130,7 +130,7 @@ class _DashPageState extends State<DashPage>
                     );
                   } else if (state is SermonsLoading) {
                     return const _DashboardPlaceholder(
-                      child: LwpLoader(message: ""),
+                      child: LwpSkeletonMediaCard(compact: true),
                     );
                   } else if (state is SermonsError) {
                     return _DashboardPlaceholder(
@@ -219,7 +219,7 @@ class _DashPageState extends State<DashPage>
                       );
                     } else if (state is VotdLoading) {
                       return const _DashboardPlaceholder(
-                        child: LwpLoader(message: ""),
+                        child: LwpSkeletonTextCard(),
                       );
                     } else if (state is VotdError) {
                       return _DashboardPlaceholder(

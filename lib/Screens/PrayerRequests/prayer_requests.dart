@@ -7,7 +7,7 @@ import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/PrayerRequest/prayer_request.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
-import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
+import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 import 'package:lw_app/Widgets/Glass/lwp_glass_fab.dart';
 import 'package:lw_app/Widgets/PrayerRequest/prayer_request_card.dart';
@@ -192,7 +192,7 @@ class _PrayerRequestsViewState extends State<_PrayerRequestsView> {
             if (state is PrayerRequestsLoading ||
                 state is PrayerRequestSubmitting ||
                 state is PrayerRequestsInitial) {
-              return LwpLoader(message: context.l10n.prayerRequestsLoading);
+              return LwpSkeletonList.text();
             }
 
             if (state is PrayerRequestsError) {

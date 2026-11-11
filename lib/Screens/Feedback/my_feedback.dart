@@ -8,7 +8,7 @@ import 'package:lw_app/Models/AppFeedback/app_feedback.dart';
 import 'package:lw_app/Widgets/Feedback/feedback_item_card.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
-import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
+import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
 import 'package:lw_app/Widgets/Glass/lwp_glass_fab.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 
@@ -73,7 +73,7 @@ class _MyFeedbackViewState extends State<_MyFeedbackView> {
         body: BlocBuilder<MyFeedbackBloc, MyFeedbackState>(
           builder: (context, state) {
             if (state is MyFeedbackLoading || state is MyFeedbackInitial) {
-              return LwpLoader(message: context.l10n.feedbackLoading);
+              return LwpSkeletonList.text();
             }
 
             if (state is MyFeedbackError) {

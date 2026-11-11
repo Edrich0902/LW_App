@@ -8,8 +8,7 @@ import 'package:lw_app/Models/Event/event_category.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
-import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
-import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
+import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
 import 'package:cloudinary_flutter/image/cld_image.dart';
 import 'package:lw_app/Screens/Courses/course_detail.dart';
@@ -44,7 +43,7 @@ class _CoursesPageState extends State<CoursesPage> {
         body: BlocBuilder<CoursesBloc, CoursesState>(
             builder: (context, state) {
               if (state is CoursesLoading) {
-                return LwpLoader(message: context.l10n.coursesLoading);
+                return LwpSkeletonList.media();
               } else if (state is CoursesSuccess) {
                 if (state.courses.isNotEmpty) {
                   return RefreshIndicator(

@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
-import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
+import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Blocs/UserAnnouncements/user_announcement_bloc.dart';
 import 'package:lw_app/Models/UserAnnouncement/user_announcement.dart';
@@ -74,7 +74,7 @@ class _UserAnnouncementsPageState extends State<UserAnnouncementsPage> {
               } else if (state is UserAnnouncementError) {
                 return const LwpError();
               } else {
-                return LwpLoader(message: context.l10n.announcementsLoading);
+                return LwpSkeletonList.thumb();
               }
             },
           ),

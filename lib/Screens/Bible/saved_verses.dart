@@ -10,7 +10,7 @@ import 'package:lw_app/Services/Bible/bible_interaction_service.dart';
 import 'package:lw_app/Screens/Bible/bible.dart' show highlightColorFromString;
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/share_helper.dart';
-import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
+import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
@@ -279,9 +279,7 @@ class _SavedVersesPageState extends State<SavedVersesPage>
           ),
           Expanded(
             child: _isLoading
-                ? Center(
-                    child: LwpLoader(message: context.l10n.savedVersesLoading),
-                  )
+                ? LwpSkeletonList.text(itemCount: 5)
                 : _errorMessage != null
                     ? LwpError(message: _errorMessage!, onRetry: _loadData)
                     : TabBarView(

@@ -11,7 +11,7 @@ import 'package:lw_app/Utils/date_formatter.dart';
 import 'package:lw_app/Utils/quill_helper.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
-import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
+import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
 
 class PastoralBlogPage extends StatelessWidget {
   const PastoralBlogPage({super.key});
@@ -43,7 +43,7 @@ class _PastoralBlogView extends StatelessWidget {
 
   Widget _buildBody(BuildContext context, PastoralBlogState state) {
     if (state.status == PastoralBlogStatus.loading && !state.isRefreshing) {
-      return LwpLoader(message: context.l10n.pastoralBlogLoading);
+      return LwpSkeletonList.media(mediaHeight: 180);
     }
 
     if (state.status == PastoralBlogStatus.error) {

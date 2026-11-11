@@ -12,7 +12,7 @@ import 'package:lw_app/Utils/date_formatter.dart';
 import 'package:lw_app/Utils/quill_helper.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
-import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
+import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
 import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
 import 'package:lw_app/Widgets/Glass/lwp_glass_fab.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
@@ -88,7 +88,7 @@ class _GroupFeedViewState extends State<_GroupFeedView> {
     if (state.status == GroupDetailStatus.loading &&
         state.group == null &&
         !state.isRefreshing) {
-      return LwpLoader(message: context.l10n.groupFeedLoading);
+      return LwpSkeletonList.text();
     }
 
     if (state.status == GroupDetailStatus.error && state.group == null) {

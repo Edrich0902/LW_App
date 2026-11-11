@@ -3,12 +3,11 @@ import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
 import 'package:lw_app/Models/YoutubeVideo/youtube_video.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
-import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:lw_app/Blocs/Sermons/sermons_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
-import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
+import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
 import 'package:lw_app/Screens/Sermons/sermon_detail.dart';
 
 class SermonsPage extends StatefulWidget {
@@ -55,7 +54,7 @@ class _SermonsPageState extends State<SermonsPage> {
         body: BlocBuilder<SermonsBloc, SermonsState>(
             builder: (context, state) {
               if (state is SermonsLoading) {
-                return LwpLoader(message: context.l10n.sermonsLoading);
+                return LwpSkeletonList.media();
               } else if (state is SermonsSuccess) {
                 if (state.youtubeVideos.isNotEmpty) {
                   return StatefulBuilder(

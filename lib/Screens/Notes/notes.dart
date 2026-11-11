@@ -9,7 +9,7 @@ import 'package:lw_app/Models/Note/note.dart';
 import 'package:lw_app/Screens/NotesEdit/notes_edit.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
-import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
+import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
 import 'package:lw_app/Widgets/Glass/lwp_glass_fab.dart';
@@ -76,7 +76,7 @@ class _NotesPageState extends State<NotesPage> {
         body: BlocBuilder<NotesBloc, NotesState>(
             builder: (context, state) {
               if (state is NotesLoading) {
-                return const LwpLoader();
+                return LwpSkeletonList.text();
               } else if (state is NotesSuccess) {
                 final filtered = _filterNotes(state.data);
 

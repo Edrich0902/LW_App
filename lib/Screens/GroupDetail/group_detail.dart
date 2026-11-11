@@ -20,7 +20,7 @@ import 'package:lw_app/Utils/maps_helper.dart';
 import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
-import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
+import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -101,7 +101,7 @@ class _GroupDetailViewState extends State<_GroupDetailView> {
     if (state.status == GroupDetailStatus.loading &&
         state.group == null &&
         !state.isRefreshing) {
-      return LwpLoader(message: context.l10n.groupDetailLoading);
+      return LwpSkeletonList.group(itemCount: 4);
     }
 
     if (state.status == GroupDetailStatus.error && state.group == null) {

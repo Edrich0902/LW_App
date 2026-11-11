@@ -5,8 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Blocs/MoreInfo/more_info_bloc.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
-import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 import 'package:lw_app/Widgets/Glass/lwp_shell_insets.dart';
+import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
 import 'package:collection/collection.dart';
 
 class MoreInfoPage extends StatefulWidget {
@@ -31,7 +31,7 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
           return Scaffold(
             body: Padding(
               padding: LwpShellInsets.paddingOf(context),
-              child: const LwpLoader(),
+              child: LwpSkeletonList.group(itemCount: 4),
             ),
           );
         } else if (state is MoreInfoSuccess) {

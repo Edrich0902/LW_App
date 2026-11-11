@@ -16,8 +16,7 @@ import 'package:lw_app/Utils/date_formatter.dart';
 import 'package:lw_app/Utils/maps_helper.dart';
 import 'package:lw_app/Widgets/Dashboard/dashboard_grid_card.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
-import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
-import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
+import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class FirstTimeVisitorScreen extends StatefulWidget {
@@ -197,7 +196,7 @@ class _FirstTimeVisitorScreenState extends State<FirstTimeVisitorScreen> {
     return BlocBuilder<EventsBloc, EventsState>(
       builder: (context, state) {
         if (state is EventsLoading) {
-          return LwpLoader(message: context.l10n.upcomingEventsLoading);
+          return LwpSkeletonList.thumb(itemCount: 3, shrinkWrap: true);
         } else if (state is EventsSuccess) {
           final upcoming = state.events.take(3).toList();
           if (upcoming.isEmpty) {
