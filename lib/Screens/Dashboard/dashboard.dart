@@ -238,7 +238,7 @@ class _DashPageState extends State<DashPage> {
                 children: [
                   DashboardGridCard(
                     title: context.l10n.dashboardUpcomingEvents,
-                    icon: Icons.event,
+                    icon: Icon(Icons.event),
                     onTap: () {
                       Navigator.push(
                         context,
@@ -249,7 +249,7 @@ class _DashPageState extends State<DashPage> {
                   ),
                   DashboardGridCard(
                     title: context.l10n.dashboardTithesOfferings,
-                    icon: Icons.volunteer_activism,
+                    icon: Icon(Icons.volunteer_activism),
                     onTap: () {
                       Navigator.push(
                         context,
@@ -261,7 +261,7 @@ class _DashPageState extends State<DashPage> {
                   ),
                   DashboardGridCard(
                     title: context.l10n.dashboardFirstTimeVisitor,
-                    icon: Icons.waving_hand,
+                    icon: Icon(Icons.waving_hand),
                     onTap: () {
                       Navigator.push(
                         context,
@@ -273,7 +273,7 @@ class _DashPageState extends State<DashPage> {
                   ),
                   DashboardGridCard(
                     title: context.l10n.dashboardFollowUs,
-                    icon: Icons.share,
+                    icon: Icon(Icons.share),
                     onTap: () {
                       Navigator.push(
                         context,
@@ -284,7 +284,7 @@ class _DashPageState extends State<DashPage> {
                   ),
                   DashboardGridCard(
                     title: context.l10n.dashboardCourses,
-                    icon: Icons.school,
+                    icon: Icon(Icons.school),
                     onTap: () {
                       Navigator.push(
                         context,
@@ -295,7 +295,7 @@ class _DashPageState extends State<DashPage> {
                   ),
                   DashboardGridCard(
                     title: context.l10n.dashboardPrayerRequests,
-                    icon: Icons.favorite_outline,
+                    icon: Icon(Icons.favorite_outline),
                     onTap: () {
                       Navigator.push(
                         context,
@@ -307,7 +307,7 @@ class _DashPageState extends State<DashPage> {
                   ),
                   DashboardGridCard(
                     title: context.l10n.dashboardBlog,
-                    icon: Icons.article_outlined,
+                    icon: Icon(Icons.article_outlined),
                     onTap: () {
                       Navigator.push(
                         context,

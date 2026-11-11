@@ -1,9 +1,11 @@
+import 'package:cloudinary_flutter/image/cld_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lw_app/Extensions/context_l10n.dart';
-import 'package:lw_app/Blocs/Events/events_bloc.dart';
-import 'package:lw_app/Models/Event/event.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:lw_app/Blocs/EventRsvp/event_rsvp_bloc.dart';
+import 'package:lw_app/Blocs/Events/events_bloc.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
+import 'package:lw_app/Models/Event/event.dart';
 import 'package:lw_app/Models/Event/event_type.dart';
 import 'package:lw_app/Screens/MoreInfo/more_info.dart';
 import 'package:lw_app/Screens/UpcomingEvents/upcoming_event_detail.dart';
@@ -12,12 +14,11 @@ import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
 import 'package:lw_app/Utils/maps_helper.dart';
 import 'package:lw_app/Widgets/Dashboard/dashboard_grid_card.dart';
+import 'package:lw_app/Widgets/LwpAnnouncement/lwp_announcement.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
-import 'package:lw_app/Widgets/LwpAnnouncement/lwp_announcement.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:cloudinary_flutter/image/cld_image.dart';
 
 class FirstTimeVisitorScreen extends StatefulWidget {
   const FirstTimeVisitorScreen({super.key});
@@ -168,12 +169,12 @@ class _FirstTimeVisitorScreenState extends State<FirstTimeVisitorScreen> {
       children: [
         DashboardGridCard(
           title: context.l10n.visitorFindUs,
-          icon: Icons.location_on,
+          icon: Icon(Icons.location_on),
           onTap: () => MapsHelper.openLocation("6 Mill Street Paarl"),
         ),
         DashboardGridCard(
           title: context.l10n.visitorContactUs,
-          icon: LwpIcons.whatsapp,
+          icon: FaIcon(LwpIcons.whatsapp),
           onTap: () {
             final Uri whatsappUri = Uri.parse("https://wa.me/+27727238406");
             launchUrl(whatsappUri, mode: LaunchMode.externalApplication);
@@ -181,7 +182,7 @@ class _FirstTimeVisitorScreenState extends State<FirstTimeVisitorScreen> {
         ),
         DashboardGridCard(
           title: context.l10n.visitorMoreAboutUs,
-          icon: Icons.info,
+          icon: Icon(Icons.info),
           onTap: () {
             Navigator.push(
               context,

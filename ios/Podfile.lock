@@ -1,112 +1,28 @@
 PODS:
   - add_2_calendar_new (0.0.1):
     - Flutter
-  - app_links (6.4.1):
-    - Flutter
   - device_info_plus (0.0.1):
     - Flutter
   - Flutter (1.0.0)
-  - flutter_keyboard_visibility_temp_fork (0.0.1):
-    - Flutter
-  - gal (1.0.0):
-    - Flutter
-    - FlutterMacOS
-  - image_picker_ios (0.0.1):
-    - Flutter
-  - package_info_plus (0.4.5):
-    - Flutter
-  - path_provider_foundation (0.0.1):
-    - Flutter
-    - FlutterMacOS
-  - quill_native_bridge_ios (0.0.1):
-    - Flutter
-  - share_plus (0.0.1):
-    - Flutter
-  - shared_preferences_foundation (0.0.1):
-    - Flutter
-    - FlutterMacOS
-  - sqflite_darwin (0.0.4):
-    - Flutter
-    - FlutterMacOS
-  - url_launcher_ios (0.0.1):
-    - Flutter
-  - video_player_avfoundation (0.0.1):
-    - Flutter
-    - FlutterMacOS
-  - webview_flutter_wkwebview (0.0.1):
-    - Flutter
-    - FlutterMacOS
 
 DEPENDENCIES:
   - add_2_calendar_new (from `.symlinks/plugins/add_2_calendar_new/ios`)
-  - app_links (from `.symlinks/plugins/app_links/ios`)
   - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
   - Flutter (from `Flutter`)
-  - flutter_keyboard_visibility_temp_fork (from `.symlinks/plugins/flutter_keyboard_visibility_temp_fork/ios`)
-  - gal (from `.symlinks/plugins/gal/darwin`)
-  - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
-  - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
-  - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
-  - quill_native_bridge_ios (from `.symlinks/plugins/quill_native_bridge_ios/ios`)
-  - share_plus (from `.symlinks/plugins/share_plus/ios`)
-  - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
-  - sqflite_darwin (from `.symlinks/plugins/sqflite_darwin/darwin`)
-  - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
-  - video_player_avfoundation (from `.symlinks/plugins/video_player_avfoundation/darwin`)
-  - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/darwin`)
 
 EXTERNAL SOURCES:
   add_2_calendar_new:
     :path: ".symlinks/plugins/add_2_calendar_new/ios"
-  app_links:
-    :path: ".symlinks/plugins/app_links/ios"
   device_info_plus:
     :path: ".symlinks/plugins/device_info_plus/ios"
   Flutter:
     :path: Flutter
-  flutter_keyboard_visibility_temp_fork:
-    :path: ".symlinks/plugins/flutter_keyboard_visibility_temp_fork/ios"
-  gal:
-    :path: ".symlinks/plugins/gal/darwin"
-  image_picker_ios:
-    :path: ".symlinks/plugins/image_picker_ios/ios"
-  package_info_plus:
-    :path: ".symlinks/plugins/package_info_plus/ios"
-  path_provider_foundation:
-    :path: ".symlinks/plugins/path_provider_foundation/darwin"
-  quill_native_bridge_ios:
-    :path: ".symlinks/plugins/quill_native_bridge_ios/ios"
-  share_plus:
-    :path: ".symlinks/plugins/share_plus/ios"
-  shared_preferences_foundation:
-    :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
-  sqflite_darwin:
-    :path: ".symlinks/plugins/sqflite_darwin/darwin"
-  url_launcher_ios:
-    :path: ".symlinks/plugins/url_launcher_ios/ios"
-  video_player_avfoundation:
-    :path: ".symlinks/plugins/video_player_avfoundation/darwin"
-  webview_flutter_wkwebview:
-    :path: ".symlinks/plugins/webview_flutter_wkwebview/darwin"
 
 SPEC CHECKSUMS:
-  add_2_calendar_new: 11ccf217f5b0054a663d4e7b39b46f6db9312e02
-  app_links: 585674be3c6661708e6cd794ab4f39fb9d8356f9
-  device_info_plus: 97af1d7e84681a90d0693e63169a5d50e0839a0d
-  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
-  flutter_keyboard_visibility_temp_fork: 8a8809c4129e31d25fca77446e0f3fd548122ced
-  gal: 6a522c75909f1244732d4596d11d6a2f86ff37a5
-  image_picker_ios: c560581cceedb403a6ff17f2f816d7fea1421fc1
-  package_info_plus: c0502532a26c7662a62a356cebe2692ec5fe4ec4
-  path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
-  quill_native_bridge_ios: 2b01d585fcc73d0f5eed78c0bd244ee564b06f5a
-  share_plus: c3fef564749587fc939ef86ffb283ceac0baf9f5
-  shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
-  sqflite_darwin: 5a7236e3b501866c1c9befc6771dfd73ffb8702d
-  url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
-  video_player_avfoundation: 7c6c11d8470e1675df7397027218274b6d2360b3
-  webview_flutter_wkwebview: 29eb20d43355b48fe7d07113835b9128f84e3af4
+  add_2_calendar_new: 68ef3d90f48e9ae4056357711462e427be6098a0
+  device_info_plus: 71ffc6ab7634ade6267c7a93088ed7e4f74e5896
+  Flutter: 71a624a5bc0c04062bf19101d501e466baf2fb47
 
-PODFILE CHECKSUM: 0dbd5a87e0ace00c9610d2037ac22083a01f861d
+PODFILE CHECKSUM: d0a48a9d83087867c43c60365a59fd2c6aafd95c
 
-COCOAPODS: 1.16.2
+COCOAPODS: 1.17.0

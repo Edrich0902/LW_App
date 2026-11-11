@@ -3,10 +3,11 @@ import 'dart:io';
 import 'package:cloudinary_flutter/image/cld_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lw_app/Blocs/GroupDetail/group_detail_bloc.dart';
 import 'package:lw_app/Extensions/app_localizations_x.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
-import 'package:lw_app/Blocs/GroupDetail/group_detail_bloc.dart';
 import 'package:lw_app/Models/Group/group.dart';
 import 'package:lw_app/Models/Group/group_membership.dart';
 import 'package:lw_app/Screens/GroupFeed/group_feed.dart';
@@ -514,7 +515,7 @@ class _GroupActionCard extends StatelessWidget {
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: isBusy ? null : onOpenWhatsApp,
-              icon: const Icon(LwpIcons.whatsapp),
+              icon: const FaIcon(LwpIcons.whatsapp),
               label: Text(context.l10n.groupDetailOpenWhatsappGroup),
             ),
           ),
@@ -550,7 +551,7 @@ class _GroupActionCard extends StatelessWidget {
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: isBusy ? null : onOpenWhatsApp,
-              icon: const Icon(LwpIcons.whatsapp),
+              icon: const FaIcon(LwpIcons.whatsapp),
               label: Text(context.l10n.groupDetailOpenWhatsappGroup),
             ),
           ),
@@ -1109,7 +1110,7 @@ class _EditGroupSheetState extends State<_EditGroupSheet> {
                 controller: _whatsappController,
                 decoration: InputDecoration(
                   labelText: context.l10n.groupDetailWhatsappLink,
-                  prefixIcon: const Icon(LwpIcons.whatsapp),
+                  prefixIcon: const FaIcon(LwpIcons.whatsapp),
                 ),
               ),
               const SizedBox(height: LwpSpacing.md),

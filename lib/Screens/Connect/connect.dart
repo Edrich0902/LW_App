@@ -39,7 +39,7 @@ class _ConnectPageState extends State<ConnectPage> {
               children: [
                 DashboardGridCard(
                   title: context.l10n.connectGroupsTitle,
-                  icon: Icons.people,
+                  icon: Icon(Icons.people),
                   onTap: () {
                     Navigator.push(
                       context,
@@ -50,7 +50,7 @@ class _ConnectPageState extends State<ConnectPage> {
                 ),
                 DashboardGridCard(
                   title: context.l10n.serveGroupsTitle,
-                  icon: Icons.volunteer_activism,
+                  icon: Icon(Icons.volunteer_activism),
                   onTap: () {
                     Navigator.push(
                       context,

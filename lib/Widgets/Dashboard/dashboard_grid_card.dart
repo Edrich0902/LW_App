@@ -3,7 +3,7 @@ import 'package:lw_app/Themes/lwp_tokens.dart';
 
 class DashboardGridCard extends StatelessWidget {
   final String title;
-  final IconData icon;
+  final Widget icon;
   final VoidCallback onTap;
 
   const DashboardGridCard({
@@ -16,6 +16,10 @@ class DashboardGridCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final resolvedIcon = IconTheme.merge(
+      data: IconThemeData(size: 32, color: theme.primaryColor),
+      child: icon,
+    );
 
     return Card(
       child: InkWell(
@@ -27,13 +31,7 @@ class DashboardGridCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Flexible(
-                child: Icon(
-                  icon,
-                  size: 32,
-                  color: theme.primaryColor,
-                ),
-              ),
+              Flexible(child: resolvedIcon),
               const SizedBox(height: 8),
               Text(
                 title,
