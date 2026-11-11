@@ -78,6 +78,9 @@ Future<void> main() async {
   // Push: local banners, token lifecycle, deep links
   await PushNotificationService.instance.initialize();
 
+  // One shared YouVersion client so Bible / VOTD / compare share cache + dedupe.
+  final bibleService = BibleService();
+
   // Start app
   runApp(
     MultiBlocProvider(
@@ -131,15 +134,14 @@ Future<void> main() async {
         ),
         BlocProvider<BibleBloc>(
           create: (_) =>
-              BibleBloc(bibleService: BibleService())..add(LoadBibleInitial()),
+              BibleBloc(bibleService: bibleService)..add(LoadBibleInitial()),
         ),
         BlocProvider<CompareTranslationsBloc>(
           lazy: true,
-          create: (_) => CompareTranslationsBloc(bibleService: BibleService()),
+          create: (_) => CompareTranslationsBloc(bibleService: bibleService),
         ),
         BlocProvider<VotdBloc>(
-          create: (_) =>
-              VotdBloc(bibleService: BibleService())..add(LoadVotd()),
+          create: (_) => VotdBloc(bibleService: bibleService)..add(LoadVotd()),
         ),
         BlocProvider<TithesOfferingsBloc>(
           create: (_) => TithesOfferingsBloc(),

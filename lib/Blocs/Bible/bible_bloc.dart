@@ -97,13 +97,21 @@ class BibleBloc extends Bloc<BibleEvent, BibleState> {
 
   Future<void> _onLoadSpecificPassage(
       LoadSpecificPassage event, Emitter<BibleState> emit) async {
+    final previous = state is BibleLoaded ? state as BibleLoaded : null;
     emit(BibleLoading());
     try {
-      final allVersions =
+      // Reuse in-memory lists when jumping within the same version.
+      final allVersions = previous?.versions ??
           await bibleService.getVersions(languages: ['en', 'af']);
-      final books = await bibleService.getBooks(event.version.id);
-      final chapters =
-          await bibleService.getChapters(event.version.id, event.book.id);
+      final books = previous != null &&
+              previous.currentVersion.id == event.version.id
+          ? previous.books
+          : await bibleService.getBooks(event.version.id);
+      final chapters = previous != null &&
+              previous.currentVersion.id == event.version.id &&
+              previous.currentBook.id == event.book.id
+          ? previous.chapters
+          : await bibleService.getChapters(event.version.id, event.book.id);
       final content = await bibleService.getChapterContent(
           event.version.id, event.book.id, event.chapter.id);
 

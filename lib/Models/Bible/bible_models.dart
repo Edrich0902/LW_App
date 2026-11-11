@@ -109,6 +109,10 @@ class BibleContent extends Equatable {
     );
   }
 
+  /// Rebuild from a previously cached YouVersion passage payload.
+  factory BibleContent.fromCachedJson(Map<String, dynamic> json) =>
+      BibleContent.fromJson(json);
+
   static String _processHtml(String html) {
     // Use a simple class rename approach — no lookbehind (not supported in Dart)
     String processed = html;

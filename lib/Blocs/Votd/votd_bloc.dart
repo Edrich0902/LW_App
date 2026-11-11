@@ -19,26 +19,29 @@ class VotdBloc extends Bloc<VotdEvent, VotdState> {
       final now = DateTime.now();
       final dayOfYear = now.difference(DateTime(now.year, 1, 1)).inDays + 1;
 
-      final passageId = await bibleService.getVotdPassageId(dayOfYear);
+      // Parallelize independent lookups; BibleService cache + in-flight
+      // dedupe collapses overlap with BibleBloc startup.
+      final versionFuture = event.version != null
+          ? Future.value(event.version!)
+          : _getDefaultVersion();
+      final passageIdFuture = bibleService.getVotdPassageId(dayOfYear);
 
-      final version = event.version ?? await _getDefaultVersion();
+      final version = await versionFuture;
+      final passageId = await passageIdFuture;
 
-      // 2. Parse passageId (e.g. "ROM.5.8" or "ROM.5")
+      // Parse passageId (e.g. "ROM.5.8" or "ROM.5")
       final parts = passageId.split('.');
       final bookId = parts[0];
       final chapterNumber = parts.length > 1 ? parts[1] : '1';
 
-      // 3. Fetch Book metadata
       final books = await bibleService.getBooks(version.id);
       final book = books.firstWhereOrNull((b) => b.id == bookId) ?? books.first;
 
-      // 4. Fetch Chapter metadata
       final chapters = await bibleService.getChapters(version.id, book.id);
       final chapter =
           chapters.firstWhereOrNull((c) => c.number == chapterNumber) ??
               chapters.first;
 
-      // 5. Fetch content
       final content =
           await bibleService.getPassageContent(version.id, passageId);
 
