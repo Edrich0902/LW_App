@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LWP — Group lists redesign</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0b1218;
+      --card: #1e1e1e;
+      --ink: #eef3f7;
+      --muted: #8a9aab;
+      --line: rgba(255,255,255,0.08);
+      --accent: #2e86c1;
+      --accent-soft: rgba(46,134,193,0.18);
+      --good: #7dceb0;
+      --good-soft: rgba(61,186,122,0.14);
+      --warn: #e0a45a;
+      --warn-soft: rgba(224,164,90,0.16);
+      --leader: #e6c35c;
+      --leader-soft: rgba(230,195,92,0.16);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "DM Sans", system-ui, sans-serif;
+      background:
+        radial-gradient(900px 420px at 15% -10%, rgba(46,134,193,0.14), transparent 58%),
+        var(--bg);
+      color: var(--ink);
+      padding: 28px 20px 80px;
+    }
+    .page { max-width: 1280px; margin: 0 auto; }
+    .eyebrow {
+      font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--muted); margin: 0 0 6px;
+    }
+    h1 {
+      margin: 0 0 8px; font-size: 28px; font-weight: 600; letter-spacing: -0.03em;
+    }
+    .lede {
+      margin: 0 0 16px; color: var(--muted); font-size: 14px; line-height: 1.55; max-width: 70ch;
+    }
+    .pitch {
+      margin: 0 0 18px; padding: 14px 16px; border: 1px solid var(--line);
+      border-radius: 12px; background: rgba(255,255,255,0.03);
+      color: var(--muted); font-size: 13px; line-height: 1.55; max-width: 86ch;
+    }
+    .pitch strong { color: var(--ink); font-weight: 600; }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+    .toolbar button {
+      appearance: none; border: 1px solid var(--line); background: rgba(255,255,255,0.03);
+      color: var(--ink); border-radius: 999px; padding: 10px 14px; font: inherit;
+      font-size: 13px; font-weight: 500; cursor: pointer;
+    }
+    .toolbar button:hover { border-color: rgba(255,255,255,0.18); }
+    .toolbar button.active { background: var(--accent); border-color: transparent; color: #fff; }
+    .hint { margin: 0 0 20px; font-size: 12px; color: var(--muted); }
+    .phones {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 22px; align-items: start;
+    }
+    .phone {
+      border: 1px solid var(--line); border-radius: 28px; background: #121212;
+      overflow: hidden; box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+      min-height: 760px; display: none; flex-direction: column;
+    }
+    .phone.active { display: flex; }
+    .phone-label {
+      padding: 14px 18px 0; font-size: 11px; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .chrome {
+      display: flex; align-items: center; gap: 10px; padding: 14px 16px 12px;
+    }
+    .chrome-spacer { flex: 1; }
+    .glass-btn {
+      width: 36px; height: 36px; border-radius: 999px; border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04); display: grid; place-items: center; color: var(--ink);
+    }
+    .glass-btn svg {
+      width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.7;
+      stroke-linecap: round; stroke-linejoin: round;
+    }
+    .title-pill {
+      height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04); display: inline-flex; align-items: center;
+      font-size: 14px; font-weight: 600;
+    }
+    .scroll {
+      flex: 1; overflow: auto; padding: 8px 16px 28px;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .scroll.tight { gap: 10px; }
+    .art {
+      width: 100%; position: relative; overflow: hidden; background: #16324a;
+    }
+    .art::after {
+      content: ""; position: absolute; inset: 0; pointer-events: none;
+      background:
+        radial-gradient(circle at 72% 28%, rgba(255,255,255,0.16), transparent 42%),
+        radial-gradient(circle at 18% 86%, rgba(46,134,193,0.35), transparent 48%);
+    }
+    .art-a { background: linear-gradient(145deg, #1a3a52 0%, #2e86c1 48%, #0f1c28 100%); }
+    .art-b { background: linear-gradient(160deg, #243044 0%, #3d6a8a 40%, #121820 100%); }
+    .art-c { background: linear-gradient(135deg, #2a2140 0%, #2e86c1 45%, #0d1822 100%); }
+    .art-d { background: linear-gradient(150deg, #1e3d36 0%, #2e86c1 50%, #101820 100%); }
+
+    /* Current */
+    .g-cur {
+      background: var(--card); border-radius: 14px; padding: 12px;
+      display: grid; grid-template-columns: 88px 1fr; gap: 14px;
+    }
+    .g-cur .thumb { height: 88px; border-radius: 12px; }
+    .g-cur h3 {
+      margin: 0 0 6px; font-size: 15px; font-weight: 700; padding-right: 18px; position: relative;
+    }
+    .g-cur h3::after {
+      content: "›"; position: absolute; right: 0; top: -2px; color: var(--muted); font-weight: 400;
+    }
+    .g-cur .desc {
+      margin: 0 0 10px; font-size: 13px; color: var(--muted); line-height: 1.4;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .mini-chip {
+      padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 650;
+      background: var(--accent-soft); color: var(--accent);
+    }
+    .mini-chip.warn { background: var(--warn-soft); color: var(--warn); }
+    .mini-chip.good { background: var(--good-soft); color: var(--good); }
+    .mini-chip.leader { background: var(--leader-soft); color: var(--leader); }
+
+    /* A Quiet Horizon */
+    .g-a {
+      display: grid; grid-template-columns: 84px 1fr; gap: 12px;
+      padding: 10px; background: var(--card); border-radius: 16px;
+      border: 1px solid transparent; cursor: pointer;
+      transition: border-color 160ms ease, transform 160ms ease;
+    }
+    .g-a:hover { border-color: rgba(46,134,193,0.35); transform: translateY(-1px); }
+    .g-a .thumb { height: 84px; border-radius: 12px; }
+    .g-a .body { display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+    .g-a h3 {
+      margin: 0 0 3px; font-size: 15px; font-weight: 650; letter-spacing: -0.02em;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .g-a .desc {
+      margin: 0 0 8px; font-size: 12px; color: var(--muted);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .g-a .meta {
+      display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+      font-size: 11px; font-weight: 600; color: var(--muted);
+    }
+    .g-a .meta .sep { opacity: 0.35; }
+    .badge {
+      padding: 3px 8px; border-radius: 999px; font-size: 10px; font-weight: 700;
+      background: var(--good-soft); color: var(--good);
+    }
+    .badge.warn { background: var(--warn-soft); color: var(--warn); }
+    .badge.leader { background: var(--leader-soft); color: var(--leader); }
+
+    /* B Soft Cover */
+    .g-b {
+      background: var(--card); border-radius: 16px; overflow: hidden;
+      border: 1px solid transparent; cursor: pointer;
+      transition: border-color 160ms ease, transform 160ms ease;
+    }
+    .g-b:hover { border-color: rgba(46,134,193,0.35); transform: translateY(-1px); }
+    .g-b .art { height: 96px; }
+    .g-b .body { padding: 12px 14px 14px; }
+    .g-b h3 {
+      margin: 0 0 4px; font-size: 16px; font-weight: 650; letter-spacing: -0.02em;
+    }
+    .g-b .desc {
+      margin: 0 0 10px; font-size: 12px; color: var(--muted);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .g-b .meta {
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+      font-size: 11px; font-weight: 600; color: var(--muted);
+    }
+    .g-b .meta .grow { margin-left: auto; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <p class="eyebrow">LWP App · Groups</p>
+    <h1>Group lists — elevate the card</h1>
+    <p class="lede">
+      Connect, Serve, and My Groups share one card. Today it’s a thumb + chevron + chip cloud.
+      Two quiet elevations that match Date Beacon / Quiet Cover — pick one.
+    </p>
+
+    <div class="toolbar" id="concepts">
+      <button type="button" data-concept="current">Current</button>
+      <button type="button" class="active" data-concept="a">A · Quiet Horizon</button>
+      <button type="button" data-concept="b">B · Soft Cover</button>
+    </div>
+    <div class="toolbar" id="screens">
+      <button type="button" class="active" data-screen="connect">Connect Groups</button>
+      <button type="button" data-screen="mine">My Groups</button>
+    </div>
+    <p class="hint">Switch concept and list context. Membership badges only show when relevant.</p>
+    <p class="pitch" id="pitch"></p>
+
+    <div class="phones">
+      <div class="phone" data-concept="current" data-screen="connect">
+        <div class="phone-label">Connect · current</div>
+        <div class="chrome">
+          <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>
+          <div class="title-pill">Connect Groups</div>
+          <div class="chrome-spacer"></div>
+        </div>
+        <div class="scroll" id="cur-connect"></div>
+      </div>
+      <div class="phone" data-concept="current" data-screen="mine">
+        <div class="phone-label">My Groups · current</div>
+        <div class="chrome">
+          <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>
+          <div class="title-pill">My Groups</div>
+          <div class="chrome-spacer"></div>
+        </div>
+        <div class="scroll" id="cur-mine"></div>
+      </div>
+
+      <div class="phone active" data-concept="a" data-screen="connect">
+        <div class="phone-label">Connect · Quiet Horizon</div>
+        <div class="chrome">
+          <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>
+          <div class="title-pill">Connect Groups</div>
+          <div class="chrome-spacer"></div>
+        </div>
+        <div class="scroll tight" id="a-connect"></div>
+      </div>
+      <div class="phone" data-concept="a" data-screen="mine">
+        <div class="phone-label">My Groups · Quiet Horizon</div>
+        <div class="chrome">
+          <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>
+          <div class="title-pill">My Groups</div>
+          <div class="chrome-spacer"></div>
+        </div>
+        <div class="scroll tight" id="a-mine"></div>
+      </div>
+
+      <div class="phone" data-concept="b" data-screen="connect">
+        <div class="phone-label">Connect · Soft Cover</div>
+        <div class="chrome">
+          <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>
+          <div class="title-pill">Connect Groups</div>
+          <div class="chrome-spacer"></div>
+        </div>
+        <div class="scroll tight" id="b-connect"></div>
+      </div>
+      <div class="phone" data-concept="b" data-screen="mine">
+        <div class="phone-label">My Groups · Soft Cover</div>
+        <div class="chrome">
+          <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>
+          <div class="title-pill">My Groups</div>
+          <div class="chrome-spacer"></div>
+        </div>
+        <div class="scroll tight" id="b-mine"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const CONNECT = [
+      {
+        title: "Jeug Connect",
+        desc: "Young adults growing together in faith and friendship",
+        leaders: 2, members: 18, pending: 0, status: null, leader: false, art: "art-a",
+      },
+      {
+        title: "Vroue Kring",
+        desc: "Weekly fellowship and prayer for women",
+        leaders: 1, members: 12, pending: 0, status: "active", leader: false, art: "art-d",
+      },
+      {
+        title: "Ouers & Kinders",
+        desc: "Family discipleship and Sunday connection",
+        leaders: 2, members: 24, pending: 0, status: null, leader: false, art: "art-b",
+      },
+      {
+        title: "Gebedskring Oos",
+        desc: "Neighbourhood prayer and care",
+        leaders: 1, members: 9, pending: 0, status: "pending", leader: false, art: "art-c",
+      },
+    ];
+
+    const MINE = [
+      {
+        title: "Vroue Kring",
+        desc: "Weekly fellowship and prayer for women",
+        leaders: 1, members: 12, pending: 0, status: "active", leader: false, art: "art-d",
+      },
+      {
+        title: "Diensspan Media",
+        desc: "Serve on Sundays with sound and visuals",
+        leaders: 2, members: 9, pending: 2, status: "active", leader: true, art: "art-b",
+      },
+      {
+        title: "Gebedskring Oos",
+        desc: "Neighbourhood prayer and care",
+        leaders: 1, members: 9, pending: 0, status: "pending", leader: false, art: "art-c",
+      },
+    ];
+
+    function statusBadges(g, chipClass) {
+      const bits = [];
+      if (g.status === "active") bits.push(`<span class="${chipClass} good">Active</span>`);
+      if (g.status === "pending") bits.push(`<span class="${chipClass} warn">Pending</span>`);
+      if (g.leader) bits.push(`<span class="${chipClass} leader">Leader</span>`);
+      if (g.pending > 0) bits.push(`<span class="${chipClass} warn">${g.pending} pending</span>`);
+      return bits.join("");
+    }
+
+    function renderCurrent(list) {
+      return list.map((g) => `
+        <article class="g-cur">
+          <div class="art ${g.art} thumb"></div>
+          <div>
+            <h3>${g.title}</h3>
+            <p class="desc">${g.desc}</p>
+            <div class="chips">
+              <span class="mini-chip">${g.leaders} leaders</span>
+              <span class="mini-chip">${g.members} members</span>
+              ${statusBadges(g, "mini-chip")}
+            </div>
+          </div>
+        </article>`).join("");
+    }
+
+    function renderA(list) {
+      return list.map((g) => `
+        <article class="g-a">
+          <div class="art ${g.art} thumb"></div>
+          <div class="body">
+            <h3>${g.title}</h3>
+            <p class="desc">${g.desc}</p>
+            <div class="meta">
+              <span>${g.members} members</span>
+              <span class="sep">·</span>
+              <span>${g.leaders} leaders</span>
+              ${g.status === "active" ? `<span class="badge">Active</span>` : ""}
+              ${g.status === "pending" ? `<span class="badge warn">Pending</span>` : ""}
+              ${g.leader ? `<span class="badge leader">Leader</span>` : ""}
+              ${g.pending > 0 ? `<span class="badge warn">${g.pending} pending</span>` : ""}
+            </div>
+          </div>
+        </article>`).join("");
+    }
+
+    function renderB(list) {
+      return list.map((g) => `
+        <article class="g-b">
+          <div class="art ${g.art}"></div>
+          <div class="body">
+            <h3>${g.title}</h3>
+            <p class="desc">${g.desc}</p>
+            <div class="meta">
+              <span>${g.members} members · ${g.leaders} leaders</span>
+              <span class="grow"></span>
+              ${g.status === "active" ? `<span class="badge">Active</span>` : ""}
+              ${g.status === "pending" ? `<span class="badge warn">Pending</span>` : ""}
+              ${g.leader ? `<span class="badge leader">Leader</span>` : ""}
+              ${g.pending > 0 ? `<span class="badge warn">${g.pending} pending</span>` : ""}
+            </div>
+          </div>
+        </article>`).join("");
+    }
+
+    document.getElementById("cur-connect").innerHTML = renderCurrent(CONNECT);
+    document.getElementById("cur-mine").innerHTML = renderCurrent(MINE);
+    document.getElementById("a-connect").innerHTML = renderA(CONNECT);
+    document.getElementById("a-mine").innerHTML = renderA(MINE);
+    document.getElementById("b-connect").innerHTML = renderB(CONNECT);
+    document.getElementById("b-mine").innerHTML = renderB(MINE);
+
+    const PITCH = {
+      current: "<strong>Baseline.</strong> Square thumb, chevron, two-line description, and a chip cloud for leaders / members / status / pending. Works — but noisy next to quiet group detail.",
+      a: "<strong>Quiet Horizon.</strong> Keep the horizontal scan. One-line description. Counts as quiet text; only membership / leader / pending stay as soft badges. Closest to Horizon Row density.",
+      b: "<strong>Soft Cover.</strong> Short banner strip (group art first), then title + one-line meta. More visual discovery — same calm meta language as Quiet Horizon.",
+    };
+
+    let concept = "a";
+    let screen = "connect";
+
+    function sync() {
+      document.querySelectorAll("#concepts button").forEach((b) => {
+        b.classList.toggle("active", b.dataset.concept === concept);
+      });
+      document.querySelectorAll("#screens button").forEach((b) => {
+        b.classList.toggle("active", b.dataset.screen === screen);
+      });
+      document.querySelectorAll(".phone").forEach((p) => {
+        p.classList.toggle(
+          "active",
+          p.dataset.concept === concept && p.dataset.screen === screen
+        );
+      });
+      document.getElementById("pitch").innerHTML = PITCH[concept];
+    }
+
+    document.getElementById("concepts").addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-concept]");
+      if (!btn) return;
+      concept = btn.dataset.concept;
+      sync();
+    });
+    document.getElementById("screens").addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-screen]");
+      if (!btn) return;
+      screen = btn.dataset.screen;
+      sync();
+    });
+
+    sync();
+  </script>
+</body>
+</html>
