@@ -293,6 +293,17 @@
   "announcementsTitle": "Announcements",
   "announcementsLoading": "Loading Announcements",
   "announcementsEmpty": "No Announcements",
+  "announcementsMarkAsRead": "Mark as read",
+  "announcementsClose": "Close",
+  "announcementsUnreadCount": "{count} unread",
+  "@announcementsUnreadCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "announcementsAllRead": "All caught up",
   "calendarLoading": "Loading Calendar",
   "calendarEmpty": "No Calendar Items",
   "coursesLoading": "Loading Courses",
@@ -346,6 +357,9 @@
   "pastoralBlogPostLoading": "Loading post...",
   "pastoralBlogPostNotFound": "Post not found.",
   "pastoralBlogReact": "React",
+  "pastoralBlogFeaturedLabel": "This week",
+  "pastoralBlogMorePosts": "More posts",
+  "pastoralBlogKicker": "Blog",
   "pastoralReactionAmen": "Amen",
   "pastoralReactionPrayer": "Prayer",
   "pastoralReactionHeart": "Heart",

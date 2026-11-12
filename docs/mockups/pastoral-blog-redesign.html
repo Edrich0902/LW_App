@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LWP — Pastoral blog redesign</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0b1218;
+      --surface: #121a22;
+      --ink: #eef3f7;
+      --muted: #8a9aab;
+      --line: rgba(255,255,255,0.08);
+      --accent: #2e86c1;
+      --accent-soft: rgba(46,134,193,0.16);
+      --warm: #c4a574;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "DM Sans", system-ui, sans-serif;
+      background:
+        radial-gradient(900px 420px at 18% -8%, rgba(46,134,193,0.14), transparent 58%),
+        var(--bg);
+      color: var(--ink);
+      padding: 28px 20px 72px;
+    }
+
+    .page { max-width: 1180px; margin: 0 auto; }
+
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 0 0 6px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+    }
+
+    .lede {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+      max-width: 62ch;
+    }
+
+    .pitch {
+      margin: 0 0 20px;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.03);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+      max-width: 78ch;
+    }
+    .pitch strong { color: var(--ink); font-weight: 600; }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .toolbar button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.03);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .toolbar button:hover { border-color: rgba(255,255,255,0.18); }
+    .toolbar button.active {
+      background: var(--accent);
+      border-color: transparent;
+      color: #fff;
+    }
+
+    .hint {
+      margin: 0 0 22px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .phones {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 22px;
+      align-items: start;
+    }
+
+    .phone {
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background: #0e151c;
+      overflow: hidden;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+      min-height: 720px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .phone-label {
+      padding: 14px 18px 0;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .chrome {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 16px 12px;
+    }
+
+    .back {
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      display: grid;
+      place-items: center;
+      color: var(--ink);
+      flex-shrink: 0;
+    }
+
+    .title-pill {
+      height: 36px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      display: inline-flex;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .scroll {
+      flex: 1;
+      overflow: auto;
+      padding-bottom: 28px;
+    }
+
+    .avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+    .avatar svg { width: 14px; height: 14px; fill: none; stroke: var(--accent); stroke-width: 1.6; }
+
+    .meta-name { font-size: 13px; font-weight: 600; }
+    .meta-date { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+    .cover {
+      width: 100%;
+      background:
+        linear-gradient(160deg, rgba(11,18,24,0.15), rgba(11,18,24,0.72)),
+        linear-gradient(135deg, #1a3a52 0%, #2e86c1 42%, #0b1218 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .cover::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 70% 30%, rgba(255,255,255,0.18), transparent 40%),
+        radial-gradient(circle at 20% 80%, rgba(196,165,116,0.25), transparent 45%);
+      pointer-events: none;
+    }
+    .cover-caption {
+      position: absolute;
+      left: 16px;
+      bottom: 14px;
+      right: 16px;
+      z-index: 1;
+      font-size: 11px;
+      color: rgba(255,255,255,0.78);
+      letter-spacing: 0.02em;
+    }
+
+    /* ---------- Concept A: Quiet Editorial ---------- */
+    .a-list .row {
+      padding: 18px 18px 16px;
+      border-bottom: 1px solid var(--line);
+    }
+    .a-list .row-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .a-list .author {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .a-list .tag {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .a-list .title {
+      margin: 0 0 6px;
+      font-size: 20px;
+      font-weight: 650;
+      letter-spacing: -0.03em;
+      line-height: 1.25;
+    }
+    .a-list .excerpt {
+      margin: 0;
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .a-list .row-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 12px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .a-list .row-foot .amen {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .a-list .thumb-row {
+      display: grid;
+      grid-template-columns: 1fr 72px;
+      gap: 14px;
+      align-items: start;
+    }
+    .a-list .thumb {
+      width: 72px;
+      height: 72px;
+      border-radius: 12px;
+      background:
+        linear-gradient(145deg, #244a66, #0b1218 70%),
+        var(--accent);
+      margin-top: 2px;
+    }
+
+    .a-reader .hero-band {
+      height: 120px;
+      margin: 0 16px;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .a-reader .hero-band .cover { height: 100%; }
+    .a-reader .body {
+      padding: 18px 20px 100px;
+    }
+    .a-reader .kicker {
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin: 0 0 10px;
+      font-weight: 700;
+    }
+    .a-reader h2 {
+      margin: 0 0 14px;
+      font-size: 28px;
+      font-weight: 650;
+      letter-spacing: -0.035em;
+      line-height: 1.15;
+    }
+    .a-reader .byline {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 22px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+    .a-reader .prose {
+      font-size: 16px;
+      line-height: 1.7;
+      color: rgba(238,243,247,0.92);
+      letter-spacing: -0.01em;
+    }
+    .a-reader .prose p { margin: 0 0 1.1em; }
+    .a-reader .prose p:last-child { margin-bottom: 0; }
+    .a-reader .dock {
+      position: sticky;
+      bottom: 0;
+      margin-top: auto;
+      padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+      border-top: 1px solid var(--line);
+      background: rgba(14,21,28,0.92);
+      backdrop-filter: blur(12px);
+      display: flex;
+      gap: 8px;
+    }
+    .a-reader .react {
+      flex: 1;
+      height: 40px;
+      border-radius: 12px;
+      border: none;
+      background: rgba(255,255,255,0.05);
+      color: var(--ink);
+      font: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+    .a-reader .react.on {
+      background: var(--accent-soft);
+      color: #9fd0f3;
+    }
+
+    /* ---------- Concept B: Cover Stage ---------- */
+    .b-list .featured {
+      margin: 0 16px 8px;
+      border-radius: 20px;
+      overflow: hidden;
+      min-height: 280px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+    .b-list .featured .cover {
+      position: absolute;
+      inset: 0;
+    }
+    .b-list .featured-inner {
+      position: relative;
+      z-index: 1;
+      padding: 18px 16px 16px;
+      background: linear-gradient(transparent, rgba(8,12,16,0.92) 55%);
+    }
+    /* No cover: typography stage — same hierarchy, no fake photo */
+    .b-list .featured.no-cover {
+      min-height: 0;
+      background:
+        radial-gradient(600px 220px at 10% 0%, rgba(46,134,193,0.18), transparent 55%),
+        rgba(255,255,255,0.03);
+      border: 1px solid var(--line);
+      justify-content: flex-start;
+    }
+    .b-list .featured.no-cover .cover { display: none; }
+    .b-list .featured.no-cover .featured-inner {
+      background: none;
+      padding: 20px 16px 18px;
+    }
+    .b-list .featured.no-cover .excerpt {
+      color: var(--muted);
+    }
+    .b-list .featured.no-cover .by {
+      color: var(--muted);
+    }
+    .b-list .featured .tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #9fd0f3;
+      margin-bottom: 8px;
+    }
+    .b-list .featured h3 {
+      margin: 0 0 8px;
+      font-family: "Instrument Serif", Georgia, serif;
+      font-size: 30px;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+    .b-list .featured .excerpt {
+      margin: 0 0 12px;
+      font-size: 13px;
+      color: rgba(238,243,247,0.78);
+      line-height: 1.45;
+      max-width: 36ch;
+    }
+    .b-list .featured .by {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: rgba(238,243,247,0.7);
+    }
+
+    .b-list .section {
+      padding: 14px 18px 6px;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .b-list .compact {
+      display: grid;
+      grid-template-columns: 1fr 64px;
+      gap: 12px;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--line);
+      align-items: center;
+    }
+    .b-list .compact.no-media {
+      grid-template-columns: 1fr;
+    }
+    .b-list .compact:last-child { border-bottom: none; }
+    .b-list .compact h4 {
+      margin: 0 0 4px;
+      font-size: 16px;
+      font-weight: 650;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+    }
+    .b-list .compact p {
+      margin: 0;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+    .b-list .compact .thumb {
+      width: 64px;
+      height: 64px;
+      border-radius: 12px;
+      background: linear-gradient(145deg, #3a5a40, #0b1218);
+    }
+    .b-list .compact .thumb.alt {
+      background: linear-gradient(145deg, #5a4030, #0b1218);
+    }
+
+    .b-reader .cover-hero {
+      height: 320px;
+      position: relative;
+    }
+    .b-reader .cover-hero .cover { height: 100%; }
+    .b-reader .cover-hero .overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(11,18,24,0.55) 0%,
+        transparent 28%,
+        rgba(11,18,24,0.2) 55%,
+        rgba(11,18,24,0.98) 100%
+      );
+      z-index: 1;
+    }
+    .b-reader .cover-hero .chrome {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 2;
+      background: transparent;
+    }
+    .b-reader .cover-hero .chrome .back,
+    .b-reader .cover-hero .chrome .title-pill {
+      background: rgba(11,18,24,0.45);
+      border-color: rgba(255,255,255,0.12);
+      backdrop-filter: blur(8px);
+    }
+    .b-reader .cover-copy {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 2;
+      padding: 20px 20px 22px;
+    }
+    .b-reader .cover-copy .kicker {
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #9fd0f3;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .b-reader .cover-copy h2 {
+      margin: 0 0 12px;
+      font-family: "Instrument Serif", Georgia, serif;
+      font-size: 34px;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.08;
+    }
+
+    /* Reader without cover: title stage under chrome */
+    .b-reader .text-hero {
+      padding: 4px 20px 0;
+    }
+    .b-reader .text-hero .kicker {
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 700;
+      margin: 8px 0 10px;
+    }
+    .b-reader .text-hero h2 {
+      margin: 0 0 16px;
+      font-family: "Instrument Serif", Georgia, serif;
+      font-size: 32px;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+
+    .b-reader .body {
+      padding: 8px 20px 36px;
+    }
+    .b-reader.has-cover .body { padding-top: 8px; }
+    .b-reader.no-cover .body { padding-top: 0; }
+
+    .b-variant-note {
+      display: none;
+      margin: -6px 0 14px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .b-variant-note.show { display: block; }
+    .b-reader .byline {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .b-reader .prose {
+      font-size: 16.5px;
+      line-height: 1.75;
+      color: rgba(238,243,247,0.92);
+      max-width: 36rem;
+    }
+    .b-reader .prose p { margin: 0 0 1.15em; }
+    .b-reader .pull {
+      margin: 1.4em 0;
+      padding: 4px 0 4px 14px;
+      border-left: 2px solid var(--accent);
+      font-family: "Instrument Serif", Georgia, serif;
+      font-size: 22px;
+      font-style: italic;
+      line-height: 1.35;
+      color: var(--ink);
+    }
+    .b-reader .react-block {
+      margin-top: 28px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+    }
+    .b-reader .react-block .label {
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+    .b-reader .reacts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .b-reader .react {
+      height: 36px;
+      padding: 0 12px;
+      border-radius: 999px;
+      border: none;
+      background: rgba(255,255,255,0.05);
+      color: var(--ink);
+      font: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+    .b-reader .react.on {
+      background: var(--accent-soft);
+      color: #9fd0f3;
+    }
+
+    .panel { display: none; }
+    .panel.show { display: block; }
+
+    .icon-svg { width: 14px; height: 14px; display: inline-block; vertical-align: -2px; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <p class="eyebrow">Pastoral blog · List + reader</p>
+    <h1>Two directions for a quieter, more readable blog</h1>
+    <p class="lede">
+      Current cards feel samey and the reader dumps reactions as outlined pills under thin content.
+      These concepts keep LWP blue + glass chrome, but treat pastoral writing like reading — not a feed of identical tiles.
+    </p>
+
+    <div class="toolbar" id="concept-bar">
+      <button type="button" data-concept="a">A · Quiet editorial</button>
+      <button type="button" class="active" data-concept="b">B · Cover stage</button>
+    </div>
+    <div class="toolbar" id="b-variant-bar">
+      <button type="button" class="active" data-variant="cover">Has cover image</button>
+      <button type="button" data-variant="plain">No cover image</button>
+    </div>
+    <p class="hint">
+      B is selected. Use <strong>Has / No cover</strong> to see both image states.
+      No reading time — meta is author · date · Amen only.
+    </p>
+    <p class="b-variant-note show" id="b-note-cover">Featured + reader use the cover when one exists. Compact rows only show a thumb when that post has an image.</p>
+    <p class="b-variant-note" id="b-note-plain">Same layout without photos: featured becomes a text stage; compact rows go full-width; reader opens on a title stage.</p>
+
+    <!-- CONCEPT A -->
+    <div class="panel" id="panel-a">
+      <p class="pitch">
+        <strong>A · Quiet editorial:</strong> Drop the card chrome. List becomes a divider stream (title + excerpt + light meta).
+        Reader leads with a slim cover band, strong title, and a sticky reaction dock — reactions stay available without competing with the words.
+      </p>
+      <div class="phones">
+        <section class="phone a-list" aria-label="Quiet editorial list">
+          <p class="phone-label">List</p>
+          <div class="chrome">
+            <div class="back" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+            </div>
+            <div class="title-pill">Blog</div>
+          </div>
+          <div class="scroll">
+            <article class="row">
+              <div class="row-top">
+                <div class="author">
+                  <div class="avatar"><svg viewBox="0 0 24 24"><path d="M4 20V10l8-6 8 6v10H4z"/><path d="M9 20v-6h6v6"/></svg></div>
+                  <div>
+                    <div class="meta-name">Edrich Barnard</div>
+                    <div class="meta-date">09 Aug 2026</div>
+                  </div>
+                </div>
+                <span class="tag">Pastoraal</span>
+              </div>
+              <h3 class="title">Wanneer stilte ook gebed is</h3>
+              <p class="excerpt">In ’n wêreld vol geraas leer ons weer om by die Here stil te word — nie met meer woorde nie, maar met teenwoordigheid.</p>
+              <div class="row-foot">
+                <span>09 Aug 2026</span>
+                <span class="amen">
+                  <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 9V5a3 3 0 0 0-6 0v4"/><path d="M5 11h3l2 9h4l2-9h3"/></svg>
+                  12
+                </span>
+              </div>
+            </article>
+
+            <article class="row">
+              <div class="thumb-row">
+                <div>
+                  <div class="row-top">
+                    <div class="author">
+                      <div class="avatar"><svg viewBox="0 0 24 24"><path d="M4 20V10l8-6 8 6v10H4z"/><path d="M9 20v-6h6v6"/></svg></div>
+                      <div>
+                        <div class="meta-name">Edrich Barnard</div>
+                        <div class="meta-date">02 Aug 2026</div>
+                      </div>
+                    </div>
+                  </div>
+                  <h3 class="title">Hoop wat hou in die winter</h3>
+                  <p class="excerpt">Die seisoene van die siel is nie altyd lente nie. Hier is hoe ons mekaar dra wanneer dit koud word.</p>
+                  <div class="row-foot">
+                    <span>02 Aug 2026</span>
+                    <span class="amen">Amen · 8</span>
+                  </div>
+                </div>
+                <div class="thumb" aria-hidden="true"></div>
+              </div>
+            </article>
+
+            <article class="row">
+              <div class="row-top">
+                <div class="author">
+                  <div class="avatar"><svg viewBox="0 0 24 24"><path d="M4 20V10l8-6 8 6v10H4z"/><path d="M9 20v-6h6v6"/></svg></div>
+                  <div>
+                    <div class="meta-name">Edrich Barnard</div>
+                    <div class="meta-date">21 Jul 2026</div>
+                  </div>
+                </div>
+              </div>
+              <h3 class="title">’n Brief aan die moeg gelowige</h3>
+              <p class="excerpt">As jou geloof vandag dun voel, is jy nie alleen nie. Kom ons kyk weer na die vriendelikheid van Jesus.</p>
+              <div class="row-foot">
+                <span>21 Jul 2026</span>
+                <span class="amen">Amen · 21</span>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="phone a-reader" aria-label="Quiet editorial reader">
+          <p class="phone-label">Reader</p>
+          <div class="chrome">
+            <div class="back" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+            </div>
+            <div class="title-pill">Pastoraal</div>
+          </div>
+          <div class="scroll">
+            <div class="hero-band">
+              <div class="cover"><span class="cover-caption">Cover · optional slim band</span></div>
+            </div>
+            <div class="body">
+              <p class="kicker">Pastorale brief</p>
+              <h2>Wanneer stilte ook gebed is</h2>
+              <div class="byline">
+                <div class="avatar"><svg viewBox="0 0 24 24"><path d="M4 20V10l8-6 8 6v10H4z"/><path d="M9 20v-6h6v6"/></svg></div>
+                <div>
+                  <div class="meta-name">Edrich Barnard</div>
+                  <div class="meta-date">09 Aug 2026 · 3 min</div>
+                </div>
+              </div>
+              <div class="prose">
+                <p>Ons is so gewoond daaraan om te praat — selfs met God — dat stilte ongemaklik begin voel. Tog is daar oomblikke waar die siel nie nog ’n sin nodig het nie, maar ’n plek om asem te haal.</p>
+                <p>Stilte is nie die afwesigheid van geloof nie. Dit is dikwels die ruimte waarin geloof weer wortel skiet. Wanneer jy nie weet wat om te bid nie, mag jy by die Here sit soos ’n kind by ’n pa: sonder ’n agenda, met net teenwoordigheid.</p>
+                <p>Hierdie week nooi ek jou: skakel iets af. Sit vyf minute stil. Laat die Woord en die Gees die stilte vul. Jy hoef nie die stilte te “vul” nie — jy mag daarin rus.</p>
+              </div>
+            </div>
+          </div>
+          <div class="dock">
+            <button type="button" class="react on">Amen · 12</button>
+            <button type="button" class="react">Gebed · 3</button>
+            <button type="button" class="react">Hart · 5</button>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- CONCEPT B -->
+    <div class="panel show" id="panel-b">
+      <p class="pitch">
+        <strong>B · Cover stage (locked in):</strong> Featured lead + compact stream + immersive reader when a cover exists.
+        <strong>No reading time.</strong> When there is no image, featured becomes a text stage, compact rows drop the thumb, and the reader opens on a title stage — same hierarchy, no placeholder art.
+      </p>
+      <div class="phones">
+        <section class="phone b-list" aria-label="Cover stage list">
+          <p class="phone-label">List</p>
+          <div class="chrome">
+            <div class="back" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+            </div>
+            <div class="title-pill">Blog</div>
+          </div>
+          <div class="scroll">
+            <article class="featured" id="b-featured">
+              <div class="cover" id="b-featured-cover"></div>
+              <div class="featured-inner">
+                <span class="tag">Hierdie week</span>
+                <h3>Wanneer stilte ook gebed is</h3>
+                <p class="excerpt">Leer weer om by die Here stil te word — nie met meer woorde nie, maar met teenwoordigheid.</p>
+                <div class="by">
+                  <div class="avatar" style="width:22px;height:22px"><svg viewBox="0 0 24 24"><path d="M4 20V10l8-6 8 6v10H4z"/><path d="M9 20v-6h6v6"/></svg></div>
+                  Edrich Barnard · 09 Aug 2026 · Amen 12
+                </div>
+              </div>
+            </article>
+
+            <div class="section">Meer briewe</div>
+
+            <article class="compact" id="b-row-1">
+              <div>
+                <h4>Hoop wat hou in die winter</h4>
+                <p>Edrich · 02 Aug 2026 · Amen 8</p>
+              </div>
+              <div class="thumb" id="b-thumb-1" aria-hidden="true"></div>
+            </article>
+            <article class="compact no-media">
+              <div>
+                <h4>’n Brief aan die moeg gelowige</h4>
+                <p>Edrich · 21 Jul 2026 · Amen 21</p>
+              </div>
+            </article>
+            <article class="compact" id="b-row-3">
+              <div>
+                <h4>Gemeenskap wat dra</h4>
+                <p>Edrich · 10 Jul 2026 · Amen 6</p>
+              </div>
+              <div class="thumb alt" id="b-thumb-3" aria-hidden="true"></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="phone b-reader has-cover" id="b-reader" aria-label="Cover stage reader">
+          <p class="phone-label">Reader</p>
+          <div class="scroll">
+            <div class="cover-hero" id="b-cover-hero">
+              <div class="cover"></div>
+              <div class="overlay"></div>
+              <div class="chrome">
+                <div class="back" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+                </div>
+                <div class="title-pill">Pastoraal</div>
+              </div>
+              <div class="cover-copy">
+                <div class="kicker">Pastorale brief</div>
+                <h2>Wanneer stilte ook gebed is</h2>
+              </div>
+            </div>
+            <div class="chrome" id="b-plain-chrome" hidden>
+              <div class="back" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+              </div>
+              <div class="title-pill">Pastoraal</div>
+            </div>
+            <div class="text-hero" id="b-text-hero" hidden>
+              <div class="kicker">Pastorale brief</div>
+              <h2>Wanneer stilte ook gebed is</h2>
+            </div>
+            <div class="body">
+              <div class="byline">
+                <div class="avatar"><svg viewBox="0 0 24 24"><path d="M4 20V10l8-6 8 6v10H4z"/><path d="M9 20v-6h6v6"/></svg></div>
+                <div>
+                  <div class="meta-name">Edrich Barnard</div>
+                  <div class="meta-date">09 Aug 2026</div>
+                </div>
+              </div>
+              <div class="prose">
+                <p>Ons is so gewoond daaraan om te praat — selfs met God — dat stilte ongemaklik begin voel. Tog is daar oomblikke waar die siel nie nog ’n sin nodig het nie, maar ’n plek om asem te haal.</p>
+                <p class="pull">Stilte is nie die afwesigheid van geloof nie — dit is dikwels die ruimte waarin geloof weer wortel skiet.</p>
+                <p>Wanneer jy nie weet wat om te bid nie, mag jy by die Here sit soos ’n kind by ’n pa: sonder ’n agenda, met net teenwoordigheid. Hierdie week nooi ek jou: skakel iets af. Sit vyf minute stil. Laat die Woord en die Gees die stilte vul.</p>
+              </div>
+              <div class="react-block">
+                <div class="label">Reageer</div>
+                <div class="reacts">
+                  <button type="button" class="react on">Amen · 12</button>
+                  <button type="button" class="react">Gebed · 3</button>
+                  <button type="button" class="react">Hart · 5</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const bar = document.getElementById("concept-bar");
+    const variantBar = document.getElementById("b-variant-bar");
+    const noteCover = document.getElementById("b-note-cover");
+    const notePlain = document.getElementById("b-note-plain");
+
+    function setConcept(id) {
+      bar.querySelectorAll("button").forEach((b) =>
+        b.classList.toggle("active", b.dataset.concept === id)
+      );
+      document.querySelectorAll(".panel").forEach((p) => p.classList.remove("show"));
+      document.getElementById(`panel-${id}`).classList.add("show");
+      variantBar.style.display = id === "b" ? "flex" : "none";
+      noteCover.classList.toggle("show", id === "b" && variantBar.querySelector(".active")?.dataset.variant === "cover");
+      notePlain.classList.toggle("show", id === "b" && variantBar.querySelector(".active")?.dataset.variant === "plain");
+    }
+
+    function setVariant(variant) {
+      variantBar.querySelectorAll("button").forEach((b) =>
+        b.classList.toggle("active", b.dataset.variant === variant)
+      );
+      const plain = variant === "plain";
+      document.getElementById("b-featured").classList.toggle("no-cover", plain);
+      document.getElementById("b-row-1").classList.toggle("no-media", plain);
+      document.getElementById("b-row-3").classList.toggle("no-media", plain);
+      document.getElementById("b-thumb-1").hidden = plain;
+      document.getElementById("b-thumb-3").hidden = plain;
+
+      const reader = document.getElementById("b-reader");
+      reader.classList.toggle("has-cover", !plain);
+      reader.classList.toggle("no-cover", plain);
+      document.getElementById("b-cover-hero").hidden = plain;
+      document.getElementById("b-plain-chrome").hidden = !plain;
+      document.getElementById("b-text-hero").hidden = !plain;
+
+      noteCover.classList.toggle("show", !plain);
+      notePlain.classList.toggle("show", plain);
+    }
+
+    bar.addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-concept]");
+      if (!btn) return;
+      setConcept(btn.dataset.concept);
+    });
+
+    variantBar.addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-variant]");
+      if (!btn) return;
+      setVariant(btn.dataset.variant);
+    });
+
+    setConcept("b");
+    setVariant("cover");
+  </script>
+</body>
+</html>

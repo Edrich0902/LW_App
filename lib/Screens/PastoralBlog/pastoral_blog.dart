@@ -1,18 +1,18 @@
 import 'package:cloudinary_flutter/image/cld_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lw_app/Extensions/context_l10n.dart';
-import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
 import 'package:lw_app/Blocs/PastoralBlog/pastoral_blog_bloc.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/PastoralBlog/pastoral_post.dart';
 import 'package:lw_app/Screens/PastoralBlog/pastoral_blog_reader.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
 import 'package:lw_app/Utils/quill_helper.dart';
+import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
-import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
 import 'package:lw_app/Widgets/LwpListEntrance/lwp_list_entrance.dart';
+import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
 
 class PastoralBlogPage extends StatelessWidget {
   const PastoralBlogPage({super.key});
@@ -44,7 +44,7 @@ class _PastoralBlogView extends StatelessWidget {
 
   Widget _buildBody(BuildContext context, PastoralBlogState state) {
     if (state.status == PastoralBlogStatus.loading && !state.isRefreshing) {
-      return LwpSkeletonList.media(mediaHeight: 180);
+      return LwpSkeletonList.media(mediaHeight: 220);
     }
 
     if (state.status == PastoralBlogStatus.error) {
@@ -75,30 +75,68 @@ class _PastoralBlogView extends StatelessWidget {
                     ),
                   ),
                 )
-              else
+              else ...[
                 SliverPadding(
                   padding: const EdgeInsets.fromLTRB(
                     LwpSpacing.md,
+                    LwpSpacing.sm,
                     LwpSpacing.md,
-                    LwpSpacing.md,
-                    LwpSpacing.xxl,
+                    LwpSpacing.xs,
                   ),
-                  sliver: SliverList.separated(
-                    itemCount: state.posts.length,
-                    itemBuilder: (context, index) {
-                      final post = state.posts[index];
-                      return LwpListEntrance(
-                        id: post.id,
-                        child: _PastoralPostCard(
-                          post: post,
-                          onTap: () => _openReader(context, post),
-                        ),
-                      );
-                    },
-                    separatorBuilder: (_, __) =>
-                        const SizedBox(height: LwpSpacing.md),
+                  sliver: SliverToBoxAdapter(
+                    child: LwpListEntrance(
+                      id: 'featured-${state.posts.first.id}',
+                      child: _FeaturedPost(
+                        post: state.posts.first,
+                        onTap: () => _openReader(context, state.posts.first),
+                      ),
+                    ),
                   ),
                 ),
+                if (state.posts.length > 1) ...[
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        LwpSpacing.md,
+                        LwpSpacing.md,
+                        LwpSpacing.md,
+                        LwpSpacing.xs,
+                      ),
+                      child: Text(
+                        context.l10n.pastoralBlogMorePosts,
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              color: Theme.of(context).hintColor,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.8,
+                            ),
+                      ),
+                    ),
+                  ),
+                  SliverPadding(
+                    padding: const EdgeInsets.only(bottom: LwpSpacing.xxl),
+                    sliver: SliverList.separated(
+                      itemCount: state.posts.length - 1,
+                      itemBuilder: (context, index) {
+                        final post = state.posts[index + 1];
+                        return LwpListEntrance(
+                          id: post.id,
+                          child: _CompactPostRow(
+                            post: post,
+                            onTap: () => _openReader(context, post),
+                          ),
+                        );
+                      },
+                      separatorBuilder: (_, __) => Divider(
+                        height: 1,
+                        thickness: 1,
+                        color: Theme.of(context)
+                            .dividerColor
+                            .withValues(alpha: 0.35),
+                      ),
+                    ),
+                  ),
+                ],
+              ],
             ],
           ),
         );
@@ -119,152 +157,252 @@ class _PastoralBlogView extends StatelessWidget {
   }
 }
 
-class _PastoralPostCard extends StatelessWidget {
-  final PastoralPost post;
-  final VoidCallback onTap;
+bool _hasCover(PastoralPost post) =>
+    (post.coverImagePublicId ?? '').trim().isNotEmpty;
 
-  const _PastoralPostCard({
+String _metaLine(BuildContext context, PastoralPost post, {bool short = false}) {
+  final author = short
+      ? post.displayAuthorName.split(' ').first
+      : post.displayAuthorName;
+  final date = DateFormatter.formatDate(post.createdAt ?? '');
+  final amen = '${context.l10n.pastoralReactionAmen} ${post.amenCount}';
+  return '$author · $date · $amen';
+}
+
+class _FeaturedPost extends StatelessWidget {
+  const _FeaturedPost({
     required this.post,
     required this.onTap,
   });
 
+  final PastoralPost post;
+  final VoidCallback onTap;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final excerpt = QuillHelper.plainTextPreview(post.content, maxLength: 120);
+    final hasCover = _hasCover(post);
+    final excerpt = QuillHelper.plainTextPreview(post.content, maxLength: 110);
 
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: theme.cardColor,
-          borderRadius: LwpRadii.lgAll,
-          border: Border.all(
-            color: isDark
-                ? Colors.white12
-                : Colors.black.withValues(alpha: 0.07),
+    final titleStyle = theme.textTheme.headlineSmall?.copyWith(
+      fontWeight: FontWeight.w500,
+      height: 1.12,
+      letterSpacing: -0.4,
+      color: hasCover ? Colors.white : null,
+      fontFamily: theme.textTheme.headlineSmall?.fontFamily,
+    );
+
+    final inner = Padding(
+      padding: const EdgeInsets.fromLTRB(
+        LwpSpacing.md,
+        LwpSpacing.lg,
+        LwpSpacing.md,
+        LwpSpacing.md,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Text(
+            context.l10n.pastoralBlogFeaturedLabel.toUpperCase(),
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: hasCover
+                  ? const Color(0xFF9FD0F3)
+                  : theme.primaryColor,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.9,
+            ),
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
+          const SizedBox(height: LwpSpacing.xs),
+          Text(post.title, style: titleStyle),
+          if (excerpt.isNotEmpty) ...[
+            const SizedBox(height: LwpSpacing.sm),
+            Text(
+              excerpt,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: hasCover
+                    ? Colors.white.withValues(alpha: 0.78)
+                    : theme.hintColor,
+                height: 1.45,
+              ),
             ),
           ],
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Cover image
-            if (post.coverImagePublicId != null)
-              SizedBox(
-                height: 180,
-                width: double.infinity,
-                child: CldImageWidget(
-                  publicId: post.coverImagePublicId!,
-                  fit: BoxFit.cover,
+          const SizedBox(height: LwpSpacing.sm),
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 11,
+                backgroundColor: theme.primaryColor.withValues(alpha: 0.18),
+                child: Icon(
+                  Icons.church_outlined,
+                  size: 12,
+                  color: hasCover ? Colors.white : theme.primaryColor,
                 ),
               ),
+              const SizedBox(width: LwpSpacing.xs),
+              Expanded(
+                child: Text(
+                  _metaLine(context, post),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: hasCover
+                        ? Colors.white.withValues(alpha: 0.72)
+                        : theme.hintColor,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
 
-            Padding(
-              padding: const EdgeInsets.all(LwpSpacing.md),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: LwpRadii.lgAll,
+        child: Ink(
+          decoration: BoxDecoration(
+            borderRadius: LwpRadii.lgAll,
+            border: hasCover
+                ? null
+                : Border.all(
+                    color: theme.dividerColor.withValues(alpha: 0.45),
+                  ),
+            color: hasCover
+                ? null
+                : theme.primaryColor.withValues(alpha: 0.06),
+            gradient: hasCover
+                ? null
+                : LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      theme.primaryColor.withValues(alpha: 0.16),
+                      theme.cardColor.withValues(alpha: 0.4),
+                    ],
+                  ),
+          ),
+          child: ClipRRect(
+            borderRadius: LwpRadii.lgAll,
+            child: hasCover
+                ? SizedBox(
+                    height: 280,
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        Hero(
+                          tag: post.coverHeroTag,
+                          child: Material(
+                            type: MaterialType.transparency,
+                            child: CldImageWidget(
+                              publicId: post.coverImagePublicId!,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                        const DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.transparent,
+                                Color(0xEB080C10),
+                              ],
+                              stops: [0.35, 1],
+                            ),
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.bottomLeft,
+                          child: inner,
+                        ),
+                      ],
+                    ),
+                  )
+                : inner,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CompactPostRow extends StatelessWidget {
+  const _CompactPostRow({
+    required this.post,
+    required this.onTap,
+  });
+
+  final PastoralPost post;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final hasCover = _hasCover(post);
+
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: LwpSpacing.md,
+          vertical: LwpSpacing.md,
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Author + date row
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 16,
-                        backgroundColor:
-                            theme.primaryColor.withValues(alpha: 0.12),
-                        child: Icon(
-                          Icons.church_outlined,
-                          color: theme.primaryColor,
-                          size: 16,
-                        ),
-                      ),
-                      const SizedBox(width: LwpSpacing.sm),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            post.displayAuthorName,
-                            style: theme.textTheme.labelMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          Text(
-                            DateFormatter.formatDate(post.createdAt ?? ''),
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: theme.hintColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: LwpSpacing.md),
-
-                  // Title
                   Text(
                     post.title,
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w800,
-                      height: 1.2,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      height: 1.25,
+                      letterSpacing: -0.2,
                     ),
                   ),
-
-                  // Excerpt
-                  if (excerpt.isNotEmpty) ...[
-                    const SizedBox(height: LwpSpacing.sm),
-                    Text(
-                      excerpt,
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.hintColor,
-                        height: 1.5,
-                      ),
+                  const SizedBox(height: LwpSpacing.xxs),
+                  Text(
+                    _metaLine(context, post, short: true),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.hintColor,
                     ),
-                  ],
-
-                  const SizedBox(height: LwpSpacing.md),
-
-                  // Read more indicator
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        context.l10n.pastoralBlogReadMore,
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          color: theme.primaryColor,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.thumb_up_alt_outlined,
-                            size: 14,
-                            color: theme.hintColor,
-                          ),
-                          const SizedBox(width: 3),
-                          Text(
-                            '${post.reactionCount}',
-                            style: theme.textTheme.labelSmall
-                                ?.copyWith(color: theme.hintColor),
-                          ),
-                        ],
-                      ),
-                    ],
                   ),
                 ],
               ),
             ),
+            if (hasCover) ...[
+              const SizedBox(width: LwpSpacing.sm),
+              Hero(
+                tag: post.coverHeroTag,
+                child: ClipRRect(
+                  borderRadius: LwpRadii.smAll,
+                  child: SizedBox(
+                    width: 64,
+                    height: 64,
+                    child: Material(
+                      type: MaterialType.transparency,
+                      child: CldImageWidget(
+                        publicId: post.coverImagePublicId!,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ],
         ),
       ),

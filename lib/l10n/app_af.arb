@@ -293,6 +293,17 @@
   "announcementsTitle": "Aankondigings",
   "announcementsLoading": "Laai Aankondigings",
   "announcementsEmpty": "Geen Aankondigings",
+  "announcementsMarkAsRead": "Merk as gelees",
+  "announcementsClose": "Maak toe",
+  "announcementsUnreadCount": "{count} ongelees",
+  "@announcementsUnreadCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "announcementsAllRead": "Alles bygewerk",
   "calendarLoading": "Laai Kalender",
   "calendarEmpty": "Geen Kalender Items",
   "coursesLoading": "Laai Kursusse",
@@ -346,6 +357,9 @@
   "pastoralBlogPostLoading": "Laai pos...",
   "pastoralBlogPostNotFound": "Pos nie gevind nie.",
   "pastoralBlogReact": "Reageer",
+  "pastoralBlogFeaturedLabel": "Hierdie week",
+  "pastoralBlogMorePosts": "Meer plasings",
+  "pastoralBlogKicker": "Blog",
   "pastoralReactionAmen": "Amen",
   "pastoralReactionPrayer": "Gebed",
   "pastoralReactionHeart": "Hart",

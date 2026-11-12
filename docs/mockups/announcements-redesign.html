@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LWP — Announcements redesign</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0b1218;
+      --surface: #0e151c;
+      --ink: #eef3f7;
+      --muted: #8a9aab;
+      --line: rgba(255,255,255,0.08);
+      --accent: #2e86c1;
+      --accent-soft: rgba(46,134,193,0.18);
+      --good: #3dba7a;
+      --good-soft: rgba(61,186,122,0.16);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "DM Sans", system-ui, sans-serif;
+      background:
+        radial-gradient(900px 420px at 15% -10%, rgba(46,134,193,0.14), transparent 58%),
+        var(--bg);
+      color: var(--ink);
+      padding: 28px 20px 72px;
+    }
+
+    .page { max-width: 1180px; margin: 0 auto; }
+
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 0 0 6px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+    }
+
+    .lede {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+      max-width: 64ch;
+    }
+
+    .pitch {
+      margin: 0 0 18px;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.03);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+      max-width: 78ch;
+    }
+    .pitch strong { color: var(--ink); font-weight: 600; }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .toolbar button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.03);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .toolbar button:hover { border-color: rgba(255,255,255,0.18); }
+    .toolbar button.active {
+      background: var(--accent);
+      border-color: transparent;
+      color: #fff;
+    }
+
+    .hint {
+      margin: 0 0 20px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .phones {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 22px;
+      align-items: start;
+    }
+
+    .phone {
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background: var(--surface);
+      overflow: hidden;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+      min-height: 700px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .phone-label {
+      padding: 14px 18px 0;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .chrome {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 16px 12px;
+    }
+
+    .back, .title-pill {
+      height: 36px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--ink);
+    }
+    .back { width: 36px; }
+    .title-pill {
+      padding: 0 14px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .scroll {
+      flex: 1;
+      overflow: auto;
+      padding-bottom: 28px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .count {
+      padding: 0 18px 10px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* Shared swipe row */
+    .swipe {
+      position: relative;
+      overflow: hidden;
+      touch-action: pan-y;
+      user-select: none;
+    }
+
+    .swipe-bg {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 20px;
+      gap: 8px;
+      background: var(--accent-soft);
+      color: #9fd0f3;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    .swipe-bg svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.8;
+    }
+
+    .swipe-fg {
+      position: relative;
+      background: var(--surface);
+      transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+      will-change: transform;
+    }
+
+    .swipe.dragging .swipe-fg { transition: none; }
+    .swipe.leaving .swipe-fg {
+      transition: transform 0.28s cubic-bezier(0.4, 0, 1, 1), opacity 0.28s ease;
+      opacity: 0;
+    }
+
+    .demo-tip {
+      margin: 8px 18px 0;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px dashed rgba(46,134,193,0.35);
+      color: #9fd0f3;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    /* ---------- A: Quiet stream ---------- */
+    .a-row {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      cursor: pointer;
+    }
+    .a-row.has-media {
+      grid-template-columns: 1fr 64px;
+      align-items: start;
+    }
+    .a-kicker {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    .a-title {
+      margin: 0 0 4px;
+      font-size: 17px;
+      font-weight: 650;
+      letter-spacing: -0.025em;
+      line-height: 1.25;
+    }
+    .a-body {
+      margin: 0;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    .a-meta {
+      margin-top: 8px;
+      font-size: 11px;
+      color: var(--muted);
+      opacity: 0.85;
+    }
+    .a-thumb {
+      width: 64px;
+      height: 64px;
+      border-radius: 12px;
+      background:
+        linear-gradient(145deg, #2a5a78, #0b1218 70%),
+        var(--accent);
+    }
+    .a-thumb.warm {
+      background: linear-gradient(145deg, #6a4a30, #0b1218);
+    }
+
+    /* ---------- B: Inbox quiet ---------- */
+    .b-row {
+      padding: 15px 18px;
+      border-bottom: 1px solid var(--line);
+      display: grid;
+      grid-template-columns: 8px 1fr;
+      gap: 12px;
+      align-items: start;
+      cursor: pointer;
+    }
+    .b-row.has-media {
+      grid-template-columns: 8px 1fr 56px;
+    }
+    .b-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--accent);
+      margin-top: 7px;
+    }
+    .b-dot.read {
+      background: transparent;
+      box-shadow: inset 0 0 0 1.5px rgba(255,255,255,0.22);
+    }
+    .b-title {
+      margin: 0 0 3px;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+    }
+    .b-body {
+      margin: 0;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+    .b-meta {
+      margin-top: 7px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .b-thumb {
+      width: 56px;
+      height: 56px;
+      border-radius: 10px;
+      background: linear-gradient(145deg, #3a5a40, #0b1218);
+      margin-top: 2px;
+    }
+
+    /* Detail sheet preview */
+    .sheet-phone .sheet {
+      margin-top: auto;
+      border-top: 1px solid var(--line);
+      border-radius: 20px 20px 0 0;
+      background: #121a22;
+      padding: 10px 18px 28px;
+      min-height: 420px;
+    }
+    .handle {
+      width: 36px;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.18);
+      margin: 4px auto 14px;
+    }
+    .sheet-cover {
+      height: 160px;
+      border-radius: 16px;
+      margin-bottom: 14px;
+      background:
+        linear-gradient(160deg, rgba(11,18,24,0.2), rgba(11,18,24,0.65)),
+        linear-gradient(135deg, #1a3a52, #2e86c1 50%, #0b1218);
+    }
+    .sheet h3 {
+      margin: 0 0 8px;
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+    }
+    .sheet p {
+      margin: 0;
+      font-size: 15px;
+      color: rgba(238,243,247,0.88);
+      line-height: 1.6;
+    }
+    .sheet .actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 20px;
+    }
+    .sheet .actions button {
+      flex: 1;
+      height: 42px;
+      border-radius: 12px;
+      border: none;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .sheet .primary {
+      background: var(--accent);
+      color: #fff;
+    }
+    .sheet .ghost {
+      background: rgba(255,255,255,0.06);
+      color: var(--ink);
+    }
+
+    .panel { display: none; }
+    .panel.show { display: block; }
+
+    .gone { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <p class="eyebrow">Announcements · List + swipe</p>
+    <h1>Quieter announcements, same swipe to mark read</h1>
+    <p class="lede">
+      Drop the heavy cards. Keep tap-to-open and swipe-left to dismiss / mark as read —
+      with a soft check reveal instead of a loud coloured slab.
+    </p>
+
+    <div class="toolbar" id="concept-bar">
+      <button type="button" class="active" data-concept="a">A · Quiet stream</button>
+      <button type="button" data-concept="b">B · Inbox dots</button>
+    </div>
+    <p class="hint">Drag any highlighted row left to try dismiss. Tap a row to preview the detail sheet in the second phone.</p>
+
+    <!-- A -->
+    <div class="panel show" id="panel-a">
+      <p class="pitch">
+        <strong>A · Quiet stream:</strong> Divider list like prayer / blog compact rows.
+        Optional thumb only when there is an image. Swipe reveals a calm “Mark as read” strip; row exits.
+        Detail sheet stays minimal — cover (if any), title, body, one primary action.
+      </p>
+      <div class="phones">
+        <section class="phone" aria-label="Quiet stream list">
+          <p class="phone-label">List</p>
+          <div class="chrome">
+            <div class="back" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+            </div>
+            <div class="title-pill">Aankondigings</div>
+          </div>
+          <p class="count" id="a-count">3 ongelees</p>
+          <p class="demo-tip">Try: drag the first row left → release to mark as read</p>
+          <div class="scroll" id="a-list">
+            <div class="swipe" data-demo="1">
+              <div class="swipe-bg">
+                <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+                Merk as gelees
+              </div>
+              <div class="swipe-fg a-row has-media" data-open="youth">
+                <div>
+                  <div class="a-kicker">Hierdie week</div>
+                  <h3 class="a-title">Jeugkamp inskrywings oop</h3>
+                  <p class="a-body">Sluitingsdatum is Vrydag. Bring ’n vriend — plek is beperk.</p>
+                  <div class="a-meta">Swipe ← om te merk · Tik vir volle boodskap</div>
+                </div>
+                <div class="a-thumb" aria-hidden="true"></div>
+              </div>
+            </div>
+
+            <div class="swipe">
+              <div class="swipe-bg">
+                <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+                Merk as gelees
+              </div>
+              <div class="swipe-fg a-row" data-open="parking">
+                <div>
+                  <h3 class="a-title">Parkering Sondag</h3>
+                  <p class="a-body">Gebruik die syhek — hoofingang is tydelik gesluit vir werke.</p>
+                  <div class="a-meta">12 Nov 2026</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="swipe">
+              <div class="swipe-bg">
+                <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+                Merk as gelees
+              </div>
+              <div class="swipe-fg a-row has-media" data-open="worship">
+                <div>
+                  <h3 class="a-title">Nuwe aanbiddingstye</h3>
+                  <p class="a-body">Vanaf volgende Sondag: 09:00 en 18:00. Kindersdiens soos gewoonlik.</p>
+                  <div class="a-meta">10 Nov 2026</div>
+                </div>
+                <div class="a-thumb warm" aria-hidden="true"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="phone sheet-phone" aria-label="Detail sheet">
+          <p class="phone-label">Detail (tap a row)</p>
+          <div class="chrome">
+            <div class="back" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+            </div>
+            <div class="title-pill">Aankondigings</div>
+          </div>
+          <div class="scroll" style="opacity:0.35; pointer-events:none; padding: 0 18px;">
+            <div class="a-row"><h3 class="a-title">…</h3></div>
+            <div class="a-row"><h3 class="a-title">…</h3></div>
+          </div>
+          <div class="sheet" id="a-sheet">
+            <div class="handle"></div>
+            <div class="sheet-cover" id="a-sheet-cover"></div>
+            <h3 id="a-sheet-title">Jeugkamp inskrywings oop</h3>
+            <p id="a-sheet-body">Sluitingsdatum is Vrydag. Bring ’n vriend — plek is beperk. Meer besonderhede by die jeugtafel ná die diens.</p>
+            <div class="actions">
+              <button type="button" class="ghost" id="a-sheet-close">Maak toe</button>
+              <button type="button" class="primary" id="a-sheet-read">Merk as gelees</button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- B -->
+    <div class="panel" id="panel-b">
+      <p class="pitch">
+        <strong>B · Inbox dots:</strong> Same quiet rows, with a small unread accent dot.
+        Swipe still marks read (dot clears / row can leave). Slightly more “inbox” signal without card chrome.
+      </p>
+      <div class="phones">
+        <section class="phone" aria-label="Inbox dots list">
+          <p class="phone-label">List</p>
+          <div class="chrome">
+            <div class="back" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+            </div>
+            <div class="title-pill">Aankondigings</div>
+          </div>
+          <p class="count">3 ongelees · swipe om te merk</p>
+          <div class="scroll" id="b-list">
+            <div class="swipe" data-demo="1">
+              <div class="swipe-bg">
+                <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+                Merk as gelees
+              </div>
+              <div class="swipe-fg b-row has-media">
+                <span class="b-dot" aria-hidden="true"></span>
+                <div>
+                  <h3 class="b-title">Jeugkamp inskrywings oop</h3>
+                  <p class="b-body">Sluitingsdatum is Vrydag. Bring ’n vriend — plek is beperk.</p>
+                  <div class="b-meta">Hierdie week</div>
+                </div>
+                <div class="b-thumb" aria-hidden="true"></div>
+              </div>
+            </div>
+            <div class="swipe">
+              <div class="swipe-bg">
+                <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+                Merk as gelees
+              </div>
+              <div class="swipe-fg b-row">
+                <span class="b-dot" aria-hidden="true"></span>
+                <div>
+                  <h3 class="b-title">Parkering Sondag</h3>
+                  <p class="b-body">Gebruik die syhek — hoofingang is tydelik gesluit vir werke.</p>
+                  <div class="b-meta">12 Nov 2026</div>
+                </div>
+              </div>
+            </div>
+            <div class="swipe">
+              <div class="swipe-bg">
+                <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+                Merk as gelees
+              </div>
+              <div class="swipe-fg b-row">
+                <span class="b-dot read" aria-hidden="true"></span>
+                <div>
+                  <h3 class="b-title">Dankie vir die braai</h3>
+                  <p class="b-body">Wat ’n fees — dankie aan almal wat gehelp het.</p>
+                  <div class="b-meta">Gelees · 08 Nov 2026</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="phone" aria-label="Inbox empty after swipe note">
+          <p class="phone-label">After swipe</p>
+          <div class="chrome">
+            <div class="back" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+            </div>
+            <div class="title-pill">Aankondigings</div>
+          </div>
+          <div class="scroll" style="display:grid; place-items:center; padding:40px 28px; text-align:center;">
+            <div>
+              <div style="width:48px;height:48px;border-radius:999px;background:var(--accent-soft);display:grid;place-items:center;margin:0 auto 14px;color:#9fd0f3;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 6L9 17l-5-5"/></svg>
+              </div>
+              <p style="margin:0 0 6px;font-size:16px;font-weight:600;">Alles bygewerk</p>
+              <p style="margin:0;font-size:13px;color:var(--muted);line-height:1.5;">Geen ongeleesde aankondigings nie. Nuwe boodskappe verskyn hier.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const details = {
+      youth: {
+        title: "Jeugkamp inskrywings oop",
+        body: "Sluitingsdatum is Vrydag. Bring ’n vriend — plek is beperk. Meer besonderhede by die jeugtafel ná die diens.",
+        cover: true,
+      },
+      parking: {
+        title: "Parkering Sondag",
+        body: "Gebruik die syhek — hoofingang is tydelik gesluit vir werke. Vrywilligers help met aanwysings vanaf 08:15.",
+        cover: false,
+      },
+      worship: {
+        title: "Nuwe aanbiddingstye",
+        body: "Vanaf volgende Sondag: 09:00 en 18:00. Kindersdiens soos gewoonlik by beide dienste.",
+        cover: true,
+      },
+    };
+
+    const bar = document.getElementById("concept-bar");
+    bar.addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-concept]");
+      if (!btn) return;
+      bar.querySelectorAll("button").forEach((b) => b.classList.toggle("active", b === btn));
+      document.querySelectorAll(".panel").forEach((p) => p.classList.remove("show"));
+      document.getElementById(`panel-${btn.dataset.concept}`).classList.add("show");
+    });
+
+    function wireSwipe(root) {
+      root.querySelectorAll(".swipe").forEach((row) => {
+        const fg = row.querySelector(".swipe-fg");
+        let startX = 0;
+        let dx = 0;
+        let dragging = false;
+
+        const onStart = (x) => {
+          dragging = true;
+          startX = x;
+          dx = 0;
+          row.classList.add("dragging");
+        };
+        const onMove = (x) => {
+          if (!dragging) return;
+          dx = Math.min(0, x - startX);
+          fg.style.transform = `translateX(${dx}px)`;
+        };
+        const onEnd = () => {
+          if (!dragging) return;
+          dragging = false;
+          row.classList.remove("dragging");
+          if (dx < -96) {
+            row.classList.add("leaving");
+            fg.style.transform = "translateX(-110%)";
+            setTimeout(() => {
+              row.classList.add("gone");
+              const unread = root.querySelectorAll(".swipe:not(.gone)").length;
+              const count = document.getElementById("a-count");
+              if (count && root.id === "a-list") {
+                count.textContent = unread ? `${unread} ongelees` : "Alles gelees";
+              }
+              const dot = fg.querySelector(".b-dot");
+              if (dot) dot.classList.add("read");
+            }, 260);
+          } else {
+            fg.style.transform = "translateX(0)";
+          }
+          dx = 0;
+        };
+
+        fg.addEventListener("pointerdown", (e) => {
+          if (e.button != null && e.button !== 0) return;
+          fg.setPointerCapture(e.pointerId);
+          onStart(e.clientX);
+        });
+        fg.addEventListener("pointermove", (e) => onMove(e.clientX));
+        fg.addEventListener("pointerup", onEnd);
+        fg.addEventListener("pointercancel", onEnd);
+      });
+    }
+
+    wireSwipe(document.getElementById("a-list"));
+    wireSwipe(document.getElementById("b-list"));
+
+    const sheetTitle = document.getElementById("a-sheet-title");
+    const sheetBody = document.getElementById("a-sheet-body");
+    const sheetCover = document.getElementById("a-sheet-cover");
+
+    document.getElementById("a-list").addEventListener("click", (e) => {
+      const open = e.target.closest("[data-open]");
+      if (!open) return;
+      // Don't open if this was mostly a swipe
+      const d = details[open.dataset.open];
+      if (!d) return;
+      sheetTitle.textContent = d.title;
+      sheetBody.textContent = d.body;
+      sheetCover.style.display = d.cover ? "block" : "none";
+    });
+
+    document.getElementById("a-sheet-close").addEventListener("click", () => {
+      // no-op visual for mock
+    });
+    document.getElementById("a-sheet-read").addEventListener("click", () => {
+      const first = document.querySelector("#a-list .swipe:not(.gone)");
+      if (!first) return;
+      const fg = first.querySelector(".swipe-fg");
+      first.classList.add("leaving");
+      fg.style.transform = "translateX(-110%)";
+      setTimeout(() => {
+        first.classList.add("gone");
+        const unread = document.querySelectorAll("#a-list .swipe:not(.gone)").length;
+        document.getElementById("a-count").textContent =
+          unread ? `${unread} ongelees` : "Alles gelees";
+      }, 260);
+    });
+  </script>
+</body>
+</html>

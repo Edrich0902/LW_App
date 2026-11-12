@@ -1646,6 +1646,30 @@ abstract class AppLocalizations {
   /// **'Geen Aankondigings'**
   String get announcementsEmpty;
 
+  /// No description provided for @announcementsMarkAsRead.
+  ///
+  /// In af, this message translates to:
+  /// **'Merk as gelees'**
+  String get announcementsMarkAsRead;
+
+  /// No description provided for @announcementsClose.
+  ///
+  /// In af, this message translates to:
+  /// **'Maak toe'**
+  String get announcementsClose;
+
+  /// No description provided for @announcementsUnreadCount.
+  ///
+  /// In af, this message translates to:
+  /// **'{count} ongelees'**
+  String announcementsUnreadCount(int count);
+
+  /// No description provided for @announcementsAllRead.
+  ///
+  /// In af, this message translates to:
+  /// **'Alles bygewerk'**
+  String get announcementsAllRead;
+
   /// No description provided for @calendarLoading.
   ///
   /// In af, this message translates to:
@@ -1903,6 +1927,24 @@ abstract class AppLocalizations {
   /// In af, this message translates to:
   /// **'Reageer'**
   String get pastoralBlogReact;
+
+  /// No description provided for @pastoralBlogFeaturedLabel.
+  ///
+  /// In af, this message translates to:
+  /// **'Hierdie week'**
+  String get pastoralBlogFeaturedLabel;
+
+  /// No description provided for @pastoralBlogMorePosts.
+  ///
+  /// In af, this message translates to:
+  /// **'Meer plasings'**
+  String get pastoralBlogMorePosts;
+
+  /// No description provided for @pastoralBlogKicker.
+  ///
+  /// In af, this message translates to:
+  /// **'Blog'**
+  String get pastoralBlogKicker;
 
   /// No description provided for @pastoralReactionAmen.
   ///

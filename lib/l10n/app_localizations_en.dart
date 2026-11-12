@@ -826,6 +826,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get announcementsEmpty => 'No Announcements';
 
   @override
+  String get announcementsMarkAsRead => 'Mark as read';
+
+  @override
+  String get announcementsClose => 'Close';
+
+  @override
+  String announcementsUnreadCount(int count) {
+    return '$count unread';
+  }
+
+  @override
+  String get announcementsAllRead => 'All caught up';
+
+  @override
   String get calendarLoading => 'Loading Calendar';
 
   @override
@@ -957,6 +971,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pastoralBlogReact => 'React';
+
+  @override
+  String get pastoralBlogFeaturedLabel => 'This week';
+
+  @override
+  String get pastoralBlogMorePosts => 'More posts';
+
+  @override
+  String get pastoralBlogKicker => 'Blog';
 
   @override
   String get pastoralReactionAmen => 'Amen';

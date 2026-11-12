@@ -12,6 +12,7 @@ class LwpTopBar extends StatelessWidget {
     required this.title,
     this.showActions = true,
     this.showBack = false,
+    this.showTitle = true,
     this.onBack,
     this.actions,
     this.titleWidget,
@@ -25,6 +26,9 @@ class LwpTopBar extends StatelessWidget {
   /// Back chevron in its own floating pill (pushed routes).
   final bool showBack;
   final VoidCallback? onBack;
+
+  /// When false, the title glass capsule is omitted (back-only bars).
+  final bool showTitle;
 
   /// Extra actions inside the right glass capsule (before default actions).
   final List<Widget>? actions;
@@ -72,62 +76,66 @@ class LwpTopBar extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: islandGap),
+              if (showTitle) const SizedBox(width: islandGap),
             ],
-            Flexible(
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: LwpGlass(
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minHeight: capsuleHeight,
-                      maxWidth: MediaQuery.sizeOf(context).width *
-                          (hasRight || showBack ? 0.58 : 0.92),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 14),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (!showBack) ...[
-                            Container(
-                              width: 10,
-                              height: 10,
-                              decoration: BoxDecoration(
-                                color: accent,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                            const SizedBox(width: 9),
-                          ],
-                          // Avoid Flexible inside mainAxisSize.min — it
-                          // collapses to 0 width and leaves an empty pill.
-                          ConstrainedBox(
-                            constraints: BoxConstraints(
-                              maxWidth: MediaQuery.sizeOf(context).width *
-                                      (hasRight || showBack ? 0.58 : 0.92) -
-                                  28 -
-                                  (showBack ? 0 : 19),
-                            ),
-                            child: titleWidget ??
-                                Text(
-                                  title,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  softWrap: false,
-                                  style: theme.textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                    color: ink,
-                                  ),
+            if (showTitle)
+              Flexible(
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: LwpGlass(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: capsuleHeight,
+                        maxWidth: MediaQuery.sizeOf(context).width *
+                            (hasRight || showBack ? 0.58 : 0.92),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (!showBack) ...[
+                              Container(
+                                width: 10,
+                                height: 10,
+                                decoration: BoxDecoration(
+                                  color: accent,
+                                  shape: BoxShape.circle,
                                 ),
-                          ),
-                        ],
+                              ),
+                              const SizedBox(width: 9),
+                            ],
+                            // Avoid Flexible inside mainAxisSize.min — it
+                            // collapses to 0 width and leaves an empty pill.
+                            ConstrainedBox(
+                              constraints: BoxConstraints(
+                                maxWidth: MediaQuery.sizeOf(context).width *
+                                        (hasRight || showBack ? 0.58 : 0.92) -
+                                    28 -
+                                    (showBack ? 0 : 19),
+                              ),
+                              child: titleWidget ??
+                                  Text(
+                                    title,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    softWrap: false,
+                                    style:
+                                        theme.textTheme.titleMedium?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                      color: ink,
+                                    ),
+                                  ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ),
+              )
+            else if (hasRight)
+              const Spacer(),
             if (hasRight) ...[
               const SizedBox(width: gap),
               LwpGlass(

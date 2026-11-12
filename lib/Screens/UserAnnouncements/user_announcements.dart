@@ -1,17 +1,18 @@
+import 'package:cloudinary_flutter/image/cld_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lw_app/Extensions/context_l10n.dart';
-import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
-import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
-import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
-import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Blocs/UserAnnouncements/user_announcement_bloc.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/UserAnnouncement/user_announcement.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
+import 'package:lw_app/Utils/date_formatter.dart';
+import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
 import 'package:lw_app/Widgets/LwpBottomSheet/lwp_bottom_sheet.dart';
-import 'package:cloudinary_flutter/image/cld_image.dart';
+import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
+import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpListEntrance/lwp_list_entrance.dart';
+import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
 
 class UserAnnouncementsPage extends StatefulWidget {
   const UserAnnouncementsPage({super.key});
@@ -35,193 +36,344 @@ class _UserAnnouncementsPageState extends State<UserAnnouncementsPage> {
     super.initState();
   }
 
+  bool _hasImage(UserAnnouncement announcement) =>
+      (announcement.imagePublicId ?? '').trim().isNotEmpty;
+
+  void _dismiss(String id) {
+    HapticFeedback.mediumImpact();
+    context.read<UserAnnouncementBloc>().add(DismissUserAnnouncement(id));
+  }
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return BlocListener<UserAnnouncementBloc, UserAnnouncementState>(
       listener: (context, state) {},
       child: LwpChromeScaffold(
         title: context.l10n.announcementsTitle,
         body: BlocBuilder<UserAnnouncementBloc, UserAnnouncementState>(
-            builder: (context, state) {
-              if (state is UserAnnouncementSuccess) {
-                if (state.userAnnouncements.isNotEmpty) {
-                  return LwpListEntranceScope(
-                    controller: _listEntrance,
-                    child: ListView.builder(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0, vertical: 12.0),
-                      itemCount: state.userAnnouncements.length,
-                      itemBuilder: (context, index) {
-                        final announcement = state.userAnnouncements[index];
-                        return Dismissible(
-                          key: Key(announcement.id ?? index.toString()),
-                          direction: DismissDirection.endToStart,
-                          onDismissed: (direction) {
-                            HapticFeedback.mediumImpact();
-                            context
-                                .read<UserAnnouncementBloc>()
-                                .add(DismissUserAnnouncement(announcement.id!));
-                          },
-                          background: Container(
-                            margin: const EdgeInsets.symmetric(vertical: 8.0),
-                            decoration: BoxDecoration(
-                              color:
-                                  Theme.of(context).primaryColor.withAlpha(50),
-                              borderRadius: LwpRadii.lgAll,
-                            ),
-                            alignment: Alignment.centerRight,
-                            padding: const EdgeInsets.only(right: 20.0),
-                            child: Icon(
-                              Icons.check_circle_outline,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                          ),
-                          child: LwpListEntrance(
-                            id: announcement.id ?? 'announcement-$index',
-                            child: _createAnnouncementItem(announcement),
-                          ),
-                        );
-                      },
-                    ),
-                  );
-                } else {
-                  return LwpEmpty(message: context.l10n.announcementsEmpty);
-                }
-              } else if (state is UserAnnouncementError) {
-                return const LwpError();
-              } else {
-                return LwpSkeletonList.thumb();
+          builder: (context, state) {
+            if (state is UserAnnouncementSuccess) {
+              if (state.userAnnouncements.isEmpty) {
+                return LwpEmpty(message: context.l10n.announcementsEmpty);
               }
-            },
-          ),
-      ),
-    );
-  }
 
-  Widget _createAnnouncementItem(UserAnnouncement announcement) {
-    final theme = Theme.of(context);
+              final unread = state.userAnnouncements
+                  .where((a) => a.isRead != true)
+                  .length;
 
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: LwpRadii.lgAll,
-          side: BorderSide(
-            color: theme.dividerColor.withAlpha(50),
-            width: 1,
-          ),
-        ),
-        child: InkWell(
-          borderRadius: LwpRadii.lgAll,
-          onTap: () => _showAnnouncementDetails(context, announcement),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                ClipRRect(
-                  borderRadius: LwpRadii.smAll,
-                  child: CldImageWidget(
-                    publicId:
-                        announcement.imagePublicId ?? 'samples/cloudinary-icon',
-                    fit: BoxFit.cover,
-                    width: 80,
-                    height: 80,
-                  ),
+              return LwpListEntranceScope(
+                controller: _listEntrance,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        LwpSpacing.md,
+                        LwpSpacing.xs,
+                        LwpSpacing.md,
+                        LwpSpacing.xs,
+                      ),
+                      child: Text(
+                        unread > 0
+                            ? context.l10n.announcementsUnreadCount(unread)
+                            : context.l10n.announcementsAllRead,
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: theme.hintColor,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: ListView.separated(
+                        padding: const EdgeInsets.only(bottom: LwpSpacing.xxl),
+                        itemCount: state.userAnnouncements.length,
+                        separatorBuilder: (_, __) => Divider(
+                          height: 1,
+                          thickness: 1,
+                          color: theme.dividerColor.withValues(alpha: 0.35),
+                        ),
+                        itemBuilder: (context, index) {
+                          final announcement =
+                              state.userAnnouncements[index];
+                          final id = announcement.id ?? 'announcement-$index';
+
+                          return Dismissible(
+                            key: Key(id),
+                            direction: DismissDirection.endToStart,
+                            onDismissed: (_) {
+                              if (announcement.id == null) return;
+                              _dismiss(announcement.id!);
+                            },
+                            background: Container(
+                              alignment: Alignment.centerRight,
+                              padding: const EdgeInsets.only(
+                                right: LwpSpacing.lg,
+                              ),
+                              color: theme.primaryColor.withValues(alpha: 0.16),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Icon(
+                                    Icons.check,
+                                    size: 20,
+                                    color: theme.brightness == Brightness.dark
+                                        ? const Color(0xFF9FD0F3)
+                                        : theme.primaryColor,
+                                  ),
+                                  const SizedBox(width: LwpSpacing.xs),
+                                  Text(
+                                    context.l10n.announcementsMarkAsRead,
+                                    style: theme.textTheme.labelMedium?.copyWith(
+                                      color: theme.brightness == Brightness.dark
+                                          ? const Color(0xFF9FD0F3)
+                                          : theme.primaryColor,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            child: LwpListEntrance(
+                              id: id,
+                              child: _AnnouncementRow(
+                                announcement: announcement,
+                                hasImage: _hasImage(announcement),
+                                onTap: () => _showAnnouncementDetails(
+                                  context,
+                                  announcement,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        announcement.title,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        announcement.body,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color:
-                              theme.textTheme.bodyMedium?.color?.withAlpha(200),
-                        ),
-                        maxLines: 3,
-                        softWrap: true,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            ),
-          ),
+              );
+            }
+
+            if (state is UserAnnouncementError) {
+              return const LwpError();
+            }
+
+            return LwpSkeletonList.text();
+          },
         ),
       ),
     );
   }
 
   void _showAnnouncementDetails(
-      BuildContext context, UserAnnouncement announcement) {
+    BuildContext context,
+    UserAnnouncement announcement,
+  ) {
     final theme = Theme.of(context);
+    final hasImage = _hasImage(announcement);
 
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        decoration: BoxDecoration(
-          color: theme.scaffoldBackgroundColor,
-          borderRadius: LwpRadii.lgTop,
+      builder: (sheetContext) {
+        return ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.sizeOf(sheetContext).height * 0.88,
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              color: theme.scaffoldBackgroundColor,
+              borderRadius: LwpRadii.lgTop,
+            ),
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.paddingOf(sheetContext).bottom + LwpSpacing.lg,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      top: LwpSpacing.sm,
+                      bottom: LwpSpacing.xs,
+                    ),
+                    child: LwpSheetHandle(),
+                  ),
+                ),
+                if (hasImage)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      LwpSpacing.md,
+                      LwpSpacing.xs,
+                      LwpSpacing.md,
+                      LwpSpacing.md,
+                    ),
+                    child: ClipRRect(
+                      borderRadius: LwpRadii.lgAll,
+                      child: AspectRatio(
+                        aspectRatio: 16 / 9,
+                        child: CldImageWidget(
+                          publicId: announcement.imagePublicId!,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    LwpSpacing.lg,
+                    LwpSpacing.xs,
+                    LwpSpacing.lg,
+                    LwpSpacing.sm,
+                  ),
+                  child: Text(
+                    announcement.title,
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: -0.4,
+                      height: 1.2,
+                    ),
+                  ),
+                ),
+                Flexible(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(
+                      LwpSpacing.lg,
+                      0,
+                      LwpSpacing.lg,
+                      LwpSpacing.md,
+                    ),
+                    child: Text(
+                      announcement.body,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: theme.textTheme.bodyLarge?.color
+                            ?.withValues(alpha: 0.88),
+                        height: 1.55,
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    LwpSpacing.md,
+                    0,
+                    LwpSpacing.md,
+                    LwpSpacing.sm,
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => Navigator.pop(sheetContext),
+                          child: Text(context.l10n.announcementsClose),
+                        ),
+                      ),
+                      const SizedBox(width: LwpSpacing.sm),
+                      Expanded(
+                        child: FilledButton(
+                          onPressed: () {
+                            Navigator.pop(sheetContext);
+                            final id = announcement.id;
+                            if (id == null) return;
+                            _dismiss(id);
+                          },
+                          child: Text(context.l10n.announcementsMarkAsRead),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _AnnouncementRow extends StatelessWidget {
+  const _AnnouncementRow({
+    required this.announcement,
+    required this.hasImage,
+    required this.onTap,
+  });
+
+  final UserAnnouncement announcement;
+  final bool hasImage;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final date = (announcement.createdAt ?? '').isNotEmpty
+        ? DateFormatter.formatDate(announcement.createdAt!)
+        : null;
+
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: LwpSpacing.md,
+          vertical: LwpSpacing.md,
         ),
-        padding: const EdgeInsets.only(bottom: LwpSpacing.xl),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+        child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Center(
-              child: Padding(
-                padding:
-                    EdgeInsets.only(top: LwpSpacing.sm, bottom: LwpSpacing.xs),
-                child: LwpSheetHandle(),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    announcement.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: -0.25,
+                      height: 1.25,
+                    ),
+                  ),
+                  if (announcement.body.trim().isNotEmpty) ...[
+                    const SizedBox(height: LwpSpacing.xxs),
+                    Text(
+                      announcement.body,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.hintColor,
+                        height: 1.45,
+                      ),
+                    ),
+                  ],
+                  if (date != null) ...[
+                    const SizedBox(height: LwpSpacing.xs),
+                    Text(
+                      date,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: theme.hintColor.withValues(alpha: 0.9),
+                      ),
+                    ),
+                  ],
+                ],
               ),
             ),
-            if (announcement.imagePublicId != null)
-              Container(
-                width: double.infinity,
-                height: 250,
-                margin: const EdgeInsets.all(16),
-                child: ClipRRect(
-                  borderRadius: LwpRadii.lgAll,
+            if (hasImage) ...[
+              const SizedBox(width: LwpSpacing.sm),
+              ClipRRect(
+                borderRadius: LwpRadii.smAll,
+                child: SizedBox(
+                  width: 64,
+                  height: 64,
                   child: CldImageWidget(
                     publicId: announcement.imagePublicId!,
                     fit: BoxFit.cover,
                   ),
                 ),
               ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-              child: Text(
-                announcement.title,
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-              child: Text(
-                announcement.body,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: theme.textTheme.bodyLarge?.color?.withAlpha(200),
-                  height: 1.5,
-                ),
-              ),
-            ),
+            ],
           ],
         ),
       ),

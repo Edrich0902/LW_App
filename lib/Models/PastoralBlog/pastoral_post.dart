@@ -75,6 +75,9 @@ class PastoralPost extends Equatable {
     return 'Pastoraat';
   }
 
+  /// Shared [Hero] tag for list → reader cover transitions.
+  String get coverHeroTag => 'pastoral_cover_$id';
+
   int reactionCountFor(String reactionType) {
     switch (reactionType) {
       case PastoralPostReactionType.amen:
