@@ -21,6 +21,7 @@ import 'package:lw_app/Widgets/ProfileActionButton/profile_action_button.dart';
 import 'package:lw_app/Widgets/LwpAnnouncement/lwp_announcement.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
+import 'package:lw_app/Widgets/LwpListEntrance/lwp_list_entrance.dart';
 import 'package:lw_app/Widgets/Glass/lwp_glass.dart';
 import 'package:lw_app/Widgets/Glass/lwp_glass_fab.dart';
 import 'package:lw_app/Widgets/Glass/lwp_sheet.dart';
@@ -1149,6 +1150,7 @@ class _BibleNavigationSheetState extends State<BibleNavigationSheet>
   final TextEditingController _versionSearchController =
       TextEditingController();
   final TextEditingController _bookSearchController = TextEditingController();
+  final _listEntrance = LwpListEntranceController();
 
   @override
   void initState() {
@@ -1161,6 +1163,7 @@ class _BibleNavigationSheetState extends State<BibleNavigationSheet>
     _tabController.dispose();
     _versionSearchController.dispose();
     _bookSearchController.dispose();
+    _listEntrance.dispose();
     super.dispose();
   }
 
@@ -1192,165 +1195,177 @@ class _BibleNavigationSheetState extends State<BibleNavigationSheet>
               );
             }).toList();
 
-            return Column(
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: TabBar(
-                    controller: _tabController,
-                    labelColor: Theme.of(context).primaryColor,
-                    unselectedLabelColor: Theme.of(context).hintColor,
-                    indicatorColor: Theme.of(context).primaryColor,
-                    tabs: [
-                      Tab(text: context.l10n.bibleTranslationTab),
-                      Tab(text: context.l10n.bibleBookTab),
-                      Tab(text: context.l10n.bibleChapterTab),
-                    ],
+            return LwpListEntranceScope(
+              controller: _listEntrance,
+              child: Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: TabBar(
+                      controller: _tabController,
+                      labelColor: Theme.of(context).primaryColor,
+                      unselectedLabelColor: Theme.of(context).hintColor,
+                      indicatorColor: Theme.of(context).primaryColor,
+                      tabs: [
+                        Tab(text: context.l10n.bibleTranslationTab),
+                        Tab(text: context.l10n.bibleBookTab),
+                        Tab(text: context.l10n.bibleChapterTab),
+                      ],
+                    ),
                   ),
-                ),
-                if (state.isLoading)
-                  const LinearProgressIndicator(minHeight: 2),
-                Expanded(
-                  child: TabBarView(
-                    controller: _tabController,
-                    children: [
-                      Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: TextField(
-                              controller: _versionSearchController,
-                              decoration: InputDecoration(
-                                hintText:
-                                    context.l10n.bibleSearchTranslationHint,
-                                prefixIcon: const Icon(Icons.search),
-                                border: OutlineInputBorder(
-                                  borderRadius: LwpRadii.lgAll,
+                  if (state.isLoading)
+                    const LinearProgressIndicator(minHeight: 2),
+                  Expanded(
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: [
+                        Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: TextField(
+                                controller: _versionSearchController,
+                                decoration: InputDecoration(
+                                  hintText:
+                                      context.l10n.bibleSearchTranslationHint,
+                                  prefixIcon: const Icon(Icons.search),
+                                  border: OutlineInputBorder(
+                                    borderRadius: LwpRadii.lgAll,
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                  ),
                                 ),
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                ),
-                              ),
-                              onChanged: (value) => setState(() {}),
-                            ),
-                          ),
-                          Expanded(
-                            child: ListView.builder(
-                              itemCount: filteredVersions.length,
-                              itemBuilder: (context, index) {
-                                final version = filteredVersions[index];
-                                return ListTile(
-                                  title: Text(version.displayName),
-                                  trailing:
-                                      version.id == state.currentVersion.id
-                                      ? const Icon(
-                                          Icons.check,
-                                          color: Colors.green,
-                                        )
-                                      : null,
-                                  onTap: () {
-                                    context.read<BibleBloc>().add(
-                                      ChangeVersion(version),
-                                    );
-                                    Navigator.pop(context);
-                                  },
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                      Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: TextField(
-                              controller: _bookSearchController,
-                              decoration: InputDecoration(
-                                hintText: context.l10n.bibleSearchBookHint,
-                                prefixIcon: const Icon(Icons.search),
-                                border: OutlineInputBorder(
-                                  borderRadius: LwpRadii.lgAll,
-                                ),
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                ),
-                              ),
-                              onChanged: (value) => setState(() {}),
-                            ),
-                          ),
-                          Expanded(
-                            child: ListView.builder(
-                              itemCount: filteredBooks.length,
-                              itemBuilder: (context, index) {
-                                final book = filteredBooks[index];
-                                return ListTile(
-                                  title: Text(book.name),
-                                  trailing: book.id == state.currentBook.id
-                                      ? const Icon(
-                                          Icons.check,
-                                          color: Colors.green,
-                                        )
-                                      : null,
-                                  onTap: () {
-                                    context.read<BibleBloc>().add(
-                                      ChangeBook(book),
-                                    );
-                                    _tabController.animateTo(2);
-                                  },
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                      GridView.builder(
-                        padding: const EdgeInsets.all(16),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 5,
-                              crossAxisSpacing: 8,
-                              mainAxisSpacing: 8,
-                            ),
-                        itemCount: state.chapters.length,
-                        itemBuilder: (context, index) {
-                          final chapter = state.chapters[index];
-                          final isSelected =
-                              chapter.id == state.currentChapter.id;
-                          return InkWell(
-                            onTap: () {
-                              context.read<BibleBloc>().add(
-                                ChangeChapter(chapter),
-                              );
-                              Navigator.pop(context);
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: isSelected
-                                    ? Theme.of(context).primaryColor
-                                    : Theme.of(
-                                        context,
-                                      ).hintColor.withValues(alpha: 0.1),
-                                borderRadius: LwpRadii.smAll,
-                              ),
-                              alignment: Alignment.center,
-                              child: Text(
-                                chapter.number,
-                                style: TextStyle(
-                                  color: isSelected ? Colors.white : null,
-                                  fontWeight: isSelected
-                                      ? FontWeight.bold
-                                      : null,
-                                ),
+                                onChanged: (value) => setState(() {}),
                               ),
                             ),
-                          );
-                        },
-                      ),
+                            Expanded(
+                              child: ListView.builder(
+                                itemCount: filteredVersions.length,
+                                itemBuilder: (context, index) {
+                                  final version = filteredVersions[index];
+                                  return LwpListEntrance(
+                                    id: 'version-${version.id}',
+                                    child: ListTile(
+                                      title: Text(version.displayName),
+                                      trailing: version.id ==
+                                              state.currentVersion.id
+                                          ? const Icon(
+                                              Icons.check,
+                                              color: Colors.green,
+                                            )
+                                          : null,
+                                      onTap: () {
+                                        context.read<BibleBloc>().add(
+                                          ChangeVersion(version),
+                                        );
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: TextField(
+                                controller: _bookSearchController,
+                                decoration: InputDecoration(
+                                  hintText: context.l10n.bibleSearchBookHint,
+                                  prefixIcon: const Icon(Icons.search),
+                                  border: OutlineInputBorder(
+                                    borderRadius: LwpRadii.lgAll,
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                  ),
+                                ),
+                                onChanged: (value) => setState(() {}),
+                              ),
+                            ),
+                            Expanded(
+                              child: ListView.builder(
+                                itemCount: filteredBooks.length,
+                                itemBuilder: (context, index) {
+                                  final book = filteredBooks[index];
+                                  return LwpListEntrance(
+                                    id: 'book-${book.id}',
+                                    child: ListTile(
+                                      title: Text(book.name),
+                                      trailing: book.id == state.currentBook.id
+                                          ? const Icon(
+                                              Icons.check,
+                                              color: Colors.green,
+                                            )
+                                          : null,
+                                      onTap: () {
+                                        context.read<BibleBloc>().add(
+                                          ChangeBook(book),
+                                        );
+                                        _tabController.animateTo(2);
+                                      },
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        GridView.builder(
+                          padding: const EdgeInsets.all(16),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 5,
+                                crossAxisSpacing: 8,
+                                mainAxisSpacing: 8,
+                              ),
+                          itemCount: state.chapters.length,
+                          itemBuilder: (context, index) {
+                            final chapter = state.chapters[index];
+                            final isSelected =
+                                chapter.id == state.currentChapter.id;
+                            return LwpListEntrance(
+                              id: 'chapter-${chapter.id}',
+                              child: InkWell(
+                                onTap: () {
+                                  context.read<BibleBloc>().add(
+                                    ChangeChapter(chapter),
+                                  );
+                                  Navigator.pop(context);
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: isSelected
+                                        ? Theme.of(context).primaryColor
+                                        : Theme.of(context)
+                                            .hintColor
+                                            .withValues(alpha: 0.1),
+                                    borderRadius: LwpRadii.smAll,
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    chapter.number,
+                                    style: TextStyle(
+                                      color: isSelected ? Colors.white : null,
+                                      fontWeight: isSelected
+                                          ? FontWeight.bold
+                                          : null,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
                     ],
                   ),
                 ),
               ],
+              ),
             );
           },
         ),

@@ -9,6 +9,7 @@ import 'package:lw_app/Blocs/CompareTranslations/compare_translations_state.dart
 import 'package:lw_app/Models/Bible/bible_models.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Widgets/LwpBottomSheet/lwp_bottom_sheet.dart';
+import 'package:lw_app/Widgets/LwpListEntrance/lwp_list_entrance.dart';
 
 class CompareTranslationsSheet extends StatefulWidget {
   final BibleBook book;
@@ -27,12 +28,14 @@ class CompareTranslationsSheet extends StatefulWidget {
 
 class _CompareTranslationsSheetState extends State<CompareTranslationsSheet> {
   final TextEditingController _filterController = TextEditingController();
+  final _listEntrance = LwpListEntranceController();
   Timer? _debounce;
 
   @override
   void dispose() {
     _debounce?.cancel();
     _filterController.dispose();
+    _listEntrance.dispose();
     super.dispose();
   }
 
@@ -156,25 +159,31 @@ class _CompareTranslationsSheetState extends State<CompareTranslationsSheet> {
                           );
                         }
 
-                        return ListView.builder(
-                          controller: scrollController,
-                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
-                          itemCount: versions.length,
-                          itemBuilder: (context, index) {
-                            final version = versions[index];
-                            final status =
-                                state.resultsByVersionId[version.id] ??
-                                const CompareItemLoading();
-                            return _TranslationCard(
-                              version: version,
-                              status: status,
-                              book: widget.book,
-                              chapter: widget.chapter,
-                              onRetry: () => context
-                                  .read<CompareTranslationsBloc>()
-                                  .add(RetryComparisonItem(version.id)),
-                            );
-                          },
+                        return LwpListEntranceScope(
+                          controller: _listEntrance,
+                          child: ListView.builder(
+                            controller: scrollController,
+                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+                            itemCount: versions.length,
+                            itemBuilder: (context, index) {
+                              final version = versions[index];
+                              final status =
+                                  state.resultsByVersionId[version.id] ??
+                                  const CompareItemLoading();
+                              return LwpListEntrance(
+                                id: version.id,
+                                child: _TranslationCard(
+                                  version: version,
+                                  status: status,
+                                  book: widget.book,
+                                  chapter: widget.chapter,
+                                  onRetry: () => context
+                                      .read<CompareTranslationsBloc>()
+                                      .add(RetryComparisonItem(version.id)),
+                                ),
+                              );
+                            },
+                          ),
                         );
                       },
                     ),

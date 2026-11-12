@@ -13,6 +13,7 @@ import 'package:lw_app/Utils/date_formatter.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
+import 'package:lw_app/Widgets/LwpListEntrance/lwp_list_entrance.dart';
 
 class UpcomingEventsPage extends StatefulWidget {
   const UpcomingEventsPage({super.key});
@@ -22,7 +23,14 @@ class UpcomingEventsPage extends StatefulWidget {
 }
 
 class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
+  final _listEntrance = LwpListEntranceController();
   late DateTime currentDate;
+
+  @override
+  void dispose() {
+    _listEntrance.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -48,32 +56,43 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
                 return LwpSkeletonList.thumb();
               } else if (state is EventsSuccess) {
                 if (state.events.isNotEmpty) {
-                  return RefreshIndicator(
-                    onRefresh: () async => eventsBloc.add(
-                      LoadUpcomingEvents(
-                          eventType: EventType.ONCE, date: currentDate),
-                    ),
-                    child: ListView.separated(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0, vertical: 24.0),
-                      itemCount: state.events.length,
-                      separatorBuilder: (context, index) =>
-                          const SizedBox(height: 16.0),
-                      itemBuilder: (BuildContext context, int index) {
-                        final event = state.events[index];
-                        return _buildEventCard(event, () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => BlocProvider(
-                                create: (_) =>
-                                    EventRsvpBloc()..add(InitEventRsvp(event)),
-                                child: UpcomingEventDetailPage(event: event),
-                              ),
-                            ),
-                          );
-                        });
+                  return LwpListEntranceScope(
+                    controller: _listEntrance,
+                    child: RefreshIndicator(
+                      onRefresh: () async {
+                        _listEntrance.bump();
+                        eventsBloc.add(
+                          LoadUpcomingEvents(
+                            eventType: EventType.ONCE,
+                            date: currentDate,
+                          ),
+                        );
                       },
+                      child: ListView.separated(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 24.0),
+                        itemCount: state.events.length,
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(height: 16.0),
+                        itemBuilder: (BuildContext context, int index) {
+                          final event = state.events[index];
+                          return LwpListEntrance(
+                            id: event.id ?? 'event-$index',
+                            child: _buildEventCard(event, () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => BlocProvider(
+                                    create: (_) => EventRsvpBloc()
+                                      ..add(InitEventRsvp(event)),
+                                    child: UpcomingEventDetailPage(event: event),
+                                  ),
+                                ),
+                              );
+                            }),
+                          );
+                        },
+                      ),
                     ),
                   );
                 } else {

@@ -10,6 +10,7 @@ import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 import 'package:lw_app/Models/Event/event_category.dart';
 import 'package:lw_app/Widgets/Glass/lwp_shell_insets.dart';
+import 'package:lw_app/Widgets/LwpListEntrance/lwp_list_entrance.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});
@@ -19,6 +20,14 @@ class CalendarPage extends StatefulWidget {
 }
 
 class _CalendarPageState extends State<CalendarPage> {
+  final _listEntrance = LwpListEntranceController();
+
+  @override
+  void dispose() {
+    _listEntrance.dispose();
+    super.dispose();
+  }
+
   @override
   void initState() {
     context.read<CalendarBloc>().add(LoadCalendar(
@@ -52,25 +61,36 @@ class _CalendarPageState extends State<CalendarPage> {
                     timelineItems.addAll(events);
                   });
 
-                  return RefreshIndicator(
-                    onRefresh: () async => calendarBloc.add(LoadCalendar(
-                        eventType: EventType.WEEKLY,
-                        eventCategory: EventCategory.GENERAL)),
-                    child: ListView.builder(
-                      padding: EdgeInsets.fromLTRB(
-                        16,
-                        LwpShellInsets.top(context) + 24,
-                        16,
-                        LwpShellInsets.bottom(context) + 24,
-                      ),
-                      itemCount: timelineItems.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        final item = timelineItems[index];
-                        final bool isLast = index == timelineItems.length - 1;
-                        final bool isDayHeader = item is String;
-                        final bool isFirst = index == 0;
+                  return LwpListEntranceScope(
+                    controller: _listEntrance,
+                    child: RefreshIndicator(
+                      onRefresh: () async {
+                        _listEntrance.bump();
+                        calendarBloc.add(LoadCalendar(
+                          eventType: EventType.WEEKLY,
+                          eventCategory: EventCategory.GENERAL,
+                        ));
+                      },
+                      child: ListView.builder(
+                        padding: EdgeInsets.fromLTRB(
+                          16,
+                          LwpShellInsets.top(context) + 24,
+                          16,
+                          LwpShellInsets.bottom(context) + 24,
+                        ),
+                        itemCount: timelineItems.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          final item = timelineItems[index];
+                          final bool isLast = index == timelineItems.length - 1;
+                          final bool isDayHeader = item is String;
+                          final bool isFirst = index == 0;
+                          final entranceId = isDayHeader
+                              ? 'day-$item'
+                              : (item as Event).id ?? 'event-$index';
 
-                        return Stack(
+                          return LwpListEntrance(
+                            id: entranceId,
+                            child: Stack(
                           children: [
                             // 1. Vertical Line (drawn first so it's behind the dot)
                             Positioned(
@@ -132,8 +152,10 @@ class _CalendarPageState extends State<CalendarPage> {
                                 ),
                               ),
                           ],
-                        );
-                      },
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   );
                 } else {

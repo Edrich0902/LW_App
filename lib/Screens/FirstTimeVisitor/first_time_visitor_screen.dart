@@ -18,6 +18,7 @@ import 'package:lw_app/Widgets/Dashboard/dashboard_grid_card.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:lw_app/Widgets/LwpListEntrance/lwp_list_entrance.dart';
 
 class FirstTimeVisitorScreen extends StatefulWidget {
   const FirstTimeVisitorScreen({super.key});
@@ -27,6 +28,14 @@ class FirstTimeVisitorScreen extends StatefulWidget {
 }
 
 class _FirstTimeVisitorScreenState extends State<FirstTimeVisitorScreen> {
+  final _listEntrance = LwpListEntranceController();
+
+  @override
+  void dispose() {
+    _listEntrance.dispose();
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -202,14 +211,21 @@ class _FirstTimeVisitorScreenState extends State<FirstTimeVisitorScreen> {
           if (upcoming.isEmpty) {
             return Text(context.l10n.visitorNoUpcomingEvents);
           }
-          return ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: upcoming.length,
-            separatorBuilder: (context, index) => const SizedBox(height: 16),
-            itemBuilder: (context, index) {
-              return _buildCompactEventCard(upcoming[index]);
-            },
+          return LwpListEntranceScope(
+            controller: _listEntrance,
+            child: ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: upcoming.length,
+              separatorBuilder: (context, index) => const SizedBox(height: 16),
+              itemBuilder: (context, index) {
+                final event = upcoming[index];
+                return LwpListEntrance(
+                  id: event.id ?? 'visitor-event-$index',
+                  child: _buildCompactEventCard(event),
+                );
+              },
+            ),
           );
         } else {
           return LwpError(message: context.l10n.visitorUpcomingEventsError);

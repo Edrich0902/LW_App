@@ -12,6 +12,7 @@ import 'package:lw_app/Utils/quill_helper.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
+import 'package:lw_app/Widgets/LwpListEntrance/lwp_list_entrance.dart';
 
 class PastoralBlogPage extends StatelessWidget {
   const PastoralBlogPage({super.key});
@@ -54,46 +55,54 @@ class _PastoralBlogView extends StatelessWidget {
       );
     }
 
-    return RefreshIndicator(
-      onRefresh: () async {
-        context.read<PastoralBlogBloc>().add(const RefreshPastoralBlog());
-      },
-      child: CustomScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        slivers: [
-          if (state.posts.isEmpty)
-            SliverFillRemaining(
-              hasScrollBody: false,
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(LwpSpacing.xl),
-                  child: LwpEmpty(message: context.l10n.pastoralBlogEmpty),
+    return LwpListEntranceHost(
+      builder: (context, entrance) {
+        return RefreshIndicator(
+          onRefresh: () async {
+            entrance.bump();
+            context.read<PastoralBlogBloc>().add(const RefreshPastoralBlog());
+          },
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              if (state.posts.isEmpty)
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(LwpSpacing.xl),
+                      child: LwpEmpty(message: context.l10n.pastoralBlogEmpty),
+                    ),
+                  ),
+                )
+              else
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(
+                    LwpSpacing.md,
+                    LwpSpacing.md,
+                    LwpSpacing.md,
+                    LwpSpacing.xxl,
+                  ),
+                  sliver: SliverList.separated(
+                    itemCount: state.posts.length,
+                    itemBuilder: (context, index) {
+                      final post = state.posts[index];
+                      return LwpListEntrance(
+                        id: post.id,
+                        child: _PastoralPostCard(
+                          post: post,
+                          onTap: () => _openReader(context, post),
+                        ),
+                      );
+                    },
+                    separatorBuilder: (_, __) =>
+                        const SizedBox(height: LwpSpacing.md),
+                  ),
                 ),
-              ),
-            )
-          else
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(
-                LwpSpacing.md,
-                LwpSpacing.md,
-                LwpSpacing.md,
-                LwpSpacing.xxl,
-              ),
-              sliver: SliverList.separated(
-                itemCount: state.posts.length,
-                itemBuilder: (context, index) {
-                  final post = state.posts[index];
-                  return _PastoralPostCard(
-                    post: post,
-                    onTap: () => _openReader(context, post),
-                  );
-                },
-                separatorBuilder: (_, __) =>
-                    const SizedBox(height: LwpSpacing.md),
-              ),
-            ),
-        ],
-      ),
+            ],
+          ),
+        );
+      },
     );
   }
 

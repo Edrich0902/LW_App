@@ -8,6 +8,7 @@ import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
 import 'package:lw_app/Widgets/Group/lwp_group_card.dart';
+import 'package:lw_app/Widgets/LwpListEntrance/lwp_list_entrance.dart';
 
 class ServeGroupsPage extends StatefulWidget {
   const ServeGroupsPage({super.key});
@@ -17,6 +18,14 @@ class ServeGroupsPage extends StatefulWidget {
 }
 
 class _ServeGroupsPageState extends State<ServeGroupsPage> {
+  final _listEntrance = LwpListEntranceController();
+
+  @override
+  void dispose() {
+    _listEntrance.dispose();
+    super.dispose();
+  }
+
   @override
   void initState() {
     context.read<ServiceGroupsBloc>().add(const LoadServiceGroups());
@@ -42,15 +51,24 @@ class _ServeGroupsPageState extends State<ServeGroupsPage> {
                 return LwpSkeletonList.group();
               } else if (state is ServiceGroupsSuccess) {
                 if (state.serviceGroups.isNotEmpty) {
-                  return RefreshIndicator(
-                    onRefresh: () async =>
-                        serviceGroupsBloc.add(const LoadServiceGroups()),
-                    child: ListView.builder(
-                      padding: const EdgeInsets.all(16.0),
-                      itemCount: state.serviceGroups.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return LwpGroupCard(group: state.serviceGroups[index]);
+                  return LwpListEntranceScope(
+                    controller: _listEntrance,
+                    child: RefreshIndicator(
+                      onRefresh: () async {
+                        _listEntrance.bump();
+                        serviceGroupsBloc.add(const LoadServiceGroups());
                       },
+                      child: ListView.builder(
+                        padding: const EdgeInsets.all(16.0),
+                        itemCount: state.serviceGroups.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          final group = state.serviceGroups[index];
+                          return LwpListEntrance(
+                            id: group.id ?? 'serve-$index',
+                            child: LwpGroupCard(group: group),
+                          );
+                        },
+                      ),
                     ),
                   );
                 } else {

@@ -12,6 +12,7 @@ import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
 import 'package:cloudinary_flutter/image/cld_image.dart';
 import 'package:lw_app/Screens/Courses/course_detail.dart';
+import 'package:lw_app/Widgets/LwpListEntrance/lwp_list_entrance.dart';
 
 class CoursesPage extends StatefulWidget {
   const CoursesPage({super.key});
@@ -21,6 +22,14 @@ class CoursesPage extends StatefulWidget {
 }
 
 class _CoursesPageState extends State<CoursesPage> {
+  final _listEntrance = LwpListEntranceController();
+
+  @override
+  void dispose() {
+    _listEntrance.dispose();
+    super.dispose();
+  }
+
   @override
   void initState() {
     context
@@ -46,27 +55,38 @@ class _CoursesPageState extends State<CoursesPage> {
                 return LwpSkeletonList.media();
               } else if (state is CoursesSuccess) {
                 if (state.courses.isNotEmpty) {
-                  return RefreshIndicator(
-                    onRefresh: () async => coursesBloc
-                        .add(LoadCourses(eventCategory: EventCategory.COURSE)),
-                    child: ListView.separated(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0, vertical: 24.0),
-                      itemCount: state.courses.length,
-                      separatorBuilder: (context, index) =>
-                          const SizedBox(height: 16.0),
-                      itemBuilder: (BuildContext context, int index) {
-                        return _buildCourseCard(state.courses[index], () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => CourseDetailPage(
-                                course: state.courses[index],
-                              ),
-                            ),
-                          );
-                        });
+                  return LwpListEntranceScope(
+                    controller: _listEntrance,
+                    child: RefreshIndicator(
+                      onRefresh: () async {
+                        _listEntrance.bump();
+                        coursesBloc.add(
+                          LoadCourses(eventCategory: EventCategory.COURSE),
+                        );
                       },
+                      child: ListView.separated(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 24.0),
+                        itemCount: state.courses.length,
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(height: 16.0),
+                        itemBuilder: (BuildContext context, int index) {
+                          final course = state.courses[index];
+                          return LwpListEntrance(
+                            id: course.id ?? 'course-$index',
+                            child: _buildCourseCard(course, () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => CourseDetailPage(
+                                    course: course,
+                                  ),
+                                ),
+                              );
+                            }),
+                          );
+                        },
+                      ),
                     ),
                   );
                 } else {

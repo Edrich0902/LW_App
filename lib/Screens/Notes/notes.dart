@@ -14,6 +14,7 @@ import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
 import 'package:lw_app/Widgets/Glass/lwp_glass_fab.dart';
 import 'package:lw_app/Utils/quill_helper.dart';
+import 'package:lw_app/Widgets/LwpListEntrance/lwp_list_entrance.dart';
 
 class NotesPage extends StatefulWidget {
   const NotesPage({super.key});
@@ -24,6 +25,7 @@ class NotesPage extends StatefulWidget {
 
 class _NotesPageState extends State<NotesPage> {
   final TextEditingController _searchController = TextEditingController();
+  final _listEntrance = LwpListEntranceController();
 
   @override
   void initState() {
@@ -34,6 +36,7 @@ class _NotesPageState extends State<NotesPage> {
   @override
   void dispose() {
     _searchController.dispose();
+    _listEntrance.dispose();
     super.dispose();
   }
 
@@ -114,33 +117,43 @@ class _NotesPageState extends State<NotesPage> {
                     Expanded(
                       child: filtered.isEmpty
                           ? LwpEmpty(message: context.l10n.notesEmpty)
-                          : RefreshIndicator(
-                              onRefresh: () async =>
-                                  notesBloc.add(const LoadNotes()),
-                              child: ListView.separated(
-                                padding:
-                                    const EdgeInsets.fromLTRB(16, 8, 16, 100),
-                                itemCount: filtered.length,
-                                separatorBuilder: (_, __) =>
-                                    const SizedBox(height: 12),
-                                itemBuilder: (context, index) {
-                                  final note = filtered[index];
-                                  return _buildNoteCard(
-                                    note,
-                                    onDelete: () => _confirmDelete(
-                                        context,
-                                        () => notesBloc.add(
-                                            DeleteNote(noteId: note.id ?? ''))),
-                                    onEdit: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => NotesEditPage(
-                                          noteId: note.id ?? '',
+                          : LwpListEntranceScope(
+                              controller: _listEntrance,
+                              child: RefreshIndicator(
+                                onRefresh: () async {
+                                  _listEntrance.bump();
+                                  notesBloc.add(const LoadNotes());
+                                },
+                                child: ListView.separated(
+                                  padding: const EdgeInsets.fromLTRB(
+                                      16, 8, 16, 100),
+                                  itemCount: filtered.length,
+                                  separatorBuilder: (_, __) =>
+                                      const SizedBox(height: 12),
+                                  itemBuilder: (context, index) {
+                                    final note = filtered[index];
+                                    return LwpListEntrance(
+                                      id: note.id ?? 'note-$index',
+                                      child: _buildNoteCard(
+                                        note,
+                                        onDelete: () => _confirmDelete(
+                                          context,
+                                          () => notesBloc.add(
+                                            DeleteNote(noteId: note.id ?? ''),
+                                          ),
+                                        ),
+                                        onEdit: () => Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => NotesEditPage(
+                                              noteId: note.id ?? '',
+                                            ),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  );
-                                },
+                                    );
+                                  },
+                                ),
                               ),
                             ),
                     ),

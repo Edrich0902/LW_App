@@ -11,6 +11,7 @@ import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
 import 'package:lw_app/Widgets/Glass/lwp_glass_fab.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
+import 'package:lw_app/Widgets/LwpListEntrance/lwp_list_entrance.dart';
 
 class MyFeedbackPage extends StatelessWidget {
   const MyFeedbackPage({super.key});
@@ -33,8 +34,16 @@ class _MyFeedbackView extends StatefulWidget {
 
 class _MyFeedbackViewState extends State<_MyFeedbackView> {
   FeedbackStatus? _selectedFilter;
+  final _listEntrance = LwpListEntranceController();
+
+  @override
+  void dispose() {
+    _listEntrance.dispose();
+    super.dispose();
+  }
 
   Future<void> _refresh() async {
+    _listEntrance.bump();
     context.read<MyFeedbackBloc>().add(const LoadMyFeedback());
   }
 
@@ -137,15 +146,24 @@ class _MyFeedbackViewState extends State<_MyFeedbackView> {
                             ],
                           ),
                         )
-                      : RefreshIndicator(
-                          onRefresh: _refresh,
-                          child: ListView.separated(
-                            padding: const EdgeInsets.all(16),
-                            itemCount: filtered.length,
-                            separatorBuilder: (_, __) =>
-                                const SizedBox(height: 12),
-                            itemBuilder: (context, index) =>
-                                FeedbackItemCard(feedback: filtered[index]),
+                      : LwpListEntranceScope(
+                          controller: _listEntrance,
+                          child: RefreshIndicator(
+                            onRefresh: _refresh,
+                            child: ListView.separated(
+                              padding: const EdgeInsets.all(16),
+                              itemCount: filtered.length,
+                              separatorBuilder: (_, __) =>
+                                  const SizedBox(height: 12),
+                              itemBuilder: (context, index) {
+                                final feedback = filtered[index];
+                                return LwpListEntrance(
+                                  id: feedback.id ?? 'feedback-$index',
+                                  child:
+                                      FeedbackItemCard(feedback: feedback),
+                                );
+                              },
+                            ),
                           ),
                         ),
                 ),

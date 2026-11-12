@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LWP — List entrance · Soft rise</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0b1218;
+      --surface: #0f1720;
+      --ink: #eef3f7;
+      --muted: #8a9aab;
+      --line: rgba(255,255,255,0.08);
+      --accent: #2e86c1;
+      --rise-y: 8px;
+      --rise-ms: 200ms;
+      --stagger-ms: 36ms;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "DM Sans", system-ui, sans-serif;
+      background:
+        radial-gradient(900px 420px at 15% -10%, rgba(46,134,193,0.14), transparent 60%),
+        var(--bg);
+      color: var(--ink);
+      padding: 28px 20px 60px;
+    }
+
+    .page { max-width: 980px; margin: 0 auto; }
+
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 0 0 6px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+    }
+
+    .lede {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+      max-width: 62ch;
+    }
+
+    .pitch {
+      margin: 0 0 22px;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.03);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+      max-width: 70ch;
+    }
+
+    .pitch strong { color: var(--ink); font-weight: 600; }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .toolbar button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.03);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .toolbar button:hover { border-color: rgba(255,255,255,0.18); }
+    .toolbar button.primary {
+      background: var(--accent);
+      border-color: transparent;
+      color: #fff;
+    }
+
+    .meta {
+      font-size: 12px;
+      color: var(--muted);
+      margin: 0 0 16px;
+    }
+
+    .phones {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .phone {
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background: var(--surface);
+      overflow: hidden;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+    }
+
+    .phone-bar {
+      padding: 18px 18px 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .phone-bar h2 {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .phone-bar p {
+      margin: 4px 0 0;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .list {
+      height: 520px;
+      overflow: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .row {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--line);
+      /* Soft rise start state */
+      opacity: 0;
+      transform: translateY(var(--rise-y));
+      transition:
+        opacity var(--rise-ms) cubic-bezier(0.22, 1, 0.36, 1),
+        transform var(--rise-ms) cubic-bezier(0.22, 1, 0.36, 1);
+      transition-delay: var(--delay, 0ms);
+      will-change: opacity, transform;
+    }
+
+    .row.is-in {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .row {
+        opacity: 1;
+        transform: none;
+        transition: none;
+      }
+    }
+
+    .row-title {
+      margin: 0 0 4px;
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: -0.015em;
+      line-height: 1.4;
+    }
+
+    .row-meta {
+      margin: 0;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .dot { opacity: 0.45; margin: 0 0.35em; }
+
+    .badge {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .sentinel {
+      height: 48px;
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .hint {
+      margin-top: 18px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 11px;
+      color: #b7d7ef;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <p class="eyebrow">Motion · All lists</p>
+    <h1>Soft rise — every row, as it appears</h1>
+    <p class="lede">
+      Fade + 8px rise, ~200ms ease-out. Each row animates the first time it enters the
+      viewport — initial load, scroll, and newly appended items. No “first 12 only” cap.
+    </p>
+    <p class="pitch">
+      <strong>Pitch:</strong> Content settles into place instead of popping.
+      Scroll the lists, hit <em>Load more</em>, or <em>Replay</em> to see the same motion
+      wherever rows appear. Replay resets so you can watch entrance again.
+    </p>
+
+    <div class="toolbar">
+      <button type="button" class="primary" id="btn-replay">Replay entrances</button>
+      <button type="button" id="btn-more">Load more (+6)</button>
+      <button type="button" id="btn-refresh">Simulate refresh</button>
+    </div>
+    <p class="meta" id="status">Observing viewport…</p>
+
+    <div class="phones">
+      <section class="phone" aria-label="Prayer requests list">
+        <div class="phone-bar">
+          <h2>Prayer requests</h2>
+          <p>Quiet divider rows · soft rise on appear</p>
+        </div>
+        <div class="list" id="list-prayer" data-kind="prayer"></div>
+      </section>
+
+      <section class="phone" aria-label="Group feed list">
+        <div class="phone-bar">
+          <h2>Group feed</h2>
+          <p>Same motion · denser copy</p>
+        </div>
+        <div class="list" id="list-feed" data-kind="feed"></div>
+      </section>
+    </div>
+
+    <p class="hint">
+      Spec for Flutter: observe each row with visibility (e.g. <code>VisibilityDetector</code>
+      / scroll notification), run soft-rise once per mount when visible, stagger siblings that
+      enter in the same frame by ~36ms. Skip transform when reduced-motion is on.
+    </p>
+  </div>
+
+  <script>
+    const PRAYER = [
+      ["Please pray for my mom’s recovery this week.", "Anonymous · Healing · 12 Nov"],
+      ["Grateful for the youth camp — so many open hearts.", "Johan · Thanksgiving · 11 Nov", "Praise"],
+      ["Guidance for a job decision this month.", "Anonymous · Guidance · 10 Nov"],
+      ["Family harmony after a hard season.", "Mari · Family · 9 Nov"],
+      ["Provision for school fees in January.", "Anonymous · Provision · 8 Nov"],
+      ["Strength for caregivers at home.", "Anonymous · Healing · 7 Nov"],
+      ["Wisdom for our connect group leaders.", "Pieter · Spiritual growth · 6 Nov"],
+      ["Peace over exam stress for our teens.", "Anonymous · Guidance · 5 Nov"],
+      ["Thankful for answered prayer on housing.", "Lize · Thanksgiving · 4 Nov", "Praise"],
+      ["Healing after surgery — slow but steady.", "Anonymous · Healing · 3 Nov"],
+      ["Unity in our marriage conversations.", "Anonymous · Family · 2 Nov"],
+      ["Courage to share faith at work.", "Anoniem wait— · Spiritual growth · 1 Nov"],
+      ["Travel mercies for the mission team.", "Anonymous · Other · 31 Oct"],
+      ["Comfort for the Meyer family.", "Anonymous · Family · 30 Oct"],
+      ["Clarity on serving in kids ministry.", "Sarah · Guidance · 29 Oct"],
+      ["Thankful for new friendships in Connect.", "Anonymous · Thanksgiving · 28 Oct", "Praise"],
+      ["Rest for exhausted parents this term.", "Anonymous · Family · 27 Oct"],
+      ["Breakthrough in a long prayer request.", "Anonymous · Other · 26 Oct"],
+    ];
+
+    const FEED = [
+      ["Sunday notes from Johan — Luke 15.", "Johan · 2h ago · 4 comments"],
+      ["Who’s bringing snacks Thursday?", "Mari · 5h ago · 8 comments"],
+      ["Photo from the braai last weekend.", "Pieter · Yesterday · 12 comments"],
+      ["Reminder: parking at the side gate.", "Lize · Yesterday · 1 comment"],
+      ["Prayer focus for November.", "Sarah · 2d ago · 6 comments"],
+      ["Welcome Meghan to the group.", "Admin · 3d ago · 9 comments"],
+      ["Shared: worship playlist link.", "Johan · 3d ago · 2 comments"],
+      ["Service opportunity this Saturday.", "Mari · 4d ago · 5 comments"],
+      ["Kids are welcome — bring a jacket.", "Pieter · 5d ago · 0 comments"],
+      ["Testimony night next month — save the date.", "Lize · 6d ago · 7 comments"],
+      ["Reading plan: Psalms this week.", "Sarah · 1w ago · 3 comments"],
+      ["Thank you for praying for Thabo.", "Johan · 1w ago · 11 comments"],
+      ["Connect dinner sign-up is open.", "Mari · 1w ago · 4 comments"],
+      ["Notes from last midweek.", "Pieter · 1w ago · 2 comments"],
+      ["New member intro thread.", "Admin · 2w ago · 15 comments"],
+      ["Quiet morning walk — anyone joining?", "Lize · 2w ago · 1 comment"],
+      ["Resource: parenting workshop slides.", "Sarah · 2w ago · 0 comments"],
+      ["End-of-year picnic planning.", "Johan · 3w ago · 8 comments"],
+    ];
+
+    // Fix accidental Afrikaans slip in seed data
+    PRAYER[11][1] = "Anonymous · Spiritual growth · 1 Nov";
+
+    let prayerCount = 10;
+    let feedCount = 10;
+
+    const statusEl = document.getElementById("status");
+    let animatedTotal = 0;
+
+    function setStatus() {
+      statusEl.textContent = `${animatedTotal} row entrances played · scroll or load more to keep going`;
+    }
+
+    function makeRow(kind, index, title, meta, badge) {
+      const row = document.createElement("article");
+      row.className = "row";
+      row.dataset.kind = kind;
+      row.dataset.index = String(index);
+      row.innerHTML = `
+        <p class="row-title">${title}</p>
+        <p class="row-meta">${meta}</p>
+        ${badge ? `<span class="badge">${badge}</span>` : ""}
+      `;
+      return row;
+    }
+
+    function fillList(listEl, source, count) {
+      listEl.innerHTML = "";
+      const frag = document.createDocumentFragment();
+      for (let i = 0; i < count; i++) {
+        const [title, meta, badge] = source[i % source.length];
+        frag.appendChild(makeRow(listEl.dataset.kind, i, title, meta, badge));
+      }
+      const sentinel = document.createElement("div");
+      sentinel.className = "sentinel";
+      sentinel.textContent = "Scroll for more rows below…";
+      frag.appendChild(sentinel);
+      listEl.appendChild(frag);
+      observeAll(listEl);
+    }
+
+    function appendRows(listEl, source, n) {
+      const sentinel = listEl.querySelector(".sentinel");
+      const start = listEl.querySelectorAll(".row").length;
+      for (let i = 0; i < n; i++) {
+        const idx = start + i;
+        const [title, meta, badge] = source[idx % source.length];
+        const row = makeRow(listEl.dataset.kind, idx, title, meta, badge);
+        listEl.insertBefore(row, sentinel);
+        observeRow(row);
+      }
+      if (listEl.id === "list-prayer") prayerCount = start + n;
+      if (listEl.id === "list-feed") feedCount = start + n;
+    }
+
+    // Stagger rows that become visible in the same frame
+    let frameQueue = [];
+    let frameScheduled = false;
+
+    function enqueueAppear(row) {
+      if (row.classList.contains("is-in") || row.dataset.animating === "1") return;
+      row.dataset.animating = "1";
+      frameQueue.push(row);
+      if (!frameScheduled) {
+        frameScheduled = true;
+        requestAnimationFrame(() => {
+          const batch = frameQueue;
+          frameQueue = [];
+          frameScheduled = false;
+          batch.forEach((el, i) => {
+            el.style.setProperty("--delay", `${i * 36}ms`);
+            // Force style flush then add class
+            void el.offsetWidth;
+            el.classList.add("is-in");
+            animatedTotal += 1;
+            setStatus();
+            el.addEventListener(
+              "transitionend",
+              () => {
+                el.dataset.animating = "0";
+                el.style.removeProperty("--delay");
+              },
+              { once: true }
+            );
+          });
+        });
+      }
+    }
+
+    // Per-scroll-container observers
+    const observers = new Map();
+
+    function observerFor(listEl) {
+      if (observers.has(listEl)) return observers.get(listEl);
+      const obs = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            const row = entry.target;
+            if (!(row instanceof HTMLElement) || !row.classList.contains("row")) return;
+            enqueueAppear(row);
+            obs.unobserve(row);
+          });
+        },
+        {
+          root: listEl,
+          threshold: 0.15,
+          rootMargin: "0px 0px -2% 0px",
+        }
+      );
+      observers.set(listEl, obs);
+      return obs;
+    }
+
+    function observeRow(row) {
+      const listEl = row.parentElement;
+      observerFor(listEl).observe(row);
+    }
+
+    function observeAll(listEl) {
+      listEl.querySelectorAll(".row").forEach(observeRow);
+    }
+
+    function resetList(listEl, source, count) {
+      animatedTotal = 0;
+      fillList(listEl, source, count);
+      setStatus();
+    }
+
+    const prayerList = document.getElementById("list-prayer");
+    const feedList = document.getElementById("list-feed");
+
+    fillList(prayerList, PRAYER, prayerCount);
+    fillList(feedList, FEED, feedCount);
+    setStatus();
+
+    document.getElementById("btn-replay").addEventListener("click", () => {
+      animatedTotal = 0;
+      prayerList.querySelectorAll(".row").forEach((row) => {
+        row.classList.remove("is-in");
+        row.dataset.animating = "0";
+        row.style.removeProperty("--delay");
+      });
+      feedList.querySelectorAll(".row").forEach((row) => {
+        row.classList.remove("is-in");
+        row.dataset.animating = "0";
+        row.style.removeProperty("--delay");
+      });
+      // Re-observe so entrances play again (including off-screen until scrolled)
+      observeAll(prayerList);
+      observeAll(feedList);
+      // Nudge scroll to re-trigger visible ones
+      prayerList.scrollTop = 0;
+      feedList.scrollTop = 0;
+      setStatus();
+    });
+
+    document.getElementById("btn-more").addEventListener("click", () => {
+      appendRows(prayerList, PRAYER, 6);
+      appendRows(feedList, FEED, 6);
+      // Scroll near bottom so new rows enter the viewport and animate
+      prayerList.scrollTo({ top: prayerList.scrollHeight, behavior: "smooth" });
+      feedList.scrollTo({ top: feedList.scrollHeight, behavior: "smooth" });
+    });
+
+    document.getElementById("btn-refresh").addEventListener("click", () => {
+      prayerCount = 10;
+      feedCount = 10;
+      resetList(prayerList, PRAYER, prayerCount);
+      resetList(feedList, FEED, feedCount);
+      prayerList.scrollTop = 0;
+      feedList.scrollTop = 0;
+    });
+  </script>
+</body>
+</html>

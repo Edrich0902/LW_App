@@ -10,6 +10,7 @@ import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
 import 'package:lw_app/Widgets/WhatsappContactFAB/whatsapp_contact_fab.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
+import 'package:lw_app/Widgets/LwpListEntrance/lwp_list_entrance.dart';
 
 class MyGroupsPage extends StatelessWidget {
   const MyGroupsPage({super.key});
@@ -52,58 +53,72 @@ class _MyGroupsView extends StatelessWidget {
               return LwpEmpty(message: context.l10n.myGroupsEmpty);
             }
 
-            return RefreshIndicator(
-              onRefresh: () async {
-                context.read<MyGroupsBloc>().add(const RefreshMyGroups());
+            return LwpListEntranceHost(
+              builder: (context, entrance) {
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    entrance.bump();
+                    context.read<MyGroupsBloc>().add(const RefreshMyGroups());
+                  },
+                  child: ListView(
+                    padding: const EdgeInsets.all(LwpSpacing.md),
+                    children: [
+                      if (state.activeGroups.isNotEmpty) ...[
+                        _SectionHeader(
+                          title: context.l10n.myGroupsActiveSectionTitle,
+                          subtitle: context.l10n.myGroupsActiveSectionSubtitle,
+                        ),
+                        const SizedBox(height: LwpSpacing.sm),
+                        ...state.activeGroups.indexed.map(
+                          (entry) => LwpListEntrance(
+                            id: entry.$2.id ?? 'active-${entry.$1}',
+                            child: LwpGroupCard(
+                              group: entry.$2,
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => GroupDetailPage(
+                                    groupId: entry.$2.id ?? '',
+                                  ),
+                                ),
+                              ).then((_) {
+                                myGroupsBloc.add(const RefreshMyGroups());
+                              }),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: LwpSpacing.lg),
+                      ],
+                      if (state.pendingGroups.isNotEmpty) ...[
+                        _SectionHeader(
+                          title: context.l10n.myGroupsPendingSectionTitle,
+                          subtitle:
+                              context.l10n.myGroupsPendingSectionSubtitle,
+                        ),
+                        const SizedBox(height: LwpSpacing.sm),
+                        ...state.pendingGroups.indexed.map(
+                          (entry) => LwpListEntrance(
+                            id: entry.$2.id ?? 'pending-${entry.$1}',
+                            child: LwpGroupCard(
+                              group: entry.$2,
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => GroupDetailPage(
+                                    groupId: entry.$2.id ?? '',
+                                  ),
+                                ),
+                              ).then((_) {
+                                myGroupsBloc.add(const RefreshMyGroups());
+                              }),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                );
               },
-              child: ListView(
-                padding: const EdgeInsets.all(LwpSpacing.md),
-                children: [
-                  if (state.activeGroups.isNotEmpty) ...[
-                    _SectionHeader(
-                      title: context.l10n.myGroupsActiveSectionTitle,
-                      subtitle: context.l10n.myGroupsActiveSectionSubtitle,
-                    ),
-                    const SizedBox(height: LwpSpacing.sm),
-                    ...state.activeGroups.map(
-                      (group) => LwpGroupCard(
-                        group: group,
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                GroupDetailPage(groupId: group.id ?? ''),
-                          ),
-                        ).then((_) {
-                          myGroupsBloc.add(const RefreshMyGroups());
-                        }),
-                      ),
-                    ),
-                    const SizedBox(height: LwpSpacing.lg),
-                  ],
-                  if (state.pendingGroups.isNotEmpty) ...[
-                    _SectionHeader(
-                      title: context.l10n.myGroupsPendingSectionTitle,
-                      subtitle: context.l10n.myGroupsPendingSectionSubtitle,
-                    ),
-                    const SizedBox(height: LwpSpacing.sm),
-                    ...state.pendingGroups.map(
-                      (group) => LwpGroupCard(
-                        group: group,
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                GroupDetailPage(groupId: group.id ?? ''),
-                          ),
-                        ).then((_) {
-                          myGroupsBloc.add(const RefreshMyGroups());
-                        }),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
             );
           },
         ),

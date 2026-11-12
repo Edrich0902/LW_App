@@ -11,6 +11,7 @@ import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 import 'package:lw_app/Screens/PrayerRequests/my_prayer_requests.dart';
 import 'package:lw_app/Widgets/Glass/lwp_glass_fab.dart';
+import 'package:lw_app/Widgets/LwpListEntrance/lwp_list_entrance.dart';
 import 'package:lw_app/Widgets/PrayerRequest/prayer_request_card.dart';
 
 class PrayerRequestsPage extends StatelessWidget {
@@ -35,6 +36,7 @@ class _PrayerRequestsView extends StatefulWidget {
 class _PrayerRequestsViewState extends State<_PrayerRequestsView> {
   final _formKey = GlobalKey<FormState>();
   final _bodyController = TextEditingController();
+  final _listEntrance = LwpListEntranceController();
 
   /// When true, the next SubmitSuccess/Error from create should navigate/snack.
   bool _awaitingCreateResult = false;
@@ -42,6 +44,7 @@ class _PrayerRequestsViewState extends State<_PrayerRequestsView> {
   @override
   void dispose() {
     _bodyController.dispose();
+    _listEntrance.dispose();
     super.dispose();
   }
 
@@ -171,6 +174,7 @@ class _PrayerRequestsViewState extends State<_PrayerRequestsView> {
   }
 
   Future<void> _refresh() async {
+    _listEntrance.bump();
     context.read<PrayerRequestsBloc>().add(const LoadPrayerRequests());
   }
 
@@ -199,27 +203,33 @@ class _PrayerRequestsViewState extends State<_PrayerRequestsView> {
       );
     }
 
-    return RefreshIndicator(
-      onRefresh: _refresh,
-      child: ListView.separated(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        itemCount: requests.length,
-        separatorBuilder: (context, _) => Divider(
-          height: 1,
-          thickness: 1,
-          color: Theme.of(context).dividerColor.withValues(alpha: 0.35),
+    return LwpListEntranceScope(
+      controller: _listEntrance,
+      child: RefreshIndicator(
+        onRefresh: _refresh,
+        child: ListView.separated(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          itemCount: requests.length,
+          separatorBuilder: (context, _) => Divider(
+            height: 1,
+            thickness: 1,
+            color: Theme.of(context).dividerColor.withValues(alpha: 0.35),
+          ),
+          itemBuilder: (context, index) {
+            final request = requests[index];
+            return LwpListEntrance(
+              id: request.id ?? 'prayer-$index',
+              child: PrayerRequestCard(
+                request: request,
+                onPrayTap: () {
+                  context.read<PrayerRequestsBloc>().add(
+                        TogglePrayerReaction(request: request),
+                      );
+                },
+              ),
+            );
+          },
         ),
-        itemBuilder: (context, index) {
-          final request = requests[index];
-          return PrayerRequestCard(
-            request: request,
-            onPrayTap: () {
-              context.read<PrayerRequestsBloc>().add(
-                    TogglePrayerReaction(request: request),
-                  );
-            },
-          );
-        },
       ),
     );
   }

@@ -24,6 +24,7 @@ import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:lw_app/Widgets/LwpListEntrance/lwp_list_entrance.dart';
 
 class GroupDetailPage extends StatelessWidget {
   final String groupId;
@@ -54,6 +55,14 @@ class _GroupDetailView extends StatefulWidget {
 }
 
 class _GroupDetailViewState extends State<_GroupDetailView> {
+  final _listEntrance = LwpListEntranceController();
+
+  @override
+  void dispose() {
+    _listEntrance.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<GroupDetailBloc, GroupDetailState>(
@@ -105,13 +114,16 @@ class _GroupDetailViewState extends State<_GroupDetailView> {
             body: Stack(
               fit: StackFit.expand,
               children: [
-                RefreshIndicator(
-                  onRefresh: () async {
-                    context
-                        .read<GroupDetailBloc>()
-                        .add(RefreshGroupDetail(widget.groupId));
-                  },
-                  child: ListView(
+                LwpListEntranceScope(
+                  controller: _listEntrance,
+                  child: RefreshIndicator(
+                    onRefresh: () async {
+                      _listEntrance.bump();
+                      context
+                          .read<GroupDetailBloc>()
+                          .add(RefreshGroupDetail(widget.groupId));
+                    },
+                    child: ListView(
                     padding: EdgeInsets.only(
                       bottom: MediaQuery.paddingOf(context).bottom +
                           LwpSpacing.xl,
@@ -198,6 +210,7 @@ class _GroupDetailViewState extends State<_GroupDetailView> {
                         ),
                       ),
                     ],
+                    ),
                   ),
                 ),
                 Positioned(
@@ -833,9 +846,12 @@ class _MembershipSection extends StatelessWidget {
           else
             for (var i = 0; i < memberships.length; i++) ...[
               Divider(height: 1, thickness: 1, color: line),
-              _PendingMemberRow(
-                membership: memberships[i],
-                action: actionBuilder(memberships[i]),
+              LwpListEntrance(
+                id: memberships[i].userId,
+                child: _PendingMemberRow(
+                  membership: memberships[i],
+                  action: actionBuilder(memberships[i]),
+                ),
               ),
             ],
         ],
@@ -1057,21 +1073,24 @@ class _ActiveMembersSectionState extends State<_ActiveMembersSection> {
           else
             for (var i = 0; i < widget.memberships.length; i++) ...[
               Divider(height: 1, thickness: 1, color: line),
-              _ActiveMemberRow(
-                membership: widget.memberships[i],
-                armed: _armedUserId == widget.memberships[i].userId,
-                isBusy: widget.isBusy,
-                onArm: () => setState(
-                  () => _armedUserId = widget.memberships[i].userId,
+              LwpListEntrance(
+                id: widget.memberships[i].userId,
+                child: _ActiveMemberRow(
+                  membership: widget.memberships[i],
+                  armed: _armedUserId == widget.memberships[i].userId,
+                  isBusy: widget.isBusy,
+                  onArm: () => setState(
+                    () => _armedUserId = widget.memberships[i].userId,
+                  ),
+                  onCancel: () => setState(() => _armedUserId = null),
+                  onRemove: () {
+                    final userId = widget.memberships[i].userId;
+                    setState(() => _armedUserId = null);
+                    context.read<GroupDetailBloc>().add(
+                          RemoveGroupMember(widget.groupId, userId),
+                        );
+                  },
                 ),
-                onCancel: () => setState(() => _armedUserId = null),
-                onRemove: () {
-                  final userId = widget.memberships[i].userId;
-                  setState(() => _armedUserId = null);
-                  context.read<GroupDetailBloc>().add(
-                        RemoveGroupMember(widget.groupId, userId),
-                      );
-                },
               ),
             ],
         ],

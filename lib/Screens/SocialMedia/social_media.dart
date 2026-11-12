@@ -8,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
+import 'package:lw_app/Widgets/LwpListEntrance/lwp_list_entrance.dart';
 
 class SocialMediaPage extends StatefulWidget {
   const SocialMediaPage({super.key});
@@ -17,6 +18,14 @@ class SocialMediaPage extends StatefulWidget {
 }
 
 class _SocialMediaPageState extends State<SocialMediaPage> {
+  final _listEntrance = LwpListEntranceController();
+
+  @override
+  void dispose() {
+    _listEntrance.dispose();
+    super.dispose();
+  }
+
   @override
   void initState() {
     context.read<SocialMediaBloc>().add(const LoadSocialMedia());
@@ -40,18 +49,24 @@ class _SocialMediaPageState extends State<SocialMediaPage> {
                 return LwpSkeletonList.thumb();
               } else if (state is SocialMediaSuccess) {
                 if (state.socialMedia.isNotEmpty) {
-                  return RefreshIndicator(
-                    onRefresh: () async =>
-                        socialMediaBloc.add(const LoadSocialMedia()),
-                    child: ListView.separated(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0, vertical: 24.0),
-                      itemCount: state.socialMedia.length,
-                      separatorBuilder: (context, index) =>
-                          const SizedBox(height: 16.0),
-                      itemBuilder: (BuildContext context, int index) {
-                        final social = state.socialMedia[index];
-                        return Card(
+                  return LwpListEntranceScope(
+                    controller: _listEntrance,
+                    child: RefreshIndicator(
+                      onRefresh: () async {
+                        _listEntrance.bump();
+                        socialMediaBloc.add(const LoadSocialMedia());
+                      },
+                      child: ListView.separated(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 24.0),
+                        itemCount: state.socialMedia.length,
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(height: 16.0),
+                        itemBuilder: (BuildContext context, int index) {
+                          final social = state.socialMedia[index];
+                          return LwpListEntrance(
+                            id: social.id ?? 'social-$index',
+                            child: Card(
                           margin: EdgeInsets.zero,
                           shape: RoundedRectangleBorder(
                             borderRadius: LwpRadii.lgAll,
@@ -102,8 +117,10 @@ class _SocialMediaPageState extends State<SocialMediaPage> {
                               ),
                             ),
                           ),
-                        );
-                      },
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   );
                 } else {

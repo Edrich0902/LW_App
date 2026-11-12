@@ -11,6 +11,7 @@ import 'package:lw_app/Models/UserAnnouncement/user_announcement.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Widgets/LwpBottomSheet/lwp_bottom_sheet.dart';
 import 'package:cloudinary_flutter/image/cld_image.dart';
+import 'package:lw_app/Widgets/LwpListEntrance/lwp_list_entrance.dart';
 
 class UserAnnouncementsPage extends StatefulWidget {
   const UserAnnouncementsPage({super.key});
@@ -20,6 +21,14 @@ class UserAnnouncementsPage extends StatefulWidget {
 }
 
 class _UserAnnouncementsPageState extends State<UserAnnouncementsPage> {
+  final _listEntrance = LwpListEntranceController();
+
+  @override
+  void dispose() {
+    _listEntrance.dispose();
+    super.dispose();
+  }
+
   @override
   void initState() {
     context.read<UserAnnouncementBloc>().add(const LoadUserAnnouncements());
@@ -36,37 +45,44 @@ class _UserAnnouncementsPageState extends State<UserAnnouncementsPage> {
             builder: (context, state) {
               if (state is UserAnnouncementSuccess) {
                 if (state.userAnnouncements.isNotEmpty) {
-                  return ListView.builder(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 12.0),
-                    itemCount: state.userAnnouncements.length,
-                    itemBuilder: (context, index) {
-                      final announcement = state.userAnnouncements[index];
-                      return Dismissible(
-                        key: Key(announcement.id ?? index.toString()),
-                        direction: DismissDirection.endToStart,
-                        onDismissed: (direction) {
-                          HapticFeedback.mediumImpact();
-                          context
-                              .read<UserAnnouncementBloc>()
-                              .add(DismissUserAnnouncement(announcement.id!));
-                        },
-                        background: Container(
-                          margin: const EdgeInsets.symmetric(vertical: 8.0),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).primaryColor.withAlpha(50),
-                            borderRadius: LwpRadii.lgAll,
+                  return LwpListEntranceScope(
+                    controller: _listEntrance,
+                    child: ListView.builder(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 12.0),
+                      itemCount: state.userAnnouncements.length,
+                      itemBuilder: (context, index) {
+                        final announcement = state.userAnnouncements[index];
+                        return Dismissible(
+                          key: Key(announcement.id ?? index.toString()),
+                          direction: DismissDirection.endToStart,
+                          onDismissed: (direction) {
+                            HapticFeedback.mediumImpact();
+                            context
+                                .read<UserAnnouncementBloc>()
+                                .add(DismissUserAnnouncement(announcement.id!));
+                          },
+                          background: Container(
+                            margin: const EdgeInsets.symmetric(vertical: 8.0),
+                            decoration: BoxDecoration(
+                              color:
+                                  Theme.of(context).primaryColor.withAlpha(50),
+                              borderRadius: LwpRadii.lgAll,
+                            ),
+                            alignment: Alignment.centerRight,
+                            padding: const EdgeInsets.only(right: 20.0),
+                            child: Icon(
+                              Icons.check_circle_outline,
+                              color: Theme.of(context).primaryColor,
+                            ),
                           ),
-                          alignment: Alignment.centerRight,
-                          padding: const EdgeInsets.only(right: 20.0),
-                          child: Icon(
-                            Icons.check_circle_outline,
-                            color: Theme.of(context).primaryColor,
+                          child: LwpListEntrance(
+                            id: announcement.id ?? 'announcement-$index',
+                            child: _createAnnouncementItem(announcement),
                           ),
-                        ),
-                        child: _createAnnouncementItem(announcement),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   );
                 } else {
                   return LwpEmpty(message: context.l10n.announcementsEmpty);

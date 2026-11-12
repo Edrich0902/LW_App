@@ -16,6 +16,7 @@ import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 import 'package:collection/collection.dart';
+import 'package:lw_app/Widgets/LwpListEntrance/lwp_list_entrance.dart';
 
 class SavedVersesPage extends StatefulWidget {
   const SavedVersesPage({super.key});
@@ -33,6 +34,7 @@ class _SavedVersesPageState extends State<SavedVersesPage>
   List<UserVerseInteraction> _versesWithNotes = [];
   bool _isLoading = true;
   String? _errorMessage;
+  final _listEntrance = LwpListEntranceController();
 
   @override
   void initState() {
@@ -44,6 +46,7 @@ class _SavedVersesPageState extends State<SavedVersesPage>
   @override
   void dispose() {
     _tabController.dispose();
+    _listEntrance.dispose();
     super.dispose();
   }
 
@@ -282,9 +285,11 @@ class _SavedVersesPageState extends State<SavedVersesPage>
                 ? LwpSkeletonList.text(itemCount: 5)
                 : _errorMessage != null
                     ? LwpError(message: _errorMessage!, onRetry: _loadData)
-                    : TabBarView(
-                        controller: _tabController,
-                        children: [
+                    : LwpListEntranceScope(
+                        controller: _listEntrance,
+                        child: TabBarView(
+                          controller: _tabController,
+                          children: [
                     // Saved Verses Tab
                     _savedVerses.isEmpty
                         ? LwpEmpty(
@@ -307,7 +312,11 @@ class _SavedVersesPageState extends State<SavedVersesPage>
                                 if (bookObj != null) bookName = bookObj.name;
                               }
 
-                              return Card(
+                              final verseId = item.id ??
+                                  '${item.bookId}-${item.chapterNumber}-${item.verseNumber}-${item.versionId}';
+                              return LwpListEntrance(
+                                id: verseId,
+                                child: Card(
                                 margin: const EdgeInsets.only(
                                     bottom: LwpSpacing.sm),
                                 child: InkWell(
@@ -394,6 +403,7 @@ class _SavedVersesPageState extends State<SavedVersesPage>
                                     ),
                                   ),
                                 ),
+                                ),
                               );
                             },
                           ),
@@ -418,7 +428,11 @@ class _SavedVersesPageState extends State<SavedVersesPage>
                                 if (bookObj != null) bookName = bookObj.name;
                               }
 
-                              return Card(
+                              final noteId = item.id ??
+                                  'note-${item.bookId}-${item.chapterNumber}-${item.verseNumber}';
+                              return LwpListEntrance(
+                                id: noteId,
+                                child: Card(
                                 margin: const EdgeInsets.only(
                                     bottom: LwpSpacing.sm),
                                 child: Padding(
@@ -518,10 +532,12 @@ class _SavedVersesPageState extends State<SavedVersesPage>
                                     ],
                                   ),
                                 ),
+                                ),
                               );
                             },
                           ),
                         ],
+                        ),
                       ),
               ),
             ],

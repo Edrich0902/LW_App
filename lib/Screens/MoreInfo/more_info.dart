@@ -8,6 +8,7 @@ import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/Glass/lwp_shell_insets.dart';
 import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
 import 'package:collection/collection.dart';
+import 'package:lw_app/Widgets/LwpListEntrance/lwp_list_entrance.dart';
 
 class MoreInfoPage extends StatefulWidget {
   const MoreInfoPage({super.key});
@@ -17,6 +18,14 @@ class MoreInfoPage extends StatefulWidget {
 }
 
 class _MoreInfoPageState extends State<MoreInfoPage> {
+  final _listEntrance = LwpListEntranceController();
+
+  @override
+  void dispose() {
+    _listEntrance.dispose();
+    super.dispose();
+  }
+
   @override
   void initState() {
     context.read<MoreInfoBloc>().add(const LoadMoreInfo());
@@ -41,7 +50,9 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
               state.data.firstWhereOrNull((v) => v.key == 'vision_statement');
 
           return Scaffold(
-            body: CustomScrollView(
+            body: LwpListEntranceScope(
+              controller: _listEntrance,
+              child: CustomScrollView(
               slivers: [
                 SliverPadding(
                   padding: EdgeInsets.fromLTRB(
@@ -81,18 +92,21 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
                     delegate: SliverChildBuilderDelegate(
                       (context, index) {
                         final roleplayer = state.roleplayers[index];
-                        return RoleplayerGridCard(
-                          roleplayer: roleplayer,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => RoleplayerDetailScreen(
-                                  roleplayer: roleplayer,
+                        return LwpListEntrance(
+                          id: roleplayer.id ?? 'roleplayer-$index',
+                          child: RoleplayerGridCard(
+                            roleplayer: roleplayer,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => RoleplayerDetailScreen(
+                                    roleplayer: roleplayer,
+                                  ),
                                 ),
-                              ),
-                            );
-                          },
+                              );
+                            },
+                          ),
                         );
                       },
                       childCount: state.roleplayers.length,
@@ -103,6 +117,7 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
                   child: SizedBox(height: LwpShellInsets.bottom(context) + 16),
                 ),
               ],
+            ),
             ),
           );
         } else {

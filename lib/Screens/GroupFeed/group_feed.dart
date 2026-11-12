@@ -17,6 +17,7 @@ import 'package:lw_app/Widgets/Glass/lwp_top_bar.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
+import 'package:lw_app/Widgets/LwpListEntrance/lwp_list_entrance.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 
 class GroupFeedPage extends StatelessWidget {
@@ -48,6 +49,14 @@ class _GroupFeedView extends StatefulWidget {
 }
 
 class _GroupFeedViewState extends State<_GroupFeedView> {
+  final _listEntrance = LwpListEntranceController();
+
+  @override
+  void dispose() {
+    _listEntrance.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<GroupDetailBloc, GroupDetailState>(
@@ -116,106 +125,115 @@ class _GroupFeedViewState extends State<_GroupFeedView> {
             body: Stack(
               fit: StackFit.expand,
               children: [
-                RefreshIndicator(
-                  onRefresh: () async {
-                    context
-                        .read<GroupDetailBloc>()
-                        .add(RefreshGroupDetail(widget.groupId));
-                  },
-                  child: CustomScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    slivers: [
-                      SliverToBoxAdapter(
-                        child: _GroupFeedHero(
-                          group: group,
-                          postCount: state.posts.length,
+                LwpListEntranceScope(
+                  controller: _listEntrance,
+                  child: RefreshIndicator(
+                    onRefresh: () async {
+                      _listEntrance.bump();
+                      context
+                          .read<GroupDetailBloc>()
+                          .add(RefreshGroupDetail(widget.groupId));
+                    },
+                    child: CustomScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      slivers: [
+                        SliverToBoxAdapter(
+                          child: _GroupFeedHero(
+                            group: group,
+                            postCount: state.posts.length,
+                          ),
                         ),
-                      ),
-                      if (state.posts.isEmpty)
-                        SliverFillRemaining(
-                          hasScrollBody: false,
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(
-                              LwpSpacing.md,
-                              LwpSpacing.sm,
-                              LwpSpacing.md,
-                              LwpSpacing.xxl,
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                _UpdatesLabel(count: 0),
-                                const SizedBox(height: LwpSpacing.sm),
-                                Expanded(
-                                  child: Center(
-                                    child: LwpEmpty(
-                                      message: context.l10n.groupFeedEmpty,
+                        if (state.posts.isEmpty)
+                          SliverFillRemaining(
+                            hasScrollBody: false,
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(
+                                LwpSpacing.md,
+                                LwpSpacing.sm,
+                                LwpSpacing.md,
+                                LwpSpacing.xxl,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  _UpdatesLabel(count: 0),
+                                  const SizedBox(height: LwpSpacing.sm),
+                                  Expanded(
+                                    child: Center(
+                                      child: LwpEmpty(
+                                        message: context.l10n.groupFeedEmpty,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
+                            ),
+                          )
+                        else ...[
+                          SliverToBoxAdapter(
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(
+                                LwpSpacing.md,
+                                LwpSpacing.sm,
+                                LwpSpacing.md,
+                                LwpSpacing.xs,
+                              ),
+                              child: _UpdatesLabel(count: state.posts.length),
                             ),
                           ),
-                        )
-                      else ...[
-                        SliverToBoxAdapter(
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(
+                          SliverPadding(
+                            padding: EdgeInsets.fromLTRB(
                               LwpSpacing.md,
-                              LwpSpacing.sm,
+                              0,
                               LwpSpacing.md,
-                              LwpSpacing.xs,
+                              MediaQuery.paddingOf(context).bottom +
+                                  (group.isLeader ? 96 : LwpSpacing.xl),
                             ),
-                            child: _UpdatesLabel(count: state.posts.length),
-                          ),
-                        ),
-                        SliverPadding(
-                          padding: EdgeInsets.fromLTRB(
-                            LwpSpacing.md,
-                            0,
-                            LwpSpacing.md,
-                            MediaQuery.paddingOf(context).bottom +
-                                (group.isLeader ? 96 : LwpSpacing.xl),
-                          ),
-                          sliver: SliverList.separated(
-                            itemCount: state.posts.length,
-                            itemBuilder: (context, index) {
-                              final post = state.posts[index];
-                              final isLeader = group.isLeader;
-                              return _GroupFeedPostCard(
-                                post: post,
-                                isBusy: state.isFeedActionInProgress,
-                                onEdit: post.isAuthor
-                                    ? () => _openEditPost(context, post)
-                                    : null,
-                                onDelete: post.isAuthor
-                                    ? () => _confirmDeletePost(context, post)
-                                    : null,
-                                onPin: isLeader
-                                    ? () =>
-                                        context.read<GroupDetailBloc>().add(
+                            sliver: SliverList.separated(
+                              itemCount: state.posts.length,
+                              itemBuilder: (context, index) {
+                                final post = state.posts[index];
+                                final isLeader = group.isLeader;
+                                return LwpListEntrance(
+                                  id: post.id,
+                                  child: _GroupFeedPostCard(
+                                    post: post,
+                                    isBusy: state.isFeedActionInProgress,
+                                    onEdit: post.isAuthor
+                                        ? () => _openEditPost(context, post)
+                                        : null,
+                                    onDelete: post.isAuthor
+                                        ? () =>
+                                            _confirmDeletePost(context, post)
+                                        : null,
+                                    onPin: isLeader
+                                        ? () => context
+                                            .read<GroupDetailBloc>()
+                                            .add(
                                               TogglePinPost(
                                                 groupId: widget.groupId,
                                                 post: post,
                                               ),
                                             )
-                                    : null,
-                                onReact: (reactionType) =>
-                                    context.read<GroupDetailBloc>().add(
-                                          ToggleGroupPostReaction(
-                                            groupId: widget.groupId,
-                                            post: post,
-                                            reactionType: reactionType,
-                                          ),
-                                        ),
-                              );
-                            },
-                            separatorBuilder: (_, __) =>
-                                const SizedBox(height: LwpSpacing.sm),
+                                        : null,
+                                    onReact: (reactionType) =>
+                                        context.read<GroupDetailBloc>().add(
+                                              ToggleGroupPostReaction(
+                                                groupId: widget.groupId,
+                                                post: post,
+                                                reactionType: reactionType,
+                                              ),
+                                            ),
+                                  ),
+                                );
+                              },
+                              separatorBuilder: (_, __) =>
+                                  const SizedBox(height: LwpSpacing.sm),
+                            ),
                           ),
-                        ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
                 ),
                 Positioned(

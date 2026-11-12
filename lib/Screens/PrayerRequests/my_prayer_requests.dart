@@ -10,6 +10,7 @@ import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
+import 'package:lw_app/Widgets/LwpListEntrance/lwp_list_entrance.dart';
 import 'package:lw_app/Widgets/PrayerRequest/prayer_request_card.dart';
 
 class MyPrayerRequestsPage extends StatelessWidget {
@@ -52,6 +53,7 @@ class _MyPrayerRequestsView extends StatefulWidget {
 
 class _MyPrayerRequestsViewState extends State<_MyPrayerRequestsView> {
   late PrayerRequestStatus? _selectedStatus;
+  final _listEntrance = LwpListEntranceController();
 
   @override
   void initState() {
@@ -68,7 +70,14 @@ class _MyPrayerRequestsViewState extends State<_MyPrayerRequestsView> {
     }
   }
 
+  @override
+  void dispose() {
+    _listEntrance.dispose();
+    super.dispose();
+  }
+
   Future<void> _refresh() async {
+    _listEntrance.bump();
     context.read<MyPrayerRequestsBloc>().add(const LoadMyPrayerRequests());
   }
 
@@ -260,37 +269,43 @@ class _MyPrayerRequestsViewState extends State<_MyPrayerRequestsView> {
                               ],
                             ),
                           )
-                        : RefreshIndicator(
-                            onRefresh: _refresh,
-                            child: ListView.separated(
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              itemCount: requests.length,
-                              separatorBuilder: (context, _) => Divider(
-                                height: 1,
-                                thickness: 1,
-                                color: Theme.of(context)
-                                    .dividerColor
-                                    .withValues(alpha: 0.35),
-                              ),
-                              itemBuilder: (context, index) {
-                                final request = requests[index];
-                                return PrayerRequestCard(
-                                  request: request.copyWith(
-                                    displayName:
-                                        request.isAnonymous
+                        : LwpListEntranceScope(
+                            controller: _listEntrance,
+                            child: RefreshIndicator(
+                              onRefresh: _refresh,
+                              child: ListView.separated(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8),
+                                itemCount: requests.length,
+                                separatorBuilder: (context, _) => Divider(
+                                  height: 1,
+                                  thickness: 1,
+                                  color: Theme.of(context)
+                                      .dividerColor
+                                      .withValues(alpha: 0.35),
+                                ),
+                                itemBuilder: (context, index) {
+                                  final request = requests[index];
+                                  return LwpListEntrance(
+                                    id: request.id ?? 'my-prayer-$index',
+                                    child: PrayerRequestCard(
+                                      request: request.copyWith(
+                                        displayName: request.isAnonymous
                                             ? context.l10n.prayerAnonymousName
                                             : context.l10n.commonYou,
-                                  ),
-                                  showStatus: true,
-                                  onResolveTap: request.status !=
-                                          PrayerRequestStatus.resolved
-                                      ? () => _showResolveBottomSheet(
-                                            context,
-                                            request.id!,
-                                          )
-                                      : null,
-                                );
-                              },
+                                      ),
+                                      showStatus: true,
+                                      onResolveTap: request.status !=
+                                              PrayerRequestStatus.resolved
+                                          ? () => _showResolveBottomSheet(
+                                                context,
+                                                request.id!,
+                                              )
+                                          : null,
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
                           ),
                   ),
