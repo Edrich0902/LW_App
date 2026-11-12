@@ -10,6 +10,8 @@ import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/Note/note.dart';
 import 'package:lw_app/Utils/quill_helper.dart';
 import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
+import 'package:lw_app/Widgets/Glass/lwp_glass.dart';
+import 'package:lw_app/Widgets/Glass/lwp_top_bar.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
@@ -162,41 +164,62 @@ class _NotesEditPageState extends State<NotesEditPage> {
             LwpSnackbar.showError(context, context.l10n.notesGenericError);
           }
         },
-        child: LwpChromeScaffold(
-          title: _isEdit
-              ? context.l10n.notesEditTitle
-              : context.l10n.notesCreateTitle,
-          actions: [
-            if (_isInitialized)
-              Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 250),
-                  child: _showSaved
-                      ? Icon(
-                          Icons.cloud_done_outlined,
-                          key: const ValueKey(true),
-                          size: 20,
-                          color: iconColor,
-                        )
-                      : const SizedBox.shrink(key: ValueKey(false)),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            LwpChromeScaffold(
+              title: _isEdit
+                  ? context.l10n.notesEditTitle
+                  : context.l10n.notesCreateTitle,
+              onBack: _handleBack,
+              body: SafeArea(
+                top: false,
+                child: BlocBuilder<NoteEditBloc, NoteEditState>(
+                  buildWhen: (previous, current) =>
+                      current is NoteLoading || current is NoteError,
+                  builder: (context, state) {
+                    if (!_isInitialized) {
+                      if (state is NoteError) return const LwpError();
+                      return const LwpLoader();
+                    }
+                    return _buildEditor(theme);
+                  },
                 ),
               ),
-          ],
-          body: SafeArea(
-            top: false,
-            child: BlocBuilder<NoteEditBloc, NoteEditState>(
-              buildWhen: (previous, current) =>
-                  current is NoteLoading || current is NoteError,
-              builder: (context, state) {
-                if (!_isInitialized) {
-                  if (state is NoteError) return const LwpError();
-                  return const LwpLoader();
-                }
-                return _buildEditor(theme);
-              },
             ),
-          ),
+            // Autosave bubble — overlay so it can morph without fighting the
+            // top-bar Row layout (AnimatedSwitcher in that Row caused crashes).
+            Positioned(
+              top: MediaQuery.paddingOf(context).top + LwpTopBar.gap,
+              right: LwpTopBar.side,
+              child: IgnorePointer(
+                ignoring: !_showSaved,
+                child: AnimatedScale(
+                  scale: _showSaved ? 1 : 0.45,
+                  duration: const Duration(milliseconds: 340),
+                  curve: Curves.easeOutBack,
+                  child: AnimatedOpacity(
+                    opacity: _showSaved ? 1 : 0,
+                    duration: const Duration(milliseconds: 220),
+                    curve: Curves.easeOut,
+                    child: BackdropGroup(
+                      child: LwpGlass(
+                        child: SizedBox(
+                          width: LwpTopBar.capsuleHeight,
+                          height: LwpTopBar.capsuleHeight,
+                          child: Icon(
+                            Icons.cloud_done_outlined,
+                            size: 20,
+                            color: iconColor,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
