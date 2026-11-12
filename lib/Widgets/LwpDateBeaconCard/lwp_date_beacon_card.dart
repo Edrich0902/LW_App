@@ -15,6 +15,7 @@ class LwpDateBeaconCard extends StatelessWidget {
     required this.onTap,
     this.showAttendance = false,
     this.coverHeight = 120,
+    this.displayDate,
   });
 
   final Event event;
@@ -23,13 +24,16 @@ class LwpDateBeaconCard extends StatelessWidget {
   final bool showAttendance;
   final double coverHeight;
 
+  /// When set (e.g. next weekly occurrence), overrides [event.startDate].
+  final DateTime? displayDate;
+
   static const double dateTileWidth = 56.0;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final locale = Localizations.localeOf(context).toString();
-    final date = parseStartDate(event.startDate);
+    final date = displayDate ?? parseStartDate(event.startDate);
     final hasRsvps = showAttendance &&
         (event.attendingCount + event.interestedCount) > 0;
 

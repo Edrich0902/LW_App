@@ -4,6 +4,7 @@ import 'package:lw_app/Models/Event/event.dart';
 import 'package:lw_app/Models/Event/event_type.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
+import 'package:lw_app/Utils/event_occurrence.dart';
 import 'package:lw_app/Widgets/LwpBottomSheet/lwp_bottom_sheet.dart';
 import 'package:lw_app/Widgets/LwpDateBeaconCard/lwp_date_beacon_card.dart';
 import 'package:add_2_calendar/add_2_calendar.dart' as calendar;
@@ -22,6 +23,7 @@ class LwpEvent extends StatelessWidget {
       event: event,
       heroTag: 'calendar_event_${event.id ?? event.title}',
       coverHeight: 96,
+      displayDate: EventOccurrence.nextFor(event),
       onTap: () => _showEventDetails(context),
     );
   }
@@ -113,52 +115,19 @@ class LwpEvent extends StatelessWidget {
 
   void _addToCalendar(BuildContext context) {
     try {
-      DateTime baseDate;
-      if (event.startDate != null) {
-        baseDate = DateTime.parse(event.startDate!);
-      } else {
-        baseDate = DateTime.now();
-      }
-
+      final nextDay = EventOccurrence.nextFor(event) ?? DateTime.now();
       final cleanTime = event.time.split('+').first;
       final timeParts = cleanTime.split(':');
 
-      DateTime startDateTime = DateTime(
-        baseDate.year,
-        baseDate.month,
-        baseDate.day,
+      final startDateTime = DateTime(
+        nextDay.year,
+        nextDay.month,
+        nextDay.day,
         int.parse(timeParts[0]),
         int.parse(timeParts[1]),
-        int.parse(timeParts[2]),
+        timeParts.length > 2 ? int.parse(timeParts[2]) : 0,
       );
-
-      if (event.type == EventType.WEEKLY && event.day.isNotEmpty) {
-        const dayToWeekday = {
-          'Monday': DateTime.monday,
-          'Tuesday': DateTime.tuesday,
-          'Wednesday': DateTime.wednesday,
-          'Thursday': DateTime.thursday,
-          'Friday': DateTime.friday,
-          'Saturday': DateTime.saturday,
-          'Sunday': DateTime.sunday,
-        };
-        final targetWeekday = dayToWeekday[event.day];
-        if (targetWeekday != null && startDateTime.weekday != targetWeekday) {
-          final daysToAdd = (targetWeekday - startDateTime.weekday + 7) % 7;
-          startDateTime = startDateTime.add(Duration(days: daysToAdd));
-        }
-      }
-
-      final endDateTime = event.endDate != null
-          ? DateTime(
-              DateTime.parse(event.endDate!).year,
-              DateTime.parse(event.endDate!).month,
-              DateTime.parse(event.endDate!).day,
-              int.parse(timeParts[0]),
-              int.parse(timeParts[1]),
-              int.parse(timeParts[2]),
-            )
-          : startDateTime.add(const Duration(hours: 1));
+      final endDateTime = startDateTime.add(const Duration(hours: 1));
 
       calendar.Recurrence? recurrence;
       if (event.type != EventType.ONCE) {
