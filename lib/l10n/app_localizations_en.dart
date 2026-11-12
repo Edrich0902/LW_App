@@ -340,13 +340,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileMyGroups => 'My Groups';
 
   @override
-  String get profileFeedbackReports => 'Feedback & Reports';
+  String get profileFeedbackReports => 'Feedback';
 
   @override
   String get profileSettings => 'Settings';
 
   @override
+  String get profileMyStuffSection => 'My things';
+
+  @override
+  String get profileAppSection => 'App';
+
+  @override
   String get profileSignOut => 'Sign Out';
+
+  @override
+  String get commonCopy => 'Copy';
 
   @override
   String get profileSignOutConfirmTitle => 'Sign Out';

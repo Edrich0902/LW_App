@@ -1,9 +1,8 @@
-import 'package:cloudinary_flutter/image/cld_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:lw_app/Blocs/EventRsvp/event_rsvp_bloc.dart';
-import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
 import 'package:lw_app/Blocs/Events/events_bloc.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/Event/event.dart';
@@ -13,12 +12,12 @@ import 'package:lw_app/Screens/UpcomingEvents/upcoming_event_detail.dart';
 import 'package:lw_app/Themes/lwp_icons.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
+import 'package:lw_app/Utils/event_occurrence.dart';
 import 'package:lw_app/Utils/maps_helper.dart';
-import 'package:lw_app/Widgets/Dashboard/dashboard_grid_card.dart';
+import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:lw_app/Widgets/LwpListEntrance/lwp_list_entrance.dart';
 
 class FirstTimeVisitorScreen extends StatefulWidget {
   const FirstTimeVisitorScreen({super.key});
@@ -28,14 +27,6 @@ class FirstTimeVisitorScreen extends StatefulWidget {
 }
 
 class _FirstTimeVisitorScreenState extends State<FirstTimeVisitorScreen> {
-  final _listEntrance = LwpListEntranceController();
-
-  @override
-  void dispose() {
-    _listEntrance.dispose();
-    super.dispose();
-  }
-
   @override
   void initState() {
     super.initState();
@@ -50,26 +41,86 @@ class _FirstTimeVisitorScreenState extends State<FirstTimeVisitorScreen> {
     final theme = Theme.of(context);
 
     return LwpChromeScaffold(
-        title: context.l10n.visitorWelcomeTitle,
-        showDefaultActions: true,
-        body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+      title: context.l10n.visitorWelcomeTitle,
+      showDefaultActions: true,
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(
+          LwpSpacing.md,
+          LwpSpacing.md,
+          LwpSpacing.md,
+          LwpSpacing.xl,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildWelcomeHero(theme),
-            const SizedBox(height: 24),
-            _buildServiceTimesCard(theme),
-            const SizedBox(height: 24),
-            _buildQuickLinksGrid(context),
-            const SizedBox(height: 32),
             Text(
-              context.l10n.visitorUpcomingEventsTitle,
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
+              context.l10n.visitorWelcomeHeadline,
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.4,
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: LwpSpacing.xs),
+            Text(
+              context.l10n.visitorWelcomeBody,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: theme.hintColor,
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: LwpSpacing.lg),
+            _sectionLabel(context.l10n.visitorSundayServices, theme),
+            _serviceTimeRow(
+              context.l10n.visitorMorningService,
+              '09:30',
+              theme,
+            ),
+            _serviceTimeRow(
+              context.l10n.visitorEveningService,
+              '18:00',
+              theme,
+            ),
+            const SizedBox(height: LwpSpacing.md),
+            _quietLink(
+              icon: Icon(
+                Icons.location_on_outlined,
+                size: 16,
+                color: theme.colorScheme.primary,
+              ),
+              title: context.l10n.visitorFindUs,
+              onTap: () => MapsHelper.openLocation('6 Mill Street Paarl'),
+            ),
+            _quietLink(
+              icon: FaIcon(
+                LwpIcons.whatsapp,
+                size: 15,
+                color: theme.colorScheme.primary,
+              ),
+              title: context.l10n.visitorContactUs,
+              onTap: () {
+                final Uri whatsappUri =
+                    Uri.parse('https://wa.me/+27727238406');
+                launchUrl(whatsappUri, mode: LaunchMode.externalApplication);
+              },
+            ),
+            _quietLink(
+              icon: Icon(
+                Icons.info_outline,
+                size: 16,
+                color: theme.colorScheme.primary,
+              ),
+              title: context.l10n.visitorMoreAboutUs,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const MoreInfoPage(),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: LwpSpacing.lg),
+            _sectionLabel(context.l10n.visitorUpcomingEventsTitle, theme),
             _buildUpcomingEventsSection(),
           ],
         ),
@@ -77,125 +128,95 @@ class _FirstTimeVisitorScreenState extends State<FirstTimeVisitorScreen> {
     );
   }
 
-  Widget _buildWelcomeHero(ThemeData theme) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24.0),
-      decoration: BoxDecoration(
-        color: theme.primaryColor.withValues(alpha: 0.1),
-        borderRadius: LwpRadii.lgAll,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(
-            Icons.favorite,
-            color: theme.primaryColor,
-            size: 40,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            context.l10n.visitorWelcomeHeadline,
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: theme.primaryColor,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            context.l10n.visitorWelcomeBody,
-            style: theme.textTheme.bodyLarge,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildServiceTimesCard(ThemeData theme) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.schedule, color: theme.primaryColor),
-                const SizedBox(width: 12),
-                Text(
-                  context.l10n.visitorSundayServices,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-            const Divider(height: 32),
-            _buildServiceTimeRow(
-              context.l10n.visitorMorningService,
-              '09:30',
-              theme,
-            ),
-            const SizedBox(height: 12),
-            _buildServiceTimeRow(
-              context.l10n.visitorEveningService,
-              '18:00',
-              theme,
-            ),
-          ],
+  Widget _sectionLabel(String label, ThemeData theme) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: LwpSpacing.xs),
+      child: Text(
+        label,
+        style: theme.textTheme.labelSmall?.copyWith(
+          color: theme.hintColor,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 1.0,
         ),
       ),
     );
   }
 
-  Widget _buildServiceTimeRow(String label, String time, ThemeData theme) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget _serviceTimeRow(String label, String time, ThemeData theme) {
+    return Column(
       children: [
-        Text(label, style: theme.textTheme.bodyLarge),
-        Text(
-          time,
-          style: theme.textTheme.bodyLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: theme.primaryColor,
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: LwpSpacing.sm),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(label, style: theme.textTheme.bodyLarge),
+              Text(
+                time,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: theme.colorScheme.primary,
+                  fontFeatures: const [FontFeature.tabularFigures()],
+                ),
+              ),
+            ],
           ),
+        ),
+        Divider(
+          height: 1,
+          thickness: 1,
+          color: theme.dividerColor.withValues(alpha: 0.45),
         ),
       ],
     );
   }
 
-  Widget _buildQuickLinksGrid(BuildContext context) {
-    return GridView.count(
-      shrinkWrap: true,
-      padding: EdgeInsets.zero,
-      physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: 3,
-      crossAxisSpacing: 12,
-      mainAxisSpacing: 12,
-      childAspectRatio: 1.55,
+  Widget _quietLink({
+    required Widget icon,
+    required String title,
+    required VoidCallback onTap,
+  }) {
+    final theme = Theme.of(context);
+    return Column(
       children: [
-        DashboardGridCard(
-          title: context.l10n.visitorFindUs,
-          icon: Icon(Icons.location_on),
-          onTap: () => MapsHelper.openLocation("6 Mill Street Paarl"),
+        InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: LwpSpacing.sm),
+            child: Row(
+              children: [
+                Container(
+                  width: 34,
+                  height: 34,
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(LwpRadii.xs),
+                  ),
+                  alignment: Alignment.center,
+                  child: icon,
+                ),
+                const SizedBox(width: LwpSpacing.sm),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                Icon(
+                  Icons.chevron_right,
+                  size: 18,
+                  color: theme.hintColor,
+                ),
+              ],
+            ),
+          ),
         ),
-        DashboardGridCard(
-          title: context.l10n.visitorContactUs,
-          icon: FaIcon(LwpIcons.whatsapp),
-          onTap: () {
-            final Uri whatsappUri = Uri.parse("https://wa.me/+27727238406");
-            launchUrl(whatsappUri, mode: LaunchMode.externalApplication);
-          },
-        ),
-        DashboardGridCard(
-          title: context.l10n.visitorMoreAboutUs,
-          icon: Icon(Icons.info),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const MoreInfoPage()),
-            );
-          },
+        Divider(
+          height: 1,
+          thickness: 1,
+          color: theme.dividerColor.withValues(alpha: 0.45),
         ),
       ],
     );
@@ -205,27 +226,31 @@ class _FirstTimeVisitorScreenState extends State<FirstTimeVisitorScreen> {
     return BlocBuilder<EventsBloc, EventsState>(
       builder: (context, state) {
         if (state is EventsLoading) {
-          return LwpSkeletonList.thumb(itemCount: 3, shrinkWrap: true);
+          return LwpSkeletonList.thumb(itemCount: 2, shrinkWrap: true);
         } else if (state is EventsSuccess) {
           final upcoming = state.events.take(3).toList();
           if (upcoming.isEmpty) {
-            return Text(context.l10n.visitorNoUpcomingEvents);
+            return Text(
+              context.l10n.visitorNoUpcomingEvents,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).hintColor,
+                  ),
+            );
           }
-          return LwpListEntranceScope(
-            controller: _listEntrance,
-            child: ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: upcoming.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 16),
-              itemBuilder: (context, index) {
-                final event = upcoming[index];
-                return LwpListEntrance(
-                  id: event.id ?? 'visitor-event-$index',
-                  child: _buildCompactEventCard(event),
-                );
-              },
-            ),
+          return Column(
+            children: [
+              for (var i = 0; i < upcoming.length; i++) ...[
+                if (i > 0)
+                  Divider(
+                    height: 1,
+                    thickness: 1,
+                    color: Theme.of(context)
+                        .dividerColor
+                        .withValues(alpha: 0.45),
+                  ),
+                _buildEventRow(upcoming[i]),
+              ],
+            ],
           );
         } else {
           return LwpError(message: context.l10n.visitorUpcomingEventsError);
@@ -234,77 +259,107 @@ class _FirstTimeVisitorScreenState extends State<FirstTimeVisitorScreen> {
     );
   }
 
-  Widget _buildCompactEventCard(Event event) {
+  Widget _buildEventRow(Event event) {
     final theme = Theme.of(context);
+    final locale = Localizations.localeOf(context).toString();
+    final next = EventOccurrence.nextFor(event);
+    final day = next != null ? '${next.day}' : '—';
+    final mon = next != null ? DateFormat('MMM', locale).format(next) : '';
+    final timeLabel = _formatEventTime(event.time);
+    final metaParts = <String>[
+      if (event.day.trim().isNotEmpty) event.day,
+      if (timeLabel.isNotEmpty) timeLabel,
+    ];
 
-    return Card(
-      margin: EdgeInsets.zero,
-      clipBehavior: Clip.antiAliasWithSaveLayer,
-      shape: RoundedRectangleBorder(
-        borderRadius: LwpRadii.lgAll,
-      ),
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => BlocProvider(
-                create: (_) => EventRsvpBloc()..add(InitEventRsvp(event)),
-                child: UpcomingEventDetailPage(event: event),
-              ),
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => BlocProvider(
+              create: (_) => EventRsvpBloc()..add(InitEventRsvp(event)),
+              child: UpcomingEventDetailPage(event: event),
             ),
-          );
-        },
+          ),
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: LwpSpacing.sm),
         child: Row(
           children: [
-            SizedBox(
-              width: 100,
-              height: 100,
-              child: CldImageWidget(
-                publicId: event.bannerPublicId ?? 'samples/cloudinary-icon',
-                fit: BoxFit.cover,
+            Container(
+              width: 48,
+              height: 52,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primary.withValues(alpha: 0.14),
+                borderRadius: LwpRadii.smAll,
+              ),
+              alignment: Alignment.center,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    day,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.w700,
+                      height: 1,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    mon.toUpperCase(),
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 9,
+                      letterSpacing: 0.6,
+                    ),
+                  ),
+                ],
               ),
             ),
+            const SizedBox(width: LwpSpacing.sm),
             Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    event.title,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (metaParts.isNotEmpty) ...[
+                    const SizedBox(height: 3),
                     Text(
-                      event.title,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
+                      metaParts.join(' · '),
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.hintColor,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "${event.day} ${DateFormatter.formatDate(event.startDate)}",
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.primaryColor,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      event.description,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.hintColor,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
                   ],
-                ),
+                ],
               ),
             ),
-            const Icon(Icons.chevron_right),
-            const SizedBox(width: 8),
           ],
         ),
       ),
     );
+  }
+
+  String _formatEventTime(String raw) {
+    final value = raw.trim();
+    if (value.isEmpty) return '';
+    try {
+      return DateFormatter.formatTime(value);
+    } catch (_) {
+      final match = RegExp(r'^(\d{1,2}:\d{2})').firstMatch(value);
+      return match?.group(1) ?? value;
+    }
   }
 }

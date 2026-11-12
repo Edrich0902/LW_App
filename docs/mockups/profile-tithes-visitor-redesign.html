@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="af">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LWP — Profile, Settings, Tithes, Visitor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0b1218;
+      --card: #1e1e1e;
+      --ink: #eef3f7;
+      --muted: #8a9aab;
+      --line: rgba(255,255,255,0.08);
+      --accent: #2e86c1;
+      --accent-soft: rgba(46,134,193,0.18);
+      --danger: #e57373;
+      --ok: #10b981;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh;
+      font-family: "DM Sans", system-ui, sans-serif;
+      background:
+        radial-gradient(900px 420px at 18% -8%, rgba(46,134,193,0.14), transparent 58%),
+        var(--bg);
+      color: var(--ink);
+      padding: 28px 20px 80px;
+    }
+    .page { max-width: 1280px; margin: 0 auto; }
+    .eyebrow {
+      font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--muted); margin: 0 0 6px;
+    }
+    h1 { margin: 0 0 8px; font-size: 28px; font-weight: 600; letter-spacing: -0.03em; }
+    .lede {
+      margin: 0 0 16px; color: var(--muted); font-size: 14px; line-height: 1.55; max-width: 80ch;
+    }
+    .pitch {
+      margin: 0 0 18px; padding: 14px 16px; border: 1px solid var(--line);
+      border-radius: 12px; background: rgba(255,255,255,0.03);
+      color: var(--muted); font-size: 13px; line-height: 1.55; max-width: 92ch;
+    }
+    .pitch strong { color: var(--ink); font-weight: 600; }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+    .toolbar button {
+      appearance: none; border: 1px solid var(--line); background: rgba(255,255,255,0.03);
+      color: var(--ink); border-radius: 999px; padding: 10px 14px; font: inherit;
+      font-size: 13px; font-weight: 500; cursor: pointer;
+    }
+    .toolbar button:hover { border-color: rgba(255,255,255,0.18); }
+    .toolbar button.active { background: var(--accent); border-color: transparent; color: #fff; }
+    .hint { margin: 0 0 20px; font-size: 12px; color: var(--muted); }
+    .phones {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 22px; align-items: start;
+    }
+    .phone {
+      border: 1px solid var(--line); border-radius: 28px; background: #121212;
+      overflow: hidden; box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+      min-height: 780px; display: none; flex-direction: column; position: relative;
+    }
+    .phone.active { display: flex; }
+    .phone-label {
+      padding: 14px 18px 0; font-size: 11px; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .chrome {
+      display: flex; align-items: center; gap: 10px; padding: 14px 16px 10px;
+    }
+    .chrome-spacer { flex: 1; }
+    .glass-btn, .title-pill {
+      height: 36px; border-radius: 999px; border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04); display: inline-grid; place-items: center;
+      color: var(--ink);
+    }
+    .glass-btn { width: 36px; }
+    .glass-btn svg {
+      width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.7;
+      stroke-linecap: round; stroke-linejoin: round;
+    }
+    .title-pill {
+      padding: 0 14px; display: inline-flex; align-items: center;
+      font-size: 14px; font-weight: 600;
+    }
+    .scroll { flex: 1; overflow: auto; padding: 8px 16px 28px; }
+    .fab {
+      position: absolute; right: 18px; bottom: 22px;
+      width: 52px; height: 52px; border-radius: 999px; background: var(--accent);
+      display: grid; place-items: center; color: #fff;
+      box-shadow: 0 10px 28px rgba(46,134,193,0.35);
+    }
+    .fab svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; }
+
+    /* Current profile */
+    .cur-avatar {
+      width: 120px; height: 120px; border-radius: 999px; margin: 18px auto 14px;
+      background: linear-gradient(145deg, #1a3a52, #2e86c1);
+    }
+    .cur-name { text-align: center; font-size: 24px; font-weight: 700; margin: 0; }
+    .cur-role { text-align: center; color: var(--muted); font-size: 14px; margin: 4px 0 22px; }
+    .card-block {
+      background: var(--card); border-radius: 16px; border: 1px solid var(--line); overflow: hidden;
+    }
+    .row {
+      display: flex; align-items: center; gap: 12px; padding: 14px 14px;
+      border-bottom: 1px solid var(--line);
+    }
+    .row:last-child { border-bottom: 0; }
+    .row .ico {
+      width: 24px; color: var(--ink); display: grid; place-items: center;
+    }
+    .row .ico svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.7; }
+    .row b { flex: 1; font-size: 15px; font-weight: 500; }
+    .row .chev { color: var(--muted); }
+    .row .chev svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.7; }
+    .row.danger b, .row.danger .ico { color: var(--danger); }
+
+    /* Proposed profile */
+    .p-id {
+      display: flex; align-items: center; gap: 14px; padding: 8px 0 18px;
+    }
+    .p-avatar {
+      width: 72px; height: 72px; border-radius: 999px; flex-shrink: 0;
+      background: linear-gradient(145deg, #1a3a52, #2e86c1);
+    }
+    .p-id h2 { margin: 0 0 4px; font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+    .p-id p { margin: 0; color: var(--muted); font-size: 13px; }
+    .p-edit {
+      margin-top: 8px; display: inline-flex; align-items: center; gap: 4px;
+      font-size: 13px; color: var(--accent); font-weight: 600;
+    }
+    .sec {
+      margin: 8px 0 6px; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--muted); font-weight: 600;
+    }
+    .q-row {
+      display: flex; align-items: center; gap: 12px; padding: 13px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .q-row:last-child { border-bottom: 0; }
+    .q-row .dot {
+      width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--line);
+      background: rgba(255,255,255,0.03); display: grid; place-items: center; color: var(--ink);
+    }
+    .q-row .dot svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.7; }
+    .q-row b { flex: 1; font-size: 15px; font-weight: 560; }
+    .q-row .meta { font-size: 12px; color: var(--muted); }
+    .q-row .chev { color: var(--muted); }
+    .q-row .chev svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.7; }
+    .q-row.danger b { color: var(--danger); }
+    .q-row.danger .dot { color: var(--danger); border-color: rgba(229,115,115,0.28); background: rgba(229,115,115,0.08); }
+
+    /* Settings current */
+    .s-label {
+      font-size: 14px; font-weight: 700; color: var(--muted); margin: 12px 0 8px 4px;
+    }
+    .opt {
+      display: flex; align-items: center; gap: 10px; padding: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+    .opt:last-child { border-bottom: 0; }
+    .opt .radio {
+      width: 20px; height: 20px; border-radius: 999px; border: 2px solid var(--muted);
+    }
+    .opt.on .radio {
+      border-color: var(--accent); box-shadow: inset 0 0 0 5px var(--accent);
+    }
+    .opt b { font-size: 15px; font-weight: 500; }
+
+    /* Settings proposed */
+    .seg {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
+      padding: 4px; border: 1px solid var(--line); border-radius: 14px;
+      background: rgba(255,255,255,0.03); margin-bottom: 8px;
+    }
+    .seg button {
+      appearance: none; border: 0; background: transparent; color: var(--muted);
+      border-radius: 10px; padding: 10px 8px; font: inherit; font-size: 13px; font-weight: 600;
+      cursor: pointer;
+    }
+    .seg button.on { background: var(--accent); color: #fff; }
+    .notice {
+      display: flex; align-items: flex-start; gap: 12px; padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .notice .ico {
+      width: 34px; height: 34px; border-radius: 10px; background: var(--accent-soft);
+      color: var(--accent); display: grid; place-items: center; flex-shrink: 0;
+    }
+    .notice .ico svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.7; }
+    .notice h4 { margin: 0 0 2px; font-size: 15px; font-weight: 600; }
+    .notice p { margin: 0; font-size: 12px; color: var(--muted); line-height: 1.4; }
+    .ghost {
+      appearance: none; margin-top: 10px; border: 1px solid var(--line); background: transparent;
+      color: var(--ink); border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 12px; font-weight: 600;
+    }
+
+    /* Feedback */
+    .chip-row { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+    .chip {
+      height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line);
+      background: rgba(255,255,255,0.03); font-size: 12px; display: inline-flex; align-items: center;
+      color: var(--muted);
+    }
+    .chip.on { background: var(--accent-soft); color: var(--accent); border-color: transparent; }
+    .fb-card {
+      background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+      padding: 14px; margin-bottom: 10px;
+    }
+    .fb-card .top { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+    .badge {
+      font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 700;
+      padding: 4px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent);
+    }
+    .badge.open { background: rgba(255,255,255,0.06); color: var(--muted); }
+    .fb-card h4 { margin: 0 0 6px; font-size: 15px; font-weight: 600; }
+    .fb-card p { margin: 0; font-size: 13px; color: var(--muted); line-height: 1.45; }
+    .fb-row {
+      padding: 14px 0; border-bottom: 1px solid var(--line);
+    }
+    .fb-row:last-child { border-bottom: 0; }
+    .fb-row .top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .fb-row h4 { margin: 0; flex: 1; font-size: 15px; font-weight: 600; }
+    .fb-row .when { font-size: 12px; color: var(--muted); }
+    .fb-row p { margin: 0; font-size: 13px; color: var(--muted); line-height: 1.45; }
+
+    /* Tithes */
+    .hero {
+      height: 220px; border-radius: 0; margin: -8px -16px 0; position: relative; overflow: hidden;
+      background: linear-gradient(145deg, #1a3a52, #2e86c1 50%, #0f1c28);
+    }
+    .hero.rounded {
+      margin: 0; border-radius: 18px; height: 180px; border: 1px solid var(--line);
+    }
+    .hero .shade {
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, transparent 30%, rgba(8,12,16,0.92));
+    }
+    .hero .copy {
+      position: absolute; left: 18px; right: 18px; bottom: 16px; z-index: 1;
+    }
+    .hero h3 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+    .verse {
+      text-align: center; font-style: italic; color: var(--muted); font-size: 14px;
+      line-height: 1.5; margin: 16px 0 18px; padding: 0 8px;
+    }
+    .bank-head {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 8px;
+    }
+    .bank-head .ico {
+      width: 36px; height: 36px; border-radius: 999px; background: var(--accent-soft);
+      color: var(--accent); display: grid; place-items: center;
+    }
+    .bank-head .ico svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.7; }
+    .bank-head h4 { margin: 0; font-size: 18px; font-weight: 700; }
+    .detail {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+      padding: 12px 0; border-bottom: 1px solid var(--line);
+    }
+    .detail:last-child { border-bottom: 0; }
+    .detail .k { font-size: 12px; color: var(--muted); margin: 0 0 3px; }
+    .detail .v { font-size: 15px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
+    .copy-btn {
+      appearance: none; border: 1px solid var(--line); background: transparent;
+      color: var(--accent); border-radius: 999px; padding: 6px 10px; font: inherit;
+      font-size: 12px; font-weight: 600; flex-shrink: 0;
+    }
+    .pad-card { padding: 18px; }
+
+    /* Visitor */
+    .welcome-box {
+      background: var(--accent-soft); border-radius: 16px; padding: 22px;
+    }
+    .welcome-box svg { width: 36px; height: 36px; color: var(--accent); fill: currentColor; margin-bottom: 12px; }
+    .welcome-box h3 { margin: 0 0 8px; font-size: 22px; font-weight: 700; color: var(--accent); }
+    .welcome-box p { margin: 0; font-size: 15px; line-height: 1.5; }
+    .v-welcome h3 {
+      margin: 4px 0 8px; font-size: 26px; font-weight: 700; letter-spacing: -0.03em;
+    }
+    .v-welcome p { margin: 0 0 18px; color: var(--muted); font-size: 15px; line-height: 1.5; }
+    .time-row {
+      display: flex; justify-content: space-between; align-items: baseline;
+      padding: 12px 0; border-bottom: 1px solid var(--line);
+    }
+    .time-row:last-child { border-bottom: 0; }
+    .time-row span { font-size: 15px; }
+    .time-row b { font-size: 16px; color: var(--accent); font-weight: 700; font-variant-numeric: tabular-nums; }
+    .links {
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 16px 0 22px;
+    }
+    .link {
+      border: 1px solid var(--line); border-radius: 14px; background: rgba(255,255,255,0.03);
+      padding: 12px 10px; min-height: 64px; display: flex; align-items: center; gap: 8px;
+    }
+    .link .ico {
+      width: 32px; height: 32px; border-radius: 10px; background: var(--accent-soft);
+      color: var(--accent); display: grid; place-items: center; flex-shrink: 0;
+    }
+    .link .ico svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.7; }
+    .link b { font-size: 12px; font-weight: 600; line-height: 1.25; }
+    .ev {
+      display: grid; grid-template-columns: 48px 1fr; gap: 12px; padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .ev:last-child { border-bottom: 0; }
+    .ev .date {
+      width: 48px; height: 52px; border-radius: 10px; background: var(--accent-soft);
+      color: var(--accent); display: grid; place-items: center; text-align: center;
+    }
+    .ev .date b { font-size: 16px; font-weight: 700; line-height: 1; }
+    .ev .date span { font-size: 9px; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 700; }
+    .ev h4 { margin: 0 0 3px; font-size: 15px; font-weight: 600; }
+    .ev p { margin: 0; font-size: 12px; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <p class="eyebrow">LW App · Account &amp; info surfaces</p>
+    <h1>Profile / Settings / Tithes / Visitor</h1>
+    <p class="lede">
+      Auth stays as-is. These mockups cover the remaining utility surfaces:
+      account chrome and the two info screens that still feel card-heavy next to Quiet Stream / Soft Continuity.
+    </p>
+    <div class="pitch">
+      <strong>2 · Quiet Account</strong> — Profile identity as a left-aligned editorial header (not a centred poster),
+      then divider rows instead of a ListTile card. Settings drop nested Cards for section labels + segmented controls.
+      Feedback becomes Quiet Stream rows with status chips.<br /><br />
+      <strong>3 · Calm Info</strong> — Tithes keeps a Cover Stage image but banks details become copyable quiet rows.
+      Visitor loses the tinted welcome box; service times and events follow the same quiet rhythm as home/calendar.
+    </div>
+
+    <div class="toolbar" id="toolbar"></div>
+    <p class="hint">Switch screens above. Each pair is Current vs proposed. Afrikaans copy.</p>
+
+    <div class="phones">
+      <!-- PROFILE CURRENT -->
+      <section class="phone active" data-id="profile-cur">
+        <div class="phone-label">Profile · current</div>
+        <div class="chrome">
+          <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></div>
+          <div class="title-pill">Profiel</div>
+          <div class="chrome-spacer"></div>
+        </div>
+        <div class="scroll">
+          <div class="cur-avatar"></div>
+          <h2 class="cur-name">Edrich Jacobs</h2>
+          <p class="cur-role">Member</p>
+          <div class="card-block">
+            <div class="row"><div class="ico"><svg viewBox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/></svg></div><b>My Profiel</b><div class="chev"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></div></div>
+            <div class="row"><div class="ico"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div><b>My Notas</b><div class="chev"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></div></div>
+            <div class="row"><div class="ico"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg></div><b>My Gebedsversoeke</b><div class="chev"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></div></div>
+            <div class="row"><div class="ico"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><b>My Groepe</b><div class="chev"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></div></div>
+            <div class="row"><div class="ico"><svg viewBox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H7l-4 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg></div><b>Terugvoer</b><div class="chev"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></div></div>
+            <div class="row"><div class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg></div><b>Instellings</b><div class="chev"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></div></div>
+            <div class="row danger"><div class="ico"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></svg></div><b>Teken uit</b><div class="chev"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PROFILE PROPOSED -->
+      <section class="phone" data-id="profile-new">
+        <div class="phone-label">Profile · Quiet Account</div>
+        <div class="chrome">
+          <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></div>
+          <div class="title-pill">Profiel</div>
+          <div class="chrome-spacer"></div>
+        </div>
+        <div class="scroll">
+          <div class="p-id">
+            <div class="p-avatar"></div>
+            <div>
+              <h2>Edrich Jacobs</h2>
+              <p>Lid · Lewende Woord Paarl</p>
+              <div class="p-edit">Wysig profiel ›</div>
+            </div>
+          </div>
+          <p class="sec">My goed</p>
+          <div class="q-row"><div class="dot"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div><b>My Notas</b><div class="chev"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></div></div>
+          <div class="q-row"><div class="dot"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg></div><b>My Gebedsversoeke</b><div class="chev"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></div></div>
+          <div class="q-row"><div class="dot"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><b>My Groepe</b><div class="chev"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></div></div>
+          <div class="q-row"><div class="dot"><svg viewBox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H7l-4 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg></div><b>Terugvoer</b><div class="chev"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></div></div>
+          <p class="sec">App</p>
+          <div class="q-row"><div class="dot"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg></div><b>Instellings</b><div class="chev"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></div></div>
+          <div class="q-row danger"><div class="dot"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></svg></div><b>Teken uit</b><div class="chev"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></div></div>
+        </div>
+      </section>
+
+      <!-- SETTINGS CURRENT -->
+      <section class="phone" data-id="settings-cur">
+        <div class="phone-label">Settings · current</div>
+        <div class="chrome">
+          <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></div>
+          <div class="title-pill">Instellings</div>
+          <div class="chrome-spacer"></div>
+        </div>
+        <div class="scroll">
+          <p class="s-label">Voorkoms</p>
+          <div class="card-block">
+            <div class="opt on"><div class="radio"></div><b>Stelsel</b></div>
+            <div class="opt"><div class="radio"></div><b>Lig</b></div>
+            <div class="opt"><div class="radio"></div><b>Donker</b></div>
+          </div>
+          <p class="s-label">Taal</p>
+          <div class="card-block">
+            <div class="opt on"><div class="radio"></div><b>Afrikaans</b></div>
+            <div class="opt"><div class="radio"></div><b>English</b></div>
+          </div>
+          <p class="s-label">Kennisgewings</p>
+          <div class="card-block">
+            <div class="row"><div class="ico"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></div><b>Aktiveer kennisgewings</b></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SETTINGS PROPOSED -->
+      <section class="phone" data-id="settings-new">
+        <div class="phone-label">Settings · Quiet Controls</div>
+        <div class="chrome">
+          <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></div>
+          <div class="title-pill">Instellings</div>
+          <div class="chrome-spacer"></div>
+        </div>
+        <div class="scroll">
+          <p class="sec">Voorkoms</p>
+          <div class="seg">
+            <button class="on" type="button">Stelsel</button>
+            <button type="button">Lig</button>
+            <button type="button">Donker</button>
+          </div>
+          <p class="sec">Taal</p>
+          <div class="seg" style="grid-template-columns:1fr 1fr">
+            <button class="on" type="button">Afrikaans</button>
+            <button type="button">English</button>
+          </div>
+          <p class="sec">Kennisgewings</p>
+          <div class="notice">
+            <div class="ico"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></div>
+            <div>
+              <h4>Aan · toestel-toestemming</h4>
+              <p>Aankondigings, groepe en pastorale blog</p>
+              <button class="ghost" type="button">Maak stelselinstellings oop</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FEEDBACK CURRENT -->
+      <section class="phone" data-id="feedback-cur">
+        <div class="phone-label">Feedback · current</div>
+        <div class="chrome">
+          <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></div>
+          <div class="title-pill">Terugvoer</div>
+          <div class="chrome-spacer"></div>
+        </div>
+        <div class="scroll">
+          <div class="chip-row">
+            <span class="chip on">Alles</span>
+            <span class="chip">Oop</span>
+            <span class="chip">Gesluit</span>
+          </div>
+          <div class="fb-card">
+            <div class="top"><span class="badge open">Oop</span><span style="color:var(--muted);font-size:12px">3 Nov</span></div>
+            <h4>Donker modus op Bybel</h4>
+            <p>Die teks is moeilik om te lees wanneer die verligting laag is.</p>
+          </div>
+          <div class="fb-card">
+            <div class="top"><span class="badge">Gesluit</span><span style="color:var(--muted);font-size:12px">28 Okt</span></div>
+            <h4>Kalender laai stadig</h4>
+            <p>Dit vat ’n paar sekondes om gebeure te wys.</p>
+          </div>
+        </div>
+        <div class="fab"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+      </section>
+
+      <!-- FEEDBACK PROPOSED -->
+      <section class="phone" data-id="feedback-new">
+        <div class="phone-label">Feedback · Quiet Stream</div>
+        <div class="chrome">
+          <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></div>
+          <div class="title-pill">Terugvoer</div>
+          <div class="chrome-spacer"></div>
+        </div>
+        <div class="scroll">
+          <div class="chip-row">
+            <span class="chip on">Alles</span>
+            <span class="chip">Oop</span>
+            <span class="chip">Gesluit</span>
+          </div>
+          <div class="fb-row">
+            <div class="top"><span class="badge open">Oop</span><h4>Donker modus op Bybel</h4><span class="when">3 Nov</span></div>
+            <p>Die teks is moeilik om te lees wanneer die verligting laag is.</p>
+          </div>
+          <div class="fb-row">
+            <div class="top"><span class="badge">Gesluit</span><h4>Kalender laai stadig</h4><span class="when">28 Okt</span></div>
+            <p>Dit vat ’n paar sekondes om gebeure te wys.</p>
+          </div>
+        </div>
+        <div class="fab"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+      </section>
+
+      <!-- TITHES CURRENT -->
+      <section class="phone" data-id="tithes-cur">
+        <div class="phone-label">Tithes · current</div>
+        <div class="chrome">
+          <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></div>
+          <div class="title-pill">Tiendes &amp; offers</div>
+          <div class="chrome-spacer"></div>
+        </div>
+        <div class="scroll">
+          <div class="hero">
+            <div class="shade"></div>
+            <div class="copy"><h3>Gee met ’n dankbare hart</h3></div>
+          </div>
+          <p class="verse">“Elkeen moet gee soos hy Hom in sy hart voorgeneem het.” · 2 Kor. 9:7</p>
+          <div class="card-block pad-card">
+            <div class="bank-head">
+              <div class="ico"><svg viewBox="0 0 24 24"><path d="M3 10h18M5 10V7l7-4 7 4v3M6 10v8M10 10v8M14 10v8M18 10v8M4 18h16"/></svg></div>
+              <h4>Bankbesonderhede</h4>
+            </div>
+            <div class="detail"><div><p class="k">Bank</p><p class="v">ABSA</p></div></div>
+            <div class="detail"><div><p class="k">Rekeningnaam</p><p class="v">Lewende Woord Paarl</p></div></div>
+            <div class="detail"><div><p class="k">Rekeningnommer</p><p class="v">40 1234 5678</p></div><button class="copy-btn" type="button">Kopieer</button></div>
+            <div class="detail"><div><p class="k">Takode</p><p class="v">632005</p></div><button class="copy-btn" type="button">Kopieer</button></div>
+            <div class="detail"><div><p class="k">Verwysing</p><p class="v">Jou naam + Tiende</p></div><button class="copy-btn" type="button">Kopieer</button></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TITHES PROPOSED -->
+      <section class="phone" data-id="tithes-new">
+        <div class="phone-label">Tithes · Calm Stage</div>
+        <div class="chrome">
+          <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></div>
+          <div class="title-pill">Tiendes &amp; offers</div>
+          <div class="chrome-spacer"></div>
+        </div>
+        <div class="scroll">
+          <div class="hero rounded">
+            <div class="shade"></div>
+            <div class="copy"><h3>Gee met ’n dankbare hart</h3></div>
+          </div>
+          <p class="verse">“Elkeen moet gee soos hy Hom in sy hart voorgeneem het.” · 2 Kor. 9:7</p>
+          <p class="sec">Bankbesonderhede</p>
+          <div class="detail"><div><p class="k">Bank</p><p class="v">ABSA</p></div></div>
+          <div class="detail"><div><p class="k">Rekeningnaam</p><p class="v">Lewende Woord Paarl</p></div></div>
+          <div class="detail"><div><p class="k">Rekeningnommer</p><p class="v">40 1234 5678</p></div><button class="copy-btn" type="button">Kopieer</button></div>
+          <div class="detail"><div><p class="k">Takode</p><p class="v">632005</p></div><button class="copy-btn" type="button">Kopieer</button></div>
+          <div class="detail"><div><p class="k">Verwysing</p><p class="v">Jou naam + Tiende</p></div><button class="copy-btn" type="button">Kopieer</button></div>
+        </div>
+      </section>
+
+      <!-- VISITOR CURRENT -->
+      <section class="phone" data-id="visitor-cur">
+        <div class="phone-label">Visitor · current</div>
+        <div class="chrome">
+          <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></div>
+          <div class="title-pill">Welkom</div>
+          <div class="chrome-spacer"></div>
+        </div>
+        <div class="scroll">
+          <div class="welcome-box">
+            <svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+            <h3>Jy is welkom hier</h3>
+            <p>Ons is bly jy is hier. Kom ervaar ’n warm gemeenskap wat Jesus volg.</p>
+          </div>
+          <div style="height:16px"></div>
+          <div class="card-block pad-card">
+            <div class="bank-head">
+              <div class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+              <h4>Sondag dienste</h4>
+            </div>
+            <div class="time-row"><span>Oggenddiens</span><b>09:30</b></div>
+            <div class="time-row"><span>Aanddiens</span><b>18:00</b></div>
+          </div>
+          <div class="links">
+            <div class="link"><div class="ico"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><b>Vind ons</b></div>
+            <div class="link"><div class="ico"><svg viewBox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H7l-4 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg></div><b>Kontak</b></div>
+            <div class="link"><div class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg></div><b>Meer oor ons</b></div>
+          </div>
+          <p class="sec" style="margin-top:4px;text-transform:none;letter-spacing:0;font-size:18px;color:var(--ink)">Komende gebeure</p>
+          <div class="card-block" style="padding:12px;margin-top:10px">Jeug-aand · 16 Nov</div>
+        </div>
+      </section>
+
+      <!-- VISITOR PROPOSED -->
+      <section class="phone" data-id="visitor-new">
+        <div class="phone-label">Visitor · Calm Welcome</div>
+        <div class="chrome">
+          <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></div>
+          <div class="title-pill">Welkom</div>
+          <div class="chrome-spacer"></div>
+        </div>
+        <div class="scroll">
+          <div class="v-welcome">
+            <h3>Jy is welkom hier</h3>
+            <p>Ons is bly jy is hier. Kom ervaar ’n warm gemeenskap wat Jesus volg.</p>
+          </div>
+          <p class="sec">Sondag dienste</p>
+          <div class="time-row"><span>Oggenddiens</span><b>09:30</b></div>
+          <div class="time-row"><span>Aanddiens</span><b>18:00</b></div>
+          <div class="links">
+            <div class="link"><div class="ico"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><b>Vind ons</b></div>
+            <div class="link"><div class="ico"><svg viewBox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H7l-4 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg></div><b>Kontak</b></div>
+            <div class="link"><div class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg></div><b>Meer oor ons</b></div>
+          </div>
+          <p class="sec">Komende gebeure</p>
+          <div class="ev">
+            <div class="date"><b>16</b><span>Nov</span></div>
+            <div>
+              <h4>Jeug-aand</h4>
+              <p>Sondag 18:00 · Kerksaal</p>
+            </div>
+          </div>
+          <div class="ev">
+            <div class="date"><b>18</b><span>Nov</span></div>
+            <div>
+              <h4>Koffie na die diens</h4>
+              <p>Dinsdag 09:30 · Foyer</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const screens = [
+      ["profile-cur", "Profile · Current"],
+      ["profile-new", "Profile · Quiet Account"],
+      ["settings-cur", "Settings · Current"],
+      ["settings-new", "Settings · Quiet Controls"],
+      ["feedback-cur", "Feedback · Current"],
+      ["feedback-new", "Feedback · Quiet Stream"],
+      ["tithes-cur", "Tithes · Current"],
+      ["tithes-new", "Tithes · Calm Stage"],
+      ["visitor-cur", "Visitor · Current"],
+      ["visitor-new", "Visitor · Calm Welcome"],
+    ];
+    const toolbar = document.getElementById("toolbar");
+    const phones = [...document.querySelectorAll(".phone")];
+    screens.forEach(([id, label], i) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = label;
+      if (i === 0) btn.classList.add("active");
+      btn.addEventListener("click", () => {
+        toolbar.querySelectorAll("button").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        phones.forEach((p) => p.classList.toggle("active", p.dataset.id === id));
+      });
+      toolbar.appendChild(btn);
+    });
+  </script>
+</body>
+</html>

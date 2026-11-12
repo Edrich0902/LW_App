@@ -11,6 +11,7 @@ import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
 import 'package:lw_app/Widgets/Glass/lwp_glass_fab.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
+import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Widgets/LwpListEntrance/lwp_list_entrance.dart';
 
 class MyFeedbackPage extends StatelessWidget {
@@ -151,10 +152,20 @@ class _MyFeedbackViewState extends State<_MyFeedbackView> {
                           child: RefreshIndicator(
                             onRefresh: _refresh,
                             child: ListView.separated(
-                              padding: const EdgeInsets.all(16),
+                              padding: const EdgeInsets.fromLTRB(
+                                LwpSpacing.md,
+                                LwpSpacing.xs,
+                                LwpSpacing.md,
+                                100,
+                              ),
                               itemCount: filtered.length,
-                              separatorBuilder: (_, __) =>
-                                  const SizedBox(height: 12),
+                              separatorBuilder: (_, __) => Divider(
+                                height: 1,
+                                thickness: 1,
+                                color: Theme.of(context)
+                                    .dividerColor
+                                    .withValues(alpha: 0.45),
+                              ),
                               itemBuilder: (context, index) {
                                 final feedback = filtered[index];
                                 return LwpListEntrance(

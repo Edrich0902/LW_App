@@ -731,7 +731,7 @@ abstract class AppLocalizations {
   /// No description provided for @profileFeedbackReports.
   ///
   /// In af, this message translates to:
-  /// **'Terugvoer & Verslae'**
+  /// **'Terugvoer'**
   String get profileFeedbackReports;
 
   /// No description provided for @profileSettings.
@@ -740,11 +740,29 @@ abstract class AppLocalizations {
   /// **'Instellings'**
   String get profileSettings;
 
+  /// No description provided for @profileMyStuffSection.
+  ///
+  /// In af, this message translates to:
+  /// **'My goed'**
+  String get profileMyStuffSection;
+
+  /// No description provided for @profileAppSection.
+  ///
+  /// In af, this message translates to:
+  /// **'App'**
+  String get profileAppSection;
+
   /// No description provided for @profileSignOut.
   ///
   /// In af, this message translates to:
   /// **'Teken Uit'**
   String get profileSignOut;
+
+  /// No description provided for @commonCopy.
+  ///
+  /// In af, this message translates to:
+  /// **'Kopieer'**
+  String get commonCopy;
 
   /// No description provided for @profileSignOutConfirmTitle.
   ///

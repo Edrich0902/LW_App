@@ -2,15 +2,15 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/Locale/locale_bloc.dart';
-import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
 import 'package:lw_app/Blocs/Locale/locale_event.dart';
 import 'package:lw_app/Blocs/Locale/locale_state.dart';
-import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Blocs/Theme/theme_bloc.dart';
 import 'package:lw_app/Blocs/Theme/theme_event.dart';
 import 'package:lw_app/Blocs/Theme/theme_state.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Services/Push/push_notification_service.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
+import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -128,156 +128,130 @@ class _SettingsPageState extends State<SettingsPage>
         child: ListView(
           padding: const EdgeInsets.all(LwpSpacing.md),
           children: [
-            Padding(
-              padding: const EdgeInsets.only(
-                  left: LwpSpacing.xs, bottom: LwpSpacing.xs),
-              child: Text(
-                context.l10n.settingsAppearanceSection,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: theme.hintColor,
-                ),
-              ),
-            ),
-            Card(
-              child: BlocBuilder<ThemeBloc, ThemeState>(
-                builder: (context, state) {
-                  return Column(
-                    children: [
-                      _themeOption(
-                        context,
-                        context.l10n.settingsThemeSystem,
-                        Icons.brightness_auto,
-                        ThemeMode.system,
-                        state.themeMode == ThemeMode.system,
-                      ),
-                      const Divider(height: 1, indent: 56),
-                      _themeOption(
-                        context,
-                        context.l10n.settingsThemeLight,
-                        Icons.light_mode,
-                        ThemeMode.light,
-                        state.themeMode == ThemeMode.light,
-                      ),
-                      const Divider(height: 1, indent: 56),
-                      _themeOption(
-                        context,
-                        context.l10n.settingsThemeDark,
-                        Icons.dark_mode,
-                        ThemeMode.dark,
-                        state.themeMode == ThemeMode.dark,
-                      ),
-                    ],
-                  );
-                },
-              ),
+            _sectionLabel(context.l10n.settingsAppearanceSection, theme),
+            BlocBuilder<ThemeBloc, ThemeState>(
+              builder: (context, state) {
+                return _SegmentedControl<ThemeMode>(
+                  values: const [
+                    ThemeMode.system,
+                    ThemeMode.light,
+                    ThemeMode.dark,
+                  ],
+                  labels: [
+                    context.l10n.settingsThemeSystem,
+                    context.l10n.settingsThemeLight,
+                    context.l10n.settingsThemeDark,
+                  ],
+                  selected: state.themeMode,
+                  onChanged: (mode) {
+                    context.read<ThemeBloc>().add(UpdateThemeEvent(mode));
+                  },
+                );
+              },
             ),
             const SizedBox(height: LwpSpacing.lg),
-            Padding(
-              padding: const EdgeInsets.only(
-                  left: LwpSpacing.xs, bottom: LwpSpacing.xs),
-              child: Text(
-                context.l10n.settingsLanguageSection,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: theme.hintColor,
-                ),
-              ),
+            _sectionLabel(context.l10n.settingsLanguageSection, theme),
+            BlocBuilder<LocaleBloc, LocaleState>(
+              builder: (context, state) {
+                return _SegmentedControl<String>(
+                  values: const ['af', 'en'],
+                  labels: [
+                    context.l10n.settingsLanguageAfrikaans,
+                    context.l10n.settingsLanguageEnglish,
+                  ],
+                  selected: state.locale.languageCode,
+                  onChanged: (code) {
+                    context.read<LocaleBloc>().add(
+                          UpdateLocaleEvent(Locale(code)),
+                        );
+                  },
+                );
+              },
             ),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(LwpSpacing.md),
-                child: BlocBuilder<LocaleBloc, LocaleState>(
-                  builder: (context, state) {
-                    return Column(
+            const SizedBox(height: LwpSpacing.lg),
+            _sectionLabel(context.l10n.settingsNotificationsSection, theme),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: LwpSpacing.sm),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 34,
+                    height: 34,
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primary.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(LwpRadii.xs),
+                    ),
+                    alignment: Alignment.center,
+                    child: Icon(
+                      _statusIcon(),
+                      size: 16,
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
+                  const SizedBox(width: LwpSpacing.sm),
+                  Expanded(
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          context.l10n.settingsLanguageDescription,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.hintColor,
+                          _statusLabel(context),
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
-                        const SizedBox(height: LwpSpacing.md),
-                        SegmentedButton<String>(
-                          showSelectedIcon: false,
-                          segments: [
-                            ButtonSegment(
-                              value: 'af',
-                              label:
-                                  Text(context.l10n.settingsLanguageAfrikaans),
+                        const SizedBox(height: 2),
+                        Text(
+                          context.l10n.settingsNotificationsDescription,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.hintColor,
+                            height: 1.4,
+                          ),
+                        ),
+                        const SizedBox(height: LwpSpacing.sm),
+                        OutlinedButton(
+                          onPressed:
+                              _notificationBusy ? null : _onEnableNotifications,
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: theme.colorScheme.onSurface,
+                            side: BorderSide(
+                              color:
+                                  theme.dividerColor.withValues(alpha: 0.6),
                             ),
-                            ButtonSegment(
-                              value: 'en',
-                              label: Text(context.l10n.settingsLanguageEnglish),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: LwpSpacing.sm,
+                              vertical: LwpSpacing.xs,
                             ),
-                          ],
-                          selected: {state.locale.languageCode},
-                          onSelectionChanged: (selected) {
-                            context.read<LocaleBloc>().add(
-                                  UpdateLocaleEvent(
-                                    Locale(selected.first),
+                            visualDensity: VisualDensity.compact,
+                            shape: const StadiumBorder(),
+                          ),
+                          child: _notificationBusy
+                              ? const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
                                   ),
-                                );
-                          },
+                                )
+                              : Text(
+                                  _notificationStatus ==
+                                          AuthorizationStatus.denied
+                                      ? context.l10n
+                                          .settingsNotificationsActionOpenSettings
+                                      : context.l10n
+                                          .settingsNotificationsActionEnable,
+                                ),
                         ),
                       ],
-                    );
-                  },
-                ),
-              ),
-            ),
-            const SizedBox(height: LwpSpacing.lg),
-            Padding(
-              padding: const EdgeInsets.only(
-                  left: LwpSpacing.xs, bottom: LwpSpacing.xs),
-              child: Text(
-                context.l10n.settingsNotificationsSection,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: theme.hintColor,
-                ),
-              ),
-            ),
-            Card(
-              child: Column(
-                children: [
-                  ListTile(
-                    leading: Icon(
-                      _statusIcon(),
-                      color: theme.primaryColor,
                     ),
-                    title: Text(_statusLabel(context)),
-                    subtitle: Text(
-                      context.l10n.settingsNotificationsDescription,
-                    ),
-                    isThreeLine: true,
-                  ),
-                  const Divider(height: 1, indent: 56),
-                  ListTile(
-                    leading: _notificationBusy
-                        ? const SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : Icon(
-                            Icons.notifications_outlined,
-                            color: theme.primaryColor,
-                          ),
-                    title: Text(
-                      _notificationStatus == AuthorizationStatus.denied
-                          ? context.l10n.settingsNotificationsActionOpenSettings
-                          : context.l10n.settingsNotificationsActionEnable,
-                    ),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: _notificationBusy ? null : _onEnableNotifications,
                   ),
                 ],
               ),
+            ),
+            Divider(
+              height: 1,
+              thickness: 1,
+              color: theme.dividerColor.withValues(alpha: 0.45),
             ),
           ],
         ),
@@ -285,26 +259,82 @@ class _SettingsPageState extends State<SettingsPage>
     );
   }
 
-  Widget _themeOption(
-    BuildContext context,
-    String title,
-    IconData icon,
-    ThemeMode mode,
-    bool isSelected,
-  ) {
-    final theme = Theme.of(context);
-    return ListTile(
-      leading: Icon(
-        icon,
-        color: isSelected ? theme.primaryColor : null,
+  Widget _sectionLabel(String label, ThemeData theme) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: LwpSpacing.sm),
+      child: Text(
+        label,
+        style: theme.textTheme.labelSmall?.copyWith(
+          color: theme.hintColor,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 1.0,
+        ),
       ),
-      title: Text(title),
-      trailing: isSelected
-          ? Icon(Icons.check_circle, color: theme.primaryColor)
-          : Icon(Icons.circle_outlined, color: theme.hintColor),
-      onTap: () {
-        context.read<ThemeBloc>().add(UpdateThemeEvent(mode));
-      },
+    );
+  }
+}
+
+class _SegmentedControl<T> extends StatelessWidget {
+  const _SegmentedControl({
+    required this.values,
+    required this.labels,
+    required this.selected,
+    required this.onChanged,
+  });
+
+  final List<T> values;
+  final List<String> labels;
+  final T selected;
+  final ValueChanged<T> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface.withValues(alpha: 0.35),
+        borderRadius: LwpRadii.mdAll,
+        border: Border.all(
+          color: theme.dividerColor.withValues(alpha: 0.55),
+        ),
+      ),
+      child: Row(
+        children: [
+          for (var i = 0; i < values.length; i++) ...[
+            if (i > 0) const SizedBox(width: 4),
+            Expanded(
+              child: Material(
+                color: values[i] == selected
+                    ? theme.colorScheme.primary
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(LwpRadii.xs),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(LwpRadii.xs),
+                  onTap: () => onChanged(values[i]),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: LwpSpacing.sm,
+                      horizontal: LwpSpacing.xs,
+                    ),
+                    child: Text(
+                      labels[i],
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: values[i] == selected
+                            ? theme.colorScheme.onPrimary
+                            : theme.hintColor,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
     );
   }
 }

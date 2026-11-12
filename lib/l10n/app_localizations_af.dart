@@ -346,13 +346,22 @@ class AppLocalizationsAf extends AppLocalizations {
   String get profileMyGroups => 'My Groepe';
 
   @override
-  String get profileFeedbackReports => 'Terugvoer & Verslae';
+  String get profileFeedbackReports => 'Terugvoer';
 
   @override
   String get profileSettings => 'Instellings';
 
   @override
+  String get profileMyStuffSection => 'My goed';
+
+  @override
+  String get profileAppSection => 'App';
+
+  @override
   String get profileSignOut => 'Teken Uit';
+
+  @override
+  String get commonCopy => 'Kopieer';
 
   @override
   String get profileSignOutConfirmTitle => 'Teken Uit';
