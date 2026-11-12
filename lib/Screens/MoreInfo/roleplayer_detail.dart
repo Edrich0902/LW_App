@@ -16,15 +16,20 @@ class RoleplayerDetailScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          // Hero Background Image
           SizedBox(
             height: size.height * 0.45,
             width: double.infinity,
-            child: CldImageWidget(
-              publicId: roleplayer.profilePublicId?.isNotEmpty == true
-                  ? roleplayer.profilePublicId!
-                  : 'samples/cloudinary-icon',
-              fit: BoxFit.cover,
+            child: Hero(
+              tag: 'roleplayer_image_${roleplayer.id}',
+              child: Material(
+                color: Colors.transparent,
+                child: CldImageWidget(
+                  publicId: roleplayer.profilePublicId?.isNotEmpty == true
+                      ? roleplayer.profilePublicId!
+                      : 'samples/cloudinary-icon',
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
           ),
 

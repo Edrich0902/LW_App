@@ -172,18 +172,25 @@ class _LeadershipRow extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: LwpSpacing.sm),
             child: Row(
               children: [
-                ClipRRect(
-                  borderRadius: LwpRadii.smAll,
-                  child: SizedBox(
-                    width: 64,
-                    height: 64,
-                    child: CldImageWidget(
-                      publicId: (roleplayer.profilePublicId ?? '').isEmpty
-                          ? 'samples/cloudinary-icon'
-                          : roleplayer.profilePublicId!,
-                      width: 64,
-                      height: 64,
-                      fit: BoxFit.cover,
+                Hero(
+                  tag: 'roleplayer_image_${roleplayer.id}',
+                  child: Material(
+                    color: Colors.transparent,
+                    child: ClipRRect(
+                      borderRadius: LwpRadii.smAll,
+                      child: SizedBox(
+                        width: 64,
+                        height: 64,
+                        child: CldImageWidget(
+                          publicId:
+                              (roleplayer.profilePublicId ?? '').isEmpty
+                                  ? 'samples/cloudinary-icon'
+                                  : roleplayer.profilePublicId!,
+                          width: 64,
+                          height: 64,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
                   ),
                 ),
