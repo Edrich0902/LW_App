@@ -30,7 +30,12 @@ class PrayerRequestSubmitting extends PrayerRequestsState {
 }
 
 class PrayerRequestSubmitSuccess extends PrayerRequestsState {
-  const PrayerRequestSubmitSuccess();
+  final List<PrayerRequest> requests;
+
+  const PrayerRequestSubmitSuccess({required this.requests});
+
+  @override
+  List<Object?> get props => [requests];
 }
 
 class PrayerRequestsError extends PrayerRequestsState {

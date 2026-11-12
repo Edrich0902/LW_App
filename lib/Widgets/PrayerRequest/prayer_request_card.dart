@@ -5,6 +5,7 @@ import 'package:lw_app/Models/PrayerRequest/prayer_request.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
 
+/// Minimal prayer row: body → meta line → optional praise/note → pray / ⋯
 class PrayerRequestCard extends StatelessWidget {
   const PrayerRequestCard({
     super.key,
@@ -19,194 +20,266 @@ class PrayerRequestCard extends StatelessWidget {
   final VoidCallback? onResolveTap;
   final bool showStatus;
 
+  bool get _hasPraise =>
+      request.status == PrayerRequestStatus.resolved &&
+      (request.praiseReport ?? '').trim().isNotEmpty;
+
+  bool get _hasModerationNote =>
+      (request.moderationNote ?? '').trim().isNotEmpty;
+
+  bool get _isResolved => request.status == PrayerRequestStatus.resolved;
+
+  /// Status only when it adds signal (pending / rejected on My requests).
+  bool get _showStatusInMeta =>
+      showStatus &&
+      (request.status == PrayerRequestStatus.pending ||
+          request.status == PrayerRequestStatus.rejected);
+
   Color _statusColor(BuildContext context) {
     switch (request.status) {
       case PrayerRequestStatus.pending:
-        return Colors.orange;
-      case PrayerRequestStatus.approved:
-        return Colors.green;
+        return Colors.orange.shade700;
       case PrayerRequestStatus.rejected:
-        return Colors.red;
+        return Colors.redAccent;
+      case PrayerRequestStatus.approved:
+        return Colors.green.shade700;
       case PrayerRequestStatus.resolved:
         return Theme.of(context).primaryColor;
     }
   }
 
+  String _metaLine(BuildContext context) {
+    // Backend views hardcode Afrikaans "Anoniem" in display_name — always
+    // localize anonymous labels from the active locale.
+    final name = request.isAnonymous
+        ? context.l10n.prayerAnonymousName
+        : (request.displayName ?? context.l10n.prayerAnonymousName);
+    final parts = <String>[
+      name,
+      request.category.label(context.l10n),
+      if (request.createdAt != null)
+        DateFormatter.formatDate(request.createdAt!),
+    ];
+    return parts.join(' · ');
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isPraiseReport = request.status == PrayerRequestStatus.resolved &&
-        request.praiseReport != null &&
-        request.praiseReport!.trim().isNotEmpty;
+    final hasMenu = onResolveTap != null && !_isResolved;
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              crossAxisAlignment: WrapCrossAlignment.center,
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+        LwpSpacing.md,
+        LwpSpacing.md,
+        hasMenu ? LwpSpacing.xs : LwpSpacing.md,
+        LwpSpacing.md,
+      ),
+      child: Stack(
+        children: [
+          Padding(
+            padding: EdgeInsets.only(right: hasMenu ? 28 : 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Chip(
-                  label: Text(request.category.label(context.l10n)),
-                  visualDensity: VisualDensity.compact,
-                  shape: const StadiumBorder(),
+                Text(
+                  request.body,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    height: 1.5,
+                    letterSpacing: -0.15,
+                  ),
                 ),
-                if (showStatus)
-                  Chip(
-                    label: Text(request.status.label(context.l10n)),
-                    backgroundColor:
-                        _statusColor(context).withValues(alpha: 0.15),
-                    labelStyle: TextStyle(
-                      color: _statusColor(context),
-                      fontWeight: FontWeight.w600,
+                const SizedBox(height: LwpSpacing.xs),
+                Text.rich(
+                  TextSpan(
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.hintColor,
+                      height: 1.4,
                     ),
-                    visualDensity: VisualDensity.compact,
-                    shape: const StadiumBorder(),
+                    children: [
+                      TextSpan(text: _metaLine(context)),
+                      if (_showStatusInMeta) ...[
+                        const TextSpan(text: ' · '),
+                        TextSpan(
+                          text: request.status.label(context.l10n),
+                          style: TextStyle(
+                            color: _statusColor(context),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
-                if (isPraiseReport)
-                  Chip(
-                    avatar: Icon(
-                      Icons.check_circle,
-                      size: 14,
-                      color: theme.colorScheme.primary,
-                    ),
-                    label: Text(
-                      context.l10n.prayerPraiseReportLabel,
-                      style: TextStyle(
-                        color: theme.colorScheme.primary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    visualDensity: VisualDensity.compact,
-                    shape: const StadiumBorder(),
+                ),
+                if (_hasModerationNote) ...[
+                  const SizedBox(height: LwpSpacing.sm),
+                  _ReplyBlock(
+                    label: context.l10n.prayerNoteShortLabel,
+                    body: request.moderationNote!.trim(),
+                    labelColor: Colors.orange.shade700,
                   ),
+                ],
+                if (_hasPraise) ...[
+                  const SizedBox(height: LwpSpacing.sm),
+                  _ReplyBlock(
+                    label: context.l10n.prayerPraiseShortLabel,
+                    body: request.praiseReport!.trim(),
+                    labelColor: theme.primaryColor,
+                  ),
+                ],
+                if (_showPrayRow) ...[
+                  const SizedBox(height: LwpSpacing.xs),
+                  if (onPrayTap != null && !_isResolved)
+                    _PrayControl(
+                      count: request.reactionCount,
+                      pressed: request.hasReacted,
+                      onTap: onPrayTap!,
+                    )
+                  else if (_isResolved && request.reactionCount > 0)
+                    _PrayControl(
+                      count: request.reactionCount,
+                      pressed: true,
+                      onTap: null,
+                    ),
+                ],
               ],
             ),
-            const SizedBox(height: 12),
-            Text(
-              request.body,
-              style: theme.textTheme.bodyLarge,
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    request.displayName ?? context.l10n.prayerAnonymousName,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
+          ),
+          if (hasMenu)
+            Positioned(
+              top: -4,
+              right: 0,
+              child: PopupMenuButton<String>(
+                tooltip: context.l10n.prayerResolveAction,
+                onSelected: (value) {
+                  if (value == 'resolve') onResolveTap?.call();
+                },
+                itemBuilder: (context) => [
+                  PopupMenuItem<String>(
+                    value: 'resolve',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.check_circle_outline, size: 20),
+                        const SizedBox(width: LwpSpacing.sm),
+                        Text(context.l10n.prayerResolveAction),
+                      ],
                     ),
                   ),
-                ),
-                if (request.createdAt != null)
-                  Text(
-                    DateFormatter.formatDate(request.createdAt!),
-                    style: theme.textTheme.bodySmall,
-                  ),
-              ],
-            ),
-            if (request.moderationNote != null &&
-                request.moderationNote!.trim().isNotEmpty) ...[
-              const SizedBox(height: 12),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceContainerHighest,
-                  borderRadius: LwpRadii.smAll,
-                ),
-                child: Text(
-                  context.l10n.prayerModerationNote(
-                    request.moderationNote!,
-                  ),
-                  style: theme.textTheme.bodyMedium,
+                ],
+                icon: Icon(
+                  Icons.more_vert,
+                  color: theme.hintColor,
                 ),
               ),
-            ],
-            if (isPraiseReport) ...[
-              const SizedBox(height: 12),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceContainerHighest,
-                  borderRadius: LwpRadii.smAll,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      context.l10n.prayerPraiseReportLabel,
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        color: theme.colorScheme.primary,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      request.praiseReport!,
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                if (onPrayTap != null &&
-                    request.status != PrayerRequestStatus.resolved)
-                  ActionChip(
-                    avatar: Icon(
-                      request.hasReacted
-                          ? Icons.favorite
-                          : Icons.favorite_border,
-                      size: 18,
-                      color: request.hasReacted
-                          ? Colors.red
-                          : theme.colorScheme.primary,
-                    ),
-                    label: Text(
-                      context.l10n.prayerReactionLabel(
-                        request.reactionCount,
-                      ),
-                    ),
-                    onPressed: onPrayTap,
-                    shape: const StadiumBorder(),
-                  ),
-                if (request.status == PrayerRequestStatus.resolved &&
-                    request.reactionCount > 0)
-                  Chip(
-                    avatar: const Icon(
-                      Icons.favorite,
-                      size: 18,
-                      color: Colors.red,
-                    ),
-                    label: Text(
-                      context.l10n.prayerReactionLabel(
-                        request.reactionCount,
-                      ),
-                    ),
-                    shape: const StadiumBorder(),
-                    backgroundColor: theme.colorScheme.surfaceContainerLow,
-                  ),
-                if (onResolveTap != null &&
-                    request.status != PrayerRequestStatus.resolved)
-                  ActionChip(
-                    avatar: const Icon(Icons.check_circle_outline, size: 18),
-                    label: Text(context.l10n.prayerResolveAction),
-                    onPressed: onResolveTap,
-                    shape: const StadiumBorder(),
-                  ),
-              ],
             ),
-          ],
+        ],
+      ),
+    );
+  }
+
+  bool get _showPrayRow =>
+      (onPrayTap != null && !_isResolved) ||
+      (_isResolved && request.reactionCount > 0);
+}
+
+class _ReplyBlock extends StatelessWidget {
+  const _ReplyBlock({
+    required this.label,
+    required this.body,
+    required this.labelColor,
+  });
+
+  final String label;
+  final String body;
+  final Color labelColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label.toUpperCase(),
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: labelColor,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.5,
+            fontSize: 11,
+          ),
+        ),
+        const SizedBox(height: 3),
+        Text(
+          body,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.hintColor,
+            height: 1.5,
+            fontSize: 13,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _PrayControl extends StatelessWidget {
+  const _PrayControl({
+    required this.count,
+    required this.pressed,
+    required this.onTap,
+  });
+
+  final int count;
+  final bool pressed;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final active = pressed;
+    final color = active ? theme.primaryColor : theme.hintColor;
+
+    final child = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          active
+              ? Icons.volunteer_activism
+              : Icons.volunteer_activism_outlined,
+          size: 18,
+          color: color,
+        ),
+        if (count > 0) ...[
+          const SizedBox(width: 6),
+          Text(
+            '$count',
+            style: theme.textTheme.labelMedium?.copyWith(
+              color: color,
+              fontWeight: FontWeight.w600,
+              fontSize: 12,
+              fontFeatures: const [FontFeature.tabularFigures()],
+            ),
+          ),
+        ],
+      ],
+    );
+
+    if (onTap == null) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: child,
+      );
+    }
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(LwpRadii.xs),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+          child: child,
         ),
       ),
     );

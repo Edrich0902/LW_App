@@ -13,26 +13,60 @@ import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 import 'package:lw_app/Widgets/PrayerRequest/prayer_request_card.dart';
 
 class MyPrayerRequestsPage extends StatelessWidget {
-  const MyPrayerRequestsPage({super.key});
+  const MyPrayerRequestsPage({
+    super.key,
+    this.initialStatus,
+    this.showCreatedFeedback = false,
+  });
+
+  /// Pre-select a status chip (e.g. pending after creating a request).
+  final PrayerRequestStatus? initialStatus;
+
+  /// Show the submit-success snackbar once this page opens.
+  final bool showCreatedFeedback;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => MyPrayerRequestsBloc()..add(const LoadMyPrayerRequests()),
-      child: const _MyPrayerRequestsView(),
+      child: _MyPrayerRequestsView(
+        initialStatus: initialStatus,
+        showCreatedFeedback: showCreatedFeedback,
+      ),
     );
   }
 }
 
 class _MyPrayerRequestsView extends StatefulWidget {
-  const _MyPrayerRequestsView();
+  const _MyPrayerRequestsView({
+    this.initialStatus,
+    this.showCreatedFeedback = false,
+  });
+
+  final PrayerRequestStatus? initialStatus;
+  final bool showCreatedFeedback;
 
   @override
   State<_MyPrayerRequestsView> createState() => _MyPrayerRequestsViewState();
 }
 
 class _MyPrayerRequestsViewState extends State<_MyPrayerRequestsView> {
-  PrayerRequestStatus? _selectedStatus;
+  late PrayerRequestStatus? _selectedStatus;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedStatus = widget.initialStatus;
+    if (widget.showCreatedFeedback) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        LwpSnackbar.showSuccess(
+          context,
+          context.l10n.prayerRequestsSubmitSuccess,
+        );
+      });
+    }
+  }
 
   Future<void> _refresh() async {
     context.read<MyPrayerRequestsBloc>().add(const LoadMyPrayerRequests());
@@ -229,10 +263,15 @@ class _MyPrayerRequestsViewState extends State<_MyPrayerRequestsView> {
                         : RefreshIndicator(
                             onRefresh: _refresh,
                             child: ListView.separated(
-                              padding: const EdgeInsets.all(16),
+                              padding: const EdgeInsets.symmetric(vertical: 8),
                               itemCount: requests.length,
-                              separatorBuilder: (_, __) =>
-                                  const SizedBox(height: 12),
+                              separatorBuilder: (context, _) => Divider(
+                                height: 1,
+                                thickness: 1,
+                                color: Theme.of(context)
+                                    .dividerColor
+                                    .withValues(alpha: 0.35),
+                              ),
                               itemBuilder: (context, index) {
                                 final request = requests[index];
                                 return PrayerRequestCard(
@@ -245,7 +284,10 @@ class _MyPrayerRequestsViewState extends State<_MyPrayerRequestsView> {
                                   showStatus: true,
                                   onResolveTap: request.status !=
                                           PrayerRequestStatus.resolved
-                                      ? () => _showResolveBottomSheet(context, request.id!)
+                                      ? () => _showResolveBottomSheet(
+                                            context,
+                                            request.id!,
+                                          )
                                       : null,
                                 );
                               },

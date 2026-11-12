@@ -39,6 +39,9 @@ class AppLocalizationsAf extends AppLocalizations {
   String get commonDelete => 'Verwyder';
 
   @override
+  String get commonRemove => 'Verwyder';
+
+  @override
   String get commonContinue => 'Gaan voort';
 
   @override
@@ -499,6 +502,19 @@ class AppLocalizationsAf extends AppLocalizations {
 
   @override
   String get groupFeedThisPost => 'hierdie plasing';
+
+  @override
+  String get groupFeedEmpty => 'Nog geen plasings in hierdie groep nie.';
+
+  @override
+  String get groupFeedMembersOnly =>
+      'Jy moet eers \'n aktiewe lid van hierdie groep wees.';
+
+  @override
+  String get groupFeedLoadError => 'Kon nie groepfeed laai nie.';
+
+  @override
+  String get groupFeedUpdatesLabel => 'Opdaterings';
 
   @override
   String get groupDetailTitle => 'Groep';
@@ -1375,6 +1391,18 @@ class AppLocalizationsAf extends AppLocalizations {
   String prayerReactionLabel(Object count) {
     return 'Ek bid vir jou ($count)';
   }
+
+  @override
+  String get prayerPrayingAction => 'Ek bid';
+
+  @override
+  String get prayerPrayedLabel => 'Gebid';
+
+  @override
+  String get prayerPraiseShortLabel => 'Lof';
+
+  @override
+  String get prayerNoteShortLabel => 'Nota';
 
   @override
   String get prayerResolveAction => 'Merk as afgehandel';

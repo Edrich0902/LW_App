@@ -2,19 +2,21 @@ import 'package:cloudinary_flutter/image/cld_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_quill/flutter_quill.dart';
-import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Blocs/GroupDetail/group_detail_bloc.dart';
+import 'package:lw_app/Extensions/context_l10n.dart';
+import 'package:lw_app/Models/Group/group.dart';
 import 'package:lw_app/Models/Group/group_post.dart';
 import 'package:lw_app/Screens/GroupPostEdit/group_post_edit.dart';
 import 'package:lw_app/Themes/custom_theme.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
 import 'package:lw_app/Utils/quill_helper.dart';
+import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
+import 'package:lw_app/Widgets/Glass/lwp_glass_fab.dart';
+import 'package:lw_app/Widgets/Glass/lwp_top_bar.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
-import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
-import 'package:lw_app/Widgets/Glass/lwp_glass_fab.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 
 class GroupFeedPage extends StatelessWidget {
@@ -65,127 +67,171 @@ class _GroupFeedViewState extends State<_GroupFeedView> {
         builder: (context, state) {
           final group = state.group;
 
-          return LwpChromeScaffold(
-            title: group?.title ?? context.l10n.groupFeedTitle,
-            floatingActionButton: group?.isLeader == true
+          if (state.status == GroupDetailStatus.loading &&
+              group == null &&
+              !state.isRefreshing) {
+            return LwpChromeScaffold(
+              title: context.l10n.groupFeedTitle,
+              body: LwpSkeletonList.text(),
+            );
+          }
+
+          if (state.status == GroupDetailStatus.error && group == null) {
+            return LwpChromeScaffold(
+              title: context.l10n.groupFeedTitle,
+              body: LwpError(
+                message: state.error ?? context.l10n.groupFeedLoadError,
+                onRetry: () => context
+                    .read<GroupDetailBloc>()
+                    .add(LoadGroupDetail(widget.groupId)),
+              ),
+            );
+          }
+
+          if (group == null) {
+            return LwpChromeScaffold(
+              title: context.l10n.groupFeedTitle,
+              body: LwpEmpty(message: context.l10n.groupFeedGroupNotFound),
+            );
+          }
+
+          if (!group.isActiveMember && !group.isLeader) {
+            return LwpChromeScaffold(
+              title: group.title,
+              body: LwpEmpty(message: context.l10n.groupFeedMembersOnly),
+            );
+          }
+
+          return Scaffold(
+            floatingActionButton: group.isLeader
                 ? LwpGlassFab.extended(
                     heroTag: 'group-feed-fab',
                     onPressed: state.isFeedActionInProgress
                         ? null
                         : () => _openCreatePost(context),
-                    icon: const Icon(Icons.post_add_outlined),
+                    icon: const Icon(Icons.add),
                     label: Text(context.l10n.groupPostNewTitle),
                   )
                 : null,
-            body: _buildBody(context, state),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildBody(BuildContext context, GroupDetailState state) {
-    if (state.status == GroupDetailStatus.loading &&
-        state.group == null &&
-        !state.isRefreshing) {
-      return LwpSkeletonList.text();
-    }
-
-    if (state.status == GroupDetailStatus.error && state.group == null) {
-      return LwpError(
-        message: state.error ?? 'Kon nie groepfeed laai nie.',
-        onRetry: () => context
-            .read<GroupDetailBloc>()
-            .add(LoadGroupDetail(widget.groupId)),
-      );
-    }
-
-    final group = state.group;
-    if (group == null) {
-      return LwpEmpty(message: context.l10n.groupFeedGroupNotFound);
-    }
-
-    if (!group.isActiveMember && !group.isLeader) {
-      return const LwpEmpty(
-        message: 'Jy moet eers \'n aktiewe lid van hierdie groep wees.',
-      );
-    }
-
-    return RefreshIndicator(
-      onRefresh: () async {
-        context.read<GroupDetailBloc>().add(RefreshGroupDetail(widget.groupId));
-      },
-      child: CustomScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        slivers: [
-          SliverToBoxAdapter(
-            child: _GroupFeedHeader(
-              title: group.title,
-              description: group.description,
-              bannerPublicId: group.bannerPublicId,
-              bannerUrl: group.bannerUrl,
-              memberCount: group.memberCount,
-              postCount: state.posts.length,
-              isLeader: group.isLeader,
-            ),
-          ),
-          if (state.posts.isEmpty)
-            const SliverFillRemaining(
-              hasScrollBody: false,
-              child: Center(
-                child: Padding(
-                  padding: EdgeInsets.all(LwpSpacing.xl),
-                  child: LwpEmpty(
-                    message: 'Nog geen plasings in hierdie groep nie.',
+            body: Stack(
+              fit: StackFit.expand,
+              children: [
+                RefreshIndicator(
+                  onRefresh: () async {
+                    context
+                        .read<GroupDetailBloc>()
+                        .add(RefreshGroupDetail(widget.groupId));
+                  },
+                  child: CustomScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    slivers: [
+                      SliverToBoxAdapter(
+                        child: _GroupFeedHero(
+                          group: group,
+                          postCount: state.posts.length,
+                        ),
+                      ),
+                      if (state.posts.isEmpty)
+                        SliverFillRemaining(
+                          hasScrollBody: false,
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(
+                              LwpSpacing.md,
+                              LwpSpacing.sm,
+                              LwpSpacing.md,
+                              LwpSpacing.xxl,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                _UpdatesLabel(count: 0),
+                                const SizedBox(height: LwpSpacing.sm),
+                                Expanded(
+                                  child: Center(
+                                    child: LwpEmpty(
+                                      message: context.l10n.groupFeedEmpty,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      else ...[
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(
+                              LwpSpacing.md,
+                              LwpSpacing.sm,
+                              LwpSpacing.md,
+                              LwpSpacing.xs,
+                            ),
+                            child: _UpdatesLabel(count: state.posts.length),
+                          ),
+                        ),
+                        SliverPadding(
+                          padding: EdgeInsets.fromLTRB(
+                            LwpSpacing.md,
+                            0,
+                            LwpSpacing.md,
+                            MediaQuery.paddingOf(context).bottom +
+                                (group.isLeader ? 96 : LwpSpacing.xl),
+                          ),
+                          sliver: SliverList.separated(
+                            itemCount: state.posts.length,
+                            itemBuilder: (context, index) {
+                              final post = state.posts[index];
+                              final isLeader = group.isLeader;
+                              return _GroupFeedPostCard(
+                                post: post,
+                                isBusy: state.isFeedActionInProgress,
+                                onEdit: post.isAuthor
+                                    ? () => _openEditPost(context, post)
+                                    : null,
+                                onDelete: post.isAuthor
+                                    ? () => _confirmDeletePost(context, post)
+                                    : null,
+                                onPin: isLeader
+                                    ? () =>
+                                        context.read<GroupDetailBloc>().add(
+                                              TogglePinPost(
+                                                groupId: widget.groupId,
+                                                post: post,
+                                              ),
+                                            )
+                                    : null,
+                                onReact: (reactionType) =>
+                                    context.read<GroupDetailBloc>().add(
+                                          ToggleGroupPostReaction(
+                                            groupId: widget.groupId,
+                                            post: post,
+                                            reactionType: reactionType,
+                                          ),
+                                        ),
+                              );
+                            },
+                            separatorBuilder: (_, __) =>
+                                const SizedBox(height: LwpSpacing.sm),
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                 ),
-              ),
-            )
-          else
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(
-                LwpSpacing.md,
-                0,
-                LwpSpacing.md,
-                LwpSpacing.xxl,
-              ),
-              sliver: SliverList.separated(
-                itemCount: state.posts.length,
-                itemBuilder: (context, index) {
-                  final post = state.posts[index];
-                  final isLeader = state.group?.isLeader == true;
-                  return _GroupFeedPostCard(
-                    post: post,
-                    isBusy: state.isFeedActionInProgress,
-                    onEdit: post.isAuthor
-                        ? () => _openEditPost(context, post)
-                        : null,
-                    onDelete: post.isAuthor
-                        ? () => _confirmDeletePost(context, post)
-                        : null,
-                    onPin: isLeader
-                        ? () => context.read<GroupDetailBloc>().add(
-                              TogglePinPost(
-                                groupId: widget.groupId,
-                                post: post,
-                              ),
-                            )
-                        : null,
-                    onReact: (reactionType) =>
-                        context.read<GroupDetailBloc>().add(
-                              ToggleGroupPostReaction(
-                                groupId: widget.groupId,
-                                post: post,
-                                reactionType: reactionType,
-                              ),
-                            ),
-                  );
-                },
-                separatorBuilder: (_, __) =>
-                    const SizedBox(height: LwpSpacing.md),
-              ),
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  child: LwpTopBar(
+                    title: group.title,
+                    showBack: true,
+                    showActions: false,
+                  ),
+                ),
+              ],
             ),
-        ],
+          );
+        },
       ),
     );
   }
@@ -240,7 +286,7 @@ class _GroupFeedViewState extends State<_GroupFeedView> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text('Kanselleer'),
+                child: Text(context.l10n.commonCancel),
               ),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context, true),
@@ -262,142 +308,183 @@ class _GroupFeedViewState extends State<_GroupFeedView> {
   }
 }
 
-class _GroupFeedHeader extends StatelessWidget {
-  final String title;
-  final String description;
-  final String? bannerPublicId;
-  final String? bannerUrl;
-  final int memberCount;
-  final int postCount;
-  final bool isLeader;
+class _UpdatesLabel extends StatelessWidget {
+  final int count;
 
-  const _GroupFeedHeader({
-    required this.title,
-    required this.description,
-    required this.bannerPublicId,
-    required this.bannerUrl,
-    required this.memberCount,
-    required this.postCount,
-    required this.isLeader,
+  const _UpdatesLabel({
+    required this.count,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Padding(
-      padding: const EdgeInsets.all(LwpSpacing.md),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: LwpRadii.lgAll,
-          gradient: LinearGradient(
-            colors: [
-              theme.primaryColor.withValues(alpha: 0.95),
-              theme.primaryColor.withValues(alpha: 0.7),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            context.l10n.groupFeedUpdatesLabel.toUpperCase(),
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.hintColor,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.6,
+            ),
           ),
         ),
-        clipBehavior: Clip.antiAlias,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              height: 180,
-              width: double.infinity,
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  CldImageWidget(
-                    publicId: bannerPublicId ?? 'samples/cloudinary-icon',
-                    fit: BoxFit.cover,
-                  ),
-                  Container(color: Colors.black.withValues(alpha: 0.35)),
+        Text(
+          '$count',
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.hintColor,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _GroupFeedHero extends StatelessWidget {
+  final Group group;
+  final int postCount;
+
+  const _GroupFeedHero({
+    required this.group,
+    required this.postCount,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final topClearance =
+        LwpTopBar.heightOf(context) + LwpSpacing.xxl + LwpSpacing.lg;
+    const contentBlock = 132.0;
+    final heroHeight = topClearance + contentBlock + LwpSpacing.md;
+
+    return SizedBox(
+      height: heroHeight,
+      width: double.infinity,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          CldImageWidget(
+            publicId: group.bannerPublicId ?? 'samples/cloudinary-icon',
+            width: double.infinity,
+            height: heroHeight,
+            fit: BoxFit.cover,
+          ),
+          // Dark scrim under chips/title so white type stays readable in
+          // light mode and on bright banners; soft handoff into the page.
+          DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.black.withValues(alpha: 0.28),
+                  Colors.black.withValues(alpha: 0.08),
+                  Colors.black.withValues(alpha: 0.55),
+                  Colors.black.withValues(alpha: 0.72),
+                  theme.scaffoldBackgroundColor,
                 ],
+                stops: const [0.0, 0.28, 0.58, 0.88, 1.0],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(LwpSpacing.md),
+          ),
+          Positioned(
+            left: LwpSpacing.md,
+            right: LwpSpacing.md,
+            top: topClearance,
+            bottom: LwpSpacing.md,
+            child: Align(
+              alignment: Alignment.bottomLeft,
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Wrap(
                     spacing: LwpSpacing.xs,
                     runSpacing: LwpSpacing.xs,
                     children: [
-                      _HeaderChip(
-                    label: context.l10n.groupMembersCount(memberCount),
+                      _HeroChip(
                         icon: Icons.people_outline,
+                        label: context.l10n.groupMembersCount(group.memberCount),
                       ),
-                      _HeaderChip(
-                        label: context.l10n.groupFeedPostCount(postCount),
+                      _HeroChip(
                         icon: Icons.dynamic_feed_outlined,
+                        label: context.l10n.groupFeedPostCount(postCount),
                       ),
-                      if (isLeader)
-                        const _HeaderChip(
-                          label: 'Leier',
+                      if (group.isLeader)
+                        _HeroChip(
                           icon: Icons.shield_outlined,
+                          label: context.l10n.groupLeaderBadge,
+                          accent: Colors.amber,
                         ),
                     ],
                   ),
-                  const SizedBox(height: LwpSpacing.md),
-                  Text(
-                    title,
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
                   const SizedBox(height: LwpSpacing.sm),
                   Text(
-                    description,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: Colors.white.withValues(alpha: 0.88),
-                      height: 1.5,
+                    group.title,
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.4,
                     ),
                   ),
+                  if (group.description.trim().isNotEmpty) ...[
+                    const SizedBox(height: LwpSpacing.xs),
+                    Text(
+                      group.description,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: Colors.white.withValues(alpha: 0.82),
+                        height: 1.4,
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class _HeaderChip extends StatelessWidget {
-  final String label;
+class _HeroChip extends StatelessWidget {
   final IconData icon;
+  final String label;
+  final Color? accent;
 
-  const _HeaderChip({
-    required this.label,
+  const _HeroChip({
     required this.icon,
+    required this.label,
+    this.accent,
   });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final color = accent ?? theme.primaryColor;
+
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: LwpSpacing.sm,
-        vertical: LwpSpacing.xs,
-      ),
+      height: 24,
+      padding: const EdgeInsets.symmetric(horizontal: LwpSpacing.sm),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.15),
+        color: color.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(LwpRadii.pill),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16, color: Colors.white),
-          const SizedBox(width: LwpSpacing.xs),
+          Icon(icon, size: 12, color: Colors.white),
+          const SizedBox(width: 5),
           Text(
             label,
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.w600,
+              fontSize: 11,
             ),
           ),
         ],
@@ -426,167 +513,193 @@ class _GroupFeedPostCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final line = theme.brightness == Brightness.dark
+        ? Colors.white.withValues(alpha: 0.08)
+        : LightColors.outline;
+    final pinnedBorder = theme.primaryColor.withValues(alpha: 0.35);
+    final author = post.displayAuthorName;
+    final when = _formatOptionalDate(post.updatedAt ?? post.createdAt);
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(LwpSpacing.md),
+    return DecoratedBox(
       decoration: BoxDecoration(
         color: theme.cardColor,
         borderRadius: LwpRadii.lgAll,
         border: Border.all(
-          color: theme.brightness == Brightness.dark
-              ? Colors.white12
-              : LightColors.outline,
+          color: post.isPinned ? pinnedBorder : line,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        gradient: post.isPinned
+            ? LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  theme.primaryColor.withValues(alpha: 0.08),
+                  theme.cardColor,
+                ],
+                stops: const [0.0, 0.45],
+              )
+            : null,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (post.isPinned) ...[
-            Row(
-              children: [
-                Icon(Icons.push_pin, size: 14, color: theme.primaryColor),
-                const SizedBox(width: LwpSpacing.xxs),
-                Text(
-                  context.l10n.groupFeedPinned,
-                  style: theme.textTheme.labelSmall?.copyWith(
+      child: Padding(
+        padding: const EdgeInsets.all(LwpSpacing.md),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (post.isPinned) ...[
+              Row(
+                children: [
+                  Icon(
+                    Icons.push_pin,
+                    size: 12,
                     color: theme.primaryColor,
-                    fontWeight: FontWeight.w700,
+                  ),
+                  const SizedBox(width: LwpSpacing.xxs),
+                  Text(
+                    context.l10n.groupFeedPinned.toUpperCase(),
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.primaryColor,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.4,
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: LwpSpacing.sm),
+            ],
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CircleAvatar(
+                  radius: 20,
+                  backgroundColor: theme.primaryColor.withValues(alpha: 0.12),
+                  child: Text(
+                    _initials(author),
+                    style: TextStyle(
+                      color: theme.primaryColor,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
+                    ),
                   ),
                 ),
+                const SizedBox(width: LwpSpacing.sm),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        author,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      if (when.isNotEmpty)
+                        Text(
+                          when,
+                          style: theme.textTheme.bodySmall
+                              ?.copyWith(color: theme.hintColor),
+                        ),
+                    ],
+                  ),
+                ),
+                if (onEdit != null || onDelete != null || onPin != null)
+                  PopupMenuButton<String>(
+                    onSelected: (value) {
+                      if (value == 'edit') onEdit?.call();
+                      if (value == 'delete') onDelete?.call();
+                      if (value == 'pin') onPin?.call();
+                    },
+                    itemBuilder: (context) => [
+                      if (onPin != null)
+                        PopupMenuItem<String>(
+                          value: 'pin',
+                          child: Row(
+                            children: [
+                              Icon(
+                                post.isPinned
+                                    ? Icons.push_pin_outlined
+                                    : Icons.push_pin,
+                                size: 20,
+                              ),
+                              const SizedBox(width: LwpSpacing.sm),
+                              Text(
+                                post.isPinned
+                                    ? context.l10n.groupFeedUnpin
+                                    : context.l10n.groupFeedPin,
+                              ),
+                            ],
+                          ),
+                        ),
+                      if (onEdit != null)
+                        PopupMenuItem<String>(
+                          value: 'edit',
+                          child: Row(
+                            children: [
+                              const Icon(Icons.edit_outlined, size: 20),
+                              const SizedBox(width: LwpSpacing.sm),
+                              Text(context.l10n.groupPostEditTitle),
+                            ],
+                          ),
+                        ),
+                      if (onDelete != null)
+                        PopupMenuItem<String>(
+                          value: 'delete',
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.delete_outline,
+                                size: 20,
+                                color: Colors.red,
+                              ),
+                              const SizedBox(width: LwpSpacing.sm),
+                              Text(
+                                context.l10n.commonDelete,
+                                style: const TextStyle(color: Colors.red),
+                              ),
+                            ],
+                          ),
+                        ),
+                    ],
+                  ),
               ],
             ),
-            const SizedBox(height: LwpSpacing.sm),
-          ],
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CircleAvatar(
-                radius: 24,
-                backgroundColor: theme.primaryColor.withValues(alpha: 0.12),
-                child: Icon(
-                  Icons.campaign_outlined,
-                  color: theme.primaryColor,
+            if ((post.title ?? '').trim().isNotEmpty) ...[
+              const SizedBox(height: LwpSpacing.sm),
+              Text(
+                post.title!.trim(),
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.2,
                 ),
               ),
-              const SizedBox(width: LwpSpacing.md),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      post.displayAuthorName,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: LwpSpacing.xxs),
-                    Text(
-                      _formatOptionalDate(post.updatedAt ?? post.createdAt),
-                      style: theme.textTheme.bodySmall
-                          ?.copyWith(color: theme.hintColor),
-                    ),
-                  ],
-                ),
-              ),
-              if (onEdit != null || onDelete != null || onPin != null)
-                PopupMenuButton<String>(
-                  onSelected: (value) {
-                    if (value == 'edit') onEdit?.call();
-                    if (value == 'delete') onDelete?.call();
-                    if (value == 'pin') onPin?.call();
-                  },
-                  itemBuilder: (context) => [
-                    if (onPin != null)
-                      PopupMenuItem<String>(
-                        value: 'pin',
-                        child: Row(
-                          children: [
-                            Icon(
-                              post.isPinned
-                                  ? Icons.push_pin_outlined
-                                  : Icons.push_pin,
-                              size: 20,
-                            ),
-                            const SizedBox(width: LwpSpacing.sm),
-                            Text(
-                              post.isPinned
-                                  ? context.l10n.groupFeedUnpin
-                                  : context.l10n.groupFeedPin,
-                            ),
-                          ],
-                        ),
-                      ),
-                    if (onEdit != null)
-                      PopupMenuItem<String>(
-                        value: 'edit',
-                        child: Row(
-                          children: [
-                            const Icon(Icons.edit_outlined, size: 20),
-                            const SizedBox(width: LwpSpacing.sm),
-                            Text(context.l10n.groupPostEditTitle),
-                          ],
-                        ),
-                      ),
-                    if (onDelete != null)
-                      PopupMenuItem<String>(
-                        value: 'delete',
-                        child: Row(
-                          children: [
-                            const Icon(Icons.delete_outline, size: 20, color: Colors.red),
-                            const SizedBox(width: LwpSpacing.sm),
-                            Text(
-                              context.l10n.commonDelete,
-                              style: const TextStyle(color: Colors.red),
-                            ),
-                          ],
-                        ),
-                      ),
-                  ],
-                ),
             ],
-          ),
-          if ((post.title ?? '').trim().isNotEmpty) ...[
-            const SizedBox(height: LwpSpacing.md),
-            Text(
-              post.title!.trim(),
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w800,
-              ),
+            const SizedBox(height: LwpSpacing.sm),
+            _GroupPostContent(content: post.content),
+            const SizedBox(height: LwpSpacing.sm),
+            Divider(height: 1, thickness: 1, color: line),
+            const SizedBox(height: LwpSpacing.sm),
+            Wrap(
+              spacing: LwpSpacing.xs,
+              runSpacing: LwpSpacing.xs,
+              children: GroupPostReactionType.values
+                  .map(
+                    (reactionType) => _ReactionChip(
+                      label: GroupPostReactionType.label(
+                        context.l10n,
+                        reactionType,
+                      ),
+                      count: post.reactionCountFor(reactionType),
+                      icon: _reactionIcon(reactionType),
+                      isSelected: post.currentUserReaction == reactionType,
+                      isBusy: isBusy,
+                      onTap: () => onReact(reactionType),
+                    ),
+                  )
+                  .toList(),
             ),
           ],
-          const SizedBox(height: LwpSpacing.md),
-          _GroupPostContent(content: post.content),
-          const SizedBox(height: LwpSpacing.md),
-          Divider(color: theme.dividerColor),
-          const SizedBox(height: LwpSpacing.sm),
-          Wrap(
-            spacing: LwpSpacing.xs,
-            runSpacing: LwpSpacing.xs,
-            children: GroupPostReactionType.values
-                .map(
-                  (reactionType) => _ReactionChip(
-                    label: GroupPostReactionType.label(
-                      context.l10n,
-                      reactionType,
-                    ),
-                    count: post.reactionCountFor(reactionType),
-                    icon: _reactionIcon(reactionType),
-                    isSelected: post.currentUserReaction == reactionType,
-                    isBusy: isBusy,
-                    onTap: () => onReact(reactionType),
-                  ),
-                )
-                .toList(),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -612,25 +725,48 @@ class _ReactionChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final foregroundColor =
-        isSelected ? theme.primaryColor : theme.textTheme.bodyMedium?.color;
+    final line = theme.brightness == Brightness.dark
+        ? Colors.white.withValues(alpha: 0.08)
+        : LightColors.outline;
+    final foreground = isSelected
+        ? theme.primaryColor
+        : theme.textTheme.bodyMedium?.color;
 
-    return ActionChip(
-      onPressed: isBusy ? null : onTap,
-      avatar: Icon(icon, size: 18, color: foregroundColor),
-      label: Text('$label ($count)'),
-      backgroundColor: isSelected
+    return Material(
+      color: isSelected
           ? theme.primaryColor.withValues(alpha: 0.12)
-          : theme.cardColor,
-      side: BorderSide(
-        color: isSelected
-            ? theme.primaryColor.withValues(alpha: 0.35)
-            : theme.dividerColor,
+          : Colors.transparent,
+      shape: StadiumBorder(
+        side: BorderSide(
+          color: isSelected
+              ? theme.primaryColor.withValues(alpha: 0.35)
+              : line,
+        ),
       ),
-      shape: const StadiumBorder(),
-      labelStyle: TextStyle(
-        color: foregroundColor,
-        fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: isBusy ? null : onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: LwpSpacing.sm,
+            vertical: LwpSpacing.xs,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 14, color: foreground),
+              const SizedBox(width: 6),
+              Text(
+                '$label · $count',
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: foreground,
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -713,6 +849,13 @@ String _formatOptionalDate(String? date) {
   final value = (date ?? '').trim();
   if (value.isEmpty) return '';
   return DateFormatter.formatDate(value);
+}
+
+String _initials(String name) {
+  final parts = name.split(' ').where((part) => part.isNotEmpty).toList();
+  if (parts.isEmpty) return '?';
+  if (parts.length == 1) return parts.first.substring(0, 1).toUpperCase();
+  return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
 }
 
 IconData _reactionIcon(String reactionType) {

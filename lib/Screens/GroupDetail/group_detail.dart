@@ -18,6 +18,7 @@ import 'package:lw_app/Utils/cloudinary_helper.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
 import 'package:lw_app/Utils/maps_helper.dart';
 import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
+import 'package:lw_app/Widgets/Glass/lwp_top_bar.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
@@ -72,143 +73,163 @@ class _GroupDetailViewState extends State<_GroupDetailView> {
         builder: (context, state) {
           final group = state.group;
 
-          return LwpChromeScaffold(
-            title: group?.title ?? context.l10n.groupDetailTitle,
-            actions: [
-              if (group != null && (group.isActiveMember || group.isLeader))
-                IconButton(
-                  onPressed: () => _openFeed(context, group),
-                  icon: const Icon(Icons.dynamic_feed_outlined),
-                  tooltip: context.l10n.groupDetailOpenFeedTooltip,
+          if (state.status == GroupDetailStatus.loading &&
+              group == null &&
+              !state.isRefreshing) {
+            return LwpChromeScaffold(
+              title: context.l10n.groupDetailTitle,
+              body: LwpSkeletonList.group(itemCount: 4),
+            );
+          }
+
+          if (state.status == GroupDetailStatus.error && group == null) {
+            return LwpChromeScaffold(
+              title: context.l10n.groupDetailTitle,
+              body: LwpError(
+                message: state.error ?? 'Kon nie groep laai nie.',
+                onRetry: () => context
+                    .read<GroupDetailBloc>()
+                    .add(LoadGroupDetail(widget.groupId)),
+              ),
+            );
+          }
+
+          if (group == null) {
+            return LwpChromeScaffold(
+              title: context.l10n.groupDetailTitle,
+              body: LwpEmpty(message: context.l10n.groupFeedGroupNotFound),
+            );
+          }
+
+          return Scaffold(
+            body: Stack(
+              fit: StackFit.expand,
+              children: [
+                RefreshIndicator(
+                  onRefresh: () async {
+                    context
+                        .read<GroupDetailBloc>()
+                        .add(RefreshGroupDetail(widget.groupId));
+                  },
+                  child: ListView(
+                    padding: EdgeInsets.only(
+                      bottom: MediaQuery.paddingOf(context).bottom +
+                          LwpSpacing.xl,
+                    ),
+                    children: [
+                      _GroupHero(group: group),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(
+                          LwpSpacing.md,
+                          LwpSpacing.sm,
+                          LwpSpacing.md,
+                          0,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            _StatsStrip(group: group),
+                            const SizedBox(height: LwpSpacing.md),
+                            _GroupActions(
+                              group: group,
+                              isBusy: state.isActionInProgress,
+                              onRequestJoin: () => context
+                                  .read<GroupDetailBloc>()
+                                  .add(RequestToJoinGroup(widget.groupId)),
+                              onCancelRequest: () => context
+                                  .read<GroupDetailBloc>()
+                                  .add(CancelGroupJoinRequest(widget.groupId)),
+                              onLeaveGroup: () => _confirmLeaveGroup(
+                                context,
+                                context.read<GroupDetailBloc>(),
+                              ),
+                              onOpenWhatsApp: () =>
+                                  _launchWhatsApp(context, group),
+                              onOpenMaps: group.hasLocation
+                                  ? () =>
+                                      MapsHelper.openLocation(group.location!)
+                                  : null,
+                            ),
+                            if (group.isActiveMember || group.isLeader) ...[
+                              const SizedBox(height: LwpSpacing.md),
+                              _GroupFeedEntryRow(
+                                postCount: state.posts.length,
+                                onOpenFeed: () => _openFeed(context, group),
+                              ),
+                            ],
+                            if (group.isLeader) ...[
+                              const SizedBox(height: LwpSpacing.md),
+                              _MembershipSection(
+                                title: context
+                                    .l10n.groupDetailPendingRequestsTitle,
+                                subtitle: context
+                                    .l10n.groupDetailPendingRequestsSubtitle,
+                                count: state.pendingMembers.length,
+                                memberships: state.pendingMembers,
+                                emptyMessage: context
+                                    .l10n.groupDetailPendingRequestsEmpty,
+                                actionBuilder: (membership) =>
+                                    _PendingActions(
+                                  isBusy: state.isActionInProgress,
+                                  onDecline: () =>
+                                      context.read<GroupDetailBloc>().add(
+                                            DeclineGroupMembership(
+                                              widget.groupId,
+                                              membership.userId,
+                                            ),
+                                          ),
+                                  onApprove: () =>
+                                      context.read<GroupDetailBloc>().add(
+                                            ApproveGroupMembership(
+                                              widget.groupId,
+                                              membership.userId,
+                                            ),
+                                          ),
+                                ),
+                              ),
+                              const SizedBox(height: LwpSpacing.md),
+                              _ActiveMembersSection(
+                                memberships: state.activeMembers,
+                                isBusy: state.isActionInProgress,
+                                groupId: widget.groupId,
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              if (group?.isLeader == true)
-                IconButton(
-                  onPressed: state.isActionInProgress
-                      ? null
-                      : () => _showEditSheet(context, group!),
-                  icon: const Icon(Icons.edit_outlined),
-                  tooltip: context.l10n.groupDetailEditTooltip,
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  child: LwpTopBar(
+                    title: group.title,
+                    showBack: true,
+                    showActions: false,
+                    actions: [
+                      if (group.isActiveMember || group.isLeader)
+                        IconButton(
+                          onPressed: () => _openFeed(context, group),
+                          icon: const Icon(Icons.dynamic_feed_outlined),
+                          tooltip: context.l10n.groupDetailOpenFeedTooltip,
+                        ),
+                      if (group.isLeader)
+                        IconButton(
+                          onPressed: state.isActionInProgress
+                              ? null
+                              : () => _showEditSheet(context, group),
+                          icon: const Icon(Icons.edit_outlined),
+                          tooltip: context.l10n.groupDetailEditTooltip,
+                        ),
+                    ],
+                  ),
                 ),
-            ],
-            body: _buildBody(context, state),
+              ],
+            ),
           );
         },
-      ),
-    );
-  }
-
-  Widget _buildBody(BuildContext context, GroupDetailState state) {
-    if (state.status == GroupDetailStatus.loading &&
-        state.group == null &&
-        !state.isRefreshing) {
-      return LwpSkeletonList.group(itemCount: 4);
-    }
-
-    if (state.status == GroupDetailStatus.error && state.group == null) {
-      return LwpError(
-        message: state.error ?? 'Kon nie groep laai nie.',
-        onRetry: () => context
-            .read<GroupDetailBloc>()
-            .add(LoadGroupDetail(widget.groupId)),
-      );
-    }
-
-    final group = state.group;
-    if (group == null) {
-      return LwpEmpty(message: context.l10n.groupFeedGroupNotFound);
-    }
-
-    return RefreshIndicator(
-      onRefresh: () async {
-        context.read<GroupDetailBloc>().add(RefreshGroupDetail(widget.groupId));
-      },
-      child: ListView(
-        padding: const EdgeInsets.all(LwpSpacing.md),
-        children: [
-          _GroupHero(group: group),
-          const SizedBox(height: LwpSpacing.md),
-          _GroupStatusCard(group: group),
-          const SizedBox(height: LwpSpacing.md),
-          _GroupActionCard(
-            group: group,
-            isBusy: state.isActionInProgress,
-            onRequestJoin: () => context
-                .read<GroupDetailBloc>()
-                .add(RequestToJoinGroup(widget.groupId)),
-            onCancelRequest: () => context
-                .read<GroupDetailBloc>()
-                .add(CancelGroupJoinRequest(widget.groupId)),
-            onLeaveGroup: () =>
-                _confirmLeaveGroup(context, context.read<GroupDetailBloc>()),
-            onOpenWhatsApp: () => _launchWhatsApp(context, group),
-            onOpenMaps: group.hasLocation
-                ? () => MapsHelper.openLocation(group.location!)
-                : null,
-          ),
-          if (group.isActiveMember || group.isLeader) ...[
-            const SizedBox(height: LwpSpacing.lg),
-            _GroupFeedEntryCard(
-              group: group,
-              postCount: state.posts.length,
-              onOpenFeed: () => _openFeed(context, group),
-            ),
-          ],
-          if (group.isLeader) ...[
-            const SizedBox(height: LwpSpacing.lg),
-            _MembershipSection(
-              title: context.l10n.groupDetailPendingRequestsTitle,
-              subtitle: context.l10n.groupDetailPendingRequestsSubtitle,
-              memberships: state.pendingMembers,
-              emptyMessage: context.l10n.groupDetailPendingRequestsEmpty,
-              actionBuilder: (membership) => Wrap(
-                spacing: LwpSpacing.xs,
-                runSpacing: LwpSpacing.xs,
-                children: [
-                  OutlinedButton(
-                    onPressed: state.isActionInProgress
-                        ? null
-                        : () => context.read<GroupDetailBloc>().add(
-                              DeclineGroupMembership(
-                                widget.groupId,
-                                membership.userId,
-                              ),
-                            ),
-                    child: Text(context.l10n.groupDetailDecline),
-                  ),
-                  ElevatedButton(
-                    onPressed: state.isActionInProgress
-                        ? null
-                        : () => context.read<GroupDetailBloc>().add(
-                              ApproveGroupMembership(
-                                widget.groupId,
-                                membership.userId,
-                              ),
-                            ),
-                    child: Text(context.l10n.groupDetailApprove),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: LwpSpacing.lg),
-            _MembershipSection(
-              title: context.l10n.groupDetailActiveMembersTitle,
-              subtitle: context.l10n.groupDetailActiveMembersSubtitle,
-              memberships: state.activeMembers,
-              emptyMessage: context.l10n.groupDetailActiveMembersEmpty,
-              actionBuilder: (membership) => OutlinedButton.icon(
-                onPressed: state.isActionInProgress
-                    ? null
-                    : () => _confirmRemoveMember(
-                          context,
-                          membership,
-                          context.read<GroupDetailBloc>(),
-                        ),
-                icon: const Icon(Icons.person_remove_outlined),
-                label: Text(context.l10n.commonDelete),
-              ),
-            ),
-          ],
-        ],
       ),
     );
   }
@@ -237,7 +258,7 @@ class _GroupDetailViewState extends State<_GroupDetailView> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text('Kanselleer'),
+                child: Text(context.l10n.commonCancel),
               ),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context, true),
@@ -250,38 +271,6 @@ class _GroupDetailViewState extends State<_GroupDetailView> {
 
     if (!confirmed) return;
     bloc.add(LeaveGroup(widget.groupId));
-  }
-
-  Future<void> _confirmRemoveMember(
-    BuildContext context,
-    GroupMembership membership,
-    GroupDetailBloc bloc,
-  ) async {
-    final confirmed = await showDialog<bool>(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text(context.l10n.groupDetailRemoveMemberTitle),
-            content: Text(
-              context.l10n.groupDetailRemoveMemberBody(
-                _displayName(membership),
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: const Text('Kanselleer'),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: Text(context.l10n.commonDelete),
-              ),
-            ],
-          ),
-        ) ??
-        false;
-
-    if (!confirmed) return;
-    bloc.add(RemoveGroupMember(widget.groupId, membership.userId));
   }
 
   Future<void> _openFeed(BuildContext context, Group group) async {
@@ -340,68 +329,104 @@ class _GroupHero extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    // Banner breathes under chrome; chips/title sit lower in the hero.
+    final topClearance =
+        LwpTopBar.heightOf(context) + LwpSpacing.xxl + LwpSpacing.lg;
+    const contentBlock = 132.0;
+    final heroHeight = topClearance + contentBlock + LwpSpacing.md;
 
-    return Card(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return SizedBox(
+      height: heroHeight,
+      width: double.infinity,
+      child: Stack(
+        fit: StackFit.expand,
         children: [
-          ClipRRect(
-            borderRadius: LwpRadii.lgTop,
-            child: CldImageWidget(
-              publicId: group.bannerPublicId ?? 'samples/cloudinary-icon',
-              width: double.infinity,
-              height: 220,
-              fit: BoxFit.cover,
+          CldImageWidget(
+            publicId: group.bannerPublicId ?? 'samples/cloudinary-icon',
+            width: double.infinity,
+            height: heroHeight,
+            fit: BoxFit.cover,
+          ),
+          // Dark scrim under chips/title so white type stays readable in
+          // light mode and on bright banners; soft handoff into the page.
+          DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.black.withValues(alpha: 0.28),
+                  Colors.black.withValues(alpha: 0.08),
+                  Colors.black.withValues(alpha: 0.55),
+                  Colors.black.withValues(alpha: 0.72),
+                  theme.scaffoldBackgroundColor,
+                ],
+                stops: const [0.0, 0.28, 0.58, 0.88, 1.0],
+              ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(LwpSpacing.md),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Wrap(
-                  spacing: LwpSpacing.xs,
-                  runSpacing: LwpSpacing.xs,
-                  children: [
-                    _PillChip(
-                      label: group.isConnectGroup
-                          ? context.l10n.connectGroupsTitle
-                          : context.l10n.serveGroupsTitle,
-                      backgroundColor:
-                          theme.primaryColor.withValues(alpha: 0.12),
-                      foregroundColor: theme.primaryColor,
+          Positioned(
+            left: LwpSpacing.md,
+            right: LwpSpacing.md,
+            top: topClearance,
+            bottom: LwpSpacing.md,
+            child: Align(
+              alignment: Alignment.bottomLeft,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Wrap(
+                    spacing: LwpSpacing.xs,
+                    runSpacing: LwpSpacing.xs,
+                    children: [
+                      _PillChip(
+                        label: group.isConnectGroup
+                            ? context.l10n.connectGroupsTitle
+                            : context.l10n.serveGroupsTitle,
+                        backgroundColor:
+                            theme.primaryColor.withValues(alpha: 0.18),
+                        foregroundColor: Colors.white,
+                      ),
+                      if (group.isLeader)
+                        _PillChip(
+                          label: context.l10n.groupLeaderBadge,
+                          backgroundColor:
+                              Colors.amber.withValues(alpha: 0.22),
+                          foregroundColor: Colors.amber.shade100,
+                        )
+                      else if (group.membershipStatus != null)
+                        _PillChip(
+                          label: _membershipLabel(context, group),
+                          backgroundColor: _membershipTone(group, theme)
+                              .withValues(alpha: 0.22),
+                          foregroundColor: Colors.white,
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: LwpSpacing.sm),
+                  Text(
+                    group.title,
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.4,
                     ),
-                    if (group.membershipStatus != null)
-                      _PillChip(
-                        label: _membershipLabel(context, group),
-                        backgroundColor: _membershipTone(group, theme)
-                            .withValues(alpha: 0.14),
-                        foregroundColor: _membershipTone(group, theme),
+                  ),
+                  if (group.description.trim().isNotEmpty) ...[
+                    const SizedBox(height: LwpSpacing.xs),
+                    Text(
+                      group.description,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: Colors.white.withValues(alpha: 0.82),
+                        height: 1.4,
                       ),
-                    if (group.isLeader)
-                      _PillChip(
-                        label: context.l10n.groupLeaderBadge,
-                        backgroundColor: Colors.amber.withValues(alpha: 0.18),
-                        foregroundColor: Colors.orange.shade800,
-                      ),
+                    ),
                   ],
-                ),
-                const SizedBox(height: LwpSpacing.sm),
-                Text(
-                  group.title,
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: LwpSpacing.sm),
-                Text(
-                  group.description,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    height: 1.5,
-                    color: theme.hintColor,
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
@@ -410,46 +435,99 @@ class _GroupHero extends StatelessWidget {
   }
 }
 
-class _GroupStatusCard extends StatelessWidget {
+class _StatsStrip extends StatelessWidget {
   final Group group;
 
-  const _GroupStatusCard({
+  const _StatsStrip({
     required this.group,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: _CountCard(
-            label: context.l10n.groupDetailLeadersLabel,
-            value: group.leaderCount,
-            icon: Icons.shield_outlined,
-          ),
+    final theme = Theme.of(context);
+    final line = theme.brightness == Brightness.dark
+        ? Colors.white.withValues(alpha: 0.08)
+        : LightColors.outline;
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: theme.cardColor,
+        borderRadius: LwpRadii.smAll,
+        border: Border.all(color: line),
+      ),
+      child: IntrinsicHeight(
+        child: Row(
+          children: [
+            Expanded(
+              child: _StatCell(
+                value: group.leaderCount,
+                label: context.l10n.groupDetailLeadersLabel,
+              ),
+            ),
+            VerticalDivider(width: 1, thickness: 1, color: line),
+            Expanded(
+              child: _StatCell(
+                value: group.memberCount,
+                label: context.l10n.groupDetailMembersLabel,
+              ),
+            ),
+            VerticalDivider(width: 1, thickness: 1, color: line),
+            Expanded(
+              child: _StatCell(
+                value: group.pendingCount,
+                label: context.l10n.groupDetailPendingLabel,
+              ),
+            ),
+          ],
         ),
-        const SizedBox(width: LwpSpacing.sm),
-        Expanded(
-          child: _CountCard(
-            label: context.l10n.groupDetailMembersLabel,
-            value: group.memberCount,
-            icon: Icons.people_outline,
-          ),
-        ),
-        const SizedBox(width: LwpSpacing.sm),
-        Expanded(
-          child: _CountCard(
-            label: context.l10n.groupDetailPendingLabel,
-            value: group.pendingCount,
-            icon: Icons.schedule_outlined,
-          ),
-        ),
-      ],
+      ),
     );
   }
 }
 
-class _GroupActionCard extends StatelessWidget {
+class _StatCell extends StatelessWidget {
+  final int value;
+  final String label;
+
+  const _StatCell({
+    required this.value,
+    required this.label,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: LwpSpacing.xs,
+        vertical: LwpSpacing.sm,
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            '$value',
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.w700,
+              letterSpacing: -0.4,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.hintColor,
+              fontSize: 11,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _GroupActions extends StatelessWidget {
   final Group group;
   final bool isBusy;
   final VoidCallback onRequestJoin;
@@ -458,7 +536,7 @@ class _GroupActionCard extends StatelessWidget {
   final VoidCallback onOpenWhatsApp;
   final VoidCallback? onOpenMaps;
 
-  const _GroupActionCard({
+  const _GroupActions({
     required this.group,
     required this.isBusy,
     required this.onRequestJoin,
@@ -470,138 +548,108 @@ class _GroupActionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final secondary = <Widget>[];
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(LwpSpacing.md),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              context.l10n.groupDetailActionsTitle,
-              style: theme.textTheme.titleMedium,
-            ),
-            const SizedBox(height: LwpSpacing.xs),
-            Text(
-              _actionDescription(context, group),
-              style:
-                  theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor),
-            ),
-            const SizedBox(height: LwpSpacing.md),
-            if (onOpenMaps != null)
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                  onPressed: isBusy ? null : onOpenMaps,
-                  icon: const Icon(Icons.location_on_outlined),
-                  label: Text(context.l10n.groupOpenMaps),
-                ),
-              ),
-            if (onOpenMaps != null) const SizedBox(height: LwpSpacing.sm),
-            ..._buildActionButtons(context),
-          ],
+    if (onOpenMaps != null) {
+      secondary.add(
+        Expanded(
+          child: OutlinedButton(
+            onPressed: isBusy ? null : onOpenMaps,
+            child: Text(context.l10n.groupOpenMaps),
+          ),
         ),
-      ),
+      );
+    }
+
+    final primary = _primaryButton(context);
+    final leaveOrCancel = _secondaryFullWidth(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (primary != null) primary,
+        if (secondary.isNotEmpty) ...[
+          if (primary != null) const SizedBox(height: LwpSpacing.xs),
+          Row(
+            children: [
+              for (var i = 0; i < secondary.length; i++) ...[
+                if (i > 0) const SizedBox(width: LwpSpacing.xs),
+                secondary[i],
+              ],
+            ],
+          ),
+        ],
+        if (leaveOrCancel != null) ...[
+          const SizedBox(height: LwpSpacing.xs),
+          leaveOrCancel,
+        ],
+      ],
     );
   }
 
-  List<Widget> _buildActionButtons(BuildContext context) {
-    if (group.isLeader) {
-      return [
-        if (group.hasWhatsappLink)
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: isBusy ? null : onOpenWhatsApp,
-              icon: const FaIcon(LwpIcons.whatsapp),
-              label: Text(context.l10n.groupDetailOpenWhatsappGroup),
-            ),
-          ),
-      ];
+  Widget? _primaryButton(BuildContext context) {
+    if (group.isLeader || group.isActiveMember) {
+      if (!group.hasWhatsappLink) return null;
+      return ElevatedButton.icon(
+        onPressed: isBusy ? null : onOpenWhatsApp,
+        icon: const FaIcon(LwpIcons.whatsapp, size: 16),
+        label: Text(context.l10n.groupDetailOpenWhatsappGroup),
+      );
     }
 
     if (group.isPending) {
-      return [
-        SizedBox(
-          width: double.infinity,
-          child: ElevatedButton.icon(
-            onPressed: null,
-            icon: const Icon(Icons.schedule),
-            label: Text(context.l10n.groupMembershipPending),
-          ),
-        ),
-        const SizedBox(height: LwpSpacing.sm),
-        SizedBox(
-          width: double.infinity,
-          child: OutlinedButton.icon(
-            onPressed: isBusy ? null : onCancelRequest,
-            icon: const Icon(Icons.close),
-            label: Text(context.l10n.groupDetailCancelRequest),
-          ),
-        ),
-      ];
+      return ElevatedButton.icon(
+        onPressed: null,
+        icon: const Icon(Icons.schedule),
+        label: Text(context.l10n.groupMembershipPending),
+      );
     }
 
-    if (group.isActiveMember) {
-      return [
-        if (group.hasWhatsappLink)
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: isBusy ? null : onOpenWhatsApp,
-              icon: const FaIcon(LwpIcons.whatsapp),
-              label: Text(context.l10n.groupDetailOpenWhatsappGroup),
-            ),
-          ),
-        if (group.hasWhatsappLink) const SizedBox(height: LwpSpacing.sm),
-        SizedBox(
-          width: double.infinity,
-          child: OutlinedButton.icon(
-            onPressed: isBusy ? null : onLeaveGroup,
-            icon: const Icon(Icons.logout),
-            label: Text(context.l10n.groupDetailLeaveGroup),
-          ),
-        ),
-      ];
-    }
-
-    return [
-      SizedBox(
-        width: double.infinity,
-        child: ElevatedButton.icon(
-          onPressed: isBusy ? null : onRequestJoin,
-          icon: const Icon(Icons.group_add_outlined),
-          label: Text(context.l10n.groupDetailRequestJoin),
-        ),
-      ),
-    ];
+    return ElevatedButton.icon(
+      onPressed: isBusy ? null : onRequestJoin,
+      icon: const Icon(Icons.group_add_outlined),
+      label: Text(context.l10n.groupDetailRequestJoin),
+    );
   }
 
-  String _actionDescription(BuildContext context, Group group) {
-    if (group.isLeader) {
-      return context.l10n.groupDetailLeaderDescription;
-    }
-
+  Widget? _secondaryFullWidth(BuildContext context) {
     if (group.isPending) {
-      return context.l10n.groupDetailPendingDescription;
+      return OutlinedButton.icon(
+        onPressed: isBusy ? null : onCancelRequest,
+        icon: const Icon(Icons.close),
+        label: Text(context.l10n.groupDetailCancelRequest),
+      );
     }
 
-    if (group.isActiveMember) {
-      return context.l10n.groupDetailMemberDescription;
+    if (group.isActiveMember && !group.isLeader) {
+      return OutlinedButton.icon(
+        onPressed: isBusy ? null : onLeaveGroup,
+        style: OutlinedButton.styleFrom(
+          foregroundColor: Colors.redAccent.shade200,
+          side: BorderSide(
+            color: Colors.redAccent.withValues(alpha: 0.35),
+          ),
+        ),
+        icon: Icon(
+          Icons.logout,
+          color: Colors.redAccent.shade200,
+        ),
+        label: Text(
+          context.l10n.groupDetailLeaveGroup,
+          style: TextStyle(color: Colors.redAccent.shade200),
+        ),
+      );
     }
 
-    return context.l10n.groupDetailJoinDescription;
+    return null;
   }
 }
 
-class _GroupFeedEntryCard extends StatelessWidget {
-  final Group group;
+class _GroupFeedEntryRow extends StatelessWidget {
   final int postCount;
   final VoidCallback onOpenFeed;
 
-  const _GroupFeedEntryCard({
-    required this.group,
+  const _GroupFeedEntryRow({
     required this.postCount,
     required this.onOpenFeed,
   });
@@ -609,83 +657,65 @@ class _GroupFeedEntryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final line = theme.brightness == Brightness.dark
+        ? Colors.white.withValues(alpha: 0.08)
+        : LightColors.outline;
 
-    return Container(
-      decoration: BoxDecoration(
+    return Material(
+      color: theme.cardColor,
+      shape: RoundedRectangleBorder(
         borderRadius: LwpRadii.lgAll,
-        gradient: LinearGradient(
-          colors: [
-            theme.primaryColor.withValues(alpha: 0.95),
-            theme.primaryColor.withValues(alpha: 0.72),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        side: BorderSide(color: line),
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: LwpRadii.lgAll,
-          onTap: onOpenFeed,
-          child: Padding(
-            padding: const EdgeInsets.all(LwpSpacing.lg),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Wrap(
-                  spacing: LwpSpacing.xs,
-                  runSpacing: LwpSpacing.xs,
-                  children: [
-                    _WhitePillChip(
-                      icon: Icons.dynamic_feed_outlined,
-                      label: context.l10n.groupFeedPostCount(postCount),
-                    ),
-                    _WhitePillChip(
-                      icon: Icons.people_outline,
-                      label: context.l10n.groupMembersCount(group.memberCount),
-                    ),
-                    if (group.isLeader)
-                      _WhitePillChip(
-                        icon: Icons.shield_outlined,
-                        label: context.l10n.groupDetailLeaderCanPost,
-                      ),
-                  ],
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onOpenFeed,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: LwpSpacing.md,
+            vertical: LwpSpacing.sm,
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: theme.primaryColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(LwpRadii.sm),
                 ),
-                const SizedBox(height: LwpSpacing.md),
-                Text(
-                  context.l10n.groupFeedTitle,
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w800,
-                  ),
+                child: Icon(
+                  Icons.dynamic_feed_outlined,
+                  color: theme.primaryColor,
+                  size: 20,
                 ),
-                const SizedBox(height: LwpSpacing.xs),
-                Text(
-                  context.l10n.groupDetailFeedDescription,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: Colors.white.withValues(alpha: 0.9),
-                    height: 1.45,
-                  ),
-                ),
-                const SizedBox(height: LwpSpacing.md),
-                Row(
+              ),
+              const SizedBox(width: LwpSpacing.sm),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      context.l10n.groupDetailOpenFeed,
+                      context.l10n.groupFeedTitle,
                       style: theme.textTheme.titleSmall?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(width: LwpSpacing.xs),
-                    const Icon(
-                      Icons.arrow_forward_rounded,
-                      color: Colors.white,
+                    const SizedBox(height: 2),
+                    Text(
+                      context.l10n.groupFeedPostCount(postCount),
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.hintColor,
+                      ),
                     ),
                   ],
                 ),
-              ],
-            ),
+              ),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: theme.hintColor,
+              ),
+            ],
           ),
         ),
       ),
@@ -693,40 +723,29 @@ class _GroupFeedEntryCard extends StatelessWidget {
   }
 }
 
-class _WhitePillChip extends StatelessWidget {
-  final IconData icon;
-  final String label;
+class _QuietPanel extends StatelessWidget {
+  final Widget child;
 
-  const _WhitePillChip({
-    required this.icon,
-    required this.label,
+  const _QuietPanel({
+    required this.child,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: LwpSpacing.sm,
-        vertical: LwpSpacing.xs,
-      ),
+    final theme = Theme.of(context);
+    final line = theme.brightness == Brightness.dark
+        ? Colors.white.withValues(alpha: 0.08)
+        : LightColors.outline;
+
+    return DecoratedBox(
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.16),
-        borderRadius: BorderRadius.circular(LwpRadii.pill),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.22)),
+        color: theme.cardColor,
+        borderRadius: LwpRadii.lgAll,
+        border: Border.all(color: line),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 16, color: Colors.white),
-          const SizedBox(width: LwpSpacing.xs),
-          Text(
-            label,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
+      child: ClipRRect(
+        borderRadius: LwpRadii.lgAll,
+        child: child,
       ),
     );
   }
@@ -735,6 +754,7 @@ class _WhitePillChip extends StatelessWidget {
 class _MembershipSection extends StatelessWidget {
   final String title;
   final String subtitle;
+  final int count;
   final List<GroupMembership> memberships;
   final String emptyMessage;
   final Widget Function(GroupMembership membership) actionBuilder;
@@ -742,6 +762,7 @@ class _MembershipSection extends StatelessWidget {
   const _MembershipSection({
     required this.title,
     required this.subtitle,
+    required this.count,
     required this.memberships,
     required this.emptyMessage,
     required this.actionBuilder,
@@ -750,49 +771,128 @@ class _MembershipSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final line = theme.brightness == Brightness.dark
+        ? Colors.white.withValues(alpha: 0.08)
+        : LightColors.outline;
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(LwpSpacing.md),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title, style: theme.textTheme.titleMedium),
-            const SizedBox(height: LwpSpacing.xs),
-            Text(
-              subtitle,
-              style:
-                  theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor),
+    return _QuietPanel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              LwpSpacing.md,
+              LwpSpacing.md,
+              LwpSpacing.md,
+              0,
             ),
-            const SizedBox(height: LwpSpacing.md),
-            if (memberships.isEmpty)
-              LwpEmpty(message: emptyMessage)
-            else
-              Column(
-                children: memberships
-                    .map(
-                      (membership) => Padding(
-                        padding: const EdgeInsets.only(bottom: LwpSpacing.sm),
-                        child: _MembershipTile(
-                          membership: membership,
-                          action: actionBuilder(membership),
-                        ),
-                      ),
-                    )
-                    .toList(),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    title,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: -0.2,
+                    ),
+                  ),
+                ),
+                Text(
+                  '$count',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.hintColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              LwpSpacing.md,
+              LwpSpacing.xxs,
+              LwpSpacing.md,
+              LwpSpacing.sm,
+            ),
+            child: Text(
+              subtitle,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.hintColor,
               ),
-          ],
-        ),
+            ),
+          ),
+          if (memberships.isEmpty)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                LwpSpacing.md,
+                0,
+                LwpSpacing.md,
+                LwpSpacing.md,
+              ),
+              child: LwpEmpty(message: emptyMessage),
+            )
+          else
+            for (var i = 0; i < memberships.length; i++) ...[
+              Divider(height: 1, thickness: 1, color: line),
+              _PendingMemberRow(
+                membership: memberships[i],
+                action: actionBuilder(memberships[i]),
+              ),
+            ],
+        ],
       ),
     );
   }
 }
 
-class _MembershipTile extends StatelessWidget {
+class _PendingActions extends StatelessWidget {
+  final bool isBusy;
+  final VoidCallback onDecline;
+  final VoidCallback onApprove;
+
+  const _PendingActions({
+    required this.isBusy,
+    required this.onDecline,
+    required this.onApprove,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        OutlinedButton(
+          onPressed: isBusy ? null : onDecline,
+          style: OutlinedButton.styleFrom(
+            visualDensity: VisualDensity.compact,
+            padding: const EdgeInsets.symmetric(horizontal: LwpSpacing.sm),
+            minimumSize: const Size(0, 32),
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            shape: const StadiumBorder(),
+          ),
+          child: Text(context.l10n.groupDetailDecline),
+        ),
+        const SizedBox(width: LwpSpacing.xs),
+        FilledButton(
+          onPressed: isBusy ? null : onApprove,
+          style: FilledButton.styleFrom(
+            visualDensity: VisualDensity.compact,
+            padding: const EdgeInsets.symmetric(horizontal: LwpSpacing.sm),
+            minimumSize: const Size(0, 32),
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            shape: const StadiumBorder(),
+          ),
+          child: Text(context.l10n.groupDetailApprove),
+        ),
+      ],
+    );
+  }
+}
+
+class _PendingMemberRow extends StatelessWidget {
   final GroupMembership membership;
   final Widget action;
 
-  const _MembershipTile({
+  const _PendingMemberRow({
     required this.membership,
     required this.action,
   });
@@ -800,90 +900,60 @@ class _MembershipTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final email = (membership.email ?? '').trim();
+    final requested = membership.requestedAt != null
+        ? DateFormatter.formatDate(membership.requestedAt)
+        : null;
+    final subtitleParts = <String>[
+      if (email.isNotEmpty) email,
+      if (requested != null)
+        context.l10n.groupDetailRequestDate(requested),
+    ];
 
-    return Container(
-      padding: const EdgeInsets.all(LwpSpacing.md),
-      decoration: BoxDecoration(
-        borderRadius: LwpRadii.mdAll,
-        color: theme.cardColor,
-        border: Border.all(
-          color: theme.brightness == Brightness.dark
-              ? Colors.white12
-              : LightColors.outline,
-        ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: LwpSpacing.md,
+        vertical: LwpSpacing.sm,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CircleAvatar(
-                radius: 24,
-                backgroundColor: theme.primaryColor.withValues(alpha: 0.12),
-                child: Text(
-                  _initials(membership),
-                  style: TextStyle(
-                    color: theme.primaryColor,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+          CircleAvatar(
+            radius: 20,
+            backgroundColor: theme.primaryColor.withValues(alpha: 0.12),
+            child: Text(
+              _initials(membership),
+              style: TextStyle(
+                color: theme.primaryColor,
+                fontWeight: FontWeight.w700,
+                fontSize: 13,
               ),
-              const SizedBox(width: LwpSpacing.md),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      _displayName(membership),
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    if ((membership.email ?? '').isNotEmpty) ...[
-                      const SizedBox(height: LwpSpacing.xxs),
-                      Text(
-                        membership.email!,
-                        style: theme.textTheme.bodyMedium
-                            ?.copyWith(color: theme.hintColor),
-                      ),
-                    ],
-                    const SizedBox(height: LwpSpacing.xs),
-                    Wrap(
-                      spacing: LwpSpacing.xs,
-                      runSpacing: LwpSpacing.xs,
-                      children: [
-                        _PillChip(
-                          label: _membershipStatusLabel(
-                            context,
-                            membership.status,
-                          ),
-                          backgroundColor:
-                              _membershipStatusColor(membership.status)
-                                  .withValues(alpha: 0.14),
-                          foregroundColor:
-                              _membershipStatusColor(membership.status),
-                        ),
-                        if (membership.requestedAt != null &&
-                            membership.status == GroupMembershipStatus.pending)
-                          _PillChip(
-                            label: context.l10n.groupDetailRequestDate(
-                              DateFormatter.formatDate(
-                                membership.requestedAt,
-                              ),
-                            ),
-                            backgroundColor:
-                                theme.hintColor.withValues(alpha: 0.14),
-                            foregroundColor: theme.hintColor,
-                          ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
+            ),
           ),
-          const SizedBox(height: LwpSpacing.sm),
+          const SizedBox(width: LwpSpacing.sm),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _displayName(membership),
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                if (subtitleParts.isNotEmpty)
+                  Text(
+                    subtitleParts.join(' · '),
+                    style: theme.textTheme.bodySmall
+                        ?.copyWith(color: theme.hintColor),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+              ],
+            ),
+          ),
+          const SizedBox(width: LwpSpacing.xs),
           action,
         ],
       ),
@@ -891,42 +961,284 @@ class _MembershipTile extends StatelessWidget {
   }
 }
 
-class _CountCard extends StatelessWidget {
-  final String label;
-  final int value;
-  final IconData icon;
+class _ActiveMembersSection extends StatefulWidget {
+  final List<GroupMembership> memberships;
+  final bool isBusy;
+  final String groupId;
 
-  const _CountCard({
-    required this.label,
-    required this.value,
-    required this.icon,
+  const _ActiveMembersSection({
+    required this.memberships,
+    required this.isBusy,
+    required this.groupId,
+  });
+
+  @override
+  State<_ActiveMembersSection> createState() => _ActiveMembersSectionState();
+}
+
+class _ActiveMembersSectionState extends State<_ActiveMembersSection> {
+  String? _armedUserId;
+
+  @override
+  void didUpdateWidget(covariant _ActiveMembersSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (_armedUserId == null) return;
+    final stillPresent =
+        widget.memberships.any((m) => m.userId == _armedUserId);
+    if (!stillPresent) {
+      _armedUserId = null;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final line = theme.brightness == Brightness.dark
+        ? Colors.white.withValues(alpha: 0.08)
+        : LightColors.outline;
+
+    return _QuietPanel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              LwpSpacing.md,
+              LwpSpacing.md,
+              LwpSpacing.md,
+              0,
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    context.l10n.groupDetailActiveMembersTitle,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: -0.2,
+                    ),
+                  ),
+                ),
+                Text(
+                  '${widget.memberships.length}',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.hintColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              LwpSpacing.md,
+              LwpSpacing.xxs,
+              LwpSpacing.md,
+              LwpSpacing.sm,
+            ),
+            child: Text(
+              context.l10n.groupDetailActiveMembersSubtitle,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.hintColor,
+              ),
+            ),
+          ),
+          if (widget.memberships.isEmpty)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                LwpSpacing.md,
+                0,
+                LwpSpacing.md,
+                LwpSpacing.md,
+              ),
+              child: LwpEmpty(
+                message: context.l10n.groupDetailActiveMembersEmpty,
+              ),
+            )
+          else
+            for (var i = 0; i < widget.memberships.length; i++) ...[
+              Divider(height: 1, thickness: 1, color: line),
+              _ActiveMemberRow(
+                membership: widget.memberships[i],
+                armed: _armedUserId == widget.memberships[i].userId,
+                isBusy: widget.isBusy,
+                onArm: () => setState(
+                  () => _armedUserId = widget.memberships[i].userId,
+                ),
+                onCancel: () => setState(() => _armedUserId = null),
+                onRemove: () {
+                  final userId = widget.memberships[i].userId;
+                  setState(() => _armedUserId = null);
+                  context.read<GroupDetailBloc>().add(
+                        RemoveGroupMember(widget.groupId, userId),
+                      );
+                },
+              ),
+            ],
+        ],
+      ),
+    );
+  }
+}
+
+class _ActiveMemberRow extends StatelessWidget {
+  static const _animDuration = Duration(milliseconds: 280);
+  static const _animCurve = Curves.easeOutCubic;
+
+  final GroupMembership membership;
+  final bool armed;
+  final bool isBusy;
+  final VoidCallback onArm;
+  final VoidCallback onCancel;
+  final VoidCallback onRemove;
+
+  const _ActiveMemberRow({
+    required this.membership,
+    required this.armed,
+    required this.isBusy,
+    required this.onArm,
+    required this.onCancel,
+    required this.onRemove,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final name = _displayName(membership);
+    final statusColor = _membershipStatusColor(membership.status);
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(LwpSpacing.md),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(icon, color: theme.primaryColor),
-            const SizedBox(height: LwpSpacing.sm),
-            Text(
-              '$value',
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: LwpSpacing.xxs),
-            Text(
-              label,
-              style:
-                  theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor),
-            ),
-          ],
+    return AnimatedContainer(
+      duration: _animDuration,
+      curve: _animCurve,
+      width: double.infinity,
+      color: armed
+          ? Colors.redAccent.withValues(alpha: 0.14)
+          : Colors.transparent,
+      child: AnimatedSize(
+        duration: _animDuration,
+        curve: _animCurve,
+        alignment: Alignment.center,
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 220),
+          switchInCurve: Curves.easeOutCubic,
+          switchOutCurve: Curves.easeInCubic,
+          transitionBuilder: (child, animation) {
+            final slide = Tween<Offset>(
+              begin: const Offset(0.03, 0),
+              end: Offset.zero,
+            ).animate(animation);
+            return FadeTransition(
+              opacity: animation,
+              child: SlideTransition(position: slide, child: child),
+            );
+          },
+          child: armed
+              ? KeyedSubtree(
+                  key: const ValueKey('armed'),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: LwpSpacing.md,
+                      vertical: LwpSpacing.sm,
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            '${context.l10n.commonRemove} $name?',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: Colors.redAccent.shade100,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: isBusy ? null : onCancel,
+                          child: Text(context.l10n.commonCancel),
+                        ),
+                        FilledButton(
+                          onPressed: isBusy ? null : onRemove,
+                          style: FilledButton.styleFrom(
+                            backgroundColor: Colors.redAccent,
+                            foregroundColor: Colors.white,
+                            visualDensity: VisualDensity.compact,
+                            shape: const StadiumBorder(),
+                          ),
+                          child: Text(context.l10n.commonRemove),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              : KeyedSubtree(
+                  key: const ValueKey('idle'),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: LwpSpacing.md,
+                      vertical: LwpSpacing.sm,
+                    ),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 20,
+                          backgroundColor:
+                              theme.primaryColor.withValues(alpha: 0.12),
+                          child: Text(
+                            _initials(membership),
+                            style: TextStyle(
+                              color: theme.primaryColor,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: LwpSpacing.sm),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                name,
+                                style: theme.textTheme.titleSmall?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              if ((membership.email ?? '').isNotEmpty)
+                                Text(
+                                  membership.email!,
+                                  style: theme.textTheme.bodySmall
+                                      ?.copyWith(color: theme.hintColor),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: LwpSpacing.xs),
+                        _PillChip(
+                          label: _membershipStatusLabel(
+                            context,
+                            membership.status,
+                          ),
+                          backgroundColor: statusColor.withValues(alpha: 0.14),
+                          foregroundColor: statusColor,
+                          compact: true,
+                        ),
+                        IconButton(
+                          onPressed: isBusy ? null : onArm,
+                          tooltip: context.l10n.commonRemove,
+                          visualDensity: VisualDensity.compact,
+                          icon: Icon(
+                            Icons.person_remove_outlined,
+                            color: theme.hintColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
         ),
       ),
     );
@@ -937,19 +1249,21 @@ class _PillChip extends StatelessWidget {
   final String label;
   final Color backgroundColor;
   final Color foregroundColor;
+  final bool compact;
 
   const _PillChip({
     required this.label,
     required this.backgroundColor,
     required this.foregroundColor,
+    this.compact = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(
+      padding: EdgeInsets.symmetric(
         horizontal: LwpSpacing.sm,
-        vertical: LwpSpacing.xs,
+        vertical: compact ? 4 : LwpSpacing.xs,
       ),
       decoration: BoxDecoration(
         color: backgroundColor,
@@ -960,7 +1274,7 @@ class _PillChip extends StatelessWidget {
         style: TextStyle(
           color: foregroundColor,
           fontWeight: FontWeight.w600,
-          fontSize: 12,
+          fontSize: compact ? 11 : 12,
         ),
       ),
     );

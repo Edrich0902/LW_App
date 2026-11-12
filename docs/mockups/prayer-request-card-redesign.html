@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LWP — Prayer request card redesign</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0b1218;
+      --surface: #141c24;
+      --surface-2: #1a2430;
+      --ink: #eef3f7;
+      --muted: #8a9aab;
+      --line: rgba(255,255,255,0.08);
+      --accent: #2e86c1;
+      --accent-soft: rgba(46,134,193,0.16);
+      --good: #3dba7a;
+      --good-soft: rgba(61,186,122,0.14);
+      --warn: #e0a84a;
+      --warn-soft: rgba(224,168,74,0.16);
+      --danger: #e35d6a;
+      --danger-soft: rgba(227,93,106,0.16);
+      --heart: #e35d6a;
+      --radius: 20px;
+      --radius-sm: 14px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "DM Sans", system-ui, sans-serif;
+      background:
+        radial-gradient(900px 420px at 15% -10%, rgba(46,134,193,0.16), transparent 60%),
+        var(--bg);
+      color: var(--ink);
+      padding: 28px 20px 60px;
+    }
+
+    .page { max-width: 1120px; margin: 0 auto; }
+
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 0 0 6px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+    }
+
+    .lede {
+      margin: 0 0 20px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+      max-width: 62ch;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 22px;
+    }
+
+    .toolbar button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.03);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .toolbar button[aria-pressed="true"] {
+      background: var(--accent-soft);
+      border-color: rgba(46,134,193,0.45);
+      color: #b9dcff;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 390px;
+      gap: 28px;
+      align-items: start;
+    }
+
+    @media (max-width: 920px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+
+    .notes {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+    }
+
+    .notes h2 {
+      margin: 0 0 8px;
+      font-size: 17px;
+      letter-spacing: -0.02em;
+    }
+
+    .notes p, .notes li {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .notes ul { margin: 10px 0 0; padding-left: 18px; }
+
+    .phone {
+      width: min(390px, 100%);
+      margin: 0 auto;
+      background: #0e151c;
+      border: 1px solid var(--line);
+      border-radius: 36px;
+      padding: 12px 10px 18px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.45);
+    }
+
+    .notch {
+      width: 108px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      margin: 4px auto 10px;
+    }
+
+    .screen {
+      background: #0f1720;
+      border-radius: 28px;
+      overflow: hidden;
+      min-height: 720px;
+      position: relative;
+    }
+
+    .chrome {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      z-index: 5;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .chrome-pill {
+      height: 40px;
+      border-radius: 999px;
+      background: rgba(16, 24, 32, 0.55);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.12);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 14px;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .chrome-pill.back {
+      width: 40px;
+      padding: 0;
+    }
+
+    .scroll {
+      height: 720px;
+      overflow: auto;
+      padding: 64px 16px 28px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.15) transparent;
+    }
+
+    .feed {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Quiet prayer card */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .card.resolved {
+      /* Same quiet surface as open cards — status chip carries the meaning. */
+    }
+
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .chip {
+      height: 24px;
+      padding: 0 10px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--line);
+      color: var(--ink);
+    }
+
+    .chip.status {
+      border: 0;
+      background: var(--accent-soft);
+      color: #9fd0f3;
+    }
+
+    .chip.status.pending {
+      background: var(--warn-soft);
+      color: var(--warn);
+    }
+
+    .chip.status.rejected {
+      background: var(--danger-soft);
+      color: #ffb4bc;
+    }
+
+    .chip.status.approved {
+      background: var(--good-soft);
+      color: var(--good);
+    }
+
+    .chip.praise {
+      border: 0;
+      background: var(--accent-soft);
+      color: #9fd0f3;
+    }
+
+    .chip svg { width: 12px; height: 12px; }
+
+    .body {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.5;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+
+    .byline {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .byline .name {
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(238,243,247,0.92);
+    }
+
+    .byline .date {
+      font-size: 12px;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .note,
+    .praise-block {
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--line);
+    }
+
+    .praise-block {
+      /* same quiet inset as .note */
+    }
+
+    .block-label {
+      margin: 0 0 4px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .block-text {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.5;
+      color: rgba(238,243,247,0.88);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      padding-top: 2px;
+    }
+
+    .btn {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.03);
+      color: var(--ink);
+      border-radius: 999px;
+      height: 36px;
+      padding: 0 12px;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+    }
+
+    .btn svg { width: 15px; height: 15px; }
+
+    .btn.pray svg { color: var(--muted); }
+    .btn.pray[aria-pressed="true"] {
+      background: var(--danger-soft);
+      border-color: rgba(227,93,106,0.35);
+      color: #ffc9ce;
+    }
+    .btn.pray[aria-pressed="true"] svg { color: var(--heart); fill: var(--heart); }
+
+    .btn.resolve {
+      background: transparent;
+      border-color: rgba(46,134,193,0.35);
+      color: #9fd0f3;
+    }
+
+    .btn.count-only {
+      cursor: default;
+      opacity: 0.85;
+    }
+
+    .count {
+      font-variant-numeric: tabular-nums;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .btn.pray[aria-pressed="true"] .count { color: #ffc9ce; }
+
+    .section-label {
+      margin: 4px 2px 0;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .view { display: none; }
+    .view.active { display: flex; flex-direction: column; gap: 12px; }
+
+    .compare {
+      margin-top: 10px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+
+    .compare h3 {
+      margin: 0 0 6px;
+      font-size: 14px;
+      color: var(--ink);
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <p class="eyebrow">Lewende Woord · Prayer requests</p>
+    <h1>Prayer request card — quiet redesign</h1>
+    <p class="lede">
+      Same functionality, less stacked chrome: one meta row instead of three chips,
+      body first, a single praise inset (no duplicate label), and a compact praying action.
+      Used everywhere this card appears — community feed and My Prayer Requests.
+    </p>
+
+    <div class="toolbar" role="tablist">
+      <button type="button" data-view="feed" aria-pressed="true">Community feed</button>
+      <button type="button" data-view="mine" aria-pressed="false">My requests</button>
+      <button type="button" data-view="resolved" aria-pressed="false">Resolved only</button>
+    </div>
+
+    <div class="layout">
+      <aside class="notes">
+        <h2>What changes</h2>
+        <ul>
+          <li><strong style="color:var(--ink);font-weight:600">One meta row</strong> — category + optional status. Drop the redundant “Answered Prayer” chip when a praise block exists.</li>
+          <li><strong style="color:var(--ink);font-weight:600">Body first</strong> — request text is the hero of the card.</li>
+          <li><strong style="color:var(--ink);font-weight:600">Quiet byline</strong> — name · date on one muted row.</li>
+          <li><strong style="color:var(--ink);font-weight:600">Praise once</strong> — short “Praise” inset with left accent, not a chip + nested titled box.</li>
+          <li><strong style="color:var(--ink);font-weight:600">Compact pray</strong> — ♥ Praying · 1 instead of a long ActionChip sentence.</li>
+          <li><strong style="color:var(--ink);font-weight:600">Resolve</strong> stays available as a quiet secondary action for owners.</li>
+        </ul>
+
+        <div class="compare">
+          <h3>Functionality kept</h3>
+          <ul>
+            <li>Category label</li>
+            <li>Status (when <code style="color:#9fd0f3">showStatus</code> / My requests)</li>
+            <li>Moderation note</li>
+            <li>Praise report on resolved</li>
+            <li>Pray / un-pray toggle + count</li>
+            <li>Mark as resolved (owner)</li>
+            <li>Read-only count on resolved cards</li>
+          </ul>
+        </div>
+      </aside>
+
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="chrome">
+            <div class="chrome-pill back" aria-label="Back">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+            </div>
+            <div class="chrome-pill" id="screen-title">Prayer requests</div>
+          </div>
+
+          <div class="scroll">
+            <!-- Community feed -->
+            <div class="view active feed" id="view-feed">
+              <p class="section-label">Open</p>
+
+              <article class="card">
+                <div class="meta-row">
+                  <span class="chip">Healing</span>
+                </div>
+                <p class="body">Please pray for strength during recovery this week — hospital follow-up on Thursday.</p>
+                <div class="byline">
+                  <span class="name">Sara Botha</span>
+                  <span class="date">10 Nov</span>
+                </div>
+                <div class="actions">
+                  <button class="btn pray" type="button" aria-pressed="false">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19 14c1.5-1.4 3-3.1 3-5.4A4.6 4.6 0 0 0 12 6a4.6 4.6 0 0 0-10 2.6c0 2.3 1.5 4 3 5.4l7 6.4 7-6.4Z"/></svg>
+                    Praying
+                    <span class="count">· 4</span>
+                  </button>
+                </div>
+              </article>
+
+              <article class="card">
+                <div class="meta-row">
+                  <span class="chip">Family</span>
+                </div>
+                <p class="body">Wisdom for a hard conversation with our teenager this weekend.</p>
+                <div class="byline">
+                  <span class="name">Anonymous</span>
+                  <span class="date">9 Nov</span>
+                </div>
+                <div class="actions">
+                  <button class="btn pray" type="button" aria-pressed="true">
+                    <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.2"><path d="M19 14c1.5-1.4 3-3.1 3-5.4A4.6 4.6 0 0 0 12 6a4.6 4.6 0 0 0-10 2.6c0 2.3 1.5 4 3 5.4l7 6.4 7-6.4Z"/></svg>
+                    Praying
+                    <span class="count">· 12</span>
+                  </button>
+                </div>
+              </article>
+
+              <p class="section-label">Resolved</p>
+
+              <article class="card resolved">
+                <div class="meta-row">
+                  <span class="chip">Thanksgiving</span>
+                  <span class="chip praise">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+                    Resolved
+                  </span>
+                </div>
+                <p class="body">Test</p>
+                <div class="byline">
+                  <span class="name">Anonymous</span>
+                  <span class="date">21 Jul</span>
+                </div>
+                <div class="praise-block">
+                  <p class="block-label">Praise</p>
+                  <p class="block-text">Testimony</p>
+                </div>
+                <div class="actions">
+                  <div class="btn count-only" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="#e35d6a" stroke="#e35d6a" stroke-width="1.2" width="15" height="15"><path d="M19 14c1.5-1.4 3-3.1 3-5.4A4.6 4.6 0 0 0 12 6a4.6 4.6 0 0 0-10 2.6c0 2.3 1.5 4 3 5.4l7 6.4 7-6.4Z"/></svg>
+                    Prayed
+                    <span class="count">· 1</span>
+                  </div>
+                </div>
+              </article>
+            </div>
+
+            <!-- My requests -->
+            <div class="view feed" id="view-mine">
+              <article class="card">
+                <div class="meta-row">
+                  <span class="chip">Guidance</span>
+                  <span class="chip status pending">Awaiting approval</span>
+                </div>
+                <p class="body">Please keep our job interview on Friday in prayer.</p>
+                <div class="byline">
+                  <span class="name">You</span>
+                  <span class="date">12 Nov</span>
+                </div>
+              </article>
+
+              <article class="card">
+                <div class="meta-row">
+                  <span class="chip">Provision</span>
+                  <span class="chip status approved">Approved</span>
+                </div>
+                <p class="body">Work situation still uncertain — trusting God for the next step.</p>
+                <div class="byline">
+                  <span class="name">You</span>
+                  <span class="date">8 Nov</span>
+                </div>
+                <div class="actions">
+                  <button class="btn pray" type="button" aria-pressed="false">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19 14c1.5-1.4 3-3.1 3-5.4A4.6 4.6 0 0 0 12 6a4.6 4.6 0 0 0-10 2.6c0 2.3 1.5 4 3 5.4l7 6.4 7-6.4Z"/></svg>
+                    Praying
+                    <span class="count">· 3</span>
+                  </button>
+                  <button class="btn resolve" type="button">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 6 9 17l-5-5"/></svg>
+                    Mark resolved
+                  </button>
+                </div>
+              </article>
+
+              <article class="card">
+                <div class="meta-row">
+                  <span class="chip">Other</span>
+                  <span class="chip status rejected">Rejected</span>
+                </div>
+                <p class="body">Short draft that needed more detail.</p>
+                <div class="byline">
+                  <span class="name">You</span>
+                  <span class="date">2 Nov</span>
+                </div>
+                <div class="note">
+                  <p class="block-label">Note</p>
+                  <p class="block-text">Please add a little more context so the congregation can pray specifically.</p>
+                </div>
+              </article>
+
+              <article class="card resolved">
+                <div class="meta-row">
+                  <span class="chip">Thanksgiving</span>
+                  <span class="chip status">Resolved</span>
+                </div>
+                <p class="body">Grateful for answered prayer around housing.</p>
+                <div class="byline">
+                  <span class="name">You</span>
+                  <span class="date">21 Jul</span>
+                </div>
+                <div class="praise-block">
+                  <p class="block-label">Praise</p>
+                  <p class="block-text">We signed the lease — thank you for praying with us.</p>
+                </div>
+                <div class="actions">
+                  <div class="btn count-only" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="#e35d6a" width="15" height="15"><path d="M19 14c1.5-1.4 3-3.1 3-5.4A4.6 4.6 0 0 0 12 6a4.6 4.6 0 0 0-10 2.6c0 2.3 1.5 4 3 5.4l7 6.4 7-6.4Z"/></svg>
+                    Prayed
+                    <span class="count">· 9</span>
+                  </div>
+                </div>
+              </article>
+            </div>
+
+            <!-- Resolved focus -->
+            <div class="view feed" id="view-resolved">
+              <article class="card resolved">
+                <div class="meta-row">
+                  <span class="chip">Thanksgiving</span>
+                  <span class="chip praise">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+                    Resolved
+                  </span>
+                </div>
+                <p class="body">Test</p>
+                <div class="byline">
+                  <span class="name">Anonymous</span>
+                  <span class="date">21 Jul</span>
+                </div>
+                <div class="praise-block">
+                  <p class="block-label">Praise</p>
+                  <p class="block-text">Testimony</p>
+                </div>
+                <div class="actions">
+                  <div class="btn count-only">
+                    <svg viewBox="0 0 24 24" fill="#e35d6a" width="15" height="15"><path d="M19 14c1.5-1.4 3-3.1 3-5.4A4.6 4.6 0 0 0 12 6a4.6 4.6 0 0 0-10 2.6c0 2.3 1.5 4 3 5.4l7 6.4 7-6.4Z"/></svg>
+                    Prayed
+                    <span class="count">· 1</span>
+                  </div>
+                </div>
+              </article>
+
+              <article class="card resolved">
+                <div class="meta-row">
+                  <span class="chip">Healing</span>
+                  <span class="chip praise">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+                    Resolved
+                  </span>
+                </div>
+                <p class="body">Surgery went well — continuing physiotherapy.</p>
+                <div class="byline">
+                  <span class="name">Johan Venter</span>
+                  <span class="date">3 Oct</span>
+                </div>
+                <div class="praise-block">
+                  <p class="block-label">Praise</p>
+                  <p class="block-text">Doctors are pleased with progress. Thank you church family.</p>
+                </div>
+                <div class="actions">
+                  <div class="btn count-only">
+                    <svg viewBox="0 0 24 24" fill="#e35d6a" width="15" height="15"><path d="M19 14c1.5-1.4 3-3.1 3-5.4A4.6 4.6 0 0 0 12 6a4.6 4.6 0 0 0-10 2.6c0 2.3 1.5 4 3 5.4l7 6.4 7-6.4Z"/></svg>
+                    Prayed
+                    <span class="count">· 18</span>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const titles = {
+      feed: 'Prayer requests',
+      mine: 'My requests',
+      resolved: 'Resolved',
+    };
+
+    function setView(view) {
+      document.querySelectorAll('.toolbar button').forEach((btn) => {
+        btn.setAttribute('aria-pressed', String(btn.dataset.view === view));
+      });
+      document.querySelectorAll('.view').forEach((el) => {
+        el.classList.toggle('active', el.id === 'view-' + view);
+      });
+      document.getElementById('screen-title').textContent = titles[view] || 'Prayer requests';
+    }
+
+    document.querySelectorAll('.toolbar button').forEach((btn) => {
+      btn.addEventListener('click', () => setView(btn.dataset.view));
+    });
+
+    document.querySelectorAll('.btn.pray').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const pressed = btn.getAttribute('aria-pressed') === 'true';
+        btn.setAttribute('aria-pressed', String(!pressed));
+        const countEl = btn.querySelector('.count');
+        if (!countEl) return;
+        const n = parseInt(countEl.textContent.replace(/[^\d]/g, ''), 10) || 0;
+        const next = pressed ? Math.max(0, n - 1) : n + 1;
+        countEl.textContent = '· ' + next;
+      });
+    });
+
+    setView('feed');
+  </script>
+</body>
+</html>

@@ -35,21 +35,28 @@ class PrayerRequestsBloc
         );
 
         final requests = await _prayerRequestService.getPublicPrayerRequests();
-        emit(const PrayerRequestSubmitSuccess());
-        emit(PrayerRequestsSuccess(requests: requests));
+        // Stay on SubmitSuccess (with the refreshed list) so UI can react
+        // without racing a follow-up Success emit.
+        emit(PrayerRequestSubmitSuccess(requests: requests));
       } catch (error) {
         emit(PrayerRequestsError(error.toString()));
         if (previousState is PrayerRequestsSuccess) {
+          emit(previousState);
+        } else if (previousState is PrayerRequestSubmitSuccess) {
           emit(previousState);
         }
       }
     });
 
     on<TogglePrayerReaction>((event, emit) async {
-      if (state is! PrayerRequestsSuccess) return;
+      if (state is! PrayerRequestsSuccess &&
+          state is! PrayerRequestSubmitSuccess) {
+        return;
+      }
 
-      final currentState = state as PrayerRequestsSuccess;
-      final updated = currentState.requests.map((request) {
+      final currentRequests = _extractRequests(state);
+      final rollback = PrayerRequestsSuccess(requests: currentRequests);
+      final updated = currentRequests.map((request) {
         if (request.id != event.request.id) return request;
         final nextReacted = !request.hasReacted;
         final nextCount = nextReacted
@@ -70,13 +77,14 @@ class PrayerRequestsBloc
         );
       } catch (error) {
         emit(PrayerRequestsError(error.toString()));
-        emit(currentState);
+        emit(rollback);
       }
     });
   }
 
   List<PrayerRequest> _extractRequests(PrayerRequestsState state) {
     if (state is PrayerRequestsSuccess) return state.requests;
+    if (state is PrayerRequestSubmitSuccess) return state.requests;
     if (state is PrayerRequestSubmitting) return state.previousRequests;
     return [];
   }

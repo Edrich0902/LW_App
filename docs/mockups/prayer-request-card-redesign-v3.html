@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LWP — Prayer card · minimal v3</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0b1218;
+      --surface: #0f1720;
+      --ink: #eef3f7;
+      --muted: #8a9aab;
+      --line: rgba(255,255,255,0.08);
+      --accent: #2e86c1;
+      --accent-soft: rgba(46,134,193,0.16);
+      --warn: #e0a84a;
+      --danger: #e35d6a;
+      --pray: #9fd0f3;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "DM Sans", system-ui, sans-serif;
+      background:
+        radial-gradient(900px 420px at 15% -10%, rgba(46,134,193,0.14), transparent 60%),
+        var(--bg);
+      color: var(--ink);
+      padding: 28px 20px 60px;
+    }
+
+    .page { max-width: 1120px; margin: 0 auto; }
+
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 0 0 6px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+    }
+
+    .lede {
+      margin: 0 0 20px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+      max-width: 60ch;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 22px;
+    }
+
+    .toolbar button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.03);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .toolbar button[aria-pressed="true"] {
+      background: var(--accent-soft);
+      border-color: rgba(46,134,193,0.45);
+      color: #b9dcff;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 390px;
+      gap: 28px;
+      align-items: start;
+    }
+
+    @media (max-width: 920px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+
+    .notes {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+    }
+
+    .notes h2 {
+      margin: 0 0 8px;
+      font-size: 17px;
+      letter-spacing: -0.02em;
+    }
+
+    .notes p, .notes li {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .notes ul { margin: 10px 0 0; padding-left: 18px; }
+    .notes strong { color: var(--ink); font-weight: 600; }
+
+    .phone {
+      width: min(390px, 100%);
+      margin: 0 auto;
+      background: #0e151c;
+      border: 1px solid var(--line);
+      border-radius: 36px;
+      padding: 12px 10px 18px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.45);
+    }
+
+    .notch {
+      width: 108px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      margin: 4px auto 10px;
+    }
+
+    .screen {
+      background: var(--surface);
+      border-radius: 28px;
+      overflow: hidden;
+      min-height: 720px;
+      position: relative;
+    }
+
+    .chrome {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      z-index: 5;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .chrome-pill {
+      height: 40px;
+      border-radius: 999px;
+      background: rgba(16, 24, 32, 0.55);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.12);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 14px;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .chrome-pill.back { width: 40px; padding: 0; }
+
+    .scroll {
+      height: 720px;
+      overflow: auto;
+      padding: 64px 0 28px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.15) transparent;
+    }
+
+    /* Continuous list — hairline dividers, no card boxes */
+    .list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .item {
+      position: relative;
+      padding: 18px 16px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .item:last-child { border-bottom: 0; }
+
+    .body {
+      margin: 0;
+      padding-right: 28px; /* room for ⋯ */
+      font-size: 15px;
+      line-height: 1.5;
+      letter-spacing: -0.015em;
+      color: var(--ink);
+    }
+
+    .meta {
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.4;
+      color: var(--muted);
+    }
+
+    .meta .dot {
+      margin: 0 6px;
+      opacity: 0.5;
+    }
+
+    .meta .status.warn { color: var(--warn); }
+    .meta .status.bad { color: #ffb4bc; }
+
+    /* Praise / note — quiet label + muted reply text, no box */
+    .reply {
+      margin: 4px 0 0;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .reply-label {
+      margin: 0;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #9fd0f3;
+    }
+
+    .reply-label.note {
+      color: var(--warn);
+    }
+
+    .reply-text {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 4px;
+      min-height: 28px;
+    }
+
+    .pray {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      width: 36px;
+      height: 28px;
+      padding: 0;
+      margin: 0;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      border-radius: 8px;
+    }
+
+    .pray:hover { background: rgba(255,255,255,0.04); }
+
+    .pray-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      line-height: 18px;
+    }
+    .pray svg { width: 16px; height: 16px; flex: 0 0 auto; }
+    .pray .n {
+      font-variant-numeric: tabular-nums;
+      min-width: 1ch;
+    }
+    .pray .n:empty,
+    .pray[data-count="0"] .n { display: none; }
+
+    .pray[aria-pressed="true"] { color: #b9dcff; }
+    .pray[aria-pressed="true"] .pray-icon {
+      color: var(--pray);
+    }
+
+    .pray.readonly {
+      cursor: default;
+      pointer-events: none;
+    }
+
+    /* Overflow — owner actions live here */
+    .more {
+      position: absolute;
+      top: 14px;
+      right: 10px;
+      appearance: none;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+    }
+
+    .more:hover {
+      background: rgba(255,255,255,0.05);
+      color: var(--ink);
+    }
+
+    .more svg { width: 18px; height: 18px; }
+
+    .menu {
+      position: absolute;
+      top: 46px;
+      right: 12px;
+      z-index: 8;
+      min-width: 168px;
+      padding: 6px;
+      border-radius: 14px;
+      background: #1a2430;
+      border: 1px solid var(--line);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+      display: none;
+    }
+
+    .menu.open { display: block; }
+
+    .menu button {
+      appearance: none;
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: var(--ink);
+      text-align: left;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .menu button:hover { background: rgba(255,255,255,0.05); }
+    .menu button svg { width: 16px; height: 16px; color: var(--muted); }
+    .menu button.danger { color: #ffb4bc; }
+    .menu button.danger svg { color: #ffb4bc; }
+
+    .view { display: none; }
+    .view.active { display: flex; flex-direction: column; }
+
+    .hint {
+      margin: 14px 16px 0;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <p class="eyebrow">Lewende Woord · Prayer requests</p>
+    <h1>Prayer card — minimal v3</h1>
+    <p class="lede">
+      Builds on v2: continuous list with hairline dividers (no card boxes),
+      tighter meta, icon-only pray, and owner actions tucked into ⋯.
+      Same skeleton for community and My requests.
+    </p>
+
+    <div class="toolbar" role="tablist">
+      <button type="button" data-view="feed" aria-pressed="true">Community feed</button>
+      <button type="button" data-view="mine" aria-pressed="false">My requests</button>
+      <button type="button" data-view="resolved" aria-pressed="false">Resolved</button>
+    </div>
+
+    <div class="layout">
+      <aside class="notes">
+        <h2>v3 changes</h2>
+        <ul>
+          <li><strong>No card chrome</strong> — list rows + hairline dividers</li>
+          <li><strong>Meta</strong> — <code style="color:#9fd0f3">Name · Category · Date</code>; status only when it adds signal (pending / rejected)</li>
+          <li><strong>Resolved</strong> — no “Resolved” label if praise text is present</li>
+          <li><strong>Praise / note</strong> — tiny “Praise” / “Note” label + muted reply text (no frame)</li>
+          <li><strong>Pray</strong> — volunteer_activism (Material) + count (count hidden at 0)</li>
+          <li><strong>Mark resolved</strong> — inside ⋯ on My requests, not a row button</li>
+        </ul>
+        <p style="margin-top:14px">Tap ⋯ on owner rows in <strong>My requests</strong> to see Mark resolved.</p>
+      </aside>
+
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="chrome">
+            <div class="chrome-pill back" aria-label="Back">
+              <span class="material-icons-outlined pray-icon" aria-hidden="true">volunteer_activism</span>
+                    <span class="n">4</span>
+                  </button>
+                </div>
+              </article>
+
+              <article class="item">
+                <p class="body">Wisdom for a hard conversation with our teenager this weekend.</p>
+                <p class="meta">Anonymous<span class="dot">·</span>Family<span class="dot">·</span>9 Nov</p>
+                <div class="row">
+                  <button class="pray" type="button" aria-pressed="true" aria-label="I am praying for you" data-count="12" title="I am praying for you">
+                    <span class="material-icons-outlined pray-icon" aria-hidden="true">volunteer_activism</span>
+                    <span class="n">12</span>
+                  </button>
+                </div>
+              </article>
+
+              <article class="item">
+                <p class="body">Test</p>
+                <p class="meta">Anonymous<span class="dot">·</span>Thanksgiving<span class="dot">·</span>21 Jul</p>
+                <div class="reply">
+                  <p class="reply-label">Praise</p>
+                  <p class="reply-text">Testimony</p>
+                </div>
+                <div class="row">
+                  <div class="pray readonly" style="color:#9fd0f3" data-count="1" aria-hidden="true">
+                    <span class="material-icons-outlined pray-icon" aria-hidden="true">volunteer_activism</span>
+                    <span class="n">1</span>
+                  </div>
+                </div>
+              </article>
+
+              <article class="item">
+                <p class="body">Looking for peace around a new job decision.</p>
+                <p class="meta">Johan Venter<span class="dot">·</span>Guidance<span class="dot">·</span>8 Nov</p>
+                <div class="row">
+                  <button class="pray" type="button" aria-pressed="false" aria-label="I am praying for you" data-count="0" title="I am praying for you">
+                    <span class="material-icons-outlined pray-icon" aria-hidden="true">volunteer_activism</span>
+                    <span class="n"></span>
+                  </button>
+                </div>
+              </article>
+            </div>
+
+            <!-- My requests — same skeleton + ⋯ -->
+            <div class="view list" id="view-mine">
+              <article class="item" data-owner>
+                <button class="more" type="button" aria-label="More" aria-expanded="false">
+                  <span class="material-icons-outlined pray-icon" aria-hidden="true">volunteer_activism</span>
+                    <span class="n">3</span>
+                  </button>
+                </div>
+              </article>
+
+              <article class="item" data-owner>
+                <button class="more" type="button" aria-label="More" aria-expanded="false">
+                  <span class="material-icons-outlined pray-icon" aria-hidden="true">volunteer_activism</span>
+                    <span class="n">9</span>
+                  </div>
+                </div>
+              </article>
+            </div>
+
+            <!-- Resolved -->
+            <div class="view list" id="view-resolved">
+              <article class="item">
+                <p class="body">Test</p>
+                <p class="meta">Anonymous<span class="dot">·</span>Thanksgiving<span class="dot">·</span>21 Jul</p>
+                <div class="reply">
+                  <p class="reply-label">Praise</p>
+                  <p class="reply-text">Testimony</p>
+                </div>
+                <div class="row">
+                  <div class="pray readonly" style="color:#9fd0f3" data-count="1" aria-hidden="true">
+                    <span class="material-icons-outlined pray-icon" aria-hidden="true">volunteer_activism</span>
+                    <span class="n">1</span>
+                  </div>
+                </div>
+              </article>
+
+              <article class="item">
+                <p class="body">Surgery went well — continuing physiotherapy.</p>
+                <p class="meta">Johan Venter<span class="dot">·</span>Healing<span class="dot">·</span>3 Oct</p>
+                <div class="reply">
+                  <p class="reply-label">Praise</p>
+                  <p class="reply-text">Doctors are pleased with progress. Thank you church family.</p>
+                </div>
+                <div class="row">
+                  <div class="pray readonly" style="color:#9fd0f3" data-count="18" aria-hidden="true">
+                    <span class="material-icons-outlined pray-icon" aria-hidden="true">volunteer_activism</span>
+                    <span class="n">18</span>
+                  </div>
+                </div>
+              </article>
+
+              <p class="hint">No “Resolved” chip — the Praise label marks the reply. Status only appears when pending or rejected.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const titles = {
+      feed: 'Prayer requests',
+      mine: 'My requests',
+      resolved: 'Resolved',
+    };
+
+    function closeMenus(except) {
+      document.querySelectorAll('.menu').forEach((menu) => {
+        if (menu !== except) menu.classList.remove('open');
+      });
+      document.querySelectorAll('.more').forEach((btn) => {
+        if (!except || btn.nextElementSibling !== except) {
+          btn.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+
+    function setView(view) {
+      closeMenus();
+      document.querySelectorAll('.toolbar button').forEach((btn) => {
+        btn.setAttribute('aria-pressed', String(btn.dataset.view === view));
+      });
+      document.querySelectorAll('.view').forEach((el) => {
+        el.classList.toggle('active', el.id === 'view-' + view);
+      });
+      document.getElementById('screen-title').textContent = titles[view];
+    }
+
+    document.querySelectorAll('.toolbar button').forEach((btn) => {
+      btn.addEventListener('click', () => setView(btn.dataset.view));
+    });
+
+    document.querySelectorAll('.pray:not(.readonly)').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const pressed = btn.getAttribute('aria-pressed') === 'true';
+        let count = parseInt(btn.dataset.count || '0', 10) || 0;
+        count = pressed ? Math.max(0, count - 1) : count + 1;
+        btn.setAttribute('aria-pressed', String(!pressed));
+        btn.dataset.count = String(count);
+        const n = btn.querySelector('.n');
+        n.textContent = count > 0 ? String(count) : '';
+      });
+    });
+
+    document.querySelectorAll('.more').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const menu = btn.parentElement.querySelector('.menu');
+        const open = !menu.classList.contains('open');
+        closeMenus(open ? menu : null);
+        menu.classList.toggle('open', open);
+        btn.setAttribute('aria-expanded', String(open));
+      });
+    });
+
+    document.addEventListener('click', () => closeMenus());
+
+    setView('feed');
+  </script>
+</body>
+</html>

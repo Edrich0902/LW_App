@@ -9,6 +9,7 @@ import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
+import 'package:lw_app/Screens/PrayerRequests/my_prayer_requests.dart';
 import 'package:lw_app/Widgets/Glass/lwp_glass_fab.dart';
 import 'package:lw_app/Widgets/PrayerRequest/prayer_request_card.dart';
 
@@ -35,6 +36,9 @@ class _PrayerRequestsViewState extends State<_PrayerRequestsView> {
   final _formKey = GlobalKey<FormState>();
   final _bodyController = TextEditingController();
 
+  /// When true, the next SubmitSuccess/Error from create should navigate/snack.
+  bool _awaitingCreateResult = false;
+
   @override
   void dispose() {
     _bodyController.dispose();
@@ -47,20 +51,21 @@ class _PrayerRequestsViewState extends State<_PrayerRequestsView> {
     var selectedCategory = PrayerCategory.healing;
     var isAnonymous = true;
     var isPrivate = false;
+    final bloc = context.read<PrayerRequestsBloc>();
 
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      builder: (context) {
+      builder: (sheetContext) {
         return Padding(
           padding: EdgeInsets.only(
             left: 16,
             right: 16,
             top: 16,
-            bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+            bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 24,
           ),
           child: StatefulBuilder(
-            builder: (context, setSheetState) {
+            builder: (sheetContext, setSheetState) {
               return Form(
                 key: _formKey,
                 child: Column(
@@ -68,21 +73,21 @@ class _PrayerRequestsViewState extends State<_PrayerRequestsView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      context.l10n.prayerRequestsCreateTitle,
-                      style: Theme.of(context).textTheme.titleLarge,
+                      sheetContext.l10n.prayerRequestsCreateTitle,
+                      style: Theme.of(sheetContext).textTheme.titleLarge,
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<PrayerCategory>(
                       initialValue: selectedCategory,
                       decoration: InputDecoration(
-                        labelText: context.l10n.feedbackCategoryLabel,
-                        border: OutlineInputBorder(),
+                        labelText: sheetContext.l10n.feedbackCategoryLabel,
+                        border: const OutlineInputBorder(),
                       ),
                       items: PrayerCategory.values
                           .map(
                             (category) => DropdownMenuItem(
                               value: category,
-                              child: Text(category.label(context.l10n)),
+                              child: Text(category.label(sheetContext.l10n)),
                             ),
                           )
                           .toList(),
@@ -97,13 +102,13 @@ class _PrayerRequestsViewState extends State<_PrayerRequestsView> {
                       minLines: 4,
                       maxLines: 6,
                       decoration: InputDecoration(
-                        labelText: context.l10n.prayerRequestsBodyLabel,
-                        border: OutlineInputBorder(),
+                        labelText: sheetContext.l10n.prayerRequestsBodyLabel,
+                        border: const OutlineInputBorder(),
                         alignLabelWithHint: true,
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return context.l10n.prayerRequestsBodyRequired;
+                          return sheetContext.l10n.prayerRequestsBodyRequired;
                         }
                         return null;
                       },
@@ -111,9 +116,11 @@ class _PrayerRequestsViewState extends State<_PrayerRequestsView> {
                     const SizedBox(height: 12),
                     SwitchListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: Text(context.l10n.prayerRequestsAnonymousTitle),
-                      subtitle:
-                          Text(context.l10n.prayerRequestsAnonymousSubtitle),
+                      title:
+                          Text(sheetContext.l10n.prayerRequestsAnonymousTitle),
+                      subtitle: Text(
+                        sheetContext.l10n.prayerRequestsAnonymousSubtitle,
+                      ),
                       value: isAnonymous,
                       onChanged: (value) {
                         setSheetState(() => isAnonymous = value);
@@ -121,9 +128,10 @@ class _PrayerRequestsViewState extends State<_PrayerRequestsView> {
                     ),
                     SwitchListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: Text(context.l10n.prayerRequestsPrivateTitle),
-                      subtitle:
-                          Text(context.l10n.prayerRequestsPrivateSubtitle),
+                      title: Text(sheetContext.l10n.prayerRequestsPrivateTitle),
+                      subtitle: Text(
+                        sheetContext.l10n.prayerRequestsPrivateSubtitle,
+                      ),
                       value: isPrivate,
                       onChanged: (value) {
                         setSheetState(() => isPrivate = value);
@@ -136,19 +144,20 @@ class _PrayerRequestsViewState extends State<_PrayerRequestsView> {
                         onPressed: () {
                           if (!_formKey.currentState!.validate()) return;
 
-                          context.read<PrayerRequestsBloc>().add(
-                                CreatePrayerRequestEvent(
-                                  category: selectedCategory,
-                                  body: _bodyController.text.trim(),
-                                  isAnonymous: isAnonymous,
-                                  isPrivate: isPrivate,
-                                ),
-                              );
-                          _formKey.currentState?.reset();
-                          _bodyController.clear();
-                          Navigator.pop(context);
+                          _awaitingCreateResult = true;
+                          Navigator.pop(sheetContext);
+                          bloc.add(
+                            CreatePrayerRequestEvent(
+                              category: selectedCategory,
+                              body: _bodyController.text.trim(),
+                              isAnonymous: isAnonymous,
+                              isPrivate: isPrivate,
+                            ),
+                          );
                         },
-                        child: Text(context.l10n.prayerRequestsSubmitButton),
+                        child: Text(
+                          sheetContext.l10n.prayerRequestsSubmitButton,
+                        ),
                       ),
                     ),
                   ],
@@ -165,17 +174,74 @@ class _PrayerRequestsViewState extends State<_PrayerRequestsView> {
     context.read<PrayerRequestsBloc>().add(const LoadPrayerRequests());
   }
 
+  void _openMyPendingRequests() {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => const MyPrayerRequestsPage(
+          initialStatus: PrayerRequestStatus.pending,
+          showCreatedFeedback: true,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRequestList(BuildContext context, List<PrayerRequest> requests) {
+    if (requests.isEmpty) {
+      return RefreshIndicator(
+        onRefresh: _refresh,
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          children: [
+            const SizedBox(height: 80),
+            LwpEmpty(message: context.l10n.prayerRequestsEmpty),
+          ],
+        ),
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: _refresh,
+      child: ListView.separated(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        itemCount: requests.length,
+        separatorBuilder: (context, _) => Divider(
+          height: 1,
+          thickness: 1,
+          color: Theme.of(context).dividerColor.withValues(alpha: 0.35),
+        ),
+        itemBuilder: (context, index) {
+          final request = requests[index];
+          return PrayerRequestCard(
+            request: request,
+            onPrayTap: () {
+              context.read<PrayerRequestsBloc>().add(
+                    TogglePrayerReaction(request: request),
+                  );
+            },
+          );
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<PrayerRequestsBloc, PrayerRequestsState>(
+      listenWhen: (previous, current) =>
+          _awaitingCreateResult &&
+          (current is PrayerRequestSubmitSuccess ||
+              current is PrayerRequestsError),
       listener: (context, state) {
+        if (!_awaitingCreateResult) return;
+        _awaitingCreateResult = false;
+
         if (state is PrayerRequestSubmitSuccess) {
           _bodyController.clear();
-          LwpSnackbar.showSuccess(
-            context,
-            context.l10n.prayerRequestsSubmitSuccess,
-          );
-        } else if (state is PrayerRequestsError) {
+          _openMyPendingRequests();
+          return;
+        }
+
+        if (state is PrayerRequestsError) {
           LwpSnackbar.showError(context, state.error);
         }
       },
@@ -190,9 +256,12 @@ class _PrayerRequestsViewState extends State<_PrayerRequestsView> {
         body: BlocBuilder<PrayerRequestsBloc, PrayerRequestsState>(
           builder: (context, state) {
             if (state is PrayerRequestsLoading ||
-                state is PrayerRequestSubmitting ||
                 state is PrayerRequestsInitial) {
               return LwpSkeletonList.text();
+            }
+
+            if (state is PrayerRequestSubmitting) {
+              return _buildRequestList(context, state.previousRequests);
             }
 
             if (state is PrayerRequestsError) {
@@ -203,38 +272,11 @@ class _PrayerRequestsViewState extends State<_PrayerRequestsView> {
             }
 
             if (state is PrayerRequestsSuccess) {
-              if (state.requests.isEmpty) {
-                return RefreshIndicator(
-                  onRefresh: _refresh,
-                  child: ListView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    children: [
-                      const SizedBox(height: 80),
-                      LwpEmpty(message: context.l10n.prayerRequestsEmpty),
-                    ],
-                  ),
-                );
-              }
+              return _buildRequestList(context, state.requests);
+            }
 
-              return RefreshIndicator(
-                onRefresh: _refresh,
-                child: ListView.separated(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: state.requests.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 12),
-                  itemBuilder: (context, index) {
-                    final request = state.requests[index];
-                    return PrayerRequestCard(
-                      request: request,
-                      onPrayTap: () {
-                        context.read<PrayerRequestsBloc>().add(
-                              TogglePrayerReaction(request: request),
-                            );
-                      },
-                    );
-                  },
-                ),
-              );
+            if (state is PrayerRequestSubmitSuccess) {
+              return _buildRequestList(context, state.requests);
             }
 
             return const SizedBox.shrink();

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="af">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LWP — Active members (armed remove)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0b1218;
+      --surface: #141c24;
+      --ink: #eef3f7;
+      --muted: #8a9aab;
+      --line: rgba(255,255,255,0.08);
+      --accent: #2e86c1;
+      --accent-soft: rgba(46,134,193,0.16);
+      --good: #3dba7a;
+      --good-soft: rgba(61,186,122,0.14);
+      --danger: #e35d6a;
+      --danger-soft: rgba(227,93,106,0.16);
+      --radius: 20px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "DM Sans", system-ui, sans-serif;
+      background:
+        radial-gradient(900px 420px at 20% -10%, rgba(46,134,193,0.18), transparent 60%),
+        radial-gradient(700px 360px at 100% 10%, rgba(61,186,122,0.08), transparent 55%),
+        var(--bg);
+      color: var(--ink);
+      padding: 28px 20px 60px;
+    }
+
+    .page {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    .top {
+      margin-bottom: 22px;
+    }
+
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 0 0 6px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    .pitch {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+    }
+
+    .pitch h2 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+    }
+
+    .pitch p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    .pitch ul {
+      margin: 12px 0 0;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .phone {
+      width: min(390px, 100%);
+      margin: 0 auto;
+      background: #0e151c;
+      border: 1px solid var(--line);
+      border-radius: 36px;
+      padding: 14px 12px 22px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.45);
+    }
+
+    .notch {
+      width: 108px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      margin: 4px auto 14px;
+    }
+
+    .screen {
+      background: #101820;
+      border-radius: 28px;
+      padding: 18px 14px 16px;
+      min-height: 520px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 4px;
+    }
+
+    .section-head h3 {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .count {
+      font-size: 12px;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .sub {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--accent-soft);
+      color: #8fc7ef;
+      font-size: 13px;
+      font-weight: 700;
+      flex: 0 0 auto;
+    }
+
+    .name {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .email {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      height: 22px;
+      padding: 0 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      background: var(--good-soft);
+      color: var(--good);
+      flex: 0 0 auto;
+    }
+
+    .icon-btn {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      flex: 0 0 auto;
+      transition: background .15s, color .15s;
+    }
+
+    .icon-btn:hover {
+      background: var(--danger-soft);
+      color: #ffb4bc;
+    }
+
+    .icon-btn svg { width: 18px; height: 18px; }
+
+    .row {
+      display: grid;
+      grid-template-columns: 40px minmax(0, 1fr) auto auto;
+      gap: 10px;
+      align-items: center;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      transition: background .2s;
+      min-height: 68px;
+    }
+
+    .row:last-child { border-bottom: 0; }
+
+    .meta {
+      min-width: 0;
+    }
+
+    .row.armed {
+      background: var(--danger-soft);
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    .row.armed .normal { display: none; }
+    .confirm {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      width: 100%;
+    }
+    .row.armed .confirm { display: flex; }
+
+    .confirm span {
+      font-size: 13px;
+      color: #ffc9ce;
+      font-weight: 500;
+    }
+
+    .confirm-actions { display: flex; gap: 8px; flex: 0 0 auto; }
+
+    .chip {
+      appearance: none;
+      border: 0;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .chip.stay { background: rgba(255,255,255,0.08); color: var(--ink); }
+    .chip.go { background: var(--danger); color: white; }
+
+    .note {
+      margin-top: 14px;
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="top">
+      <p class="eyebrow">Lewende Woord · Connect groups</p>
+      <h1>Active members — armed remove</h1>
+    </div>
+
+    <div class="grid">
+      <div class="pitch">
+        <h2>B revised — compact row + status pill</h2>
+        <p>
+          Same quiet list as before: one panel, no nested member cards, remove as a trailing icon.
+          The <strong style="color:var(--ink);font-weight:600">Active</strong> pill stays — small and inline on the row —
+          so status is still explicit without stacking a full Delete button underneath.
+        </p>
+        <ul>
+          <li>Avatar · name/email · Active pill · remove icon on one line</li>
+          <li>Remove arms an in-row confirmation (Cancel / Remove)</li>
+          <li>No alert dialog, no full-width outlined Delete</li>
+        </ul>
+      </div>
+
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="section-head">
+            <h3>Active members</h3>
+            <span class="count">3</span>
+          </div>
+          <p class="sub">Remove members if needed.</p>
+
+          <div class="panel" id="list">
+            <div class="row" data-name="Edrich Test">
+              <div class="normal" style="display:contents">
+                <div class="avatar">ET</div>
+                <div class="meta">
+                  <div class="name">Edrich Test</div>
+                  <div class="email">test@test.com</div>
+                </div>
+                <span class="pill">Active</span>
+                <button class="icon-btn arm" aria-label="Remove" type="button">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                </button>
+              </div>
+              <div class="confirm">
+                <span>Remove Edrich Test?</span>
+                <div class="confirm-actions">
+                  <button type="button" class="chip stay">Cancel</button>
+                  <button type="button" class="chip go">Remove</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="row" data-name="Sara Botha">
+              <div class="normal" style="display:contents">
+                <div class="avatar">SB</div>
+                <div class="meta">
+                  <div class="name">Sara Botha</div>
+                  <div class="email">sara@example.com</div>
+                </div>
+                <span class="pill">Active</span>
+                <button class="icon-btn arm" aria-label="Remove" type="button">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                </button>
+              </div>
+              <div class="confirm">
+                <span>Remove Sara Botha?</span>
+                <div class="confirm-actions">
+                  <button type="button" class="chip stay">Cancel</button>
+                  <button type="button" class="chip go">Remove</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="row" data-name="Johan Venter">
+              <div class="normal" style="display:contents">
+                <div class="avatar">JV</div>
+                <div class="meta">
+                  <div class="name">Johan Venter</div>
+                  <div class="email">johan@example.com</div>
+                </div>
+                <span class="pill">Active</span>
+                <button class="icon-btn arm" aria-label="Remove" type="button">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                </button>
+              </div>
+              <div class="confirm">
+                <span>Remove Johan Venter?</span>
+                <div class="confirm-actions">
+                  <button type="button" class="chip stay">Cancel</button>
+                  <button type="button" class="chip go">Remove</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <p class="note">Tap remove → row arms · Cancel / Remove · Active pill on quiet row</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('list').addEventListener('click', (e) => {
+      const arm = e.target.closest('.arm');
+      const stay = e.target.closest('.stay');
+      const go = e.target.closest('.go');
+      const row = e.target.closest('.row');
+      if (!row) return;
+
+      if (arm) {
+        document.querySelectorAll('.row.armed').forEach((r) => r.classList.remove('armed'));
+        row.classList.add('armed');
+      }
+      if (stay) row.classList.remove('armed');
+      if (go) {
+        row.style.transition = 'opacity .25s, transform .25s';
+        row.style.opacity = '0';
+        row.style.transform = 'translateX(12px)';
+        setTimeout(() => row.remove(), 260);
+      }
+    });
+  </script>
+</body>
+</html>

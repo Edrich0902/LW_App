@@ -158,6 +158,12 @@ abstract class AppLocalizations {
   /// **'Verwyder'**
   String get commonDelete;
 
+  /// No description provided for @commonRemove.
+  ///
+  /// In af, this message translates to:
+  /// **'Verwyder'**
+  String get commonRemove;
+
   /// No description provided for @commonContinue.
   ///
   /// In af, this message translates to:
@@ -1015,6 +1021,30 @@ abstract class AppLocalizations {
   /// In af, this message translates to:
   /// **'hierdie plasing'**
   String get groupFeedThisPost;
+
+  /// No description provided for @groupFeedEmpty.
+  ///
+  /// In af, this message translates to:
+  /// **'Nog geen plasings in hierdie groep nie.'**
+  String get groupFeedEmpty;
+
+  /// No description provided for @groupFeedMembersOnly.
+  ///
+  /// In af, this message translates to:
+  /// **'Jy moet eers \'n aktiewe lid van hierdie groep wees.'**
+  String get groupFeedMembersOnly;
+
+  /// No description provided for @groupFeedLoadError.
+  ///
+  /// In af, this message translates to:
+  /// **'Kon nie groepfeed laai nie.'**
+  String get groupFeedLoadError;
+
+  /// No description provided for @groupFeedUpdatesLabel.
+  ///
+  /// In af, this message translates to:
+  /// **'Opdaterings'**
+  String get groupFeedUpdatesLabel;
 
   /// No description provided for @groupDetailTitle.
   ///
@@ -2641,6 +2671,30 @@ abstract class AppLocalizations {
   /// In af, this message translates to:
   /// **'Ek bid vir jou ({count})'**
   String prayerReactionLabel(Object count);
+
+  /// No description provided for @prayerPrayingAction.
+  ///
+  /// In af, this message translates to:
+  /// **'Ek bid'**
+  String get prayerPrayingAction;
+
+  /// No description provided for @prayerPrayedLabel.
+  ///
+  /// In af, this message translates to:
+  /// **'Gebid'**
+  String get prayerPrayedLabel;
+
+  /// No description provided for @prayerPraiseShortLabel.
+  ///
+  /// In af, this message translates to:
+  /// **'Lof'**
+  String get prayerPraiseShortLabel;
+
+  /// No description provided for @prayerNoteShortLabel.
+  ///
+  /// In af, this message translates to:
+  /// **'Nota'**
+  String get prayerNoteShortLabel;
 
   /// No description provided for @prayerResolveAction.
   ///

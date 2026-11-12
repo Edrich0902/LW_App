@@ -39,6 +39,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonDelete => 'Delete';
 
   @override
+  String get commonRemove => 'Remove';
+
+  @override
   String get commonContinue => 'Continue';
 
   @override
@@ -493,6 +496,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get groupFeedThisPost => 'this post';
+
+  @override
+  String get groupFeedEmpty => 'No posts in this group yet.';
+
+  @override
+  String get groupFeedMembersOnly =>
+      'You need to be an active member of this group first.';
+
+  @override
+  String get groupFeedLoadError => 'Could not load the group feed.';
+
+  @override
+  String get groupFeedUpdatesLabel => 'Updates';
 
   @override
   String get groupDetailTitle => 'Group';
@@ -1368,6 +1384,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String prayerReactionLabel(Object count) {
     return 'I am praying for you ($count)';
   }
+
+  @override
+  String get prayerPrayingAction => 'Praying';
+
+  @override
+  String get prayerPrayedLabel => 'Prayed';
+
+  @override
+  String get prayerPraiseShortLabel => 'Praise';
+
+  @override
+  String get prayerNoteShortLabel => 'Note';
 
   @override
   String get prayerResolveAction => 'Mark as resolved';

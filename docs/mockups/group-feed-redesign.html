@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LWP — Group feed redesign</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0b1218;
+      --surface: #141c24;
+      --surface-2: #1a2430;
+      --ink: #eef3f7;
+      --muted: #8a9aab;
+      --line: rgba(255,255,255,0.08);
+      --accent: #2e86c1;
+      --accent-soft: rgba(46,134,193,0.16);
+      --good: #3dba7a;
+      --good-soft: rgba(61,186,122,0.14);
+      --warn: #e0a84a;
+      --warn-soft: rgba(224,168,74,0.16);
+      --danger: #e35d6a;
+      --danger-soft: rgba(227,93,106,0.16);
+      --radius: 20px;
+      --radius-sm: 14px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "DM Sans", system-ui, sans-serif;
+      background:
+        radial-gradient(900px 420px at 15% -10%, rgba(46,134,193,0.16), transparent 60%),
+        var(--bg);
+      color: var(--ink);
+      padding: 28px 20px 60px;
+    }
+
+    .page { max-width: 1080px; margin: 0 auto; }
+
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 0 0 6px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+    }
+
+    .lede {
+      margin: 0 0 20px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+      max-width: 56ch;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 22px;
+    }
+
+    .toolbar button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.03);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .toolbar button[aria-pressed="true"] {
+      background: var(--accent-soft);
+      border-color: rgba(46,134,193,0.45);
+      color: #b9dcff;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 390px;
+      gap: 28px;
+      align-items: start;
+    }
+
+    @media (max-width: 920px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+
+    .notes {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+    }
+
+    .notes h2 {
+      margin: 0 0 8px;
+      font-size: 17px;
+      letter-spacing: -0.02em;
+    }
+
+    .notes p, .notes li {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .notes ul { margin: 10px 0 0; padding-left: 18px; }
+
+    .phone {
+      width: min(390px, 100%);
+      margin: 0 auto;
+      background: #0e151c;
+      border: 1px solid var(--line);
+      border-radius: 36px;
+      padding: 12px 10px 18px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.45);
+    }
+
+    .notch {
+      width: 108px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      margin: 4px auto 10px;
+    }
+
+    .screen {
+      background: #0f1720;
+      border-radius: 28px;
+      overflow: hidden;
+      min-height: 760px;
+      position: relative;
+    }
+
+    .chrome {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      z-index: 5;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .chrome-pill {
+      height: 40px;
+      border-radius: 999px;
+      background: rgba(16, 24, 32, 0.55);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.12);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 12px;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 600;
+      max-width: calc(100% - 56px);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .chrome-pill.back {
+      width: 40px;
+      padding: 0;
+      justify-content: center;
+      flex: 0 0 auto;
+    }
+
+    .scroll {
+      height: 760px;
+      overflow: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.15) transparent;
+    }
+
+    /* Compact hero — same language as group detail, shorter */
+    .hero {
+      position: relative;
+      height: 220px;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,0.15), rgba(15,23,32,0.92) 78%, #0f1720),
+        linear-gradient(135deg, #1d4f73, #163047 45%, #0f1720);
+    }
+
+    .hero-art {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 70% 30%, rgba(46,134,193,0.35), transparent 42%),
+        radial-gradient(circle at 20% 70%, rgba(255,255,255,0.08), transparent 35%);
+    }
+
+    .hero-content {
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      bottom: 16px;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .chip {
+      height: 24px;
+      padding: 0 10px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--accent-soft);
+      color: #9fd0f3;
+    }
+
+    .chip svg { width: 12px; height: 12px; }
+    .chip.leader { background: var(--warn-soft); color: #f0c777; }
+
+    .hero h2 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: -0.03em;
+      font-weight: 700;
+    }
+
+    .hero p {
+      margin: 6px 0 0;
+      color: rgba(238,243,247,0.78);
+      font-size: 13px;
+      line-height: 1.45;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .body {
+      padding: 4px 16px 88px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .section-label {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      padding: 2px 2px 0;
+    }
+
+    .section-label h3 {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .section-label .meta {
+      font-size: 12px;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Quiet post card */
+    .post {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .post.pinned {
+      border-color: rgba(46,134,193,0.35);
+      background:
+        linear-gradient(180deg, rgba(46,134,193,0.08), transparent 48%),
+        var(--surface);
+    }
+
+    .pin-row {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #9fd0f3;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .pin-row svg { width: 12px; height: 12px; }
+
+    .post-head {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--accent-soft);
+      color: #8fc7ef;
+      font-size: 13px;
+      font-weight: 700;
+      flex: 0 0 auto;
+    }
+
+    .grow { flex: 1; min-width: 0; }
+
+    .author {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .when {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .more {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      flex: 0 0 auto;
+    }
+
+    .more:hover { background: rgba(255,255,255,0.05); color: var(--ink); }
+    .more svg { width: 18px; height: 18px; }
+
+    .post-title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .post-body {
+      margin: 0;
+      color: rgba(238,243,247,0.86);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--line);
+      border: 0;
+      margin: 0;
+    }
+
+    .reactions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .react {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.03);
+      color: var(--ink);
+      border-radius: 999px;
+      height: 32px;
+      padding: 0 10px;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .react svg { width: 14px; height: 14px; color: var(--muted); }
+
+    .react[aria-pressed="true"] {
+      background: var(--accent-soft);
+      border-color: rgba(46,134,193,0.45);
+      color: #b9dcff;
+    }
+
+    .react[aria-pressed="true"] svg { color: #9fd0f3; }
+
+    .empty {
+      border: 1px dashed var(--line);
+      border-radius: var(--radius);
+      padding: 28px 16px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    /* Leader FAB — glass, same chrome language */
+    .fab {
+      position: absolute;
+      right: 16px;
+      bottom: 18px;
+      z-index: 6;
+      appearance: none;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(16, 24, 32, 0.72);
+      backdrop-filter: blur(16px);
+      color: var(--ink);
+      border-radius: 999px;
+      height: 48px;
+      padding: 0 16px 0 14px;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+    }
+
+    .fab .fab-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: white;
+      display: grid;
+      place-items: center;
+    }
+
+    .fab svg { width: 16px; height: 16px; }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <p class="eyebrow">Lewende Woord · Connect groups</p>
+    <h1>Group feed — quiet redesign</h1>
+    <p class="lede">
+      Same functionality as today, aligned with the group-detail redesign:
+      edge-to-edge hero instead of a heavy promo card, quiet post panels,
+      compact reactions, and a glass compose FAB for leaders.
+    </p>
+
+    <div class="toolbar" role="tablist">
+      <button type="button" data-view="leader" aria-pressed="true">Leader view</button>
+      <button type="button" data-view="member" aria-pressed="false">Member view</button>
+      <button type="button" data-view="empty" aria-pressed="false">Empty feed</button>
+    </div>
+
+    <div class="layout">
+      <aside class="notes">
+        <h2>What changes</h2>
+        <ul>
+          <li><strong style="color:var(--ink);font-weight:600">Hero</strong> matches group detail — banner, chips, title, clamped description</li>
+          <li><strong style="color:var(--ink);font-weight:600">No gradient promo card</strong> — feed is the content, not a second marketing block</li>
+          <li><strong style="color:var(--ink);font-weight:600">Posts</strong> as quiet bordered panels (pinned gets a soft accent edge)</li>
+          <li><strong style="color:var(--ink);font-weight:600">Reactions</strong> stay compact stadium chips — Amen / Prayer / Heart</li>
+          <li><strong style="color:var(--ink);font-weight:600">Compose</strong> stays a floating glass FAB for leaders only</li>
+          <li><strong style="color:var(--ink);font-weight:600">Copy</strong> uses locale strings (Leader, not hardcoded Leier)</li>
+        </ul>
+        <p style="margin-top:14px">
+          Keep pin / edit / delete in the ⋯ menu. Members react; leaders also compose and pin.
+        </p>
+      </aside>
+
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="chrome">
+            <div class="chrome-pill back" aria-label="Back">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+            </div>
+            <div class="chrome-pill">Paarl Connect</div>
+          </div>
+
+          <div class="scroll">
+            <div class="hero">
+              <div class="hero-art"></div>
+              <div class="hero-content">
+                <div class="chips">
+                  <span class="chip">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    18 members
+                  </span>
+                  <span class="chip">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+                    12 posts
+                  </span>
+                  <span class="chip leader" data-leader-only>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg>
+                    Leader
+                  </span>
+                </div>
+                <h2>Paarl Connect</h2>
+                <p>Weekly community for families in the Paarl area — scripture, prayer, and time together.</p>
+              </div>
+            </div>
+
+            <div class="body">
+              <div class="section-label" data-hide="empty">
+                <h3>Updates</h3>
+                <span class="meta">12</span>
+              </div>
+
+              <div id="feed-list">
+                <article class="post pinned">
+                  <div class="pin-row">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/></svg>
+                    Pinned
+                  </div>
+                  <div class="post-head">
+                    <div class="avatar">JV</div>
+                    <div class="grow">
+                      <div class="author">Johan Venter</div>
+                      <div class="when">10 Nov · Leader</div>
+                    </div>
+                    <button class="more" type="button" aria-label="More">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
+                    </button>
+                  </div>
+                  <h4 class="post-title">This Sunday’s gathering</h4>
+                  <p class="post-body">
+                    We meet at 18:00 at the usual home. Bring a short scripture share if you can —
+                    we’ll close with prayer for families in our group.
+                  </p>
+                  <hr class="divider" />
+                  <div class="reactions">
+                    <button class="react" type="button" aria-pressed="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 11v8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1h2Zm0 0 4.2-7a2 2 0 0 1 3.7 1.1V8h4.2a2 2 0 0 1 2 2.3l-1.1 6A2 2 0 0 1 18 18h-7.2a2 2 0 0 1-1.8-1.1L7 11Z"/></svg>
+                      Amen · 8
+                    </button>
+                    <button class="react" type="button" aria-pressed="false">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19 14c1.5-1.4 3-3.1 3-5.4A4.6 4.6 0 0 0 12 6a4.6 4.6 0 0 0-10 2.6c0 2.3 1.5 4 3 5.4l7 6.4 7-6.4Z"/></svg>
+                      Heart · 3
+                    </button>
+                    <button class="react" type="button" aria-pressed="false">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22c4-3.2 8-6.4 8-11a5 5 0 0 0-10 0c0 .6.1 1.2.2 1.7A5 5 0 0 0 4 11c0 4.6 4 7.8 8 11Z"/></svg>
+                      Prayer · 2
+                    </button>
+                  </div>
+                </article>
+
+                <article class="post">
+                  <div class="post-head">
+                    <div class="avatar">SB</div>
+                    <div class="grow">
+                      <div class="author">Sara Botha</div>
+                      <div class="when">8 Nov</div>
+                    </div>
+                    <button class="more" type="button" aria-label="More" data-leader-only>
+                      <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
+                    </button>
+                  </div>
+                  <p class="post-body">
+                    Thank you for praying with us last week. Please keep Ané’s family in your
+                    thoughts as they travel.
+                  </p>
+                  <hr class="divider" />
+                  <div class="reactions">
+                    <button class="react" type="button" aria-pressed="false">Amen · 5</button>
+                    <button class="react" type="button" aria-pressed="true">Heart · 6</button>
+                    <button class="react" type="button" aria-pressed="false">Prayer · 4</button>
+                  </div>
+                </article>
+
+                <article class="post">
+                  <div class="post-head">
+                    <div class="avatar">ET</div>
+                    <div class="grow">
+                      <div class="author">Edrich Test</div>
+                      <div class="when">5 Nov</div>
+                    </div>
+                    <button class="more" type="button" aria-label="More">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
+                    </button>
+                  </div>
+                  <h4 class="post-title">Reading for the week</h4>
+                  <p class="post-body">
+                    Psalm 23 — short reflection welcome in the comments next gathering.
+                  </p>
+                  <hr class="divider" />
+                  <div class="reactions">
+                    <button class="react" type="button" aria-pressed="false">Amen · 2</button>
+                    <button class="react" type="button" aria-pressed="false">Heart · 1</button>
+                    <button class="react" type="button" aria-pressed="false">Prayer · 0</button>
+                  </div>
+                </article>
+              </div>
+
+              <div id="feed-empty" class="empty hidden">
+                No posts in this group yet.<br />
+                Leaders can share the first update.
+              </div>
+            </div>
+          </div>
+
+          <button class="fab" type="button" data-leader-only>
+            <span class="fab-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+            </span>
+            New post
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function setView(view) {
+      document.querySelectorAll('.toolbar button').forEach((btn) => {
+        btn.setAttribute('aria-pressed', String(btn.dataset.view === view));
+      });
+
+      const empty = view === 'empty';
+      document.getElementById('feed-list').classList.toggle('hidden', empty);
+      document.getElementById('feed-empty').classList.toggle('hidden', !empty);
+
+      document.querySelectorAll('[data-hide="empty"]').forEach((el) => {
+        el.classList.toggle('hidden', empty);
+      });
+
+      document.querySelectorAll('[data-leader-only]').forEach((el) => {
+        el.classList.toggle('hidden', view !== 'leader');
+      });
+
+      // Member view: hide author menus that are leader-only pin affordance in mock;
+      // keep own-post menus conceptually — here we only show ⋯ on first/third for demo.
+      if (view === 'member') {
+        document.querySelectorAll('#feed-list .post .more').forEach((btn, i) => {
+          // Second post is another member's — hide menu for members who aren't author.
+          btn.classList.toggle('hidden', i === 1);
+        });
+      }
+    }
+
+    document.querySelectorAll('.toolbar button').forEach((btn) => {
+      btn.addEventListener('click', () => setView(btn.dataset.view));
+    });
+
+    document.querySelectorAll('.react').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const pressed = btn.getAttribute('aria-pressed') === 'true';
+        const group = btn.parentElement;
+        group.querySelectorAll('.react').forEach((other) => {
+          other.setAttribute('aria-pressed', 'false');
+        });
+        btn.setAttribute('aria-pressed', String(!pressed));
+      });
+    });
+
+    setView('leader');
+  </script>
+</body>
+</html>
