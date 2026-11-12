@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LWP — Notes, Social, More Info redesign</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0b1218;
+      --card: #1e1e1e;
+      --ink: #eef3f7;
+      --muted: #8a9aab;
+      --line: rgba(255,255,255,0.08);
+      --accent: #2e86c1;
+      --accent-soft: rgba(46,134,193,0.18);
+      --danger: #e57373;
+      --danger-soft: rgba(229,115,115,0.14);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh;
+      font-family: "DM Sans", system-ui, sans-serif;
+      background:
+        radial-gradient(900px 420px at 15% -10%, rgba(46,134,193,0.14), transparent 58%),
+        var(--bg);
+      color: var(--ink);
+      padding: 28px 20px 80px;
+    }
+    .page { max-width: 1280px; margin: 0 auto; }
+    .eyebrow {
+      font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--muted); margin: 0 0 6px;
+    }
+    h1 { margin: 0 0 8px; font-size: 28px; font-weight: 600; letter-spacing: -0.03em; }
+    .lede {
+      margin: 0 0 16px; color: var(--muted); font-size: 14px; line-height: 1.55; max-width: 72ch;
+    }
+    .pitch {
+      margin: 0 0 18px; padding: 14px 16px; border: 1px solid var(--line);
+      border-radius: 12px; background: rgba(255,255,255,0.03);
+      color: var(--muted); font-size: 13px; line-height: 1.55; max-width: 88ch;
+    }
+    .pitch strong { color: var(--ink); font-weight: 600; }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+    .toolbar button {
+      appearance: none; border: 1px solid var(--line); background: rgba(255,255,255,0.03);
+      color: var(--ink); border-radius: 999px; padding: 10px 14px; font: inherit;
+      font-size: 13px; font-weight: 500; cursor: pointer;
+    }
+    .toolbar button:hover { border-color: rgba(255,255,255,0.18); }
+    .toolbar button.active { background: var(--accent); border-color: transparent; color: #fff; }
+    .hint { margin: 0 0 20px; font-size: 12px; color: var(--muted); }
+    .phones {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 22px; align-items: start;
+    }
+    .phone {
+      border: 1px solid var(--line); border-radius: 28px; background: #121212;
+      overflow: hidden; box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+      min-height: 760px; display: none; flex-direction: column;
+    }
+    .phone.active { display: flex; }
+    .phone-label {
+      padding: 14px 18px 0; font-size: 11px; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .chrome {
+      display: flex; align-items: center; gap: 10px; padding: 14px 16px 12px;
+    }
+    .chrome-spacer { flex: 1; }
+    .glass-btn {
+      width: 36px; height: 36px; border-radius: 999px; border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04); display: grid; place-items: center; color: var(--ink);
+    }
+    .glass-btn svg {
+      width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.7;
+      stroke-linecap: round; stroke-linejoin: round;
+    }
+    .title-pill {
+      height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04); display: inline-flex; align-items: center;
+      font-size: 14px; font-weight: 600;
+    }
+    .fab {
+      position: absolute; right: 18px; bottom: 22px;
+      width: 52px; height: 52px; border-radius: 999px; background: var(--accent);
+      display: grid; place-items: center; color: #fff; box-shadow: 0 10px 28px rgba(46,134,193,0.35);
+    }
+    .fab svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; }
+    .scroll {
+      flex: 1; overflow: auto; padding: 8px 16px 28px; position: relative;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .search {
+      margin-bottom: 4px; height: 44px; border-radius: 14px; border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04); display: flex; align-items: center; gap: 10px;
+      padding: 0 14px; color: var(--muted); font-size: 14px;
+    }
+    .search svg {
+      width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.7;
+    }
+    .art {
+      background: #16324a; position: relative; overflow: hidden;
+    }
+    .art::after {
+      content: ""; position: absolute; inset: 0; pointer-events: none;
+      background:
+        radial-gradient(circle at 70% 30%, rgba(255,255,255,0.16), transparent 42%),
+        radial-gradient(circle at 20% 80%, rgba(46,134,193,0.35), transparent 48%);
+    }
+    .art-a { background: linear-gradient(145deg, #1a3a52, #2e86c1 50%, #0f1c28); }
+    .art-b { background: linear-gradient(160deg, #243044, #3d6a8a 45%, #121820); }
+    .art-c { background: linear-gradient(135deg, #2a2140, #2e86c1 48%, #0d1822); }
+    .art-d { background: linear-gradient(150deg, #1e3d36, #2e86c1 50%, #101820); }
+
+    /* ---- Notes current ---- */
+    .n-cur {
+      background: var(--card); border-radius: 16px; border: 1px solid var(--line); padding: 14px;
+    }
+    .n-cur .top { display: flex; align-items: center; gap: 12px; }
+    .n-cur .avatar {
+      width: 40px; height: 40px; border-radius: 999px; background: var(--accent-soft);
+      display: grid; place-items: center; flex-shrink: 0;
+    }
+    .n-cur .avatar svg {
+      width: 18px; height: 18px; fill: none; stroke: var(--accent); stroke-width: 1.7;
+    }
+    .n-cur h3 { margin: 0 0 2px; font-size: 15px; font-weight: 700; }
+    .n-cur .date { font-size: 11px; color: var(--muted); }
+    .n-cur .del { margin-left: auto; color: var(--danger); font-size: 18px; opacity: 0.85; }
+    .n-cur .preview {
+      margin: 10px 0 0; font-size: 12px; color: var(--muted); line-height: 1.4;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+
+    /* Notes Quiet Stream */
+    .n-a {
+      padding: 14px 4px 14px 2px; border-bottom: 1px solid var(--line); cursor: pointer;
+    }
+    .n-a:last-child { border-bottom: 0; }
+    .n-a .row {
+      display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+    }
+    .n-a h3 {
+      margin: 0; font-size: 16px; font-weight: 650; letter-spacing: -0.02em;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .n-a .date {
+      flex-shrink: 0; font-size: 11px; font-weight: 600; color: var(--muted);
+    }
+    .n-a .preview {
+      margin: 6px 0 0; font-size: 13px; color: var(--muted); line-height: 1.45;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .n-a .hint-del {
+      margin-top: 8px; font-size: 10px; letter-spacing: 0.04em; text-transform: uppercase;
+      color: var(--muted); opacity: 0.55;
+    }
+
+    /* Notes Soft Sheet */
+    .n-b {
+      background: var(--card); border-radius: 16px; padding: 14px 14px 12px;
+      border: 1px solid transparent; cursor: pointer;
+    }
+    .n-b:hover { border-color: rgba(46,134,193,0.35); }
+    .n-b .row {
+      display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+    }
+    .n-b h3 {
+      margin: 0; font-size: 15px; font-weight: 650; letter-spacing: -0.02em;
+    }
+    .n-b .date { font-size: 11px; font-weight: 600; color: var(--muted); }
+    .n-b .preview {
+      margin: 6px 0 0; font-size: 12px; color: var(--muted); line-height: 1.4;
+      display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;
+    }
+
+    /* ---- Social current ---- */
+    .s-cur {
+      background: var(--card); border-radius: 16px; padding: 14px;
+      display: flex; align-items: center; gap: 14px;
+    }
+    .s-cur .ico {
+      width: 52px; height: 52px; border-radius: 12px; background: var(--accent-soft);
+      display: grid; place-items: center; flex-shrink: 0;
+    }
+    .s-cur .ico svg {
+      width: 24px; height: 24px; fill: none; stroke: var(--accent); stroke-width: 1.7;
+    }
+    .s-cur h3 { margin: 0; font-size: 16px; font-weight: 600; flex: 1; }
+    .s-cur .chev { color: var(--muted); opacity: 0.5; }
+
+    /* Social Quiet Stream */
+    .s-a {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 2px; border-bottom: 1px solid var(--line); cursor: pointer;
+    }
+    .s-a:last-child { border-bottom: 0; }
+    .s-a .dot {
+      width: 36px; height: 36px; border-radius: 999px; background: var(--accent-soft);
+      display: grid; place-items: center; flex-shrink: 0;
+    }
+    .s-a .dot svg {
+      width: 16px; height: 16px; fill: none; stroke: var(--accent); stroke-width: 1.7;
+    }
+    .s-a h3 {
+      margin: 0; font-size: 15px; font-weight: 650; letter-spacing: -0.02em; flex: 1;
+    }
+    .s-a .open {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--accent);
+    }
+
+    /* Social Soft Tile */
+    .s-b {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    }
+    .s-b .tile {
+      background: var(--card); border-radius: 16px; padding: 16px 14px;
+      border: 1px solid transparent; cursor: pointer; min-height: 108px;
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .s-b .tile:hover { border-color: rgba(46,134,193,0.35); }
+    .s-b .dot {
+      width: 36px; height: 36px; border-radius: 999px; background: var(--accent-soft);
+      display: grid; place-items: center;
+    }
+    .s-b .dot svg {
+      width: 16px; height: 16px; fill: none; stroke: var(--accent); stroke-width: 1.7;
+    }
+    .s-b h3 { margin: 12px 0 0; font-size: 14px; font-weight: 650; letter-spacing: -0.02em; }
+
+    /* ---- More Info current ---- */
+    .m-section {
+      font-size: 18px; font-weight: 700; margin: 4px 0 10px;
+    }
+    .m-copy {
+      margin: 0 0 22px; font-size: 14px; color: var(--muted); line-height: 1.6;
+    }
+    .m-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    }
+    .m-cur {
+      background: var(--card); border-radius: 16px; overflow: hidden;
+    }
+    .m-cur .art { height: 110px; }
+    .m-cur .body { padding: 10px 10px 12px; }
+    .m-cur h3 { margin: 0 0 2px; font-size: 13px; font-weight: 700; }
+    .m-cur .role { font-size: 11px; color: var(--muted); }
+
+    /* More Info Editorial Stage */
+    .m-a .lede-block {
+      margin: 0 0 20px; padding-bottom: 18px; border-bottom: 1px solid var(--line);
+    }
+    .m-a .kicker {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 8px;
+    }
+    .m-a .mission {
+      margin: 0 0 10px; font-size: 20px; font-weight: 650; letter-spacing: -0.03em; line-height: 1.3;
+    }
+    .m-a .vision {
+      margin: 0; font-size: 13px; color: var(--muted); line-height: 1.5;
+    }
+    .m-a .team {
+      margin: 0 0 12px; font-size: 11px; font-weight: 700; letter-spacing: 0.07em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .m-a .person {
+      display: grid; grid-template-columns: 64px 1fr; gap: 12px; align-items: center;
+      padding: 10px 0; border-bottom: 1px solid var(--line); cursor: pointer;
+    }
+    .m-a .person:last-child { border-bottom: 0; }
+    .m-a .photo {
+      width: 64px; height: 64px; border-radius: 14px;
+    }
+    .m-a h3 {
+      margin: 0 0 3px; font-size: 15px; font-weight: 650; letter-spacing: -0.02em;
+    }
+    .m-a .role { font-size: 12px; color: var(--muted); }
+
+    /* More Info Portrait Grid */
+    .m-b .lede-block { margin-bottom: 18px; }
+    .m-b .kicker {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 6px;
+    }
+    .m-b .mission {
+      margin: 0 0 8px; font-size: 17px; font-weight: 650; letter-spacing: -0.02em; line-height: 1.35;
+    }
+    .m-b .vision { margin: 0 0 18px; font-size: 13px; color: var(--muted); line-height: 1.5; }
+    .m-b .team {
+      margin: 0 0 10px; font-size: 11px; font-weight: 700; letter-spacing: 0.07em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .m-b .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .m-b .card {
+      border-radius: 16px; overflow: hidden; background: var(--card);
+      border: 1px solid transparent; cursor: pointer;
+    }
+    .m-b .card:hover { border-color: rgba(46,134,193,0.35); }
+    .m-b .art { height: 128px; }
+    .m-b .body { padding: 10px 10px 12px; }
+    .m-b h3 { margin: 0 0 2px; font-size: 13px; font-weight: 650; letter-spacing: -0.02em; }
+    .m-b .role { font-size: 11px; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <p class="eyebrow">LWP App · Medium 1–3</p>
+    <h1>Notes, Social, More Info</h1>
+    <p class="lede">
+      Same quiet language as Quiet Stream / Quiet Horizon / Cover Stage.
+      Pick a direction per area.
+    </p>
+
+    <div class="toolbar" id="areas">
+      <button type="button" class="active" data-area="notes">1 · Notes list</button>
+      <button type="button" data-area="social">2 · Social Media</button>
+      <button type="button" data-area="more">3 · More Info</button>
+    </div>
+    <div class="toolbar" id="variants"></div>
+    <p class="hint" id="hint"></p>
+    <p class="pitch" id="pitch"></p>
+    <div class="phones" id="phones"></div>
+  </div>
+
+  <script>
+    const ICONS = {
+      search: `<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16.5 16.5L21 21"/></svg>`,
+      note: `<svg viewBox="0 0 24 24"><path d="M7 3.5h7.5L19 8v12.5H7z"/><path d="M14.5 3.5V8H19"/><path d="M9.5 12h5M9.5 15.5h5"/></svg>`,
+      plus: `<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>`,
+      back: `<svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>`,
+      yt: `<svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="3"/><path d="M10 9.5l5 2.5-5 2.5z"/></svg>`,
+      ig: `<svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="12" cy="12" r="3.5"/><circle cx="17" cy="7" r="0.8" fill="currentColor" stroke="none"/></svg>`,
+      fb: `<svg viewBox="0 0 24 24"><path d="M14 9h3V6h-3c-2.2 0-3.5 1.4-3.5 3.5V12H8v3h2.5v6H14v-6h2.8l.5-3H14V9.5c0-.3.2-.5.5-.5z"/></svg>`,
+      web: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.5 2.8 2.5 14.2 0 17M12 3.5c-2.5 2.8-2.5 14.2 0 17"/></svg>`,
+    };
+
+    const NOTES = [
+      { title: "Sondag boodskap", date: "12 Nov", preview: "Geloof wat beweeg — notes from the morning service and key verses." },
+      { title: "Gebedspunte", date: "9 Nov", preview: "Familie, jeug, en die komende Alpha kursus." },
+      { title: "Studie — Romeine 8", date: "2 Nov", preview: "Lewe in die Gees. Geen veroordeling vir dié in Christus." },
+    ];
+
+    const SOCIAL = [
+      { title: "YouTube", icon: "yt" },
+      { title: "Instagram", icon: "ig" },
+      { title: "Facebook", icon: "fb" },
+      { title: "Website", icon: "web" },
+    ];
+
+    const TEAM = [
+      { name: "Ps. Johan", role: "Lead Pastor", art: "art-a" },
+      { name: "Ps. Annelie", role: "Associate Pastor", art: "art-d" },
+      { name: "Marí", role: "Worship", art: "art-b" },
+      { name: "Pieter", role: "Youth", art: "art-c" },
+    ];
+
+    function chrome(title, { back = true, fab = false } = {}) {
+      return `
+        <div class="chrome">
+          ${back ? `<div class="glass-btn">${ICONS.back}</div>` : ""}
+          <div class="title-pill">${title}</div>
+          <div class="chrome-spacer"></div>
+          <div class="glass-btn">${ICONS.search.replace("search", "") || ICONS.note}</div>
+        </div>`;
+    }
+
+    function phone(label, title, body, { fab = false } = {}) {
+      return `
+        <div class="phone active">
+          <div class="phone-label">${label}</div>
+          <div class="chrome">
+            <div class="glass-btn">${ICONS.back}</div>
+            <div class="title-pill">${title}</div>
+            <div class="chrome-spacer"></div>
+          </div>
+          <div class="scroll">${body}${fab ? `<div class="fab">${ICONS.plus}</div>` : ""}</div>
+        </div>`;
+    }
+
+    const META = {
+      notes: {
+        variants: [
+          ["current", "Current"],
+          ["a", "A · Quiet Stream"],
+          ["b", "B · Soft Sheet"],
+        ],
+        hint: "Quiet Stream matches announcements; Soft Sheet keeps a light card.",
+        pitches: {
+          current: "<strong>Baseline.</strong> Bordered card, note avatar, red delete button always visible — busy for a personal list.",
+          a: "<strong>Quiet Stream.</strong> No cards or avatars. Title + date on one line, preview below. Delete moves to swipe / long-press (hint shown).",
+          b: "<strong>Soft Sheet.</strong> Quiet card without avatar or always-on delete. Title, date, one-line preview.",
+        },
+        render(v) {
+          if (v === "current") {
+            const rows = NOTES.map((n) => `
+              <article class="n-cur">
+                <div class="top">
+                  <div class="avatar">${ICONS.note}</div>
+                  <div><h3>${n.title}</h3><div class="date">${n.date}</div></div>
+                  <div class="del">⌫</div>
+                </div>
+                <p class="preview">${n.preview}</p>
+              </article>`).join("");
+            return phone("Notes · current", "Notes", `<div class="search">${ICONS.search} Search notes</div>${rows}`, { fab: true });
+          }
+          if (v === "a") {
+            const rows = NOTES.map((n) => `
+              <article class="n-a">
+                <div class="row"><h3>${n.title}</h3><span class="date">${n.date}</span></div>
+                <p class="preview">${n.preview}</p>
+                <div class="hint-del">Swipe to delete</div>
+              </article>`).join("");
+            return phone("Notes · Quiet Stream", "Notes", `<div class="search">${ICONS.search} Search notes</div>${rows}`, { fab: true });
+          }
+          const rows = NOTES.map((n) => `
+            <article class="n-b">
+              <div class="row"><h3>${n.title}</h3><span class="date">${n.date}</span></div>
+              <p class="preview">${n.preview}</p>
+            </article>`).join("");
+          return phone("Notes · Soft Sheet", "Notes", `<div class="search">${ICONS.search} Search notes</div>${rows}`, { fab: true });
+        },
+      },
+      social: {
+        variants: [
+          ["current", "Current"],
+          ["a", "A · Quiet Stream"],
+          ["b", "B · Soft Tiles"],
+        ],
+        hint: "Quiet Stream for a link list; Soft Tiles if discovery should feel more visual.",
+        pitches: {
+          current: "<strong>Baseline.</strong> Large tinted icon boxes, chevrons, heavy cards for simple outbound links.",
+          a: "<strong>Quiet Stream.</strong> Compact icon dots, title, quiet Open affordance — no chevron chrome.",
+          b: "<strong>Soft Tiles.</strong> 2-up grid of soft cards. More presence, still calmer than today.",
+        },
+        render(v) {
+          if (v === "current") {
+            const rows = SOCIAL.map((s) => `
+              <article class="s-cur">
+                <div class="ico">${ICONS[s.icon]}</div>
+                <h3>${s.title}</h3>
+                <div class="chev">›</div>
+              </article>`).join("");
+            return phone("Social · current", "Follow Us", rows);
+          }
+          if (v === "a") {
+            const rows = SOCIAL.map((s) => `
+              <article class="s-a">
+                <div class="dot">${ICONS[s.icon]}</div>
+                <h3>${s.title}</h3>
+                <span class="open">Open</span>
+              </article>`).join("");
+            return phone("Social · Quiet Stream", "Follow Us", rows);
+          }
+          const tiles = SOCIAL.map((s) => `
+            <article class="tile">
+              <div class="dot">${ICONS[s.icon]}</div>
+              <h3>${s.title}</h3>
+            </article>`).join("");
+          return phone("Social · Soft Tiles", "Follow Us", `<div class="s-b">${tiles}</div>`);
+        },
+      },
+      more: {
+        variants: [
+          ["current", "Current"],
+          ["a", "A · Editorial list"],
+          ["b", "B · Portrait grid"],
+        ],
+        hint: "Editorial list for reading mission + team; Portrait grid keeps photos first but quieter.",
+        pitches: {
+          current: "<strong>Baseline.</strong> Bold section headers, dense body copy, 2-up cards with short photos — a bit dashboard-y.",
+          a: "<strong>Editorial list.</strong> Mission as the stage line, vision as quiet lede, team as photo+name rows. Less chrome, more people.",
+          b: "<strong>Portrait grid.</strong> Keep the grid, but taller portraits and quieter type. Mission/vision stay light above.",
+        },
+        render(v) {
+          if (v === "current") {
+            const grid = TEAM.map((t) => `
+              <article class="m-cur">
+                <div class="art ${t.art}"></div>
+                <div class="body"><h3>${t.name}</h3><div class="role">${t.role}</div></div>
+              </article>`).join("");
+            return phone("More Info · current", "More Info", `
+              <div class="m-section">Mission</div>
+              <p class="m-copy">Om mense te lei tot 'n lewe van aanbidding en dissipelskap in Christus.</p>
+              <div class="m-section">Vision</div>
+              <p class="m-copy">'n Gemeente wat groei in geloof, gemeenskap en diens.</p>
+              <div class="m-section">Team</div>
+              <div class="m-grid">${grid}</div>`);
+          }
+          if (v === "a") {
+            const people = TEAM.map((t) => `
+              <article class="person">
+                <div class="art ${t.art} photo"></div>
+                <div><h3>${t.name}</h3><div class="role">${t.role}</div></div>
+              </article>`).join("");
+            return phone("More Info · Editorial", "More Info", `
+              <div class="m-a">
+                <div class="lede-block">
+                  <div class="kicker">Mission</div>
+                  <p class="mission">Lead people into a life of worship and discipleship in Christ.</p>
+                  <p class="vision">Vision — a congregation growing in faith, community, and service.</p>
+                </div>
+                <div class="team">Leadership</div>
+                ${people}
+              </div>`);
+          }
+          const grid = TEAM.map((t) => `
+            <article class="card">
+              <div class="art ${t.art}"></div>
+              <div class="body"><h3>${t.name}</h3><div class="role">${t.role}</div></div>
+            </article>`).join("");
+          return phone("More Info · Portrait grid", "More Info", `
+            <div class="m-b">
+              <div class="lede-block">
+                <div class="kicker">Mission</div>
+                <p class="mission">Lead people into a life of worship and discipleship in Christ.</p>
+                <p class="vision">A congregation growing in faith, community, and service.</p>
+              </div>
+              <div class="team">Leadership</div>
+              <div class="grid">${grid}</div>
+            </div>`);
+        },
+      },
+    };
+
+    let area = "notes";
+    let variant = "a";
+
+    const variantsEl = document.getElementById("variants");
+    const pitchEl = document.getElementById("pitch");
+    const hintEl = document.getElementById("hint");
+    const phonesEl = document.getElementById("phones");
+
+    function sync() {
+      document.querySelectorAll("#areas button").forEach((b) => {
+        b.classList.toggle("active", b.dataset.area === area);
+      });
+      const meta = META[area];
+      const allowed = meta.variants.map(([id]) => id);
+      if (!allowed.includes(variant)) variant = allowed[1] || allowed[0];
+
+      variantsEl.innerHTML = meta.variants.map(([id, label]) =>
+        `<button type="button" data-variant="${id}" class="${id === variant ? "active" : ""}">${label}</button>`
+      ).join("");
+
+      pitchEl.innerHTML = meta.pitches[variant];
+      hintEl.textContent = meta.hint;
+      phonesEl.innerHTML = meta.render(variant);
+    }
+
+    document.getElementById("areas").addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-area]");
+      if (!btn) return;
+      area = btn.dataset.area;
+      variant = META[area].variants[1]?.[0] || "current";
+      sync();
+    });
+    variantsEl.addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-variant]");
+      if (!btn) return;
+      variant = btn.dataset.variant;
+      sync();
+    });
+
+    sync();
+  </script>
+</body>
+</html>

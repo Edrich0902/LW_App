@@ -926,6 +926,9 @@ class AppLocalizationsAf extends AppLocalizations {
   String get socialMediaEmpty => 'Geen Volg Ons Skakels';
 
   @override
+  String get socialMediaOpen => 'Open';
+
+  @override
   String get commonYou => 'Jy';
 
   @override

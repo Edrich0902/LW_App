@@ -919,6 +919,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get socialMediaEmpty => 'No Follow Us Links';
 
   @override
+  String get socialMediaOpen => 'Open';
+
+  @override
   String get commonYou => 'You';
 
   @override

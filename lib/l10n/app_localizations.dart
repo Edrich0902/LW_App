@@ -1820,6 +1820,12 @@ abstract class AppLocalizations {
   /// **'Geen Volg Ons Skakels'**
   String get socialMediaEmpty;
 
+  /// No description provided for @socialMediaOpen.
+  ///
+  /// In af, this message translates to:
+  /// **'Open'**
+  String get socialMediaOpen;
+
   /// No description provided for @commonYou.
   ///
   /// In af, this message translates to:

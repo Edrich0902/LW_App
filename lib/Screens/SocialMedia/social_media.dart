@@ -34,103 +34,116 @@ class _SocialMediaPageState extends State<SocialMediaPage> {
 
   @override
   Widget build(BuildContext context) {
-    SocialMediaBloc socialMediaBloc = BlocProvider.of<SocialMediaBloc>(context);
+    final socialMediaBloc = BlocProvider.of<SocialMediaBloc>(context);
+    final theme = Theme.of(context);
+    final openColor = theme.brightness == Brightness.dark
+        ? const Color(0xFF9FD0F3)
+        : theme.primaryColor;
 
     return BlocListener<SocialMediaBloc, SocialMediaState>(
-      listener: (context, state) {
-        // Listen to state updates and execute logic here
-      },
+      listener: (context, state) {},
       child: LwpChromeScaffold(
         title: context.l10n.dashboardFollowUs,
         showDefaultActions: true,
         body: BlocBuilder<SocialMediaBloc, SocialMediaState>(
-            builder: (context, state) {
-              if (state is SocialMediaLoading) {
-                return LwpSkeletonList.thumb();
-              } else if (state is SocialMediaSuccess) {
-                if (state.socialMedia.isNotEmpty) {
-                  return LwpListEntranceScope(
-                    controller: _listEntrance,
-                    child: RefreshIndicator(
-                      onRefresh: () async {
-                        _listEntrance.bump();
-                        socialMediaBloc.add(const LoadSocialMedia());
-                      },
-                      child: ListView.separated(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 24.0),
-                        itemCount: state.socialMedia.length,
-                        separatorBuilder: (context, index) =>
-                            const SizedBox(height: 16.0),
-                        itemBuilder: (BuildContext context, int index) {
-                          final social = state.socialMedia[index];
-                          return LwpListEntrance(
-                            id: social.id ?? 'social-$index',
-                            child: Card(
-                          margin: EdgeInsets.zero,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: LwpRadii.lgAll,
-                          ),
+          builder: (context, state) {
+            if (state is SocialMediaLoading) {
+              return LwpSkeletonList.text();
+            } else if (state is SocialMediaSuccess) {
+              if (state.socialMedia.isNotEmpty) {
+                return LwpListEntranceScope(
+                  controller: _listEntrance,
+                  child: RefreshIndicator(
+                    onRefresh: () async {
+                      _listEntrance.bump();
+                      socialMediaBloc.add(const LoadSocialMedia());
+                    },
+                    child: ListView.separated(
+                      padding: const EdgeInsets.fromLTRB(
+                        LwpSpacing.md,
+                        LwpSpacing.lg,
+                        LwpSpacing.md,
+                        LwpSpacing.xxl,
+                      ),
+                      itemCount: state.socialMedia.length,
+                      separatorBuilder: (_, __) => Divider(
+                        height: 1,
+                        thickness: 1,
+                        color: theme.dividerColor.withValues(alpha: 0.35),
+                      ),
+                      itemBuilder: (context, index) {
+                        final social = state.socialMedia[index];
+                        return LwpListEntrance(
+                          id: social.id ?? 'social-$index',
                           child: InkWell(
-                            borderRadius: LwpRadii.lgAll,
                             onTap: () {
                               if (social.link != null &&
                                   social.link!.isNotEmpty) {
-                                launchUrl(Uri.parse(social.link!),
-                                    mode: LaunchMode.externalApplication);
+                                launchUrl(
+                                  Uri.parse(social.link!),
+                                  mode: LaunchMode.externalApplication,
+                                );
                               }
                             },
                             child: Padding(
-                              padding: const EdgeInsets.all(16.0),
+                              padding: const EdgeInsets.symmetric(
+                                vertical: LwpSpacing.sm + 2,
+                                horizontal: LwpSpacing.xxs,
+                              ),
                               child: Row(
                                 children: [
                                   Container(
-                                    padding: const EdgeInsets.all(12.0),
+                                    width: 36,
+                                    height: 36,
                                     decoration: BoxDecoration(
-                                      color: Theme.of(context)
-                                          .primaryColor
-                                          .withValues(alpha: 0.1),
-                                      borderRadius: LwpRadii.smAll,
+                                      color: theme.primaryColor
+                                          .withValues(alpha: 0.18),
+                                      shape: BoxShape.circle,
                                     ),
                                     child: Icon(
                                       _getSocialMediaIcon(social.type ?? ''),
-                                      color: Theme.of(context).primaryColor,
-                                      size: 28,
+                                      color: theme.primaryColor,
+                                      size: 16,
                                     ),
                                   ),
-                                  const SizedBox(width: 16.0),
+                                  const SizedBox(width: LwpSpacing.sm),
                                   Expanded(
                                     child: Text(
                                       social.title ?? '',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleMedium,
+                                      style:
+                                          theme.textTheme.titleMedium?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                        letterSpacing: -0.2,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
-                                  Icon(
-                                    Icons.chevron_right_rounded,
-                                    color: Theme.of(context)
-                                        .hintColor
-                                        .withValues(alpha: 0.5),
+                                  Text(
+                                    context.l10n.socialMediaOpen.toUpperCase(),
+                                    style: theme.textTheme.labelSmall?.copyWith(
+                                      color: openColor,
+                                      fontWeight: FontWeight.w700,
+                                      letterSpacing: 0.4,
+                                    ),
                                   ),
                                 ],
                               ),
                             ),
                           ),
-                            ),
-                          );
-                        },
-                      ),
+                        );
+                      },
                     ),
-                  );
-                } else {
-                  return LwpEmpty(message: context.l10n.socialMediaEmpty);
-                }
+                  ),
+                );
               } else {
-                return const LwpError();
+                return LwpEmpty(message: context.l10n.socialMediaEmpty);
               }
-            },
-          ),
+            } else {
+              return const LwpError();
+            }
+          },
+        ),
       ),
     );
   }
