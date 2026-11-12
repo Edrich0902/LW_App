@@ -1538,6 +1538,18 @@ class AppLocalizationsAf extends AppLocalizations {
   String get dashboardVotdLabel => 'VERS VAN DIE DAG';
 
   @override
+  String get dashboardVotdReadInBible => 'Lees in Bybel';
+
+  @override
+  String get dashboardVotdShareImage => 'Deel as prent';
+
+  @override
+  String get dashboardDiscoverSection => 'Ontdek';
+
+  @override
+  String get dashboardUntitledSermon => 'Geen Titel';
+
+  @override
   String get weekdayMonday => 'Maandag';
 
   @override

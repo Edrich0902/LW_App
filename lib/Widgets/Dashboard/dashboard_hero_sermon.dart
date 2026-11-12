@@ -3,156 +3,123 @@ import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/Sermon/sermon.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
-import 'package:lw_app/Screens/Sermons/sermons.dart';
 
 class DashboardHeroSermon extends StatelessWidget {
   final Sermon sermon;
+  final String? thumbnailUrl;
   final VoidCallback onTap;
 
   const DashboardHeroSermon({
     super.key,
     required this.sermon,
     required this.onTap,
+    this.thumbnailUrl,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final cardColor = theme.cardTheme.color ?? theme.colorScheme.surface;
-    final heroStartColor = isDark
-        ? Color.lerp(cardColor, theme.primaryColor, 0.4)!
-        : theme.primaryColor;
-    final heroEndColor = isDark
-        ? Color.lerp(cardColor, theme.primaryColor, 0.22)!
-        : theme.primaryColor.withValues(alpha: 0.85);
-    final accentColor = isDark ? theme.primaryColor : Colors.white;
+    final dateLabel = sermon.createdAt != null && sermon.createdAt!.isNotEmpty
+        ? DateFormatter.formatDate(sermon.createdAt!)
+        : '';
+    final metaParts = <String>[
+      if ((sermon.pastor ?? '').trim().isNotEmpty) sermon.pastor!.trim(),
+      if (dateLabel.isNotEmpty) dateLabel,
+    ];
 
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
         borderRadius: LwpRadii.lgAll,
-        gradient: LinearGradient(
-          colors: [heroStartColor, heroEndColor],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        border: isDark
-            ? Border.all(color: theme.primaryColor.withValues(alpha: 0.35))
-            : null,
-        boxShadow: [
-          BoxShadow(
-            color: isDark
-                ? theme.primaryColor.withValues(alpha: 0.22)
-                : Colors.black.withValues(alpha: 0.1),
-            blurRadius: isDark ? 16 : 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
+        child: ClipRRect(
           borderRadius: LwpRadii.lgAll,
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          child: SizedBox(
+            height: 188,
+            width: double.infinity,
+            child: Stack(
+              fit: StackFit.expand,
               children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: accentColor.withValues(alpha: 0.2),
-                        borderRadius: LwpRadii.smAll,
-                      ),
-                      child: Text(
-                        context.l10n.dashboardLatestSermonLabel,
-                        style: TextStyle(
-                          color: accentColor,
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.2,
+                if ((thumbnailUrl ?? '').isNotEmpty)
+                  Image.network(
+                    thumbnailUrl!,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => ColoredBox(
+                      color: theme.colorScheme.primary.withValues(alpha: 0.28),
+                    ),
+                  )
+                else
+                  ColoredBox(
+                    color: theme.colorScheme.primary.withValues(alpha: 0.35),
+                  ),
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withValues(alpha: 0.22),
+                        Colors.black.withValues(alpha: 0.88),
+                      ],
+                      stops: const [0.2, 0.55, 1.0],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    LwpSpacing.md,
+                    LwpSpacing.md,
+                    LwpSpacing.md,
+                    LwpSpacing.sm,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Spacer(),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: LwpSpacing.sm,
+                          vertical: LwpSpacing.xxs,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.14),
+                          borderRadius: LwpRadii.smAll,
+                        ),
+                        child: Text(
+                          context.l10n.dashboardLatestSermonLabel,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 1.1,
+                          ),
                         ),
                       ),
-                    ),
-                    const Spacer(),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const SermonsPage()),
-                        );
-                      },
-                      style: TextButton.styleFrom(
-                        padding: EdgeInsets.zero,
-                        minimumSize: Size.zero,
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      const SizedBox(height: LwpSpacing.xs),
+                      Text(
+                        sermon.title ?? context.l10n.dashboardUntitledSermon,
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: -0.3,
+                          height: 1.2,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      child: Row(
-                        children: [
-                          Text(
-                            context.l10n.dashboardWatchAllButton,
-                            style: TextStyle(
-                              color: isDark ? Colors.white70 : Colors.white70,
-                              fontSize: 12,
-                            ),
+                      if (metaParts.isNotEmpty) ...[
+                        const SizedBox(height: LwpSpacing.xxs),
+                        Text(
+                          metaParts.join(' · '),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: Colors.white.withValues(alpha: 0.75),
                           ),
-                          Icon(
-                            Icons.chevron_right,
-                            color: isDark ? Colors.white70 : Colors.white70,
-                            size: 16,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  sermon.title ?? "Geen Titel",
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    color: isDark ? Colors.white : Colors.white,
-                    fontWeight: FontWeight.bold,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ],
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.person_outline,
-                      size: 14,
-                      color: isDark ? Colors.white70 : Colors.white70,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      sermon.pastor ?? "Onbekend",
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: isDark ? Colors.white70 : Colors.white70,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Icon(
-                      Icons.calendar_today_outlined,
-                      size: 14,
-                      color: isDark ? Colors.white70 : Colors.white70,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      sermon.createdAt != null && sermon.createdAt!.isNotEmpty
-                          ? DateFormatter.formatDate(sermon.createdAt!)
-                          : "",
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: isDark ? Colors.white70 : Colors.white70,
-                      ),
-                    ),
-                  ],
                 ),
               ],
             ),

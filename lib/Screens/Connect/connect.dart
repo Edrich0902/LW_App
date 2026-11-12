@@ -34,9 +34,9 @@ class _ConnectPageState extends State<ConnectPage> {
               padding: EdgeInsets.zero,
               physics: const NeverScrollableScrollPhysics(),
               crossAxisCount: 2,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-              childAspectRatio: 1.1,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 2.7,
               children: [
                 DashboardGridCard(
                   title: context.l10n.connectGroupsTitle,

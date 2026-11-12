@@ -1531,6 +1531,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dashboardVotdLabel => 'VERSE OF THE DAY';
 
   @override
+  String get dashboardVotdReadInBible => 'Read in Bible';
+
+  @override
+  String get dashboardVotdShareImage => 'Share as image';
+
+  @override
+  String get dashboardDiscoverSection => 'Discover';
+
+  @override
+  String get dashboardUntitledSermon => 'Untitled';
+
+  @override
   String get weekdayMonday => 'Monday';
 
   @override

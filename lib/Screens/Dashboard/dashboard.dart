@@ -111,6 +111,9 @@ class _DashPageState extends State<DashPage>
                   if (state is SermonsSuccess && state.sermons.isNotEmpty) {
                     return DashboardHeroSermon(
                       sermon: state.sermons.first,
+                      thumbnailUrl: state.youtubeVideos.isNotEmpty
+                          ? state.youtubeVideos.first.thumbnailUrl
+                          : null,
                       onTap: () {
                         if (state.youtubeVideos.isNotEmpty) {
                           Navigator.push(
@@ -130,10 +133,12 @@ class _DashPageState extends State<DashPage>
                     );
                   } else if (state is SermonsLoading) {
                     return const _DashboardPlaceholder(
+                      height: 188,
                       child: LwpSkeletonMediaCard(compact: true),
                     );
                   } else if (state is SermonsError) {
                     return _DashboardPlaceholder(
+                      height: 188,
                       child: LwpError(
                         message: state.error,
                       ),
@@ -145,29 +150,40 @@ class _DashPageState extends State<DashPage>
 
               BlocBuilder<PastoralBlogBloc, PastoralBlogState>(
                 builder: (context, state) {
-                  if (state.status == PastoralBlogStatus.success && state.posts.isNotEmpty) {
+                  if (state.status == PastoralBlogStatus.success &&
+                      state.posts.isNotEmpty) {
                     final latestPost = state.posts.first;
                     return Padding(
-                      padding: const EdgeInsets.only(top: 16.0),
-                      child: DashboardHeroBlog(
-                        post: latestPost,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => PastoralBlogReaderPage(
-                                postId: latestPost.id,
-                              ),
-                            ),
-                          );
-                        },
+                      padding: const EdgeInsets.only(top: LwpSpacing.sm),
+                      child: Column(
+                        children: [
+                          DashboardHeroBlog(
+                            post: latestPost,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PastoralBlogReaderPage(
+                                    postId: latestPost.id,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                          Divider(
+                            height: LwpSpacing.lg,
+                            color: Theme.of(context)
+                                .dividerColor
+                                .withValues(alpha: 0.55),
+                          ),
+                        ],
                       ),
                     );
                   }
                   return const SizedBox.shrink();
                 },
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: LwpSpacing.xs),
               BlocListener<BibleBloc, BibleState>(
                 listenWhen: (previous, current) {
                   if (current is! BibleLoaded) return false;
@@ -237,15 +253,24 @@ class _DashPageState extends State<DashPage>
                   },
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: LwpSpacing.md),
+              Text(
+                context.l10n.dashboardDiscoverSection,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: Theme.of(context).hintColor,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 1.0,
+                    ),
+              ),
+              const SizedBox(height: LwpSpacing.sm),
               GridView.count(
                 shrinkWrap: true,
                 padding: EdgeInsets.zero,
                 physics: const NeverScrollableScrollPhysics(),
                 crossAxisCount: 2,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                childAspectRatio: 1.1,
+                crossAxisSpacing: LwpSpacing.sm,
+                mainAxisSpacing: LwpSpacing.sm,
+                childAspectRatio: 2.7,
                 children: [
                   DashboardGridCard(
                     title: context.l10n.dashboardUpcomingEvents,

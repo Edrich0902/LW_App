@@ -2954,6 +2954,30 @@ abstract class AppLocalizations {
   /// **'VERS VAN DIE DAG'**
   String get dashboardVotdLabel;
 
+  /// No description provided for @dashboardVotdReadInBible.
+  ///
+  /// In af, this message translates to:
+  /// **'Lees in Bybel'**
+  String get dashboardVotdReadInBible;
+
+  /// No description provided for @dashboardVotdShareImage.
+  ///
+  /// In af, this message translates to:
+  /// **'Deel as prent'**
+  String get dashboardVotdShareImage;
+
+  /// No description provided for @dashboardDiscoverSection.
+  ///
+  /// In af, this message translates to:
+  /// **'Ontdek'**
+  String get dashboardDiscoverSection;
+
+  /// No description provided for @dashboardUntitledSermon.
+  ///
+  /// In af, this message translates to:
+  /// **'Geen Titel'**
+  String get dashboardUntitledSermon;
+
   /// No description provided for @weekdayMonday.
   ///
   /// In af, this message translates to:

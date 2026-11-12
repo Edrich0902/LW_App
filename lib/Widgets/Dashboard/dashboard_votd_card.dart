@@ -19,138 +19,118 @@ class DashboardVotdCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final imageUrl = votd.imageUrl?.trim();
-    final hasImage = imageUrl != null && imageUrl.isNotEmpty;
     final verses = BibleParser.parseChapterHtml(
       rawHtml: votd.content.rawHtml,
       bookId: votd.book.id,
       chapterId: votd.chapter.id,
     );
+    final quoteText = verses.map((v) => v.text.trim()).join(' ').trim();
 
-    return Card(
-      margin: EdgeInsets.zero,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: LwpRadii.lgAll,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (hasImage)
-              ClipRRect(
-                borderRadius: LwpRadii.lgTop,
-                child: Image.network(
-                  imageUrl,
-                  width: double.infinity,
-                  height: 200,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) =>
-                      const SizedBox.shrink(),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: LwpSpacing.sm,
+            vertical: LwpSpacing.xxs,
+          ),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.primary.withValues(alpha: 0.12),
+            borderRadius: LwpRadii.smAll,
+          ),
+          child: Text(
+            context.l10n.dashboardVotdLabel,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.primary,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 1.1,
+            ),
+          ),
+        ),
+        const SizedBox(height: LwpSpacing.sm),
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: LwpRadii.smAll,
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.only(left: LwpSpacing.sm),
+              decoration: BoxDecoration(
+                border: Border(
+                  left: BorderSide(
+                    color: theme.colorScheme.primary,
+                    width: 2,
+                  ),
                 ),
               ),
-            Padding(
-              padding: const EdgeInsets.all(24.0),
               child: Column(
-                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: theme.primaryColor.withValues(alpha: 0.1),
-                          borderRadius: LwpRadii.smAll,
-                        ),
-                        child: Text(
-                          context.l10n.dashboardVotdLabel,
-                          style: TextStyle(
-                            color: theme.primaryColor,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1.2,
-                          ),
-                        ),
-                      ),
-                      const Spacer(),
-                      GestureDetector(
-                        onTap: onCreateImage,
-                        child: Icon(Icons.image_outlined,
-                            size: 18, color: theme.hintColor),
-                      ),
-                      const SizedBox(width: 10),
-                      Icon(Icons.menu_book, size: 16, color: theme.hintColor),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Text.rich(
-                    TextSpan(
-                      children: [
-                        for (final verse in verses) ...[
-                          TextSpan(
-                            text: verse.verseNumber,
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.bold,
-                              color: theme.primaryColor.withValues(alpha: 0.8),
-                              height: 1.5,
-                            ),
-                          ),
-                          TextSpan(
-                            text: ' ${verse.text} ',
-                            style: theme.textTheme.bodyLarge?.copyWith(
-                              fontSize: 18,
-                              height: 1.5,
-                            ),
-                          ),
-                        ],
-                      ],
+                  Text(
+                    quoteText.isNotEmpty
+                        ? quoteText
+                        : votd.content.citation,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontSize: 17,
+                      height: 1.55,
+                      letterSpacing: -0.15,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    spacing: LwpSpacing.sm,
-                    runSpacing: LwpSpacing.xs,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      Text(
-                        votd.content.citation,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: theme.primaryColor,
-                        ),
-                      ),
-                      ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 260),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: LwpSpacing.sm,
-                            vertical: LwpSpacing.xxs,
-                          ),
-                          decoration: ShapeDecoration(
-                            color: theme.primaryColor.withValues(alpha: 0.1),
-                            shape: const StadiumBorder(),
-                          ),
-                          child: Text(
-                            votd.version.shortLabel,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: theme.primaryColor,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                  const SizedBox(height: LwpSpacing.sm),
+                  Text(
+                    '${votd.content.citation} · ${votd.version.shortLabel}',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ],
               ),
             ),
+          ),
+        ),
+        const SizedBox(height: LwpSpacing.sm),
+        Wrap(
+          spacing: LwpSpacing.xs,
+          runSpacing: LwpSpacing.xs,
+          children: [
+            OutlinedButton(
+              onPressed: onTap,
+              style: OutlinedButton.styleFrom(
+                foregroundColor: theme.hintColor,
+                side: BorderSide(
+                  color: theme.dividerColor.withValues(alpha: 0.6),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: LwpSpacing.sm,
+                  vertical: LwpSpacing.xs,
+                ),
+                visualDensity: VisualDensity.compact,
+                shape: const StadiumBorder(),
+              ),
+              child: Text(context.l10n.dashboardVotdReadInBible),
+            ),
+            OutlinedButton(
+              onPressed: onCreateImage,
+              style: OutlinedButton.styleFrom(
+                foregroundColor: theme.hintColor,
+                side: BorderSide(
+                  color: theme.dividerColor.withValues(alpha: 0.6),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: LwpSpacing.sm,
+                  vertical: LwpSpacing.xs,
+                ),
+                visualDensity: VisualDensity.compact,
+                shape: const StadiumBorder(),
+              ),
+              child: Text(context.l10n.dashboardVotdShareImage),
+            ),
           ],
         ),
-      ),
+      ],
     );
   }
 }

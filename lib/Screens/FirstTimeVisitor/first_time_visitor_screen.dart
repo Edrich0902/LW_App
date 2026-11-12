@@ -172,7 +172,7 @@ class _FirstTimeVisitorScreenState extends State<FirstTimeVisitorScreen> {
       crossAxisCount: 3,
       crossAxisSpacing: 12,
       mainAxisSpacing: 12,
-      childAspectRatio: 0.9,
+      childAspectRatio: 1.55,
       children: [
         DashboardGridCard(
           title: context.l10n.visitorFindUs,
