@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LWP — High-impact redesign (1–4)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0b1218;
+      --surface: #0e151c;
+      --card: #1e1e1e;
+      --ink: #eef3f7;
+      --muted: #8a9aab;
+      --line: rgba(255,255,255,0.08);
+      --accent: #2e86c1;
+      --accent-soft: rgba(46,134,193,0.18);
+      --good: #7dceb0;
+      --good-soft: rgba(61,186,122,0.14);
+      --warn: #e0a45a;
+      --warn-soft: rgba(224,164,90,0.16);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "DM Sans", system-ui, sans-serif;
+      background:
+        radial-gradient(900px 420px at 15% -10%, rgba(46,134,193,0.14), transparent 58%),
+        var(--bg);
+      color: var(--ink);
+      padding: 28px 20px 80px;
+    }
+    .page { max-width: 1320px; margin: 0 auto; }
+    .eyebrow {
+      font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--muted); margin: 0 0 6px;
+    }
+    h1 {
+      margin: 0 0 8px; font-size: 28px; font-weight: 600; letter-spacing: -0.03em;
+    }
+    .lede {
+      margin: 0 0 16px; color: var(--muted); font-size: 14px; line-height: 1.55; max-width: 72ch;
+    }
+    .pitch {
+      margin: 0 0 18px; padding: 14px 16px; border: 1px solid var(--line);
+      border-radius: 12px; background: rgba(255,255,255,0.03);
+      color: var(--muted); font-size: 13px; line-height: 1.55; max-width: 88ch;
+    }
+    .pitch strong { color: var(--ink); font-weight: 600; }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+    .toolbar button {
+      appearance: none; border: 1px solid var(--line); background: rgba(255,255,255,0.03);
+      color: var(--ink); border-radius: 999px; padding: 10px 14px; font: inherit;
+      font-size: 13px; font-weight: 500; cursor: pointer;
+    }
+    .toolbar button:hover { border-color: rgba(255,255,255,0.18); }
+    .toolbar button.active { background: var(--accent); border-color: transparent; color: #fff; }
+    .hint { margin: 0 0 20px; font-size: 12px; color: var(--muted); }
+    .phones {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 22px; align-items: start;
+    }
+    .phone {
+      border: 1px solid var(--line); border-radius: 28px; background: #121212;
+      overflow: hidden; box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+      min-height: 760px; display: flex; flex-direction: column;
+    }
+    .phone-label {
+      padding: 14px 18px 0; font-size: 11px; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .chrome {
+      display: flex; align-items: center; gap: 10px; padding: 14px 16px 12px;
+    }
+    .chrome-spacer { flex: 1; }
+    .glass-btn {
+      width: 36px; height: 36px; border-radius: 999px; border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04); display: grid; place-items: center;
+      color: var(--ink); flex-shrink: 0;
+    }
+    .glass-btn svg {
+      width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.7;
+      stroke-linecap: round; stroke-linejoin: round;
+    }
+    .title-pill {
+      height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04); display: inline-flex; align-items: center;
+      font-size: 14px; font-weight: 600;
+    }
+    .actions { display: flex; gap: 8px; }
+    .scroll { flex: 1; overflow: auto; padding: 8px 16px 28px; }
+    .scroll.gap { display: flex; flex-direction: column; gap: 12px; }
+    .scroll.tight { display: flex; flex-direction: column; gap: 10px; }
+    .art {
+      width: 100%; position: relative; overflow: hidden; background: #16324a;
+    }
+    .art::after {
+      content: ""; position: absolute; inset: 0; pointer-events: none;
+      background:
+        radial-gradient(circle at 72% 28%, rgba(255,255,255,0.16), transparent 42%),
+        radial-gradient(circle at 18% 86%, rgba(46,134,193,0.35), transparent 48%);
+    }
+    .art-a { background: linear-gradient(145deg, #1a3a52 0%, #2e86c1 48%, #0f1c28 100%); }
+    .art-b { background: linear-gradient(160deg, #243044 0%, #3d6a8a 40%, #121820 100%); }
+    .art-c { background: linear-gradient(135deg, #2a2140 0%, #2e86c1 45%, #0d1822 100%); }
+    .art-d { background: linear-gradient(150deg, #1e3d36 0%, #2e86c1 50%, #101820 100%); }
+    .play {
+      position: absolute; inset: 0; display: grid; place-items: center; z-index: 1;
+    }
+    .play span {
+      width: 44px; height: 44px; border-radius: 999px;
+      background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.2);
+      display: grid; place-items: center; backdrop-filter: blur(6px);
+    }
+    .play svg {
+      width: 16px; height: 16px; fill: #fff; margin-left: 2px;
+    }
+
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* Shared date tile */
+    .date-tile {
+      width: 56px; border-radius: 12px; background: var(--accent-soft);
+      border: 1px solid rgba(46,134,193,0.25); padding: 8px 4px; text-align: center;
+      flex-shrink: 0;
+    }
+    .date-tile .dow {
+      font-size: 9px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--accent);
+    }
+    .date-tile .day {
+      margin: 2px 0 0; font-size: 22px; font-weight: 700;
+      letter-spacing: -0.04em; line-height: 1; font-variant-numeric: tabular-nums;
+    }
+    .date-tile .mon {
+      margin-top: 3px; font-size: 10px; font-weight: 600; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.04em;
+    }
+
+    /* ---------- Sermons ---------- */
+    .s-cur {
+      background: var(--card); border-radius: 16px; overflow: hidden; margin-bottom: 16px;
+    }
+    .s-cur .art { aspect-ratio: 16/9; }
+    .s-cur .body { padding: 16px; }
+    .s-cur h3 { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+    .s-cur p { margin: 0; font-size: 14px; color: var(--muted); }
+
+    .s-a {
+      background: var(--card); border-radius: 18px; overflow: hidden;
+      border: 1px solid transparent; cursor: pointer;
+    }
+    .s-a:hover { border-color: rgba(46,134,193,0.35); }
+    .s-a .art { height: 132px; }
+    .s-a .body { padding: 12px 14px 14px; }
+    .s-a h3 {
+      margin: 0 0 4px; font-size: 16px; font-weight: 650; letter-spacing: -0.02em;
+      line-height: 1.25;
+    }
+    .s-a .meta { font-size: 13px; color: var(--muted); }
+
+    .s-b-featured {
+      border-radius: 18px; overflow: hidden; position: relative; margin-bottom: 4px;
+      cursor: pointer;
+    }
+    .s-b-featured .art { height: 210px; }
+    .s-b-featured .cap {
+      position: absolute; left: 0; right: 0; bottom: 0; z-index: 1;
+      padding: 48px 16px 16px;
+      background: linear-gradient(transparent, rgba(0,0,0,0.78));
+    }
+    .s-b-featured .kicker {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: #9fd0ef; margin-bottom: 6px;
+    }
+    .s-b-featured h3 {
+      margin: 0 0 4px; font-size: 20px; font-weight: 650; letter-spacing: -0.03em;
+    }
+    .s-b-featured .meta { font-size: 12px; color: rgba(255,255,255,0.72); }
+    .s-b-more {
+      margin: 14px 2px 8px; font-size: 11px; font-weight: 700;
+      letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted);
+    }
+    .s-b-row {
+      display: grid; grid-template-columns: 88px 1fr; gap: 12px;
+      padding: 8px; background: var(--card); border-radius: 14px; cursor: pointer;
+      border: 1px solid transparent;
+    }
+    .s-b-row:hover { border-color: rgba(46,134,193,0.35); }
+    .s-b-row .art { height: 64px; border-radius: 10px; }
+    .s-b-row .play span { width: 28px; height: 28px; }
+    .s-b-row .play svg { width: 11px; height: 11px; }
+    .s-b-row h3 {
+      margin: 4px 0 3px; font-size: 14px; font-weight: 650; letter-spacing: -0.02em;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .s-b-row .meta { font-size: 11px; color: var(--muted); }
+
+    /* ---------- Calendar ---------- */
+    .cal-day {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--accent); margin: 6px 0 12px;
+    }
+    .cal-rail {
+      position: relative; padding-left: 22px; margin-bottom: 6px;
+    }
+    .cal-rail::before {
+      content: ""; position: absolute; left: 5px; top: 10px; bottom: -18px;
+      width: 2px; background: rgba(46,134,193,0.22);
+    }
+    .cal-rail.last::before { display: none; }
+    .cal-dot {
+      position: absolute; left: 0; top: 4px; width: 12px; height: 12px;
+      border-radius: 999px; background: var(--accent);
+      box-shadow: 0 0 0 4px rgba(46,134,193,0.2);
+    }
+    .cal-cur {
+      background: var(--card); border-radius: 14px; padding: 10px; display: flex; gap: 12px;
+      margin-bottom: 14px;
+    }
+    .cal-cur .thumb {
+      width: 72px; height: 72px; border-radius: 10px; flex-shrink: 0;
+    }
+    .cal-cur h3 { margin: 2px 0 6px; font-size: 15px; font-weight: 700; }
+    .cal-cur .meta {
+      display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted);
+    }
+    .cal-a {
+      background: var(--card); border-radius: 16px; overflow: hidden;
+      margin-bottom: 10px; border: 1px solid transparent; cursor: pointer;
+    }
+    .cal-a:hover { border-color: rgba(46,134,193,0.35); }
+    .cal-a .art { height: 96px; }
+    .cal-a .row {
+      display: grid; grid-template-columns: 56px 1fr; gap: 12px;
+      padding: 12px; align-items: start;
+    }
+    .cal-a h3 {
+      margin: 0 0 3px; font-size: 15px; font-weight: 650; letter-spacing: -0.02em;
+    }
+    .cal-a .desc {
+      margin: 0 0 6px; font-size: 12px; color: var(--muted);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .cal-a .meta { font-size: 12px; font-weight: 600; }
+
+    .cal-b-day {
+      display: flex; align-items: center; gap: 12px; margin: 4px 0 10px;
+    }
+    .cal-b-events { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
+    .cal-b-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 12px 12px 14px; border-radius: 14px;
+      background: rgba(255,255,255,0.03); border: 1px solid var(--line);
+      cursor: pointer;
+    }
+    .cal-b-row:hover { border-color: rgba(46,134,193,0.35); }
+    .cal-b-row .time {
+      width: 48px; font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums;
+      color: var(--accent); flex-shrink: 0;
+    }
+    .cal-b-row h3 {
+      margin: 0 0 2px; font-size: 14px; font-weight: 650; letter-spacing: -0.02em;
+    }
+    .cal-b-row .desc { margin: 0; font-size: 12px; color: var(--muted); }
+
+    /* ---------- Detail ---------- */
+    .detail { position: relative; flex: 1; overflow: auto; }
+    .detail-hero { height: 45%; min-height: 280px; position: relative; }
+    .detail-hero.short { height: 32%; min-height: 200px; }
+    .detail-hero .art { height: 100%; }
+    .detail-grad {
+      position: absolute; inset: 0; z-index: 1;
+      background: linear-gradient(transparent 40%, #121212 96%);
+    }
+    .detail-chrome {
+      position: absolute; top: 14px; left: 16px; right: 16px; z-index: 2;
+      display: flex; gap: 10px;
+    }
+    .detail-body {
+      position: relative; z-index: 2; margin-top: -28px;
+      padding: 28px 20px 36px; border-radius: 24px 24px 0 0; background: #121212;
+    }
+    .detail-body.cur { margin-top: -40px; padding-top: 32px; }
+    .detail h2 {
+      margin: 0 0 8px; font-size: 24px; font-weight: 700; letter-spacing: -0.03em;
+    }
+    .chip {
+      display: inline-flex; padding: 4px 10px; border-radius: 999px;
+      background: var(--accent-soft); color: var(--accent);
+      font-size: 11px; font-weight: 700;
+    }
+    .detail-divider { height: 1px; background: var(--line); margin: 22px 0; }
+    .info-tile {
+      display: flex; gap: 12px; align-items: flex-start; margin-bottom: 16px;
+    }
+    .info-tile .ico {
+      width: 36px; height: 36px; border-radius: 10px; background: var(--accent-soft);
+      display: grid; place-items: center; flex-shrink: 0;
+    }
+    .info-tile .ico svg {
+      width: 16px; height: 16px; fill: none; stroke: var(--accent); stroke-width: 1.7;
+      stroke-linecap: round; stroke-linejoin: round;
+    }
+    .info-tile .label { font-size: 11px; color: var(--muted); margin-bottom: 2px; }
+    .info-tile .value { font-size: 14px; font-weight: 600; }
+    .rsvp-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+    .rsvp-btn {
+      flex: 1; min-width: 90px; text-align: center; padding: 12px 10px;
+      border-radius: 12px; border: 1px solid var(--line);
+      background: rgba(255,255,255,0.03); font-size: 12px; font-weight: 600;
+    }
+    .rsvp-btn.active {
+      background: var(--accent); border-color: transparent; color: #fff;
+    }
+    .primary-btn {
+      margin-top: 18px; width: 100%; padding: 14px; border: 0; border-radius: 14px;
+      background: var(--accent); color: #fff; font: inherit; font-weight: 650; font-size: 14px;
+    }
+
+    .d-a .headline {
+      display: grid; grid-template-columns: 56px 1fr; gap: 14px; align-items: start;
+      margin-bottom: 18px;
+    }
+    .d-a .lede-text {
+      margin: 0; font-size: 14px; color: var(--muted); line-height: 1.55;
+    }
+    .d-a .section {
+      margin: 22px 0 8px; font-size: 11px; font-weight: 700; letter-spacing: 0.07em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .d-a .stats {
+      display: flex; gap: 16px; margin-top: 14px; font-size: 12px; color: var(--muted);
+    }
+    .d-a .stats strong { color: var(--good); font-weight: 650; }
+
+    /* ---------- Groups ---------- */
+    .g-cur {
+      background: var(--card); border-radius: 14px; padding: 12px;
+      display: grid; grid-template-columns: 88px 1fr; gap: 14px; margin-bottom: 12px;
+    }
+    .g-cur .thumb { height: 88px; border-radius: 12px; }
+    .g-cur h3 { margin: 0 0 6px; font-size: 15px; font-weight: 700; padding-right: 18px; position: relative; }
+    .g-cur h3::after {
+      content: "›"; position: absolute; right: 0; top: -2px; color: var(--muted); font-weight: 400;
+    }
+    .g-cur .desc {
+      margin: 0 0 10px; font-size: 13px; color: var(--muted); line-height: 1.4;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .mini-chip {
+      padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 650;
+      background: var(--accent-soft); color: var(--accent);
+    }
+    .mini-chip.warn { background: var(--warn-soft); color: var(--warn); }
+    .mini-chip.good { background: var(--good-soft); color: var(--good); }
+
+    .g-a {
+      display: grid; grid-template-columns: 84px 1fr; gap: 12px;
+      padding: 10px; background: var(--card); border-radius: 16px;
+      border: 1px solid transparent; cursor: pointer;
+    }
+    .g-a:hover { border-color: rgba(46,134,193,0.35); }
+    .g-a .thumb { height: 84px; border-radius: 12px; }
+    .g-a .body { display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+    .g-a h3 {
+      margin: 0 0 3px; font-size: 15px; font-weight: 650; letter-spacing: -0.02em;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .g-a .desc {
+      margin: 0 0 8px; font-size: 12px; color: var(--muted);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .g-a .meta {
+      display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+      font-size: 11px; font-weight: 600; color: var(--muted);
+    }
+    .g-a .meta .sep { opacity: 0.35; }
+    .g-a .badge {
+      padding: 3px 8px; border-radius: 999px; background: var(--good-soft);
+      color: var(--good); font-size: 10px; font-weight: 700;
+    }
+    .g-a .badge.warn { background: var(--warn-soft); color: var(--warn); }
+
+    .g-b {
+      background: var(--card); border-radius: 16px; overflow: hidden;
+      border: 1px solid transparent; cursor: pointer;
+    }
+    .g-b:hover { border-color: rgba(46,134,193,0.35); }
+    .g-b .art { height: 88px; }
+    .g-b .body { padding: 12px 14px 14px; }
+    .g-b h3 {
+      margin: 0 0 4px; font-size: 16px; font-weight: 650; letter-spacing: -0.02em;
+    }
+    .g-b .desc {
+      margin: 0 0 10px; font-size: 12px; color: var(--muted);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .g-b .meta {
+      display: flex; align-items: center; gap: 8px; font-size: 11px;
+      font-weight: 600; color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <p class="eyebrow">LWP App · High impact 1–4</p>
+    <h1>Sermons, Calendar, Detail, Groups</h1>
+    <p class="lede">
+      Same dark glass + blue accent language as Date Beacon / Quiet Stream / Cover Stage.
+      Review each area, pick a direction, then we implement.
+    </p>
+
+    <div class="toolbar" id="areas">
+      <button type="button" class="active" data-area="sermons">1 · Sermons</button>
+      <button type="button" data-area="calendar">2 · Calendar</button>
+      <button type="button" data-area="detail">3 · Event / Course detail</button>
+      <button type="button" data-area="groups">4 · Group lists</button>
+    </div>
+    <div class="toolbar" id="variants"></div>
+    <p class="hint" id="hint"></p>
+
+    <!-- SERMONS -->
+    <div class="panel active" data-panel="sermons">
+      <div class="phones">
+        <div class="phone" data-variant="current">
+          <div class="phone-label">Sermons · current</div>
+          <div class="chrome">
+            <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>
+            <div class="title-pill">Sermons</div>
+            <div class="chrome-spacer"></div>
+            <div class="actions">
+              <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 7 3 7H3s3 0 3-7"/><path d="M10 21a2 2 0 0 0 4 0"/></svg></div>
+              <div class="glass-btn"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.5-3.5 4-5 7-5s5.5 1.5 7 5"/></svg></div>
+            </div>
+          </div>
+          <div class="scroll" id="sermons-current"></div>
+        </div>
+        <div class="phone" data-variant="a">
+          <div class="phone-label">Sermons · Quiet Cover (chosen)</div>
+          <div class="chrome">
+            <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>
+            <div class="title-pill">Sermons</div>
+            <div class="chrome-spacer"></div>
+            <div class="actions">
+              <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 7 3 7H3s3 0 3-7"/><path d="M10 21a2 2 0 0 0 4 0"/></svg></div>
+              <div class="glass-btn"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.5-3.5 4-5 7-5s5.5 1.5 7 5"/></svg></div>
+            </div>
+          </div>
+          <div class="scroll gap" id="sermons-a"></div>
+        </div>
+        <div class="phone" data-variant="b">
+          <div class="phone-label">Sermons · Cover Stage</div>
+          <div class="chrome">
+            <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>
+            <div class="title-pill">Sermons</div>
+            <div class="chrome-spacer"></div>
+            <div class="actions">
+              <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 7 3 7H3s3 0 3-7"/><path d="M10 21a2 2 0 0 0 4 0"/></svg></div>
+              <div class="glass-btn"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.5-3.5 4-5 7-5s5.5 1.5 7 5"/></svg></div>
+            </div>
+          </div>
+          <div class="scroll tight" id="sermons-b"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CALENDAR -->
+    <div class="panel" data-panel="calendar">
+      <div class="phones">
+        <div class="phone" data-variant="current">
+          <div class="phone-label">Calendar · current</div>
+          <div class="chrome">
+            <div class="title-pill">Calendar</div>
+            <div class="chrome-spacer"></div>
+          </div>
+          <div class="scroll" id="cal-current"></div>
+        </div>
+        <div class="phone" data-variant="a">
+          <div class="phone-label">Calendar · Date Beacon + image (chosen)</div>
+          <div class="chrome">
+            <div class="title-pill">Calendar</div>
+            <div class="chrome-spacer"></div>
+          </div>
+          <div class="scroll" id="cal-a"></div>
+        </div>
+        <div class="phone" data-variant="b">
+          <div class="phone-label">Calendar · Time Rail</div>
+          <div class="chrome">
+            <div class="title-pill">Calendar</div>
+            <div class="chrome-spacer"></div>
+          </div>
+          <div class="scroll" id="cal-b"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DETAIL -->
+    <div class="panel" data-panel="detail">
+      <div class="phones">
+        <div class="phone" data-variant="current">
+          <div class="phone-label">Event detail · current</div>
+          <div class="detail" id="detail-current"></div>
+        </div>
+        <div class="phone" data-variant="a">
+          <div class="phone-label">Event detail · Date Beacon stage</div>
+          <div class="detail" id="detail-a"></div>
+        </div>
+        <div class="phone" data-variant="b">
+          <div class="phone-label">Course detail · same language</div>
+          <div class="detail" id="detail-b"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GROUPS -->
+    <div class="panel" data-panel="groups">
+      <div class="phones">
+        <div class="phone" data-variant="current">
+          <div class="phone-label">Groups · current</div>
+          <div class="chrome">
+            <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>
+            <div class="title-pill">Connect Groups</div>
+            <div class="chrome-spacer"></div>
+          </div>
+          <div class="scroll" id="groups-current"></div>
+        </div>
+        <div class="phone" data-variant="a">
+          <div class="phone-label">Groups · Quiet Horizon</div>
+          <div class="chrome">
+            <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>
+            <div class="title-pill">Connect Groups</div>
+            <div class="chrome-spacer"></div>
+          </div>
+          <div class="scroll tight" id="groups-a"></div>
+        </div>
+        <div class="phone" data-variant="b">
+          <div class="phone-label">Groups · Soft Cover</div>
+          <div class="chrome">
+            <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>
+            <div class="title-pill">Connect Groups</div>
+            <div class="chrome-spacer"></div>
+          </div>
+          <div class="scroll tight" id="groups-b"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const PLAY = `<div class="play"><span><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></div>`;
+    const ICO = {
+      cal: `<svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M8 3.5v3M16 3.5v3M3.5 10h17"/></svg>`,
+      clock: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v5l3 2"/></svg>`,
+      back: `<svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>`,
+    };
+
+    const SERMONS = [
+      { title: "Geloof wat beweeg", author: "Ps. Johan", art: "art-a", kicker: "This week" },
+      { title: "Lewe in die Gees", author: "Ps. Annelie", art: "art-b", kicker: "Series" },
+      { title: "Hoop vir môre", author: "Ps. Johan", art: "art-c", kicker: "Archive" },
+    ];
+
+    const GROUPS = [
+      {
+        title: "Jeug Connect",
+        desc: "Young adults growing together in faith and friendship",
+        leaders: 2, members: 18, pending: 3, status: "active", art: "art-a",
+      },
+      {
+        title: "Vroue Kring",
+        desc: "Weekly fellowship and prayer for women",
+        leaders: 1, members: 12, pending: 0, status: null, art: "art-d",
+      },
+      {
+        title: "Diensspan Media",
+        desc: "Serve on Sundays with sound and visuals",
+        leaders: 2, members: 9, pending: 1, status: "pending", art: "art-b",
+      },
+    ];
+
+    function dateTile(dow, day, mon) {
+      return `<div class="date-tile"><div class="dow">${dow}</div><div class="day">${day}</div><div class="mon">${mon}</div></div>`;
+    }
+
+    /* Sermons */
+    document.getElementById("sermons-current").innerHTML = SERMONS.map((s) => `
+      <article class="s-cur">
+        <div class="art ${s.art}">${PLAY}</div>
+        <div class="body"><h3>${s.title}</h3><p>${s.author}</p></div>
+      </article>`).join("");
+
+    document.getElementById("sermons-a").innerHTML = SERMONS.map((s) => `
+      <article class="s-a">
+        <div class="art ${s.art}">${PLAY}</div>
+        <div class="body">
+          <h3>${s.title}</h3>
+          <div class="meta">${s.author}</div>
+        </div>
+      </article>`).join("");
+
+    document.getElementById("sermons-b").innerHTML = `
+      <article class="s-b-featured">
+        <div class="art art-a">${PLAY}</div>
+        <div class="cap">
+          <div class="kicker">This week</div>
+          <h3>${SERMONS[0].title}</h3>
+          <div class="meta">${SERMONS[0].author} · 38 min</div>
+        </div>
+      </article>
+      <div class="s-b-more">More sermons</div>
+      ${SERMONS.slice(1).map((s) => `
+        <article class="s-b-row">
+          <div class="art ${s.art}">${PLAY}</div>
+          <div>
+            <h3>${s.title}</h3>
+            <div class="meta">${s.author} · 32 min</div>
+          </div>
+        </article>`).join("")}`;
+
+    /* Calendar */
+    function calSection(day, eventsHtml, last = false) {
+      return `
+        <div class="cal-rail ${last ? "last" : ""}">
+          <div class="cal-dot"></div>
+          <div class="cal-day">${day}</div>
+          ${eventsHtml}
+        </div>`;
+    }
+
+    document.getElementById("cal-current").innerHTML =
+      calSection("Monday", `
+        <div class="cal-cur">
+          <div class="art art-a thumb"></div>
+          <div>
+            <h3>Oggenddiens</h3>
+            <div class="meta">${ICO.clock.replace('viewBox','width="12" height="12" viewBox')} 09:00</div>
+          </div>
+        </div>`) +
+      calSection("Wednesday", `
+        <div class="cal-cur">
+          <div class="art art-b thumb"></div>
+          <div>
+            <h3>Gebedsbyeenkoms</h3>
+            <div class="meta">18:30</div>
+          </div>
+        </div>
+        <div class="cal-cur">
+          <div class="art art-c thumb"></div>
+          <div>
+            <h3>Jeug</h3>
+            <div class="meta">19:00</div>
+          </div>
+        </div>`) +
+      calSection("Sunday", `
+        <div class="cal-cur">
+          <div class="art art-d thumb"></div>
+          <div>
+            <h3>Erediens</h3>
+            <div class="meta">09:00</div>
+          </div>
+        </div>`, true);
+
+    document.getElementById("cal-a").innerHTML =
+      calSection("Monday", `
+        <article class="cal-a">
+          <div class="art art-a"></div>
+          <div class="row">
+            ${dateTile("Mon", "17", "Nov")}
+            <div>
+              <h3>Oggenddiens</h3>
+              <p class="desc">Sunday rhythm service</p>
+              <div class="meta">09:00 · Service</div>
+            </div>
+          </div>
+        </article>`) +
+      calSection("Wednesday", `
+        <article class="cal-a">
+          <div class="art art-b"></div>
+          <div class="row">
+            ${dateTile("Wed", "19", "Nov")}
+            <div>
+              <h3>Gebedsbyeenkoms</h3>
+              <p class="desc">Midweek prayer</p>
+              <div class="meta">18:30 · Prayer</div>
+            </div>
+          </div>
+        </article>
+        <article class="cal-a">
+          <div class="art art-c"></div>
+          <div class="row">
+            ${dateTile("Wed", "19", "Nov")}
+            <div>
+              <h3>Jeug</h3>
+              <p class="desc">Young adults gathering</p>
+              <div class="meta">19:00 · Youth</div>
+            </div>
+          </div>
+        </article>`) +
+      calSection("Sunday", `
+        <article class="cal-a">
+          <div class="art art-d"></div>
+          <div class="row">
+            ${dateTile("Sun", "23", "Nov")}
+            <div>
+              <h3>Erediens</h3>
+              <p class="desc">Main gathering</p>
+              <div class="meta">09:00 · Service</div>
+            </div>
+          </div>
+        </article>`, true);
+
+    document.getElementById("cal-b").innerHTML = `
+      <div class="cal-b-day">${dateTile("Mon", "17", "Nov")}<div class="cal-day" style="margin:0">Monday</div></div>
+      <div class="cal-b-events">
+        <article class="cal-b-row"><div class="time">09:00</div><div><h3>Oggenddiens</h3><p class="desc">Service</p></div></article>
+      </div>
+      <div class="cal-b-day">${dateTile("Wed", "19", "Nov")}<div class="cal-day" style="margin:0">Wednesday</div></div>
+      <div class="cal-b-events">
+        <article class="cal-b-row"><div class="time">18:30</div><div><h3>Gebedsbyeenkoms</h3><p class="desc">Prayer</p></div></article>
+        <article class="cal-b-row"><div class="time">19:00</div><div><h3>Jeug</h3><p class="desc">Youth</p></div></article>
+      </div>
+      <div class="cal-b-day">${dateTile("Sun", "23", "Nov")}<div class="cal-day" style="margin:0">Sunday</div></div>
+      <div class="cal-b-events">
+        <article class="cal-b-row"><div class="time">09:00</div><div><h3>Erediens</h3><p class="desc">Service</p></div></article>
+      </div>`;
+
+    /* Detail */
+    document.getElementById("detail-current").innerHTML = `
+      <div class="detail-hero">
+        <div class="art art-a" style="height:100%"></div>
+        <div class="detail-grad"></div>
+        <div class="detail-chrome">
+          <div class="glass-btn">${ICO.back}</div>
+        </div>
+      </div>
+      <div class="detail-body cur">
+        <h2>Vroue Event</h2>
+        <span class="chip">Women</span>
+        <div class="detail-divider"></div>
+        <div class="info-tile"><div class="ico">${ICO.cal}</div><div><div class="label">Date</div><div class="value">Saturday 31 Dec 2026</div></div></div>
+        <div class="info-tile"><div class="ico">${ICO.clock}</div><div><div class="label">Time</div><div class="value">11:00</div></div></div>
+        <div class="detail-divider"></div>
+        <p style="margin:0 0 8px;font-size:13px;font-weight:700">About</p>
+        <p style="margin:0;color:var(--muted);font-size:14px;line-height:1.55">Test event description for the women's gathering.</p>
+        <div class="detail-divider"></div>
+        <p style="margin:0 0 10px;font-size:13px;font-weight:700">Your RSVP</p>
+        <div class="rsvp-row">
+          <div class="rsvp-btn active">Going</div>
+          <div class="rsvp-btn">Interested</div>
+          <div class="rsvp-btn">Can't go</div>
+        </div>
+        <button class="primary-btn" type="button">Add to calendar</button>
+      </div>`;
+
+    document.getElementById("detail-a").innerHTML = `
+      <div class="detail-hero short">
+        <div class="art art-a" style="height:100%"></div>
+        <div class="detail-grad"></div>
+        <div class="detail-chrome">
+          <div class="glass-btn">${ICO.back}</div>
+        </div>
+      </div>
+      <div class="detail-body d-a">
+        <div class="headline">
+          ${dateTile("Sat", "31", "Dec")}
+          <div>
+            <span class="chip">Women</span>
+            <h2 style="margin-top:8px">Vroue Event</h2>
+            <div style="font-size:13px;font-weight:600;margin-top:4px">11:00</div>
+          </div>
+        </div>
+        <p class="lede-text">A morning gathering for women — fellowship, word, and prayer.</p>
+        <div class="stats"><span><strong>1</strong> attending</span><span>0 interested</span></div>
+        <div class="section">Your RSVP</div>
+        <div class="rsvp-row">
+          <div class="rsvp-btn active">Going</div>
+          <div class="rsvp-btn">Interested</div>
+          <div class="rsvp-btn">Can't go</div>
+        </div>
+        <button class="primary-btn" type="button">Add to calendar</button>
+      </div>`;
+
+    document.getElementById("detail-b").innerHTML = `
+      <div class="detail-hero short">
+        <div class="art art-d" style="height:100%"></div>
+        <div class="detail-grad"></div>
+        <div class="detail-chrome">
+          <div class="glass-btn">${ICO.back}</div>
+        </div>
+      </div>
+      <div class="detail-body d-a">
+        <div class="headline">
+          ${dateTile("Mon", "6", "Jul")}
+          <div>
+            <span class="chip">Course</span>
+            <h2 style="margin-top:8px">Alpha Kursus</h2>
+            <div style="font-size:13px;font-weight:600;margin-top:4px">10:00 · 8 weeks</div>
+          </div>
+        </div>
+        <p class="lede-text">Foundations of faith — open to everyone exploring Christianity.</p>
+        <div class="section">Details</div>
+        <div class="info-tile" style="margin:0">
+          <div class="ico">${ICO.cal}</div>
+          <div><div class="label">Ends</div><div class="value">Mon 25 Aug 2026</div></div>
+        </div>
+        <button class="primary-btn" type="button">Add to calendar</button>
+      </div>`;
+
+    /* Groups */
+    document.getElementById("groups-current").innerHTML = GROUPS.map((g) => `
+      <article class="g-cur">
+        <div class="art ${g.art} thumb"></div>
+        <div>
+          <h3>${g.title}</h3>
+          <p class="desc">${g.desc}</p>
+          <div class="chips">
+            <span class="mini-chip">${g.leaders} leaders</span>
+            <span class="mini-chip">${g.members} members</span>
+            ${g.pending ? `<span class="mini-chip warn">${g.pending} pending</span>` : ""}
+            ${g.status === "active" ? `<span class="mini-chip good">Active</span>` : ""}
+            ${g.status === "pending" ? `<span class="mini-chip warn">Pending</span>` : ""}
+          </div>
+        </div>
+      </article>`).join("");
+
+    document.getElementById("groups-a").innerHTML = GROUPS.map((g) => `
+      <article class="g-a">
+        <div class="art ${g.art} thumb"></div>
+        <div class="body">
+          <h3>${g.title}</h3>
+          <p class="desc">${g.desc}</p>
+          <div class="meta">
+            <span>${g.members} members</span>
+            <span class="sep">·</span>
+            <span>${g.leaders} leaders</span>
+            ${g.status === "active" ? `<span class="badge">Active</span>` : ""}
+            ${g.status === "pending" ? `<span class="badge warn">Pending</span>` : ""}
+            ${g.pending && !g.status ? `<span class="badge warn">${g.pending} pending</span>` : ""}
+          </div>
+        </div>
+      </article>`).join("");
+
+    document.getElementById("groups-b").innerHTML = GROUPS.map((g) => `
+      <article class="g-b">
+        <div class="art ${g.art}"></div>
+        <div class="body">
+          <h3>${g.title}</h3>
+          <p class="desc">${g.desc}</p>
+          <div class="meta">
+            <span>${g.members} members · ${g.leaders} leaders</span>
+            ${g.status === "active" ? `<span class="badge" style="margin-left:auto;padding:3px 8px;border-radius:999px;background:var(--good-soft);color:var(--good);font-size:10px;font-weight:700">Active</span>` : ""}
+            ${g.status === "pending" ? `<span class="badge" style="margin-left:auto;padding:3px 8px;border-radius:999px;background:var(--warn-soft);color:var(--warn);font-size:10px;font-weight:700">Pending</span>` : ""}
+          </div>
+        </div>
+      </article>`).join("");
+
+    const META = {
+      sermons: {
+        variants: [
+          ["current", "Current"],
+          ["a", "Chosen · Quiet Cover"],
+          ["b", "B · Cover Stage (not selected)"],
+        ],
+        pitches: {
+          current: "<strong>Baseline.</strong> Full 16:9 cards stacked — lots of vertical bulk for title + speaker.",
+          a: "<strong>Chosen · Quiet Cover.</strong> Shorter media, soft play, title + speaker only — no series kickers, no duration.",
+          b: "<strong>Not selected.</strong> Cover Stage kept for comparison only.",
+        },
+        hint: "Locked: Quiet Cover — title + author only.",
+      },
+      calendar: {
+        variants: [
+          ["current", "Current"],
+          ["a", "Chosen · Date Beacon + image"],
+          ["b", "B · Time Rail (not selected)"],
+        ],
+        pitches: {
+          current: "<strong>Baseline.</strong> Day timeline + thick thumb cards with chevrons — fights the new events language.",
+          a: "<strong>Chosen · Date Beacon + image.</strong> Keep day rail and each item’s banner; short cover + date tile + title/time — same family as Upcoming Events.",
+          b: "<strong>Not selected.</strong> Time Rail kept for comparison only.",
+        },
+        hint: "Locked: Date Beacon calendar with images retained.",
+      },
+      detail: {
+        variants: [
+          ["current", "Current"],
+          ["a", "Chosen · Event stage"],
+          ["b", "Chosen · Course stage"],
+        ],
+        pitches: {
+          current: "<strong>Baseline.</strong> Tall 45% hero + icon info tiles + dividers. Functional but heavy under the new list cards.",
+          a: "<strong>Chosen · Event stage.</strong> Shorter hero, date beacon beside title, quiet RSVP.",
+          b: "<strong>Chosen · Course stage.</strong> Same language without RSVP; end date as a single quiet detail.",
+        },
+        hint: "Locked: Date Beacon stage for event and course detail.",
+      },
+      groups: {
+        variants: [
+          ["current", "Current"],
+          ["a", "A · Quiet Horizon"],
+          ["b", "B · Soft Cover"],
+        ],
+        pitches: {
+          current: "<strong>Baseline.</strong> Thumb + chevron + chip cloud (leaders, members, pending, status). Busy next to quiet group detail.",
+          a: "<strong>Quiet Horizon.</strong> Keep horizontal layout; one-line meta instead of chip soup. Closest to Horizon Row.",
+          b: "<strong>Soft Cover.</strong> Short banner strip + title + meta. More visual, still calmer than today.",
+        },
+        hint: "Quiet Horizon if lists should scan fast; Soft Cover if discovery should feel more visual.",
+      },
+    };
+
+    let area = "sermons";
+    let variant = "a";
+
+    const variantsEl = document.getElementById("variants");
+    const hintEl = document.getElementById("hint");
+
+    function sync() {
+      document.querySelectorAll("#areas button").forEach((b) => {
+        b.classList.toggle("active", b.dataset.area === area);
+      });
+      document.querySelectorAll(".panel").forEach((p) => {
+        p.classList.toggle("active", p.dataset.panel === area);
+      });
+
+      const meta = META[area];
+      variantsEl.innerHTML = meta.variants.map(([id, label]) =>
+        `<button type="button" data-variant="${id}" class="${id === variant ? "active" : ""}">${label}</button>`
+      ).join("");
+
+      const allowed = meta.variants.map(([id]) => id);
+      if (!allowed.includes(variant)) variant = allowed[1] || allowed[0];
+
+      variantsEl.querySelectorAll("button").forEach((b) => {
+        b.classList.toggle("active", b.dataset.variant === variant);
+      });
+
+      document.querySelectorAll(".panel.active .phone").forEach((phone) => {
+        phone.style.display = phone.dataset.variant === variant ? "" : "none";
+      });
+
+      const pitch = document.querySelector(".panel.active .pitch");
+      // inject pitch before phones if missing
+      let pitchEl = document.querySelector(".panel.active > .pitch");
+      if (!pitchEl) {
+        pitchEl = document.createElement("p");
+        pitchEl.className = "pitch";
+        const phones = document.querySelector(".panel.active .phones");
+        phones.parentNode.insertBefore(pitchEl, phones);
+      }
+      pitchEl.innerHTML = meta.pitches[variant];
+      hintEl.textContent = meta.hint;
+    }
+
+    document.getElementById("areas").addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-area]");
+      if (!btn) return;
+      area = btn.dataset.area;
+      variant = META[area].variants[1]?.[0] || "current";
+      sync();
+    });
+    variantsEl.addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-variant]");
+      if (!btn) return;
+      variant = btn.dataset.variant;
+      sync();
+    });
+
+    sync();
+  </script>
+</body>
+</html>

@@ -6,23 +6,32 @@ import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
 import 'package:add_2_calendar/add_2_calendar.dart' as calendar;
 import 'package:cloudinary_flutter/image/cld_image.dart';
+import 'package:lw_app/Widgets/LwpDateBeaconCard/lwp_date_beacon_card.dart';
 
 class CourseDetailPage extends StatelessWidget {
   final Event course;
 
   const CourseDetailPage({super.key, required this.course});
 
+  static const double _heroFraction = 0.32;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
+    final heroHeight = size.height * _heroFraction;
+    final locale = Localizations.localeOf(context).toString();
+    final date = LwpDateBeaconCard.parseStartDate(course.startDate);
+    final timeLabel = DateFormatter.formatTime(course.time);
+    final endLabel = course.endDate != null
+        ? DateFormatter.formatDate(course.endDate)
+        : null;
 
     return Scaffold(
       body: Stack(
         children: [
-          // Hero Background Image
           SizedBox(
-            height: size.height * 0.45,
+            height: heroHeight,
             width: double.infinity,
             child: Hero(
               tag: 'course_image_${course.id}',
@@ -32,10 +41,8 @@ class CourseDetailPage extends StatelessWidget {
               ),
             ),
           ),
-
-          // Gradient Overlay
           Container(
-            height: size.height * 0.45,
+            height: heroHeight,
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
@@ -45,125 +52,152 @@ class CourseDetailPage extends StatelessWidget {
                   theme.scaffoldBackgroundColor.withValues(alpha: 0.2),
                   theme.scaffoldBackgroundColor,
                 ],
-                stops: const [0.0, 0.7, 1.0],
+                stops: const [0.0, 0.55, 1.0],
               ),
             ),
           ),
-
-          // Content
           SingleChildScrollView(
             child: Column(
               children: [
-                SizedBox(height: size.height * 0.45),
+                SizedBox(height: heroHeight - 28),
                 Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: theme.scaffoldBackgroundColor,
                     borderRadius: LwpRadii.lgTop,
                   ),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 24.0, vertical: 32.0),
+                  padding: const EdgeInsets.fromLTRB(
+                    LwpSpacing.lg,
+                    LwpSpacing.lg,
+                    LwpSpacing.lg,
+                    LwpSpacing.xl,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          LwpDateTile(
+                            date: date,
+                            locale: locale,
+                            fallbackDayName: course.day,
+                          ),
+                          const SizedBox(width: LwpSpacing.md),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                if (course.category.trim().isNotEmpty)
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: theme.primaryColor
+                                          .withValues(alpha: 0.12),
+                                      borderRadius: BorderRadius.circular(
+                                        LwpRadii.pill,
+                                      ),
+                                    ),
+                                    child: Text(
+                                      course.category,
+                                      style: TextStyle(
+                                        color: theme.primaryColor,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 11,
+                                      ),
+                                    ),
+                                  ),
+                                const SizedBox(height: LwpSpacing.xs),
                                 Text(
                                   course.title,
                                   style:
                                       theme.textTheme.headlineSmall?.copyWith(
-                                    fontWeight: FontWeight.bold,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: -0.4,
+                                    height: 1.2,
                                   ),
                                 ),
-                                const SizedBox(height: 8),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 12, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: theme.primaryColor
-                                        .withValues(alpha: 0.1),
-                                    borderRadius:
-                                        BorderRadius.circular(LwpRadii.pill),
-                                  ),
-                                  child: Text(
-                                    course.category,
-                                    style: TextStyle(
-                                      color: theme.primaryColor,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12,
+                                if (timeLabel.isNotEmpty) ...[
+                                  const SizedBox(height: LwpSpacing.xxs),
+                                  Text(
+                                    timeLabel,
+                                    style: theme.textTheme.titleSmall?.copyWith(
+                                      fontWeight: FontWeight.w600,
                                     ),
                                   ),
-                                ),
+                                ],
                               ],
                             ),
                           ),
                         ],
                       ),
-                      const Divider(height: 48),
-
-                      // Info Grid/List
-                      _buildInfoTile(
-                        context,
-                        Icons.calendar_today_rounded,
-                        context.l10n.courseStartDate,
-                        "${course.day} ${DateFormatter.formatDate(course.startDate)}",
-                      ),
-                      if (course.endDate != null)
-                        _buildInfoTile(
-                          context,
-                          Icons.event_note_rounded,
-                          context.l10n.courseEndDate,
-                          DateFormatter.formatDate(course.endDate),
+                      if (course.description.trim().isNotEmpty) ...[
+                        const SizedBox(height: LwpSpacing.lg),
+                        Text(
+                          course.description,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            color: theme.hintColor,
+                            height: 1.55,
+                          ),
                         ),
-                      _buildInfoTile(
-                        context,
-                        Icons.access_time_rounded,
-                        context.l10n.courseTime,
-                        DateFormatter.formatTime(course.time),
-                      ),
-
-                      const SizedBox(height: 32),
-                      Text(
-                        context.l10n.courseDescription,
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
+                      ],
+                      if (endLabel != null && endLabel.isNotEmpty) ...[
+                        const SizedBox(height: LwpSpacing.lg),
+                        Text(
+                          context.l10n.courseEndDate.toUpperCase(),
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: theme.hintColor,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.7,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        course.description,
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          height: 1.5,
+                        const SizedBox(height: LwpSpacing.xs),
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color:
+                                    theme.primaryColor.withValues(alpha: 0.12),
+                                borderRadius: LwpRadii.smAll,
+                              ),
+                              child: Icon(
+                                Icons.event_note_rounded,
+                                color: theme.primaryColor,
+                                size: 18,
+                              ),
+                            ),
+                            const SizedBox(width: LwpSpacing.sm),
+                            Text(
+                              endLabel,
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      const SizedBox(height: 48),
-
-                      // Action Button
+                      ],
+                      const SizedBox(height: LwpSpacing.xl),
                       SizedBox(
                         width: double.infinity,
-                        child: ElevatedButton.icon(
+                        child: ElevatedButton(
                           onPressed: () => _addToCalendar(),
-                          icon: const Icon(Icons.event_available_rounded),
-                          label: Text(context.l10n.commonAddToCalendar),
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 16),
                           ),
+                          child: Text(context.l10n.commonAddToCalendar),
                         ),
                       ),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: LwpSpacing.lg),
                     ],
                   ),
                 ),
               ],
             ),
           ),
-
-          // Integrated Back Button
           Positioned(
             top: MediaQuery.of(context).padding.top + 8,
             left: 16,
@@ -180,54 +214,11 @@ class CourseDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoTile(
-      BuildContext context, IconData icon, String label, String value) {
-    final theme = Theme.of(context);
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12.0),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: theme.primaryColor.withValues(alpha: 0.1),
-              borderRadius: LwpRadii.smAll,
-            ),
-            child: Icon(icon, color: theme.primaryColor, size: 20),
-          ),
-          const SizedBox(width: 16),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: theme.hintColor,
-                ),
-              ),
-              Text(
-                value,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
   void _addToCalendar() {
     try {
       if (course.startDate == null) return;
 
-      // Parse base date
       final baseDate = DateTime.parse(course.startDate!);
-
-      // Remove timezone from time
       final cleanTime = course.time.split('+').first;
       final timeParts = cleanTime.split(':');
 
@@ -242,7 +233,6 @@ class CourseDetailPage extends StatelessWidget {
 
       final endDateTime = startDateTime.add(const Duration(hours: 1));
 
-      // Determine recurrence based on event type
       calendar.Recurrence? recurrence;
       if (course.type != EventType.ONCE) {
         calendar.Frequency? frequency;

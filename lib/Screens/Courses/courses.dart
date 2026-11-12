@@ -2,15 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
-import 'package:lw_app/Models/Event/event.dart';
 import 'package:lw_app/Blocs/Courses/courses_bloc.dart';
 import 'package:lw_app/Models/Event/event_category.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
+import 'package:lw_app/Widgets/LwpDateBeaconCard/lwp_date_beacon_card.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
-import 'package:lw_app/Utils/date_formatter.dart';
-import 'package:cloudinary_flutter/image/cld_image.dart';
 import 'package:lw_app/Screens/Courses/course_detail.dart';
 import 'package:lw_app/Widgets/LwpListEntrance/lwp_list_entrance.dart';
 
@@ -69,21 +67,25 @@ class _CoursesPageState extends State<CoursesPage> {
                             horizontal: 16.0, vertical: 24.0),
                         itemCount: state.courses.length,
                         separatorBuilder: (context, index) =>
-                            const SizedBox(height: 16.0),
+                            const SizedBox(height: LwpSpacing.sm),
                         itemBuilder: (BuildContext context, int index) {
                           final course = state.courses[index];
                           return LwpListEntrance(
                             id: course.id ?? 'course-$index',
-                            child: _buildCourseCard(course, () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => CourseDetailPage(
-                                    course: course,
+                            child: LwpDateBeaconCard(
+                              event: course,
+                              heroTag: 'course_image_${course.id}',
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => CourseDetailPage(
+                                      course: course,
+                                    ),
                                   ),
-                                ),
-                              );
-                            }),
+                                );
+                              },
+                            ),
                           );
                         },
                       ),
@@ -101,84 +103,4 @@ class _CoursesPageState extends State<CoursesPage> {
     );
   }
 
-  Widget _buildCourseCard(Event course, VoidCallback onTap) {
-    final theme = Theme.of(context);
-
-    return Card(
-      margin: EdgeInsets.zero,
-      clipBehavior: Clip.antiAliasWithSaveLayer,
-      shape: RoundedRectangleBorder(
-        borderRadius: LwpRadii.lgAll,
-      ),
-      child: InkWell(
-        onTap: onTap,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            SizedBox(
-              height: 200,
-              width: double.infinity,
-              child: Hero(
-                tag: 'course_image_${course.id}',
-                child: CldImageWidget(
-                  publicId: course.bannerPublicId ?? 'samples/cloudinary-icon',
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    course.title,
-                    style: theme.textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 4.0),
-                  Text(
-                    course.description,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.hintColor,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const Divider(height: 24.0),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.calendar_today_rounded,
-                        size: 16.0,
-                        color: theme.primaryColor,
-                      ),
-                      const SizedBox(width: 8.0),
-                      Expanded(
-                        child: Text(
-                          _formatCourseDateTime(course),
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      Icon(
-                        Icons.arrow_forward_ios_rounded,
-                        size: 14.0,
-                        color: theme.hintColor.withValues(alpha: 0.5),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  String _formatCourseDateTime(Event course) {
-    if (course.startDate == null) return 'N/A';
-    return "${course.day} ${DateFormatter.formatDate(course.startDate)} ${DateFormatter.formatTime(course.time)}";
-  }
 }

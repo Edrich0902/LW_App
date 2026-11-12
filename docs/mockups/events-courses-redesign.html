@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LWP — Events &amp; Courses redesign</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0b1218;
+      --surface: #0e151c;
+      --card: #1e1e1e;
+      --ink: #eef3f7;
+      --muted: #8a9aab;
+      --line: rgba(255,255,255,0.08);
+      --accent: #2e86c1;
+      --accent-soft: rgba(46,134,193,0.18);
+      --good: #3dba7a;
+      --good-soft: rgba(61,186,122,0.14);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "DM Sans", system-ui, sans-serif;
+      background:
+        radial-gradient(900px 420px at 15% -10%, rgba(46,134,193,0.14), transparent 58%),
+        var(--bg);
+      color: var(--ink);
+      padding: 28px 20px 72px;
+    }
+
+    .page { max-width: 1280px; margin: 0 auto; }
+
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 0 0 6px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+    }
+
+    .lede {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+      max-width: 68ch;
+    }
+
+    .pitch {
+      margin: 0 0 18px;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.03);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+      max-width: 82ch;
+    }
+    .pitch strong { color: var(--ink); font-weight: 600; }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .toolbar button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.03);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .toolbar button:hover { border-color: rgba(255,255,255,0.18); }
+    .toolbar button.active {
+      background: var(--accent);
+      border-color: transparent;
+      color: #fff;
+    }
+
+    .hint {
+      margin: 0 0 20px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .phones {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 22px;
+      align-items: start;
+    }
+
+    .phone {
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background: #121212;
+      overflow: hidden;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+      min-height: 740px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .phone-label {
+      padding: 14px 18px 0;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .chrome {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 16px 12px;
+    }
+
+    .chrome-spacer { flex: 1; }
+
+    .glass-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      display: grid;
+      place-items: center;
+      color: var(--ink);
+      flex-shrink: 0;
+    }
+    .glass-btn svg {
+      width: 16px; height: 16px;
+      fill: none; stroke: currentColor; stroke-width: 1.7;
+      stroke-linecap: round; stroke-linejoin: round;
+    }
+
+    .title-pill {
+      height: 36px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      display: inline-flex;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .actions { display: flex; gap: 8px; }
+
+    .scroll {
+      flex: 1;
+      overflow: auto;
+      padding: 8px 16px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .scroll.tight { gap: 10px; }
+
+    /* Shared cover art */
+    .art {
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+      background: #16324a;
+    }
+    .art::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 72% 28%, rgba(255,255,255,0.16), transparent 42%),
+        radial-gradient(circle at 18% 86%, rgba(46,134,193,0.35), transparent 48%);
+      pointer-events: none;
+    }
+    .art-a { background: linear-gradient(145deg, #1a3a52 0%, #2e86c1 48%, #0f1c28 100%); }
+    .art-b { background: linear-gradient(160deg, #243044 0%, #3d6a8a 40%, #121820 100%); }
+    .art-c { background: linear-gradient(135deg, #2a2140 0%, #2e86c1 45%, #0d1822 100%); }
+    .art-d { background: linear-gradient(150deg, #1e3d36 0%, #2e86c1 50%, #101820 100%); }
+
+    .art-mark {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      z-index: 1;
+      opacity: 0.55;
+    }
+    .art-mark svg {
+      width: 42px; height: 42px;
+      fill: none; stroke: #fff; stroke-width: 1.5;
+      stroke-linecap: round; stroke-linejoin: round;
+    }
+
+    /* ---------- Current (baseline) ---------- */
+    .cur-card {
+      background: var(--card);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .cur-card .art { height: 200px; }
+    .cur-body { padding: 16px; }
+    .cur-title {
+      margin: 0 0 4px;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .cur-desc {
+      margin: 0;
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+    .cur-divider {
+      height: 1px;
+      background: var(--line);
+      margin: 12px 0;
+    }
+    .cur-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .cur-meta svg {
+      width: 14px; height: 14px;
+      fill: none; stroke: var(--accent); stroke-width: 1.7;
+      stroke-linecap: round; stroke-linejoin: round;
+      flex-shrink: 0;
+    }
+    .cur-meta .chev {
+      margin-left: auto;
+      opacity: 0.4;
+      stroke: var(--muted);
+    }
+    .cur-rsvp {
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .cur-rsvp svg {
+      width: 14px; height: 14px;
+      fill: none; stroke: currentColor; stroke-width: 1.7;
+    }
+
+    /* ---------- A: Quiet Cover ---------- */
+    .a-card {
+      background: var(--card);
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid transparent;
+      transition: border-color 160ms ease, transform 160ms ease;
+      cursor: pointer;
+    }
+    .a-card:hover { border-color: rgba(46,134,193,0.35); transform: translateY(-1px); }
+    .a-card .art { height: 132px; }
+    .a-body { padding: 14px 14px 15px; }
+    .a-kicker {
+      margin: 0 0 6px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .a-title {
+      margin: 0 0 4px;
+      font-size: 17px;
+      font-weight: 650;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+    }
+    .a-desc {
+      margin: 0 0 12px;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .a-foot {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .a-date {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .a-date svg {
+      width: 13px; height: 13px;
+      fill: none; stroke: var(--accent); stroke-width: 1.7;
+      stroke-linecap: round; stroke-linejoin: round;
+    }
+    .a-chip {
+      margin-left: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: var(--good-soft);
+      color: #7dceb0;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .a-chip svg {
+      width: 12px; height: 12px;
+      fill: none; stroke: currentColor; stroke-width: 1.8;
+    }
+    .a-chip.muted {
+      background: rgba(255,255,255,0.05);
+      color: var(--muted);
+    }
+
+    /* ---------- B: Date Beacon ---------- */
+    .b-card {
+      background: var(--card);
+      border-radius: 18px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: border-color 160ms ease, transform 160ms ease;
+    }
+    .b-card:hover { border-color: rgba(46,134,193,0.35); transform: translateY(-1px); }
+    .b-card .art { height: 120px; }
+    .b-body {
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      gap: 12px;
+      padding: 14px;
+      align-items: start;
+    }
+    .b-date {
+      width: 56px;
+      border-radius: 12px;
+      background: var(--accent-soft);
+      border: 1px solid rgba(46,134,193,0.25);
+      padding: 8px 4px;
+      text-align: center;
+    }
+    .b-date .dow {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .b-date .day {
+      margin: 2px 0 0;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+    .b-date .mon {
+      margin-top: 3px;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .b-title {
+      margin: 0 0 3px;
+      font-size: 16px;
+      font-weight: 650;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+    }
+    .b-desc {
+      margin: 0 0 8px;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .b-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .b-meta .time {
+      color: var(--ink);
+      font-weight: 600;
+    }
+    .b-meta .dot { opacity: 0.35; }
+    .b-rsvp {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: #7dceb0;
+      font-weight: 600;
+    }
+    .b-rsvp svg {
+      width: 12px; height: 12px;
+      fill: none; stroke: currentColor; stroke-width: 1.8;
+    }
+
+    /* ---------- C: Horizon Row ---------- */
+    .c-card {
+      display: grid;
+      grid-template-columns: 96px 1fr;
+      gap: 12px;
+      padding: 10px;
+      background: var(--card);
+      border-radius: 16px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: border-color 160ms ease, transform 160ms ease;
+      align-items: stretch;
+    }
+    .c-card:hover { border-color: rgba(46,134,193,0.35); transform: translateY(-1px); }
+    .c-card .art {
+      height: 96px;
+      border-radius: 12px;
+    }
+    .c-body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-width: 0;
+      padding: 2px 4px 2px 0;
+    }
+    .c-title {
+      margin: 0 0 3px;
+      font-size: 15px;
+      font-weight: 650;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .c-desc {
+      margin: 0 0 8px;
+      font-size: 12px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .c-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      flex-wrap: wrap;
+    }
+    .c-meta .when { color: var(--ink); }
+    .c-meta svg {
+      width: 12px; height: 12px;
+      fill: none; stroke: var(--accent); stroke-width: 1.7;
+      flex-shrink: 0;
+    }
+    .c-pill {
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: var(--good-soft);
+      color: #7dceb0;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    .note {
+      margin-top: 8px;
+      padding: 0 2px;
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <p class="eyebrow">LWP App · Refine</p>
+    <h1>Events &amp; Courses — elevate the card</h1>
+    <p class="lede">
+      Same dark glass chrome and blue accent. The current card works, but the 200px cover,
+      divider, and trailing chevron make every row feel bulky. Three light elevations —
+      pick one direction for both screens.
+    </p>
+
+    <div class="toolbar" id="concepts">
+      <button type="button" data-concept="current">Current</button>
+      <button type="button" class="active" data-concept="a">A · Quiet Cover</button>
+      <button type="button" data-concept="b">B · Date Beacon</button>
+      <button type="button" data-concept="c">C · Horizon Row</button>
+    </div>
+    <div class="toolbar" id="screens">
+      <button type="button" class="active" data-screen="events">Upcoming Events</button>
+      <button type="button" data-screen="courses">Courses</button>
+    </div>
+    <p class="hint">Switch concept and screen. Tap a card to feel the hover lift.</p>
+
+    <!-- CURRENT -->
+    <div class="panel" data-panel="current">
+      <p class="pitch">
+        <strong>Baseline.</strong> Full 200px media, title + description, hard divider,
+        calendar row with chevron, then RSVP as a second line. Familiar — but a lot of chrome for one item.
+      </p>
+      <div class="phones">
+        <div class="phone" data-for="events">
+          <div class="phone-label">Events · current</div>
+          <div class="chrome">
+            <div class="glass-btn" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>
+            <div class="title-pill">Upcoming Events</div>
+            <div class="chrome-spacer"></div>
+            <div class="actions">
+              <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 7 3 7H3s3 0 3-7"/><path d="M10 21a2 2 0 0 0 4 0"/></svg></div>
+              <div class="glass-btn"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.5-3.5 4-5 7-5s5.5 1.5 7 5"/></svg></div>
+            </div>
+          </div>
+          <div class="scroll" id="cur-events"></div>
+        </div>
+        <div class="phone" data-for="courses">
+          <div class="phone-label">Courses · current</div>
+          <div class="chrome">
+            <div class="glass-btn" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>
+            <div class="title-pill">Courses</div>
+            <div class="chrome-spacer"></div>
+            <div class="actions">
+              <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 7 3 7H3s3 0 3-7"/><path d="M10 21a2 2 0 0 0 4 0"/></svg></div>
+              <div class="glass-btn"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.5-3.5 4-5 7-5s5.5 1.5 7 5"/></svg></div>
+            </div>
+          </div>
+          <div class="scroll" id="cur-courses"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- A -->
+    <div class="panel active" data-panel="a">
+      <p class="pitch">
+        <strong>Quiet Cover.</strong> Keep the familiar vertical card, but shorten the media,
+        drop the divider and chevron, clamp description to one line, and fold RSVP into a soft chip
+        on the same meta row. Closest to today — just tighter and calmer.
+      </p>
+      <div class="phones">
+        <div class="phone" data-for="events">
+          <div class="phone-label">Events · Quiet Cover</div>
+          <div class="chrome">
+            <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>
+            <div class="title-pill">Upcoming Events</div>
+            <div class="chrome-spacer"></div>
+            <div class="actions">
+              <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 7 3 7H3s3 0 3-7"/><path d="M10 21a2 2 0 0 0 4 0"/></svg></div>
+              <div class="glass-btn"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.5-3.5 4-5 7-5s5.5 1.5 7 5"/></svg></div>
+            </div>
+          </div>
+          <div class="scroll" id="a-events"></div>
+        </div>
+        <div class="phone" data-for="courses">
+          <div class="phone-label">Courses · Quiet Cover</div>
+          <div class="chrome">
+            <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>
+            <div class="title-pill">Courses</div>
+            <div class="chrome-spacer"></div>
+            <div class="actions">
+              <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 7 3 7H3s3 0 3-7"/><path d="M10 21a2 2 0 0 0 4 0"/></svg></div>
+              <div class="glass-btn"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.5-3.5 4-5 7-5s5.5 1.5 7 5"/></svg></div>
+            </div>
+          </div>
+          <div class="scroll" id="a-courses"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- B -->
+    <div class="panel" data-panel="b">
+      <p class="pitch">
+        <strong>Date Beacon.</strong> The date becomes a scannable tile beside the copy —
+        day number first, then title. Cover stays, but shorter. Time and attendance share one quiet meta line.
+        Best when people browse by <em>when</em>.
+      </p>
+      <div class="phones">
+        <div class="phone" data-for="events">
+          <div class="phone-label">Events · Date Beacon</div>
+          <div class="chrome">
+            <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>
+            <div class="title-pill">Upcoming Events</div>
+            <div class="chrome-spacer"></div>
+            <div class="actions">
+              <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 7 3 7H3s3 0 3-7"/><path d="M10 21a2 2 0 0 0 4 0"/></svg></div>
+              <div class="glass-btn"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.5-3.5 4-5 7-5s5.5 1.5 7 5"/></svg></div>
+            </div>
+          </div>
+          <div class="scroll" id="b-events"></div>
+        </div>
+        <div class="phone" data-for="courses">
+          <div class="phone-label">Courses · Date Beacon</div>
+          <div class="chrome">
+            <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>
+            <div class="title-pill">Courses</div>
+            <div class="chrome-spacer"></div>
+            <div class="actions">
+              <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 7 3 7H3s3 0 3-7"/><path d="M10 21a2 2 0 0 0 4 0"/></svg></div>
+              <div class="glass-btn"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.5-3.5 4-5 7-5s5.5 1.5 7 5"/></svg></div>
+            </div>
+          </div>
+          <div class="scroll" id="b-courses"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- C -->
+    <div class="panel" data-panel="c">
+      <p class="pitch">
+        <strong>Horizon Row.</strong> Square thumb + text column. Maximum calm density —
+        more items above the fold without losing the cover signal. Strongest when the list grows.
+      </p>
+      <div class="phones">
+        <div class="phone" data-for="events">
+          <div class="phone-label">Events · Horizon Row</div>
+          <div class="chrome">
+            <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>
+            <div class="title-pill">Upcoming Events</div>
+            <div class="chrome-spacer"></div>
+            <div class="actions">
+              <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 7 3 7H3s3 0 3-7"/><path d="M10 21a2 2 0 0 0 4 0"/></svg></div>
+              <div class="glass-btn"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.5-3.5 4-5 7-5s5.5 1.5 7 5"/></svg></div>
+            </div>
+          </div>
+          <div class="scroll tight" id="c-events"></div>
+        </div>
+        <div class="phone" data-for="courses">
+          <div class="phone-label">Courses · Horizon Row</div>
+          <div class="chrome">
+            <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>
+            <div class="title-pill">Courses</div>
+            <div class="chrome-spacer"></div>
+            <div class="actions">
+              <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 7 3 7H3s3 0 3-7"/><path d="M10 21a2 2 0 0 0 4 0"/></svg></div>
+              <div class="glass-btn"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.5-3.5 4-5 7-5s5.5 1.5 7 5"/></svg></div>
+            </div>
+          </div>
+          <div class="scroll tight" id="c-courses"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const ICONS = {
+      cal: '<svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M8 3.5v3M16 3.5v3M3.5 10h17"/></svg>',
+      check: '<svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>',
+      chev: '<svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>',
+      people: '<svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="3.5"/><path d="M22 21v-2a3.5 3.5 0 0 0-2.5-3.3"/><path d="M16.5 3.6a3.5 3.5 0 0 1 0 6.8"/></svg>',
+      book: '<svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',
+    };
+
+    const EVENTS = [
+      {
+        title: "Vroue Event",
+        desc: "Test",
+        when: "Saturday 31 Dec 2026 11:00",
+        shortWhen: "Sat 31 Dec · 11:00",
+        time: "11:00",
+        dow: "Sat", day: "31", mon: "Dec",
+        attending: 1, interested: 0,
+        art: "art-a",
+        kicker: "Women",
+      },
+      {
+        title: "Jeug Aand",
+        desc: "Worship and connection for young adults",
+        when: "Friday 14 Nov 2026 19:00",
+        shortWhen: "Fri 14 Nov · 19:00",
+        time: "19:00",
+        dow: "Fri", day: "14", mon: "Nov",
+        attending: 12, interested: 4,
+        art: "art-b",
+        kicker: "Youth",
+      },
+      {
+        title: "Paasfees Diens",
+        desc: "Easter celebration service",
+        when: "Sunday 5 Apr 2026 09:00",
+        shortWhen: "Sun 5 Apr · 09:00",
+        time: "09:00",
+        dow: "Sun", day: "5", mon: "Apr",
+        attending: 48, interested: 11,
+        art: "art-c",
+        kicker: "Service",
+      },
+    ];
+
+    const COURSES = [
+      {
+        title: "Alpha Kursus",
+        desc: "Foundations of faith — open to everyone",
+        when: "Monday 6 Jul 2026 10:00",
+        shortWhen: "Mon 6 Jul · 10:00",
+        time: "10:00",
+        dow: "Mon", day: "6", mon: "Jul",
+        attending: 0, interested: 0,
+        art: "art-d",
+        kicker: "Course",
+      },
+      {
+        title: "Dissipelskap 101",
+        desc: "Grow together over eight weeks",
+        when: "Wednesday 12 Aug 2026 18:30",
+        shortWhen: "Wed 12 Aug · 18:30",
+        time: "18:30",
+        dow: "Wed", day: "12", mon: "Aug",
+        attending: 0, interested: 0,
+        art: "art-a",
+        kicker: "Course",
+      },
+      {
+        title: "Gebedsskool",
+        desc: "Prayer school for everyday life",
+        when: "Tuesday 1 Sep 2026 19:00",
+        shortWhen: "Tue 1 Sep · 19:00",
+        time: "19:00",
+        dow: "Tue", day: "1", mon: "Sep",
+        attending: 0, interested: 0,
+        art: "art-b",
+        kicker: "Course",
+      },
+    ];
+
+    function artInner(kind) {
+      const mark = kind === "course"
+        ? ICONS.book
+        : ICONS.people;
+      return `<div class="art-mark">${mark}</div>`;
+    }
+
+    function rsvpLabel(item) {
+      if (!item.attending && !item.interested) return "";
+      let t = `${item.attending} attending`;
+      if (item.interested) t += ` · ${item.interested} interested`;
+      return t;
+    }
+
+    function renderCurrent(list, kind) {
+      return list.map((item) => {
+        const rsvp = rsvpLabel(item);
+        return `
+          <article class="cur-card">
+            <div class="art ${item.art}">${artInner(kind)}</div>
+            <div class="cur-body">
+              <h3 class="cur-title">${item.title}</h3>
+              <p class="cur-desc">${item.desc}</p>
+              <div class="cur-divider"></div>
+              <div class="cur-meta">
+                ${ICONS.cal}
+                <span>${item.when}</span>
+                ${ICONS.chev}
+              </div>
+              ${rsvp ? `<div class="cur-rsvp">${ICONS.check}<span>${rsvp}</span></div>` : ""}
+            </div>
+          </article>`;
+      }).join("");
+    }
+
+    function renderA(list, kind) {
+      return list.map((item) => {
+        const rsvp = rsvpLabel(item);
+        const chip = kind === "events"
+          ? (rsvp
+              ? `<span class="a-chip">${ICONS.check}${item.attending} attending</span>`
+              : `<span class="a-chip muted">Open</span>`)
+          : `<span class="a-chip muted">Starts ${item.dow}</span>`;
+        return `
+          <article class="a-card">
+            <div class="art ${item.art}">${artInner(kind)}</div>
+            <div class="a-body">
+              <p class="a-kicker">${item.kicker}</p>
+              <h3 class="a-title">${item.title}</h3>
+              <p class="a-desc">${item.desc}</p>
+              <div class="a-foot">
+                <span class="a-date">${ICONS.cal}${item.shortWhen}</span>
+                ${chip}
+              </div>
+            </div>
+          </article>`;
+      }).join("");
+    }
+
+    function renderB(list, kind) {
+      return list.map((item) => {
+        const rsvp = item.attending
+          ? `<span class="b-rsvp">${ICONS.check}${item.attending} attending</span>`
+          : "";
+        return `
+          <article class="b-card">
+            <div class="art ${item.art}">${artInner(kind)}</div>
+            <div class="b-body">
+              <div class="b-date">
+                <div class="dow">${item.dow}</div>
+                <div class="day">${item.day}</div>
+                <div class="mon">${item.mon}</div>
+              </div>
+              <div>
+                <h3 class="b-title">${item.title}</h3>
+                <p class="b-desc">${item.desc}</p>
+                <div class="b-meta">
+                  <span class="time">${item.time}</span>
+                  ${rsvp ? `<span class="dot">·</span>${rsvp}` : `<span class="dot">·</span><span>${kind === "courses" ? "Course" : "Event"}</span>`}
+                </div>
+              </div>
+            </div>
+          </article>`;
+      }).join("");
+    }
+
+    function renderC(list, kind) {
+      return list.map((item) => {
+        const pill = item.attending
+          ? `<span class="c-pill">${item.attending} going</span>`
+          : "";
+        return `
+          <article class="c-card">
+            <div class="art ${item.art}">${artInner(kind)}</div>
+            <div class="c-body">
+              <h3 class="c-title">${item.title}</h3>
+              <p class="c-desc">${item.desc}</p>
+              <div class="c-meta">
+                ${ICONS.cal}
+                <span class="when">${item.shortWhen}</span>
+                ${pill}
+              </div>
+            </div>
+          </article>`;
+      }).join("");
+    }
+
+    document.getElementById("cur-events").innerHTML = renderCurrent(EVENTS, "events");
+    document.getElementById("cur-courses").innerHTML = renderCurrent(COURSES, "courses");
+    document.getElementById("a-events").innerHTML = renderA(EVENTS, "events");
+    document.getElementById("a-courses").innerHTML = renderA(COURSES, "courses");
+    document.getElementById("b-events").innerHTML = renderB(EVENTS, "events");
+    document.getElementById("b-courses").innerHTML = renderB(COURSES, "courses");
+    document.getElementById("c-events").innerHTML = renderC(EVENTS, "events");
+    document.getElementById("c-courses").innerHTML = renderC(COURSES, "courses");
+
+    let concept = "a";
+    let screen = "events";
+
+    function sync() {
+      document.querySelectorAll(".panel").forEach((p) => {
+        p.classList.toggle("active", p.dataset.panel === concept);
+      });
+      document.querySelectorAll("#concepts button").forEach((b) => {
+        b.classList.toggle("active", b.dataset.concept === concept);
+      });
+      document.querySelectorAll("#screens button").forEach((b) => {
+        b.classList.toggle("active", b.dataset.screen === screen);
+      });
+      document.querySelectorAll(".phone").forEach((phone) => {
+        phone.style.display = phone.dataset.for === screen ? "" : "none";
+      });
+    }
+
+    document.getElementById("concepts").addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-concept]");
+      if (!btn) return;
+      concept = btn.dataset.concept;
+      sync();
+    });
+    document.getElementById("screens").addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-screen]");
+      if (!btn) return;
+      screen = btn.dataset.screen;
+      sync();
+    });
+
+    sync();
+  </script>
+</body>
+</html>

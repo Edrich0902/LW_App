@@ -11,6 +11,7 @@ import 'package:lw_app/Models/Event/event_type.dart';
 import 'package:lw_app/Models/Event/rsvp_status.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
+import 'package:lw_app/Widgets/LwpDateBeaconCard/lwp_date_beacon_card.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 
 class UpcomingEventDetailPage extends StatelessWidget {
@@ -18,10 +19,16 @@ class UpcomingEventDetailPage extends StatelessWidget {
 
   const UpcomingEventDetailPage({super.key, required this.event});
 
+  static const double _heroFraction = 0.32;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
+    final heroHeight = size.height * _heroFraction;
+    final locale = Localizations.localeOf(context).toString();
+    final date = LwpDateBeaconCard.parseStartDate(event.startDate);
+    final timeLabel = DateFormatter.formatTime(event.time);
 
     return BlocListener<EventRsvpBloc, EventRsvpState>(
       listener: (context, state) {
@@ -41,9 +48,8 @@ class UpcomingEventDetailPage extends StatelessWidget {
       child: Scaffold(
         body: Stack(
           children: [
-            // Hero Background Image
             SizedBox(
-              height: size.height * 0.45,
+              height: heroHeight,
               width: double.infinity,
               child: Hero(
                 tag: 'event_image_${event.id}',
@@ -53,10 +59,8 @@ class UpcomingEventDetailPage extends StatelessWidget {
                 ),
               ),
             ),
-
-            // Gradient Overlay
             Container(
-              height: size.height * 0.45,
+              height: heroHeight,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
@@ -66,123 +70,121 @@ class UpcomingEventDetailPage extends StatelessWidget {
                     theme.scaffoldBackgroundColor.withValues(alpha: 0.2),
                     theme.scaffoldBackgroundColor,
                   ],
-                  stops: const [0.0, 0.7, 1.0],
+                  stops: const [0.0, 0.55, 1.0],
                 ),
               ),
             ),
-
-            // Content
             SingleChildScrollView(
               child: Column(
                 children: [
-                  SizedBox(height: size.height * 0.45),
+                  SizedBox(height: heroHeight - 28),
                   Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
                       color: theme.scaffoldBackgroundColor,
                       borderRadius: LwpRadii.lgTop,
                     ),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 24.0, vertical: 32.0),
+                    padding: const EdgeInsets.fromLTRB(
+                      LwpSpacing.lg,
+                      LwpSpacing.lg,
+                      LwpSpacing.lg,
+                      LwpSpacing.xl,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            LwpDateTile(
+                              date: date,
+                              locale: locale,
+                              fallbackDayName: event.day,
+                            ),
+                            const SizedBox(width: LwpSpacing.md),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    event.title,
-                                    style:
-                                        theme.textTheme.headlineSmall?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 12, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: theme.primaryColor
-                                          .withValues(alpha: 0.1),
-                                      borderRadius:
-                                          BorderRadius.circular(LwpRadii.pill),
-                                    ),
-                                    child: Text(
-                                      event.category,
-                                      style: TextStyle(
-                                        color: theme.primaryColor,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 12,
+                                  if (event.category.trim().isNotEmpty)
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: theme.primaryColor
+                                            .withValues(alpha: 0.12),
+                                        borderRadius: BorderRadius.circular(
+                                          LwpRadii.pill,
+                                        ),
+                                      ),
+                                      child: Text(
+                                        event.category,
+                                        style: TextStyle(
+                                          color: theme.primaryColor,
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 11,
+                                        ),
                                       ),
                                     ),
+                                  const SizedBox(height: LwpSpacing.xs),
+                                  Text(
+                                    event.title,
+                                    style: theme.textTheme.headlineSmall
+                                        ?.copyWith(
+                                      fontWeight: FontWeight.w700,
+                                      letterSpacing: -0.4,
+                                      height: 1.2,
+                                    ),
                                   ),
+                                  if (timeLabel.isNotEmpty) ...[
+                                    const SizedBox(height: LwpSpacing.xxs),
+                                    Text(
+                                      timeLabel,
+                                      style:
+                                          theme.textTheme.titleSmall?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
                                 ],
                               ),
                             ),
                           ],
                         ),
-                        const Divider(height: 48),
-
-                        _buildInfoTile(
-                          context,
-                          Icons.calendar_today_rounded,
-                          context.l10n.upcomingEventDate,
-                          "${event.day} ${DateFormatter.formatDate(event.startDate)}",
-                        ),
-                        _buildInfoTile(
-                          context,
-                          Icons.access_time_rounded,
-                          context.l10n.courseTime,
-                          DateFormatter.formatTime(event.time),
-                        ),
-
-                        const SizedBox(height: 32),
-                        Text(
-                          context.l10n.groupDescriptionTitle,
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
+                        if (event.description.trim().isNotEmpty) ...[
+                          const SizedBox(height: LwpSpacing.lg),
+                          Text(
+                            event.description,
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              color: theme.hintColor,
+                              height: 1.55,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          event.description,
-                          style: theme.textTheme.bodyLarge?.copyWith(
-                            height: 1.5,
-                          ),
-                        ),
-
-                        const Divider(height: 48),
-
-                        // RSVP section
+                        ],
+                        const SizedBox(height: LwpSpacing.md),
+                        _buildAttendanceStats(context),
+                        const SizedBox(height: LwpSpacing.lg),
                         _buildRsvpSection(context),
-
-                        const SizedBox(height: 32),
-
-                        // Action Button
+                        const SizedBox(height: LwpSpacing.lg),
                         SizedBox(
                           width: double.infinity,
-                          child: ElevatedButton.icon(
+                          child: ElevatedButton(
                             onPressed: () => _addToCalendar(),
-                            icon: const Icon(Icons.event_available_rounded),
-                            label: Text(context.l10n.commonAddToCalendar),
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 16),
                             ),
+                            child: Text(context.l10n.commonAddToCalendar),
                           ),
                         ),
-                        const SizedBox(height: 32),
+                        const SizedBox(height: LwpSpacing.lg),
                       ],
                     ),
                   ),
                 ],
               ),
             ),
-
-            // Back Button
             Positioned(
               top: MediaQuery.of(context).padding.top + 8,
               left: 16,
@@ -197,6 +199,51 @@ class UpcomingEventDetailPage extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildAttendanceStats(BuildContext context) {
+    final theme = Theme.of(context);
+    const good = Color(0xFF7DCEB0);
+
+    return BlocBuilder<EventRsvpBloc, EventRsvpState>(
+      builder: (context, state) {
+        final rsvpState = state is EventRsvpReady
+            ? state
+            : state is EventRsvpUpdating
+                ? state.previous
+                : state is EventRsvpError
+                    ? state.previous
+                    : null;
+        if (rsvpState == null) return const SizedBox.shrink();
+
+        return Row(
+          children: [
+            Text(
+              context.l10n.upcomingEventsAttendingCount(rsvpState.attendingCount),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: good,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            if (rsvpState.interestedCount > 0) ...[
+              Text(
+                '  ·  ',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.hintColor.withValues(alpha: 0.5),
+                ),
+              ),
+              Text(
+                context.l10n
+                    .upcomingEventsInterestedCount(rsvpState.interestedCount),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.hintColor,
+                ),
+              ),
+            ],
+          ],
+        );
+      },
     );
   }
 
@@ -221,12 +268,14 @@ class UpcomingEventDetailPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              context.l10n.upcomingEventAreYouGoing,
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
+              context.l10n.upcomingEventAreYouGoing.toUpperCase(),
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.hintColor,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.7,
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: LwpSpacing.sm),
             if (isUpdating)
               const Center(
                 child: SizedBox(
@@ -236,57 +285,74 @@ class UpcomingEventDetailPage extends StatelessWidget {
                 ),
               )
             else
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
+              Row(
                 children: RsvpStatus.values.map((status) {
                   final isSelected = rsvpState.userStatus == status;
                   final isDisabled = status == RsvpStatus.attending &&
                       rsvpState.isFull &&
                       !isSelected;
 
-                  int count;
-                  if (status == RsvpStatus.attending) {
-                    count = rsvpState.attendingCount;
-                  } else if (status == RsvpStatus.interested) {
-                    count = rsvpState.interestedCount;
-                  } else {
-                    count = rsvpState.notAttendingCount;
-                  }
-
-                  final label = isDisabled
-                      ? context.l10n.upcomingEventSoldOut
-                      : '${status.label(context.l10n)} $count';
-
-                  return ActionChip(
-                    label: Text(label),
-                    backgroundColor: isSelected ? theme.primaryColor : null,
-                    labelStyle: TextStyle(
-                      color: isSelected
-                          ? theme.colorScheme.onPrimary
-                          : isDisabled
-                              ? theme.disabledColor
-                              : null,
-                      fontWeight: isSelected ? FontWeight.bold : null,
+                  return Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                        right: status == RsvpStatus.values.last
+                            ? 0
+                            : LwpSpacing.xs,
+                      ),
+                      child: Material(
+                        color: isSelected
+                            ? theme.primaryColor
+                            : theme.cardColor,
+                        borderRadius: LwpRadii.smAll,
+                        child: InkWell(
+                          borderRadius: LwpRadii.smAll,
+                          onTap: isDisabled
+                              ? null
+                              : () {
+                                  context.read<EventRsvpBloc>().add(
+                                        SubmitRsvpEvent(
+                                          eventId: event.id!,
+                                          newStatus: status,
+                                        ),
+                                      );
+                                },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: LwpSpacing.sm,
+                              horizontal: LwpSpacing.xs,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: LwpRadii.smAll,
+                              border: Border.all(
+                                color: isSelected
+                                    ? theme.primaryColor
+                                    : theme.dividerColor
+                                        .withValues(alpha: 0.5),
+                              ),
+                            ),
+                            child: Text(
+                              isDisabled
+                                  ? context.l10n.upcomingEventSoldOut
+                                  : status.label(context.l10n),
+                              textAlign: TextAlign.center,
+                              style: theme.textTheme.labelMedium?.copyWith(
+                                color: isSelected
+                                    ? theme.colorScheme.onPrimary
+                                    : isDisabled
+                                        ? theme.disabledColor
+                                        : null,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
-                    side: isSelected
-                        ? BorderSide(color: theme.primaryColor)
-                        : null,
-                    onPressed: isDisabled
-                        ? null
-                        : () {
-                            context.read<EventRsvpBloc>().add(
-                                  SubmitRsvpEvent(
-                                    eventId: event.id!,
-                                    newStatus: status,
-                                  ),
-                                );
-                          },
                   );
                 }).toList(),
               ),
             if (rsvpState.capacity != null) ...[
-              const SizedBox(height: 8),
+              const SizedBox(height: LwpSpacing.xs),
               Text(
                 context.l10n.upcomingEventCapacity(
                   rsvpState.attendingCount,
@@ -300,46 +366,6 @@ class UpcomingEventDetailPage extends StatelessWidget {
           ],
         );
       },
-    );
-  }
-
-  Widget _buildInfoTile(
-      BuildContext context, IconData icon, String label, String value) {
-    final theme = Theme.of(context);
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12.0),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: theme.primaryColor.withValues(alpha: 0.1),
-              borderRadius: LwpRadii.smAll,
-            ),
-            child: Icon(icon, color: theme.primaryColor, size: 20),
-          ),
-          const SizedBox(width: 16),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: theme.hintColor,
-                ),
-              ),
-              Text(
-                value,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
     );
   }
 

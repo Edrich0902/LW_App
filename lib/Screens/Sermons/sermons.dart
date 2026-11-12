@@ -136,48 +136,83 @@ class _SermonsPageState extends State<SermonsPage> {
 
   Widget _buildVideoCard(YoutubeVideo video, VoidCallback onTap) {
     final theme = Theme.of(context);
+    final title = video.customTitle ?? video.title;
+    final author = video.customAuthor ?? video.authorName;
 
     return Card(
-      margin: const EdgeInsets.only(bottom: LwpSpacing.lg),
-      shape: RoundedRectangleBorder(
-        borderRadius: LwpRadii.lgAll,
-      ),
+      margin: const EdgeInsets.only(bottom: LwpSpacing.sm),
+      clipBehavior: Clip.antiAliasWithSaveLayer,
+      shape: const RoundedRectangleBorder(borderRadius: LwpRadii.lgAll),
       child: InkWell(
         onTap: onTap,
-        borderRadius: LwpRadii.lgAll,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClipRRect(
-              borderRadius: LwpRadii.lgTop,
-              child: AspectRatio(
-                aspectRatio: 16 / 9,
-                child: Image.network(
-                  video.thumbnailUrl,
-                  fit: BoxFit.cover,
-                ),
+            SizedBox(
+              height: 132,
+              width: double.infinity,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.network(
+                    video.thumbnailUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => ColoredBox(
+                      color: theme.colorScheme.primary.withValues(alpha: 0.2),
+                    ),
+                  ),
+                  Center(
+                    child: Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.45),
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.2),
+                        ),
+                      ),
+                      child: const Icon(
+                        Icons.play_arrow_rounded,
+                        color: Colors.white,
+                        size: 26,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.fromLTRB(
+                LwpSpacing.sm,
+                LwpSpacing.sm,
+                LwpSpacing.sm,
+                LwpSpacing.md,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    video.customTitle ?? video.title,
+                    title,
                     style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: -0.2,
+                      height: 1.25,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    video.customAuthor ?? video.authorName,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.hintColor,
+                  if (author.trim().isNotEmpty) ...[
+                    const SizedBox(height: LwpSpacing.xxs),
+                    Text(
+                      author,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.hintColor,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
+                  ],
                 ],
               ),
             ),
