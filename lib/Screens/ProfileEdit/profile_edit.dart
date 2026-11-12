@@ -1,18 +1,18 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:lw_app/Blocs/User/user_bloc.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/User/user_profile.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
-import 'package:lw_app/Widgets/LwpProfileImage/lwp_profile_image.dart';
-import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
-import 'package:lw_app/Widgets/LabeledCheckbox/labeled_checkbox.dart';
 import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
+import 'package:lw_app/Widgets/LwpProfileImage/lwp_profile_image.dart';
+import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ProfileEditPage extends StatefulWidget {
   const ProfileEditPage({super.key});
@@ -24,10 +24,7 @@ class ProfileEditPage extends StatefulWidget {
 class _ProfileEditPageState extends State<ProfileEditPage> {
   User? user = Supabase.instance.client.auth.currentUser;
 
-  // Form key
   final _profileEditFormKey = GlobalKey<FormState>();
-
-  // Form controllers
   late final TextEditingController _firstNameController =
       TextEditingController();
   late final TextEditingController _lastNameController =
@@ -69,7 +66,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
 
   @override
   Widget build(BuildContext context) {
-    UserBloc userBloc = BlocProvider.of<UserBloc>(context);
+    final userBloc = BlocProvider.of<UserBloc>(context);
     final theme = Theme.of(context);
 
     return BlocListener<UserBloc, UserState>(
@@ -100,86 +97,115 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
               }
 
               if (_isInitialized && _currentUser != null) {
+                final publicId = state is UserSuccess
+                    ? state.user.profilePublicId ?? ''
+                    : _currentUser!.profilePublicId ?? '';
+                final fullName =
+                    '${_firstNameController.text} ${_lastNameController.text}'
+                        .trim();
+
                 return SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 24.0, vertical: 16.0),
+                  padding: const EdgeInsets.fromLTRB(
+                    LwpSpacing.md,
+                    LwpSpacing.sm,
+                    LwpSpacing.md,
+                    LwpSpacing.xl,
+                  ),
                   child: Form(
                     key: _profileEditFormKey,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>[
-                        const SizedBox(height: 24),
-                        _buildProfileImage(
-                            state is UserSuccess
-                                ? state.user.profilePublicId ?? ''
-                                : _currentUser!.profilePublicId ?? '',
-                            userBloc,
-                            theme,
-                            state is UserLoading),
-                        const SizedBox(height: 32),
-                        TextFormField(
-                          initialValue: user?.email ?? 'N/A',
-                          enabled: false,
-                          decoration: InputDecoration(
-                            labelText: context.l10n.authEmail,
-                            prefixIcon: Icon(Icons.email_outlined),
+                      children: [
+                        _buildIdentityHeader(
+                          publicId: publicId,
+                          fullName: fullName.isEmpty
+                              ? context.l10n.profileDefaultName
+                              : fullName,
+                          userBloc: userBloc,
+                          theme: theme,
+                          isLoading: state is UserLoading,
+                        ),
+                        const SizedBox(height: LwpSpacing.md),
+                        _sectionLabel(
+                          context.l10n.profileEditDetailsSection,
+                          theme,
+                        ),
+                        _QuietField(
+                          label: context.l10n.authEmail,
+                          child: Text(
+                            user?.email ?? 'N/A',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              color: theme.hintColor,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: _firstNameController,
-                          textCapitalization: TextCapitalization.words,
-                          validator: (firstName) {
-                            if (firstName == null || firstName.isEmpty) {
-                              return context.l10n.profileEditNameRequired;
-                            }
-                            return null;
-                          },
-                          decoration: InputDecoration(
-                            labelText: context.l10n.authFirstName,
-                            prefixIcon: Icon(Icons.person_outline),
+                        _QuietField(
+                          label: context.l10n.authFirstName,
+                          child: TextFormField(
+                            controller: _firstNameController,
+                            textCapitalization: TextCapitalization.words,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w500,
+                            ),
+                            decoration: _quietInputDecoration,
+                            validator: (firstName) {
+                              if (firstName == null || firstName.isEmpty) {
+                                return context.l10n.profileEditNameRequired;
+                              }
+                              return null;
+                            },
+                            onChanged: (_) => setState(() {}),
                           ),
                         ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: _lastNameController,
-                          textCapitalization: TextCapitalization.words,
-                          validator: (lastName) {
-                            if (lastName == null || lastName.isEmpty) {
-                              return context.l10n.profileEditLastNameRequired;
-                            }
-                            return null;
-                          },
-                          decoration: InputDecoration(
-                            labelText: context.l10n.authLastName,
-                            prefixIcon: Icon(Icons.badge_outlined),
+                        _QuietField(
+                          label: context.l10n.authLastName,
+                          child: TextFormField(
+                            controller: _lastNameController,
+                            textCapitalization: TextCapitalization.words,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w500,
+                            ),
+                            decoration: _quietInputDecoration,
+                            validator: (lastName) {
+                              if (lastName == null || lastName.isEmpty) {
+                                return context
+                                    .l10n.profileEditLastNameRequired;
+                              }
+                              return null;
+                            },
+                            onChanged: (_) => setState(() {}),
                           ),
                         ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: _addressController,
-                          textCapitalization: TextCapitalization.sentences,
-                          decoration: InputDecoration(
-                            labelText: context.l10n.profileEditAddress,
-                            prefixIcon: Icon(Icons.location_on_outlined),
+                        _QuietField(
+                          label: context.l10n.profileEditAddress,
+                          child: TextFormField(
+                            controller: _addressController,
+                            textCapitalization: TextCapitalization.sentences,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w500,
+                            ),
+                            decoration: _quietInputDecoration,
                           ),
                         ),
-                        const SizedBox(height: 24),
-                        LabeledCheckbox(
+                        const SizedBox(height: LwpSpacing.md),
+                        _sectionLabel(
+                          context.l10n.profileEditFaithSection,
+                          theme,
+                        ),
+                        _ToggleRow(
+                          label: context.l10n.profileEditBaptizedLabel,
                           value: _isBaptized,
-                          label: context.l10n.profileEditIsBaptized,
-                          onChanged: (bool? newValue) {
-                            setState(() => _isBaptized = newValue!);
-                          },
+                          onChanged: (value) =>
+                              setState(() => _isBaptized = value),
                         ),
-                        LabeledCheckbox(
+                        _ToggleRow(
+                          label: context.l10n.profileEditMemberLabel,
                           value: _isMember,
-                          label: context.l10n.profileEditIsMember,
-                          onChanged: (bool? newValue) {
-                            setState(() => _isMember = newValue!);
-                          },
+                          onChanged: (value) =>
+                              setState(() => _isMember = value),
                         ),
-                        const SizedBox(height: 32),
+                        const SizedBox(height: LwpSpacing.lg),
                         ElevatedButton(
                           onPressed: () {
                             if (_profileEditFormKey.currentState!.validate()) {
@@ -203,16 +229,16 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                                     strokeWidth: 2,
                                   ),
                                 )
-                              : Text(context.l10n.profileEditUpdateButton),
+                              : Text(context.l10n.commonSave),
                         ),
-                        const SizedBox(height: 24),
                       ],
                     ),
                   ),
                 );
               } else if (state is UserError && !_isInitialized) {
                 return LwpError(
-                  onRetry: () => context.read<UserBloc>().add(const LoadUser()),
+                  onRetry: () =>
+                      context.read<UserBloc>().add(const LoadUser()),
                 );
               }
 
@@ -224,50 +250,124 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     );
   }
 
-  Widget _buildProfileImage(
-      String publicId, UserBloc userBloc, ThemeData theme, bool isLoading) {
-    return Center(
-      child: Stack(
-        children: [
-          LwpProfileImage(
-            publicId: publicId,
-            height: 160,
-            radius: 80,
-          ),
-          if (isLoading)
-            Positioned.fill(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.3),
-                  shape: BoxShape.circle,
+  Widget _sectionLabel(String label, ThemeData theme) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: LwpSpacing.xs),
+      child: Text(
+        label,
+        style: theme.textTheme.labelSmall?.copyWith(
+          color: theme.hintColor,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 1.0,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildIdentityHeader({
+    required String publicId,
+    required String fullName,
+    required UserBloc userBloc,
+    required ThemeData theme,
+    required bool isLoading,
+  }) {
+    return Row(
+      children: [
+        Stack(
+          children: [
+            LwpProfileImage(
+              publicId: publicId,
+              height: 84,
+              radius: 42,
+            ),
+            if (isLoading)
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.3),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Center(
+                    child: SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    ),
+                  ),
                 ),
-                child: const Center(
-                  child: CircularProgressIndicator(
-                    color: Colors.white,
+              ),
+            Positioned(
+              bottom: 0,
+              right: 0,
+              child: Material(
+                color: theme.primaryColor,
+                shape: const CircleBorder(),
+                child: InkWell(
+                  customBorder: const CircleBorder(),
+                  onTap: isLoading
+                      ? null
+                      : () => _showImageSourcePicker(userBloc),
+                  child: Container(
+                    width: 30,
+                    height: 30,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: theme.scaffoldBackgroundColor,
+                        width: 2,
+                      ),
+                    ),
+                    child: const Icon(
+                      Icons.camera_alt,
+                      color: Colors.white,
+                      size: 14,
+                    ),
                   ),
                 ),
               ),
             ),
-          Positioned(
-            bottom: 4,
-            right: 4,
-            child: Container(
-              decoration: BoxDecoration(
-                color: theme.primaryColor,
-                shape: BoxShape.circle,
-                border:
-                    Border.all(color: theme.scaffoldBackgroundColor, width: 2),
+          ],
+        ),
+        const SizedBox(width: LwpSpacing.sm),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                fullName,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.3,
+                ),
               ),
-              child: IconButton(
-                icon:
-                    const Icon(Icons.camera_alt, color: Colors.white, size: 20),
-                onPressed:
-                    isLoading ? null : () => _showImageSourcePicker(userBloc),
+              const SizedBox(height: 3),
+              Text(
+                context.l10n.dashboardChurchName,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.hintColor,
+                ),
               ),
-            ),
+              const SizedBox(height: LwpSpacing.xs),
+              InkWell(
+                onTap: isLoading
+                    ? null
+                    : () => _showImageSourcePicker(userBloc),
+                child: Text(
+                  context.l10n.profileEditChangePhoto,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    color: theme.colorScheme.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -286,9 +386,11 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                 title: Text(context.l10n.authGallery),
                 onTap: () async {
                   Navigator.pop(context);
-                  File? image = await _pickImageFromGallery();
+                  final image = await _pickImageFromGallery();
                   if (image != null) {
-                    userBloc.add(UploadProfilePicture(profileImageFile: image));
+                    userBloc.add(
+                      UploadProfilePicture(profileImageFile: image),
+                    );
                   }
                 },
               ),
@@ -297,9 +399,11 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                 title: Text(context.l10n.authCamera),
                 onTap: () async {
                   Navigator.pop(context);
-                  File? image = await _pickImageFromCamera();
+                  final image = await _pickImageFromCamera();
                   if (image != null) {
-                    userBloc.add(UploadProfilePicture(profileImageFile: image));
+                    userBloc.add(
+                      UploadProfilePicture(profileImageFile: image),
+                    );
                   }
                 },
               ),
@@ -314,7 +418,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     final returnedImage =
         await ImagePicker().pickImage(source: ImageSource.gallery);
     if (returnedImage == null) return null;
-    File? imageFile = File(returnedImage.path);
+    final imageFile = File(returnedImage.path);
     if (await imageFile.exists()) return imageFile;
     return null;
   }
@@ -323,8 +427,117 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     final returnedImage =
         await ImagePicker().pickImage(source: ImageSource.camera);
     if (returnedImage == null) return null;
-    File? imageFile = File(returnedImage.path);
+    final imageFile = File(returnedImage.path);
     if (await imageFile.exists()) return imageFile;
     return null;
+  }
+}
+
+/// Strips the global filled InputDecorationTheme so quiet fields stay bare text.
+const _quietInputDecoration = InputDecoration(
+  filled: false,
+  fillColor: Colors.transparent,
+  isDense: true,
+  contentPadding: EdgeInsets.zero,
+  border: InputBorder.none,
+  enabledBorder: InputBorder.none,
+  focusedBorder: InputBorder.none,
+  errorBorder: InputBorder.none,
+  focusedErrorBorder: InputBorder.none,
+  disabledBorder: InputBorder.none,
+);
+
+class _QuietField extends StatelessWidget {
+  const _QuietField({
+    required this.label,
+    required this.child,
+  });
+
+  final String label;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: LwpSpacing.sm, bottom: 4),
+          child: Text(
+            label,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.hintColor,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.8,
+            ),
+          ),
+        ),
+        child,
+        Divider(
+          height: LwpSpacing.md,
+          thickness: 1,
+          color: theme.dividerColor.withValues(alpha: 0.45),
+        ),
+      ],
+    );
+  }
+}
+
+class _ToggleRow extends StatelessWidget {
+  const _ToggleRow({
+    required this.label,
+    required this.value,
+    required this.onChanged,
+  });
+
+  final String label;
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: LwpSpacing.sm),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  label,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              Switch(
+                value: value,
+                onChanged: onChanged,
+                activeThumbColor: Colors.white,
+                activeTrackColor: primary,
+                inactiveThumbColor: Colors.white,
+                inactiveTrackColor:
+                    theme.dividerColor.withValues(alpha: 0.55),
+                trackOutlineColor: WidgetStateProperty.resolveWith((states) {
+                  if (states.contains(WidgetState.selected)) {
+                    return Colors.transparent;
+                  }
+                  return theme.dividerColor.withValues(alpha: 0.7);
+                }),
+              ),
+            ],
+          ),
+        ),
+        Divider(
+          height: 1,
+          thickness: 1,
+          color: theme.dividerColor.withValues(alpha: 0.45),
+        ),
+      ],
+    );
   }
 }

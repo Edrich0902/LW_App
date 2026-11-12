@@ -394,7 +394,7 @@ class _BiblePageState extends State<BiblePage> {
       child: Scaffold(
         body: BlocBuilder<BibleBloc, BibleState>(
           builder: (context, state) {
-            final topInset = _bibleChromeHeight(context, hasTranslation: state is BibleLoaded);
+            final topInset = _bibleChromeHeight(context);
 
             if (state is BibleLoading) {
               return Stack(
@@ -535,9 +535,8 @@ class _BiblePageState extends State<BiblePage> {
                           '${state.currentBook.name} ${state.currentChapter.number}',
                       onTitleTap: () => _showNavigation(context, state),
                       onBookmarks: _openSavedVerses,
-                      translationLabel: state.currentVersion.displayName,
-                      onChooseTranslation: () =>
-                          _showNavigation(context, state),
+                      versionChip: state.currentVersion.shortLabel,
+                      onVersionTap: () => _showNavigation(context, state),
                     ),
                   ),
                   // Floating Sequential Navigation Buttons (Only show when NO verses are selected)
@@ -790,11 +789,9 @@ class _NavigationButton extends StatelessWidget {
   }
 }
 
-double _bibleChromeHeight(BuildContext context, {required bool hasTranslation}) {
+double _bibleChromeHeight(BuildContext context) {
   final top = MediaQuery.paddingOf(context).top + LwpTopBar.gap;
-  final row1 = LwpTopBar.capsuleHeight;
-  if (!hasTranslation) return top + row1 + 6;
-  return top + row1 + LwpTopBar.gap + 40 + 6;
+  return top + LwpTopBar.capsuleHeight + 6;
 }
 
 class _BibleGlassTopBar extends StatelessWidget {
@@ -802,15 +799,15 @@ class _BibleGlassTopBar extends StatelessWidget {
     required this.title,
     required this.onTitleTap,
     required this.onBookmarks,
-    this.translationLabel,
-    this.onChooseTranslation,
+    this.versionChip,
+    this.onVersionTap,
   });
 
   final String title;
   final VoidCallback? onTitleTap;
   final VoidCallback onBookmarks;
-  final String? translationLabel;
-  final VoidCallback? onChooseTranslation;
+  final String? versionChip;
+  final VoidCallback? onVersionTap;
 
   @override
   Widget build(BuildContext context) {
@@ -827,103 +824,85 @@ class _BibleGlassTopBar extends StatelessWidget {
           LwpTopBar.side,
           0,
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+        child: Row(
           children: [
-            Row(
-              children: [
-                LwpGlass(
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: onTitleTap,
-                    child: Container(
-                      height: LwpTopBar.capsuleHeight,
-                      padding: const EdgeInsets.only(left: 14, right: 10),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          ConstrainedBox(
-                            constraints: BoxConstraints(
-                              maxWidth: MediaQuery.sizeOf(context).width * 0.42,
-                            ),
-                            child: Text(
-                              title,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.w600,
-                                color: ink,
-                              ),
-                            ),
-                          ),
-                          if (onTitleTap != null)
-                            Icon(Icons.arrow_drop_down, color: ink),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                const Spacer(),
-                LwpGlass(
-                  child: SizedBox(
-                    height: LwpTopBar.capsuleHeight,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 2),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: Icon(Icons.bookmarks_outlined, color: ink),
-                            tooltip: context.l10n.bibleSavedVersesTooltip,
-                            onPressed: onBookmarks,
-                          ),
-                          LwpAnnouncementButton(color: ink),
-                          ProfileActionButton(color: ink),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            if (translationLabel != null) ...[
-              const SizedBox(height: LwpTopBar.gap),
-              LwpGlass(
-                child: SizedBox(
-                  height: 40,
-                  width: double.infinity,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 14),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            translationLabel!,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: ink,
-                            ),
+            LwpGlass(
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: onTitleTap,
+                child: Container(
+                  height: LwpTopBar.capsuleHeight,
+                  padding: const EdgeInsets.only(left: 14, right: 10),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxWidth: MediaQuery.sizeOf(context).width * 0.34,
+                        ),
+                        child: Text(
+                          title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: ink,
                           ),
                         ),
+                      ),
+                      if (onTitleTap != null)
+                        Icon(Icons.arrow_drop_down, color: ink),
+                      if ((versionChip ?? '').isNotEmpty) ...[
+                        const SizedBox(width: 6),
                         GestureDetector(
                           behavior: HitTestBehavior.opaque,
-                          onTap: onChooseTranslation,
-                          child: Text(
-                            context.l10n.bibleChooseTranslation,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: theme.primaryColor,
+                          onTap: onVersionTap ?? onTitleTap,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: theme.primaryColor.withValues(alpha: 0.16),
+                              borderRadius:
+                                  BorderRadius.circular(LwpRadii.pill),
+                            ),
+                            child: Text(
+                              versionChip!,
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: theme.primaryColor,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           ),
                         ),
                       ],
-                    ),
+                    ],
                   ),
                 ),
               ),
-            ],
+            ),
+            const Spacer(),
+            LwpGlass(
+              child: SizedBox(
+                height: LwpTopBar.capsuleHeight,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 2),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.bookmarks_outlined, color: ink),
+                        tooltip: context.l10n.bibleSavedVersesTooltip,
+                        onPressed: onBookmarks,
+                      ),
+                      LwpAnnouncementButton(color: ink),
+                      ProfileActionButton(color: ink),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),

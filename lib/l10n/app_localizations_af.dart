@@ -1177,7 +1177,25 @@ class AppLocalizationsAf extends AppLocalizations {
   String get savedVersesTapToView => 'Tik om in Bybel te sien...';
 
   @override
+  String get savedVersesReadAction => 'Lees';
+
+  @override
   String get savedVersesRemoveBookmark => 'Verwyder Boekmerk';
+
+  @override
+  String get profileEditChangePhoto => 'Verander foto';
+
+  @override
+  String get profileEditDetailsSection => 'Besonderhede';
+
+  @override
+  String get profileEditFaithSection => 'Geloof & lidmaatskap';
+
+  @override
+  String get profileEditBaptizedLabel => 'Gedoop';
+
+  @override
+  String get profileEditMemberLabel => 'Lidmaat';
 
   @override
   String get savedVersesNotesEmpty =>

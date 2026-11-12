@@ -2276,11 +2276,47 @@ abstract class AppLocalizations {
   /// **'Tik om in Bybel te sien...'**
   String get savedVersesTapToView;
 
+  /// No description provided for @savedVersesReadAction.
+  ///
+  /// In af, this message translates to:
+  /// **'Lees'**
+  String get savedVersesReadAction;
+
   /// No description provided for @savedVersesRemoveBookmark.
   ///
   /// In af, this message translates to:
   /// **'Verwyder Boekmerk'**
   String get savedVersesRemoveBookmark;
+
+  /// No description provided for @profileEditChangePhoto.
+  ///
+  /// In af, this message translates to:
+  /// **'Verander foto'**
+  String get profileEditChangePhoto;
+
+  /// No description provided for @profileEditDetailsSection.
+  ///
+  /// In af, this message translates to:
+  /// **'Besonderhede'**
+  String get profileEditDetailsSection;
+
+  /// No description provided for @profileEditFaithSection.
+  ///
+  /// In af, this message translates to:
+  /// **'Geloof & lidmaatskap'**
+  String get profileEditFaithSection;
+
+  /// No description provided for @profileEditBaptizedLabel.
+  ///
+  /// In af, this message translates to:
+  /// **'Gedoop'**
+  String get profileEditBaptizedLabel;
+
+  /// No description provided for @profileEditMemberLabel.
+  ///
+  /// In af, this message translates to:
+  /// **'Lidmaat'**
+  String get profileEditMemberLabel;
 
   /// No description provided for @savedVersesNotesEmpty.
   ///

@@ -1171,7 +1171,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get savedVersesTapToView => 'Tap to view in Bible...';
 
   @override
+  String get savedVersesReadAction => 'Read';
+
+  @override
   String get savedVersesRemoveBookmark => 'Remove Bookmark';
+
+  @override
+  String get profileEditChangePhoto => 'Change photo';
+
+  @override
+  String get profileEditDetailsSection => 'Details';
+
+  @override
+  String get profileEditFaithSection => 'Faith & membership';
+
+  @override
+  String get profileEditBaptizedLabel => 'Baptized';
+
+  @override
+  String get profileEditMemberLabel => 'Member';
 
   @override
   String get savedVersesNotesEmpty =>

@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="af">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LWP — Saved verses &amp; Profile edit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0b1218;
+      --card: #1e1e1e;
+      --ink: #eef3f7;
+      --muted: #8a9aab;
+      --line: rgba(255,255,255,0.08);
+      --accent: #2e86c1;
+      --accent-soft: rgba(46,134,193,0.18);
+      --hl: rgba(255,241,118,0.28);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh;
+      font-family: "DM Sans", system-ui, sans-serif;
+      background:
+        radial-gradient(900px 420px at 18% -8%, rgba(46,134,193,0.14), transparent 58%),
+        var(--bg);
+      color: var(--ink);
+      padding: 28px 20px 80px;
+    }
+    .page { max-width: 1280px; margin: 0 auto; }
+    .eyebrow {
+      font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--muted); margin: 0 0 6px;
+    }
+    h1 { margin: 0 0 8px; font-size: 28px; font-weight: 600; letter-spacing: -0.03em; }
+    .lede {
+      margin: 0 0 16px; color: var(--muted); font-size: 14px; line-height: 1.55; max-width: 82ch;
+    }
+    .pitch {
+      margin: 0 0 18px; padding: 14px 16px; border: 1px solid var(--line);
+      border-radius: 12px; background: rgba(255,255,255,0.03);
+      color: var(--muted); font-size: 13px; line-height: 1.55; max-width: 92ch;
+    }
+    .pitch strong { color: var(--ink); font-weight: 600; }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+    .toolbar button {
+      appearance: none; border: 1px solid var(--line); background: rgba(255,255,255,0.03);
+      color: var(--ink); border-radius: 999px; padding: 10px 14px; font: inherit;
+      font-size: 13px; font-weight: 500; cursor: pointer;
+    }
+    .toolbar button:hover { border-color: rgba(255,255,255,0.18); }
+    .toolbar button.active { background: var(--accent); border-color: transparent; color: #fff; }
+    .hint { margin: 0 0 20px; font-size: 12px; color: var(--muted); }
+    .phones {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 22px; align-items: start;
+    }
+    .phone {
+      border: 1px solid var(--line); border-radius: 28px; background: #121212;
+      overflow: hidden; box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+      min-height: 780px; display: none; flex-direction: column; position: relative;
+    }
+    .phone.active { display: flex; }
+    .phone-label {
+      padding: 14px 18px 0; font-size: 11px; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .chrome {
+      display: flex; align-items: center; gap: 10px; padding: 14px 16px 10px;
+    }
+    .chrome-spacer { flex: 1; }
+    .glass-btn, .title-pill {
+      height: 36px; border-radius: 999px; border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04); color: var(--ink);
+    }
+    .glass-btn { width: 36px; display: grid; place-items: center; }
+    .glass-btn svg {
+      width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.7;
+      stroke-linecap: round; stroke-linejoin: round;
+    }
+    .title-pill {
+      padding: 0 14px; display: inline-flex; align-items: center;
+      font-size: 14px; font-weight: 600;
+    }
+    .scroll { flex: 1; overflow: auto; padding: 8px 16px 28px; }
+    .tabs {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+      margin: 4px 0 14px; padding: 4px; border: 1px solid var(--line);
+      border-radius: 14px; background: rgba(255,255,255,0.03);
+    }
+    .tabs span {
+      text-align: center; padding: 10px 8px; border-radius: 10px;
+      font-size: 13px; font-weight: 600; color: var(--muted);
+    }
+    .tabs span.on { background: var(--accent); color: #fff; }
+
+    /* Saved current */
+    .card {
+      background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+      padding: 16px; margin-bottom: 10px;
+    }
+    .card .top { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .card .cite { font-size: 14px; font-weight: 700; color: var(--accent); }
+    .card .ver { font-size: 11px; color: var(--muted); }
+    .dot {
+      width: 14px; height: 14px; border-radius: 999px; background: #fff176;
+      border: 1.5px solid #fff; margin-left: auto;
+    }
+    .card .hint-line {
+      font-size: 12px; font-style: italic; color: var(--muted); margin: 0 0 10px;
+    }
+    .card .actions {
+      display: flex; gap: 8px; border-top: 1px solid var(--line); padding-top: 10px;
+    }
+    .ghost {
+      appearance: none; border: 1px solid var(--line); background: transparent;
+      color: var(--muted); border-radius: 999px; padding: 7px 12px; font: inherit; font-size: 12px;
+    }
+
+    /* Saved proposed */
+    .sec {
+      margin: 2px 0 6px; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--muted); font-weight: 600;
+    }
+    .verse-row {
+      padding: 14px 0; border-bottom: 1px solid var(--line);
+      display: grid; grid-template-columns: 4px 1fr; gap: 12px;
+    }
+    .verse-row:last-child { border-bottom: 0; }
+    .rail { border-radius: 999px; background: var(--hl); min-height: 100%; }
+    .rail.blue { background: rgba(144,202,249,0.45); }
+    .rail.green { background: rgba(165,214,167,0.45); }
+    .rail.none { background: rgba(255,255,255,0.08); }
+    .v-top { display: flex; align-items: baseline; gap: 8px; margin-bottom: 6px; }
+    .v-top .cite { font-size: 14px; font-weight: 700; color: var(--accent); }
+    .v-top .ver {
+      font-size: 11px; font-weight: 600; color: var(--accent);
+      background: var(--accent-soft); padding: 2px 8px; border-radius: 999px;
+    }
+    .v-top .mark { margin-left: auto; color: var(--accent); }
+    .v-top .mark svg { width: 14px; height: 14px; fill: currentColor; }
+    .quote {
+      margin: 0; font-size: 15px; line-height: 1.55; letter-spacing: -0.01em;
+      font-weight: 500;
+    }
+    .note {
+      margin: 8px 0 0; font-size: 13px; color: var(--muted); line-height: 1.4;
+      border-left: 2px solid var(--accent); padding-left: 10px;
+    }
+    .row-actions { margin-top: 10px; display: flex; gap: 8px; }
+
+    /* Bible chrome strip */
+    .bible-bar {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
+      padding: 10px 12px; border: 1px solid var(--line); border-radius: 14px;
+      background: rgba(255,255,255,0.03);
+    }
+    .bible-bar b { flex: 1; font-size: 14px; font-weight: 600; }
+    .bible-bar .chip {
+      font-size: 11px; font-weight: 700; color: var(--accent);
+      background: var(--accent-soft); padding: 4px 8px; border-radius: 999px;
+    }
+    .passage {
+      font-size: 16px; line-height: 1.7; color: var(--ink);
+    }
+    .passage sup {
+      color: var(--accent); font-weight: 700; font-size: 11px; margin-right: 4px;
+    }
+    .passage .hl {
+      background: var(--hl); border-radius: 4px; padding: 0 2px;
+    }
+
+    /* Profile edit current */
+    .avatar-xl {
+      width: 160px; height: 160px; border-radius: 999px; margin: 18px auto 24px;
+      background: linear-gradient(145deg, #1a3a52, #2e86c1); position: relative;
+    }
+    .cam {
+      position: absolute; right: 6px; bottom: 6px; width: 36px; height: 36px;
+      border-radius: 999px; background: var(--accent); display: grid; place-items: center;
+      border: 2px solid #121212; color: #fff;
+    }
+    .cam svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.7; }
+    .field {
+      margin-bottom: 12px; border-radius: 14px; border: 1px solid transparent;
+      background: rgba(255,255,255,0.04); padding: 12px 14px; display: flex; gap: 10px; align-items: center;
+    }
+    .field svg { width: 18px; height: 18px; color: var(--muted); fill: none; stroke: currentColor; stroke-width: 1.7; flex-shrink: 0; }
+    .field .lab { font-size: 11px; color: var(--muted); }
+    .field .val { font-size: 15px; font-weight: 500; }
+    .check {
+      display: flex; align-items: center; gap: 10px; padding: 10px 0; color: var(--ink); font-size: 14px;
+    }
+    .box {
+      width: 20px; height: 20px; border-radius: 6px; border: 1.5px solid var(--muted);
+      display: grid; place-items: center;
+    }
+    .box.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .box.on svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2.2; }
+    .primary {
+      margin-top: 18px; height: 48px; border-radius: 14px; border: 0; background: var(--accent);
+      color: #fff; font: inherit; font-size: 15px; font-weight: 700; width: 100%;
+    }
+
+    /* Profile edit proposed */
+    .edit-id {
+      display: flex; align-items: center; gap: 14px; padding: 6px 0 18px;
+    }
+    .avatar-md {
+      width: 84px; height: 84px; border-radius: 999px; flex-shrink: 0;
+      background: linear-gradient(145deg, #1a3a52, #2e86c1); position: relative;
+    }
+    .avatar-md .cam { width: 30px; height: 30px; right: 0; bottom: 0; }
+    .edit-id h2 { margin: 0 0 4px; font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+    .edit-id p { margin: 0; color: var(--muted); font-size: 13px; }
+    .edit-id .photo {
+      margin-top: 8px; font-size: 13px; color: var(--accent); font-weight: 600;
+    }
+    .q-field {
+      padding: 12px 0; border-bottom: 1px solid var(--line);
+    }
+    .q-field .lab {
+      font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--muted); font-weight: 600; margin: 0 0 4px;
+    }
+    .q-field .val { font-size: 16px; font-weight: 500; margin: 0; }
+    .q-field.disabled .val { color: var(--muted); }
+    .toggle-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 0; border-bottom: 1px solid var(--line); gap: 12px;
+    }
+    .toggle-row b { font-size: 15px; font-weight: 560; }
+    .switch {
+      width: 44px; height: 26px; border-radius: 999px; background: rgba(255,255,255,0.12);
+      position: relative; flex-shrink: 0;
+    }
+    .switch.on { background: var(--accent); }
+    .switch::after {
+      content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px;
+      border-radius: 999px; background: #fff; transition: left .15s ease;
+    }
+    .switch.on::after { left: 21px; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <p class="eyebrow">LW App · Bible &amp; profile</p>
+    <h1>Saved verses &amp; Profile edit</h1>
+    <p class="lede">
+      Two remaining polish surfaces: the saved-verse / Bible side of reading, and the edit form that should match Quiet Account.
+    </p>
+    <div class="pitch">
+      <strong>1 · Manuscript Stream</strong> — Saved verses drop bordered cards. Each verse is a quiet row with a highlight rail,
+      citation + version chip, the verse text itself (not “tap to view”), and soft ghost actions.
+      Bible chrome stays reading-first: a slim reference bar, not another card stack.<br /><br />
+      <strong>2 · Quiet Edit</strong> — Same left identity as Profile (smaller avatar + name), then unlabeled form chrome replaced by
+      sectioned quiet fields and switches instead of dense checkboxes under a giant centred photo.
+    </div>
+
+    <div class="toolbar" id="toolbar"></div>
+    <p class="hint">Switch screens above. Current vs proposed. Afrikaans copy.</p>
+
+    <div class="phones">
+      <!-- SAVED CURRENT -->
+      <section class="phone active" data-id="saved-cur">
+        <div class="phone-label">Saved verses · current</div>
+        <div class="chrome">
+          <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></div>
+          <div class="title-pill">Gestoorde verse</div>
+          <div class="chrome-spacer"></div>
+        </div>
+        <div class="scroll">
+          <div class="tabs"><span class="on">Gestoor</span><span>Notas</span></div>
+          <div class="card">
+            <div class="top">
+              <span class="cite">Johannes 3:16</span>
+              <span class="ver">(AFR83)</span>
+              <span class="dot"></span>
+            </div>
+            <p class="hint-line">Tik om te lees</p>
+            <div class="actions">
+              <button class="ghost" type="button">Deel</button>
+              <button class="ghost" type="button">Verwyder</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="top">
+              <span class="cite">Psalm 23:1</span>
+              <span class="ver">(AFR83)</span>
+              <span class="dot" style="background:#90CAF9"></span>
+            </div>
+            <p class="hint-line">Tik om te lees</p>
+            <div class="actions">
+              <button class="ghost" type="button">Deel</button>
+              <button class="ghost" type="button">Verwyder</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="top">
+              <span class="cite">1 Tess. 5:16–18</span>
+              <span class="ver">(AFR83)</span>
+            </div>
+            <p class="hint-line">Tik om te lees</p>
+            <div class="actions">
+              <button class="ghost" type="button">Deel</button>
+              <button class="ghost" type="button">Verwyder</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SAVED PROPOSED -->
+      <section class="phone" data-id="saved-new">
+        <div class="phone-label">Saved verses · Manuscript Stream</div>
+        <div class="chrome">
+          <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></div>
+          <div class="title-pill">Gestoorde verse</div>
+          <div class="chrome-spacer"></div>
+        </div>
+        <div class="scroll">
+          <div class="tabs"><span class="on">Gestoor</span><span>Notas</span></div>
+          <div class="verse-row">
+            <div class="rail"></div>
+            <div>
+              <div class="v-top">
+                <span class="cite">Johannes 3:16</span>
+                <span class="ver">AFR83</span>
+                <span class="mark"><svg viewBox="0 0 24 24"><path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></span>
+              </div>
+              <p class="quote">Want so lief het God die wêreld gehad, dat Hy sy eniggebore Seun gegee het…</p>
+              <div class="row-actions">
+                <button class="ghost" type="button">Lees</button>
+                <button class="ghost" type="button">Deel</button>
+                <button class="ghost" type="button">Verwyder</button>
+              </div>
+            </div>
+          </div>
+          <div class="verse-row">
+            <div class="rail blue"></div>
+            <div>
+              <div class="v-top">
+                <span class="cite">Psalm 23:1</span>
+                <span class="ver">AFR83</span>
+                <span class="mark"><svg viewBox="0 0 24 24"><path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></span>
+              </div>
+              <p class="quote">Die Here is my herder; ek kom niks kort nie.</p>
+              <div class="row-actions">
+                <button class="ghost" type="button">Lees</button>
+                <button class="ghost" type="button">Deel</button>
+                <button class="ghost" type="button">Verwyder</button>
+              </div>
+            </div>
+          </div>
+          <div class="verse-row">
+            <div class="rail none"></div>
+            <div>
+              <div class="v-top">
+                <span class="cite">1 Tess. 5:16–18</span>
+                <span class="ver">AFR83</span>
+              </div>
+              <p class="quote">Wees blymoedig. Bid sonder ophou. Wees dankbaar in alle omstandighede.</p>
+              <p class="note">My nota: Bid dit elke oggend saam met die kinders.</p>
+              <div class="row-actions">
+                <button class="ghost" type="button">Lees</button>
+                <button class="ghost" type="button">Deel</button>
+                <button class="ghost" type="button">Verwyder</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- BIBLE CURRENT-ish chrome -->
+      <section class="phone" data-id="bible-cur">
+        <div class="phone-label">Bible reader · current feel</div>
+        <div class="chrome">
+          <div class="title-pill">Bybel</div>
+          <div class="chrome-spacer"></div>
+          <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div>
+        </div>
+        <div class="scroll">
+          <div class="card" style="margin-bottom:12px">
+            <div class="top" style="margin:0">
+              <b style="font-size:15px">Johannes 3</b>
+              <span class="ver" style="margin-left:auto">AFR83 ▾</span>
+            </div>
+          </div>
+          <div class="passage">
+            <p><sup>16</sup><span class="hl">Want so lief het God die wêreld gehad, dat Hy sy eniggebore Seun gegee het, sodat elkeen wat in Hom glo, nie verlore mag gaan nie, maar die ewige lewe kan hê.</span></p>
+            <p><sup>17</sup>Want God het sy Seun nie in die wêreld gestuur om die wêreld te veroordeel nie, maar dat die wêreld deur Hom gered kan word.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- BIBLE PROPOSED chrome -->
+      <section class="phone" data-id="bible-new">
+        <div class="phone-label">Bible reader · quiet chrome</div>
+        <div class="chrome">
+          <div class="title-pill">Bybel</div>
+          <div class="chrome-spacer"></div>
+          <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div>
+        </div>
+        <div class="scroll">
+          <div class="bible-bar">
+            <b>Johannes 3</b>
+            <span class="chip">AFR83</span>
+          </div>
+          <div class="passage">
+            <p><sup>16</sup><span class="hl">Want so lief het God die wêreld gehad, dat Hy sy eniggebore Seun gegee het, sodat elkeen wat in Hom glo, nie verlore mag gaan nie, maar die ewige lewe kan hê.</span></p>
+            <p><sup>17</sup>Want God het sy Seun nie in die wêreld gestuur om die wêreld te veroordeel nie, maar dat die wêreld deur Hom gered kan word.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- PROFILE EDIT CURRENT -->
+      <section class="phone" data-id="edit-cur">
+        <div class="phone-label">Profile edit · current</div>
+        <div class="chrome">
+          <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></div>
+          <div class="title-pill">Wysig profiel</div>
+          <div class="chrome-spacer"></div>
+        </div>
+        <div class="scroll">
+          <div class="avatar-xl"><div class="cam"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div></div>
+          <div class="field"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="m22 6-10 7L2 6"/></svg><div><div class="lab">E-pos</div><div class="val">edrich@email.com</div></div></div>
+          <div class="field"><svg viewBox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/></svg><div><div class="lab">Naam</div><div class="val">Edrich</div></div></div>
+          <div class="field"><svg viewBox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/></svg><div><div class="lab">Van</div><div class="val">Jacobs</div></div></div>
+          <div class="field"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><div><div class="lab">Adres</div><div class="val">6 Mill Street, Paarl</div></div></div>
+          <div class="check"><div class="box on"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></div>Is jy gedoop?</div>
+          <div class="check"><div class="box on"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></div>Is jy ’n lidmaat?</div>
+          <button class="primary" type="button">Opdateer Profiel</button>
+        </div>
+      </section>
+
+      <!-- PROFILE EDIT PROPOSED -->
+      <section class="phone" data-id="edit-new">
+        <div class="phone-label">Profile edit · Quiet Edit</div>
+        <div class="chrome">
+          <div class="glass-btn"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></div>
+          <div class="title-pill">Wysig profiel</div>
+          <div class="chrome-spacer"></div>
+        </div>
+        <div class="scroll">
+          <div class="edit-id">
+            <div class="avatar-md"><div class="cam"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div></div>
+            <div>
+              <h2>Edrich Jacobs</h2>
+              <p>Lid · Lewende Woord Paarl</p>
+              <div class="photo">Verander foto</div>
+            </div>
+          </div>
+          <p class="sec">Besonderhede</p>
+          <div class="q-field disabled">
+            <p class="lab">E-pos</p>
+            <p class="val">edrich@email.com</p>
+          </div>
+          <div class="q-field">
+            <p class="lab">Naam</p>
+            <p class="val">Edrich</p>
+          </div>
+          <div class="q-field">
+            <p class="lab">Van</p>
+            <p class="val">Jacobs</p>
+          </div>
+          <div class="q-field">
+            <p class="lab">Adres</p>
+            <p class="val">6 Mill Street, Paarl</p>
+          </div>
+          <p class="sec" style="margin-top:16px">Geloof &amp; lidmaatskap</p>
+          <div class="toggle-row"><b>Gedoop</b><div class="switch on"></div></div>
+          <div class="toggle-row"><b>Lidmaat</b><div class="switch on"></div></div>
+          <button class="primary" type="button">Stoor</button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const screens = [
+      ["saved-cur", "Saved · Current"],
+      ["saved-new", "Saved · Manuscript Stream"],
+      ["bible-cur", "Bible · Current"],
+      ["bible-new", "Bible · Quiet chrome"],
+      ["edit-cur", "Edit · Current"],
+      ["edit-new", "Edit · Quiet Edit"],
+    ];
+    const toolbar = document.getElementById("toolbar");
+    const phones = [...document.querySelectorAll(".phone")];
+    screens.forEach(([id, label], i) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = label;
+      if (i === 0) btn.classList.add("active");
+      btn.addEventListener("click", () => {
+        toolbar.querySelectorAll("button").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        phones.forEach((p) => p.classList.toggle("active", p.dataset.id === id));
+      });
+      toolbar.appendChild(btn);
+    });
+  </script>
+</body>
+</html>
