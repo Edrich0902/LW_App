@@ -5,6 +5,7 @@ import 'package:lw_app/Models/Group/group_post.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/quill_helper.dart';
 import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
+import 'package:lw_app/Widgets/Glass/lwp_shell_insets.dart';
 
 class GroupPostDraft {
   final String title;
@@ -75,15 +76,15 @@ class _GroupPostEditPageState extends State<GroupPostEditPage> {
           ),
         ),
       ],
-      body: SafeArea(
-        top: false,
-        child: Column(
+      body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: LwpSpacing.md,
-                vertical: LwpSpacing.sm,
+              padding: EdgeInsets.fromLTRB(
+                LwpSpacing.md,
+                LwpShellInsets.top(context) + LwpSpacing.sm,
+                LwpSpacing.md,
+                LwpSpacing.sm,
               ),
               child: TextField(
                 controller: _titleController,
@@ -202,7 +203,6 @@ class _GroupPostEditPageState extends State<GroupPostEditPage> {
             ),
           ],
         ),
-      ),
     );
   }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
+import 'package:lw_app/Widgets/Glass/lwp_shell_insets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/SocialMedia/social_media_bloc.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
@@ -48,7 +49,10 @@ class _SocialMediaPageState extends State<SocialMediaPage> {
         body: BlocBuilder<SocialMediaBloc, SocialMediaState>(
           builder: (context, state) {
             if (state is SocialMediaLoading) {
-              return LwpSkeletonList.text();
+              return Padding(
+                padding: LwpShellInsets.bodyOf(context),
+                child: LwpSkeletonList.text(),
+              );
             } else if (state is SocialMediaSuccess) {
               if (state.socialMedia.isNotEmpty) {
                 return LwpListEntranceScope(
@@ -59,11 +63,11 @@ class _SocialMediaPageState extends State<SocialMediaPage> {
                       socialMediaBloc.add(const LoadSocialMedia());
                     },
                     child: ListView.separated(
-                      padding: const EdgeInsets.fromLTRB(
-                        LwpSpacing.md,
-                        LwpSpacing.lg,
-                        LwpSpacing.md,
-                        LwpSpacing.xxl,
+                      padding: LwpShellInsets.scrollOf(
+                        context,
+                        horizontal: LwpSpacing.md,
+                        topExtra: LwpSpacing.lg,
+                        bottom: LwpSpacing.xxl,
                       ),
                       itemCount: state.socialMedia.length,
                       separatorBuilder: (_, __) => Divider(
@@ -137,10 +141,16 @@ class _SocialMediaPageState extends State<SocialMediaPage> {
                   ),
                 );
               } else {
-                return LwpEmpty(message: context.l10n.socialMediaEmpty);
+                return Padding(
+                  padding: LwpShellInsets.bodyOf(context),
+                  child: LwpEmpty(message: context.l10n.socialMediaEmpty),
+                );
               }
             } else {
-              return const LwpError();
+              return Padding(
+                padding: LwpShellInsets.bodyOf(context),
+                child: const LwpError(),
+              );
             }
           },
         ),

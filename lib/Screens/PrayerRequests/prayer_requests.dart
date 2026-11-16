@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/PrayerRequests/prayer_requests_bloc.dart';
 import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
+import 'package:lw_app/Widgets/Glass/lwp_shell_insets.dart';
 import 'package:lw_app/Extensions/app_localizations_x.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/PrayerRequest/prayer_request.dart';
@@ -195,6 +196,7 @@ class _PrayerRequestsViewState extends State<_PrayerRequestsView> {
         onRefresh: _refresh,
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
+          padding: LwpShellInsets.scrollOf(context),
           children: [
             const SizedBox(height: 80),
             LwpEmpty(message: context.l10n.prayerRequestsEmpty),
@@ -208,7 +210,7 @@ class _PrayerRequestsViewState extends State<_PrayerRequestsView> {
       child: RefreshIndicator(
         onRefresh: _refresh,
         child: ListView.separated(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+          padding: LwpShellInsets.scrollOf(context, topExtra: 8, bottom: 8),
           itemCount: requests.length,
           separatorBuilder: (context, _) => Divider(
             height: 1,
@@ -267,7 +269,10 @@ class _PrayerRequestsViewState extends State<_PrayerRequestsView> {
           builder: (context, state) {
             if (state is PrayerRequestsLoading ||
                 state is PrayerRequestsInitial) {
-              return LwpSkeletonList.text();
+              return Padding(
+                padding: LwpShellInsets.bodyOf(context),
+                child: LwpSkeletonList.text(),
+              );
             }
 
             if (state is PrayerRequestSubmitting) {
@@ -275,9 +280,12 @@ class _PrayerRequestsViewState extends State<_PrayerRequestsView> {
             }
 
             if (state is PrayerRequestsError) {
-              return LwpError(
-                message: state.error,
-                onRetry: _refresh,
+              return Padding(
+                padding: LwpShellInsets.bodyOf(context),
+                child: LwpError(
+                  message: state.error,
+                  onRetry: _refresh,
+                ),
               );
             }
 

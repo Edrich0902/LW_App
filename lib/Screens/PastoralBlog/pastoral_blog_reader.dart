@@ -9,6 +9,7 @@ import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
 import 'package:lw_app/Utils/quill_helper.dart';
 import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
+import 'package:lw_app/Widgets/Glass/lwp_shell_insets.dart';
 import 'package:lw_app/Widgets/Glass/lwp_top_bar.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
@@ -39,14 +40,23 @@ class PastoralBlogReaderPage extends StatelessWidget {
           if (state.status == PastoralBlogStatus.loading && post == null) {
             return LwpChromeScaffold(
               title: context.l10n.pastoralBlogTitle,
-              body: LwpLoader(message: context.l10n.pastoralBlogPostLoading),
+              body: Padding(
+                padding: LwpShellInsets.bodyOf(context),
+                child:
+                    LwpLoader(message: context.l10n.pastoralBlogPostLoading),
+              ),
             );
           }
 
           if (post == null) {
             return LwpChromeScaffold(
               title: context.l10n.pastoralBlogTitle,
-              body: LwpEmpty(message: context.l10n.pastoralBlogPostNotFound),
+              body: Padding(
+                padding: LwpShellInsets.bodyOf(context),
+                child: LwpEmpty(
+                  message: context.l10n.pastoralBlogPostNotFound,
+                ),
+              ),
             );
           }
 

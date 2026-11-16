@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
+import 'package:lw_app/Widgets/Glass/lwp_shell_insets.dart';
 import 'package:lw_app/Widgets/WhatsappContactFAB/whatsapp_contact_fab.dart';
 import 'package:lw_app/Blocs/ServiceGroups/service_groups_bloc.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
@@ -48,7 +49,10 @@ class _ServeGroupsPageState extends State<ServeGroupsPage> {
         body: BlocBuilder<ServiceGroupsBloc, ServiceGroupsState>(
             builder: (context, state) {
               if (state is ServiceGroupsLoading) {
-                return LwpSkeletonList.group();
+                return Padding(
+                  padding: LwpShellInsets.bodyOf(context),
+                  child: LwpSkeletonList.group(),
+                );
               } else if (state is ServiceGroupsSuccess) {
                 if (state.serviceGroups.isNotEmpty) {
                   return LwpListEntranceScope(
@@ -59,7 +63,7 @@ class _ServeGroupsPageState extends State<ServeGroupsPage> {
                         serviceGroupsBloc.add(const LoadServiceGroups());
                       },
                       child: ListView.builder(
-                        padding: const EdgeInsets.all(16.0),
+                        padding: LwpShellInsets.scrollOf(context),
                         itemCount: state.serviceGroups.length,
                         itemBuilder: (BuildContext context, int index) {
                           final group = state.serviceGroups[index];
@@ -72,10 +76,16 @@ class _ServeGroupsPageState extends State<ServeGroupsPage> {
                     ),
                   );
                 } else {
-                  return LwpEmpty(message: context.l10n.serveGroupsEmpty);
+                  return Padding(
+                    padding: LwpShellInsets.bodyOf(context),
+                    child: LwpEmpty(message: context.l10n.serveGroupsEmpty),
+                  );
                 }
               } else {
-                return const LwpError();
+                return Padding(
+                  padding: LwpShellInsets.bodyOf(context),
+                  child: const LwpError(),
+                );
               }
             },
           ),

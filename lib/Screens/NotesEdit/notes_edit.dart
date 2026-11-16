@@ -10,6 +10,7 @@ import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/Note/note.dart';
 import 'package:lw_app/Utils/quill_helper.dart';
 import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
+import 'package:lw_app/Widgets/Glass/lwp_shell_insets.dart';
 import 'package:lw_app/Widgets/Glass/lwp_glass.dart';
 import 'package:lw_app/Widgets/Glass/lwp_top_bar.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
@@ -172,19 +173,24 @@ class _NotesEditPageState extends State<NotesEditPage> {
                   ? context.l10n.notesEditTitle
                   : context.l10n.notesCreateTitle,
               onBack: _handleBack,
-              body: SafeArea(
-                top: false,
-                child: BlocBuilder<NoteEditBloc, NoteEditState>(
-                  buildWhen: (previous, current) =>
-                      current is NoteLoading || current is NoteError,
-                  builder: (context, state) {
-                    if (!_isInitialized) {
-                      if (state is NoteError) return const LwpError();
-                      return const LwpLoader();
+              body: BlocBuilder<NoteEditBloc, NoteEditState>(
+                buildWhen: (previous, current) =>
+                    current is NoteLoading || current is NoteError,
+                builder: (context, state) {
+                  if (!_isInitialized) {
+                    if (state is NoteError) {
+                      return Padding(
+                        padding: LwpShellInsets.bodyOf(context),
+                        child: const LwpError(),
+                      );
                     }
-                    return _buildEditor(theme);
-                  },
-                ),
+                    return Padding(
+                      padding: LwpShellInsets.bodyOf(context),
+                      child: const LwpLoader(),
+                    );
+                  }
+                  return _buildEditor(theme);
+                },
               ),
             ),
             // Autosave bubble — overlay so it can morph without fighting the
@@ -230,7 +236,12 @@ class _NotesEditPageState extends State<NotesEditPage> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+          padding: EdgeInsets.fromLTRB(
+            16,
+            LwpShellInsets.top(context) + 12,
+            16,
+            12,
+          ),
           child: TextField(
             controller: _titleController,
             style: theme.textTheme.titleLarge,

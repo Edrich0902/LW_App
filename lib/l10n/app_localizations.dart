@@ -2993,13 +2993,13 @@ abstract class AppLocalizations {
   /// No description provided for @dashboardWatchAllButton.
   ///
   /// In af, this message translates to:
-  /// **'Kyk Alle'**
+  /// **'Alle preke'**
   String get dashboardWatchAllButton;
 
   /// No description provided for @dashboardReadAllButton.
   ///
   /// In af, this message translates to:
-  /// **'Lees Alle'**
+  /// **'Alle bloginskrywings'**
   String get dashboardReadAllButton;
 
   /// No description provided for @dashboardVotdLabel.

@@ -11,6 +11,7 @@ import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Services/Push/push_notification_service.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
+import 'package:lw_app/Widgets/Glass/lwp_shell_insets.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -123,10 +124,13 @@ class _SettingsPageState extends State<SettingsPage>
 
     return LwpChromeScaffold(
       title: context.l10n.settingsTitle,
-      body: SafeArea(
-        top: false,
-        child: ListView(
-          padding: const EdgeInsets.all(LwpSpacing.md),
+      body: ListView(
+          padding: LwpShellInsets.scrollOf(
+            context,
+            horizontal: LwpSpacing.md,
+            topExtra: 0,
+            bottom: LwpSpacing.md,
+          ),
           children: [
             _sectionLabel(context.l10n.settingsAppearanceSection, theme),
             BlocBuilder<ThemeBloc, ThemeState>(
@@ -255,7 +259,6 @@ class _SettingsPageState extends State<SettingsPage>
             ),
           ],
         ),
-      ),
     );
   }
 

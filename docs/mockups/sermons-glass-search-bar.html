@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="af">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sermons · Animated glass search</title>
+  <style>
+    :root {
+      --bg: #121212;
+      --surface: #1e1e1e;
+      --ink: #f5f5f5;
+      --muted: #9a9a9a;
+      --navy: #2e86c1;
+      --outline: rgba(255,255,255,.12);
+      --glass: rgba(40, 44, 52, 0.55);
+      --glass-border: rgba(255,255,255,.18);
+      --cap-h: 44px;
+      --side: 14px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #d8dde3;
+      color: #111;
+      min-height: 100vh;
+      padding: 28px 16px 56px;
+    }
+    h1 { text-align: center; font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+    .lede {
+      text-align: center; font-size: 13px; color: #666; max-width: 640px;
+      margin: 0 auto 18px; line-height: 1.45;
+    }
+    .tabs {
+      display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 22px;
+    }
+    .tabs button {
+      border: 1px solid #c5cad1; background: #fff; border-radius: 999px;
+      padding: 8px 14px; font-size: 12px; font-weight: 650; cursor: pointer; color: #333;
+    }
+    .tabs button.active { background: #023059; color: #fff; border-color: #023059; }
+    .hint {
+      text-align: center; font-size: 12px; color: #666; margin: -8px auto 20px; max-width: 520px;
+    }
+    .phones { display: flex; flex-wrap: wrap; gap: 28px; justify-content: center; }
+    .phone-wrap { width: 340px; }
+    .phone-label {
+      font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+      color: #666; text-align: center; margin-bottom: 10px;
+    }
+    .phone {
+      width: 340px; height: 720px; border-radius: 42px; border: 1px solid #2c2c2c;
+      background: var(--bg); box-shadow: 0 24px 60px rgba(17,24,28,.22);
+      position: relative; overflow: hidden;
+    }
+    .status {
+      position: absolute; top: 0; left: 0; right: 0; height: 48px;
+      padding: 16px 24px 0; display: flex; justify-content: space-between;
+      font-size: 12px; font-weight: 650; color: #f2f2f2; z-index: 40; pointer-events: none;
+    }
+    .scene {
+      position: absolute; inset: 0; overflow-y: auto; padding: 108px 16px 28px;
+      scrollbar-width: none;
+    }
+    .scene::-webkit-scrollbar { display: none; }
+
+    .glass {
+      background: var(--glass);
+      backdrop-filter: blur(22px) saturate(160%);
+      -webkit-backdrop-filter: blur(22px) saturate(160%);
+      border: 1px solid var(--glass-border);
+      box-shadow:
+        0 1px 0 rgba(255,255,255,.12) inset,
+        0 10px 28px rgba(0,0,0,.28);
+    }
+
+    .chrome {
+      position: absolute; top: 52px; left: var(--side); right: var(--side);
+      height: var(--cap-h); z-index: 30;
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .icon-pill, .title-pill, .actions {
+      height: var(--cap-h); border-radius: 999px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .icon-pill { width: var(--cap-h); flex: 0 0 var(--cap-h); cursor: pointer; color: #fff; }
+    .icon-pill svg, .actions svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .title-pill {
+      padding: 0 14px; color: #fff; font-size: 15px; font-weight: 650;
+      max-width: 46%; white-space: nowrap; overflow: hidden;
+    }
+    .actions { padding: 0 4px; gap: 2px; margin-left: auto; color: #fff; }
+    .actions button {
+      width: 40px; height: 40px; border: 0; background: transparent; color: inherit;
+      border-radius: 999px; cursor: pointer; display: grid; place-items: center;
+    }
+
+    /* Quiet Cover cards */
+    .card {
+      background: var(--surface); border-radius: 24px; overflow: hidden; margin-bottom: 14px;
+      border: 1px solid rgba(255,255,255,.06);
+    }
+    .cover {
+      height: 148px; position: relative;
+      background:
+        linear-gradient(180deg, transparent 40%, rgba(0,0,0,.72) 100%),
+        linear-gradient(145deg, #1a3a52, #2e86c1 55%, #0f1c28);
+    }
+    .cover.b {
+      background:
+        linear-gradient(180deg, transparent 40%, rgba(0,0,0,.72) 100%),
+        linear-gradient(145deg, #2a2118, #8b7355 55%, #1a1410);
+    }
+    .play {
+      position: absolute; inset: 0; margin: auto; width: 42px; height: 42px; border-radius: 999px;
+      background: rgba(0,0,0,.45); border: 1px solid rgba(255,255,255,.25);
+      display: grid; place-items: center;
+    }
+    .play::after {
+      content: ""; width: 0; height: 0;
+      border-left: 12px solid #fff; border-top: 8px solid transparent; border-bottom: 8px solid transparent;
+      margin-left: 3px;
+    }
+    .meta { padding: 12px 14px 14px; }
+    .meta h3 { color: #fff; font-size: 16px; font-weight: 700; letter-spacing: -.2px; margin-bottom: 4px; }
+    .meta p { color: var(--muted); font-size: 13px; }
+
+    .body-search {
+      margin-bottom: 14px; border-radius: 24px; padding: 14px 16px;
+      background: #2a2a2a; border: 1.5px solid var(--navy); color: var(--muted);
+      display: flex; gap: 10px; align-items: center; font-size: 14px;
+    }
+    .body-search svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+
+    /* ---------- Concept A: icon → full-bleed glass field ---------- */
+    .a-search {
+      position: absolute; inset: 0; display: flex; align-items: center;
+      border-radius: 999px; overflow: hidden;
+      transform-origin: right center;
+      transform: scaleX(0.18) scaleY(0.92);
+      opacity: 0; pointer-events: none;
+      transition:
+        transform .42s cubic-bezier(.2,.8,.2,1),
+        opacity .28s ease,
+        background .2s ease;
+    }
+    .a-search.open {
+      transform: scaleX(1) scaleY(1);
+      opacity: 1; pointer-events: auto;
+    }
+    .a-search input {
+      flex: 1; border: 0; background: transparent; color: #fff;
+      font-size: 15px; font-weight: 500; outline: none; min-width: 0;
+      padding: 0 4px;
+    }
+    .a-search input::placeholder { color: rgba(255,255,255,.55); }
+    .a-search .inner {
+      display: flex; align-items: center; gap: 8px; width: 100%;
+      padding: 0 10px 0 14px; height: 100%;
+    }
+    .a-search .close {
+      width: 32px; height: 32px; border: 0; border-radius: 999px;
+      background: rgba(255,255,255,.12); color: #fff; cursor: pointer;
+      display: grid; place-items: center; flex: 0 0 auto;
+    }
+    .a-search .close svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+    .chrome.a .idle {
+      display: flex; align-items: center; gap: 8px; width: 100%;
+      transition: opacity .25s ease, transform .35s cubic-bezier(.2,.8,.2,1);
+    }
+    .chrome.a.searching .idle {
+      opacity: 0; transform: scale(.96); pointer-events: none;
+    }
+
+    /* ---------- Concept B: title capsule morphs into search ---------- */
+    .b-title {
+      position: relative; flex: 1; min-width: 0; height: var(--cap-h);
+    }
+    .b-title-label, .b-search {
+      position: absolute; inset: 0; border-radius: 999px;
+      display: flex; align-items: center;
+    }
+    .b-title-label {
+      padding: 0 14px; color: #fff; font-size: 15px; font-weight: 650;
+      transition: opacity .22s ease, transform .38s cubic-bezier(.2,.8,.2,1);
+      transform-origin: left center;
+    }
+    .b-search {
+      transform: scaleX(.35); opacity: 0; pointer-events: none;
+      transform-origin: left center;
+      transition:
+        transform .42s cubic-bezier(.2,.8,.2,1),
+        opacity .25s ease;
+      padding: 0 8px 0 14px; gap: 8px;
+    }
+    .b-search input {
+      flex: 1; border: 0; background: transparent; color: #fff;
+      font-size: 15px; outline: none; min-width: 0;
+    }
+    .b-search input::placeholder { color: rgba(255,255,255,.55); }
+    .b-search .close {
+      width: 32px; height: 32px; border: 0; border-radius: 999px;
+      background: rgba(255,255,255,.12); color: #fff; cursor: pointer;
+      display: grid; place-items: center;
+    }
+    .b-search .close svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+    .chrome.b.searching .b-title-label {
+      opacity: 0; transform: scaleX(.4) translateX(-8px); pointer-events: none;
+    }
+    .chrome.b.searching .b-search {
+      opacity: 1; transform: scaleX(1); pointer-events: auto;
+    }
+    .chrome.b .search-trigger {
+      transition: opacity .2s ease, transform .3s ease;
+    }
+    .chrome.b.searching .search-trigger {
+      opacity: 0; transform: scale(.7); pointer-events: none; width: 0; padding: 0; margin: 0; border: 0;
+    }
+
+    /* ---------- Concept C: search grows under chrome as second glass row ---------- */
+    .c-row {
+      position: absolute; left: var(--side); right: var(--side); top: calc(52px + var(--cap-h) + 8px);
+      height: var(--cap-h); z-index: 28;
+      transform: scaleY(.4) translateY(-18px); opacity: 0; pointer-events: none;
+      transform-origin: top center;
+      transition:
+        transform .4s cubic-bezier(.2,.8,.2,1),
+        opacity .25s ease;
+    }
+    .c-row.open {
+      transform: scaleY(1) translateY(0); opacity: 1; pointer-events: auto;
+    }
+    .c-row .field {
+      height: 100%; border-radius: 999px; display: flex; align-items: center;
+      gap: 8px; padding: 0 10px 0 14px;
+    }
+    .c-row input {
+      flex: 1; border: 0; background: transparent; color: #fff; font-size: 15px; outline: none;
+    }
+    .c-row input::placeholder { color: rgba(255,255,255,.55); }
+    .c-row .close {
+      width: 32px; height: 32px; border: 0; border-radius: 999px;
+      background: rgba(255,255,255,.12); color: #fff; cursor: pointer;
+      display: grid; place-items: center;
+    }
+    .c-row .close svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
+    .phone.c .scene { transition: padding-top .35s cubic-bezier(.2,.8,.2,1); }
+    .phone.c.searching .scene { padding-top: 160px; }
+
+    .pick {
+      margin: 22px auto 0; max-width: 720px; background: #fff; border-radius: 16px;
+      border: 1px solid #d5dae0; padding: 14px 16px; font-size: 13px; line-height: 1.45; color: #333;
+    }
+    .pick strong { color: #023059; }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <h1>Sermons · Animated glass search</h1>
+  <p class="lede">
+    Move the body search field into the floating glass chrome. Tap the search control in each phone —
+    it should scale out smoothly over glass, then collapse with clear / close.
+  </p>
+  <div class="tabs">
+    <button type="button" class="active" data-show="a">A · Full-bleed morph</button>
+    <button type="button" data-show="b">B · Title morph</button>
+    <button type="button" data-show="c">C · Second glass row</button>
+  </div>
+  <p class="hint" id="hint">A: idle chrome stays; search island scales out from the right and covers the whole top row.</p>
+
+  <div class="phones">
+    <!-- CURRENT -->
+    <div class="phone-wrap" data-panel="all">
+      <div class="phone-label">Current · body field</div>
+      <div class="phone">
+        <div class="status"><span>9:41</span><span>●●●</span></div>
+        <div class="chrome">
+          <div class="icon-pill glass"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>
+          <div class="title-pill glass">Preke</div>
+          <div class="actions glass">
+            <button type="button" aria-label="Announcements"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 7 3 7H3s3 0 3-7"/><path d="M10 21a2 2 0 0 0 4 0"/></svg></button>
+            <button type="button" aria-label="Profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.5-3.5 4-5 7-5s5.5 1.5 7 5"/></svg></button>
+          </div>
+        </div>
+        <div class="scene">
+          <div class="body-search">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            Soek preke...
+          </div>
+          <div class="card"><div class="cover"><div class="play"></div></div><div class="meta"><h3>Redding en Heiligmaking</h3><p>Pieter-Louis Potgieter</p></div></div>
+          <div class="card"><div class="cover b"><div class="play"></div></div><div class="meta"><h3>Verwyder die valse juk</h3><p>Pieter-Louis Potgieter</p></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- A -->
+    <div class="phone-wrap" data-panel="a">
+      <div class="phone-label">A · Full-bleed morph · recommended</div>
+      <div class="phone" id="phone-a">
+        <div class="status"><span>9:41</span><span>●●●</span></div>
+        <div class="chrome a" id="chrome-a">
+          <div class="idle">
+            <div class="icon-pill glass"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>
+            <div class="title-pill glass">Preke</div>
+            <button type="button" class="icon-pill glass" id="open-a" aria-label="Soek">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            </button>
+            <div class="actions glass">
+              <button type="button" aria-label="Announcements"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 7 3 7H3s3 0 3-7"/><path d="M10 21a2 2 0 0 0 4 0"/></svg></button>
+              <button type="button" aria-label="Profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.5-3.5 4-5 7-5s5.5 1.5 7 5"/></svg></button>
+            </div>
+          </div>
+          <div class="a-search glass" id="search-a">
+            <div class="inner">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+              <input id="input-a" type="search" placeholder="Soek preke..." />
+              <button type="button" class="close" id="close-a" aria-label="Sluit">
+                <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="scene">
+          <div class="card"><div class="cover"><div class="play"></div></div><div class="meta"><h3>Redding en Heiligmaking</h3><p>Pieter-Louis Potgieter</p></div></div>
+          <div class="card"><div class="cover b"><div class="play"></div></div><div class="meta"><h3>Verwyder die valse juk</h3><p>Pieter-Louis Potgieter</p></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- B -->
+    <div class="phone-wrap hidden" data-panel="b">
+      <div class="phone-label">B · Title capsule morphs into search</div>
+      <div class="phone" id="phone-b">
+        <div class="status"><span>9:41</span><span>●●●</span></div>
+        <div class="chrome b" id="chrome-b">
+          <div class="icon-pill glass"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>
+          <div class="b-title glass">
+            <div class="b-title-label">Preke</div>
+            <div class="b-search" id="search-b">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+              <input id="input-b" type="search" placeholder="Soek preke..." />
+              <button type="button" class="close" id="close-b" aria-label="Sluit">
+                <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+          </div>
+          <button type="button" class="icon-pill glass search-trigger" id="open-b" aria-label="Soek">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          </button>
+          <div class="actions glass">
+            <button type="button" aria-label="Announcements"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 7 3 7H3s3 0 3-7"/><path d="M10 21a2 2 0 0 0 4 0"/></svg></button>
+            <button type="button" aria-label="Profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.5-3.5 4-5 7-5s5.5 1.5 7 5"/></svg></button>
+          </div>
+        </div>
+        <div class="scene">
+          <div class="card"><div class="cover"><div class="play"></div></div><div class="meta"><h3>Redding en Heiligmaking</h3><p>Pieter-Louis Potgieter</p></div></div>
+          <div class="card"><div class="cover b"><div class="play"></div></div><div class="meta"><h3>Verwyder die valse juk</h3><p>Pieter-Louis Potgieter</p></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- C -->
+    <div class="phone-wrap hidden" data-panel="c">
+      <div class="phone-label">C · Second glass row expands under chrome</div>
+      <div class="phone c" id="phone-c">
+        <div class="status"><span>9:41</span><span>●●●</span></div>
+        <div class="chrome">
+          <div class="icon-pill glass"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>
+          <div class="title-pill glass">Preke</div>
+          <button type="button" class="icon-pill glass" id="open-c" aria-label="Soek">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          </button>
+          <div class="actions glass">
+            <button type="button" aria-label="Announcements"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 7 3 7H3s3 0 3-7"/><path d="M10 21a2 2 0 0 0 4 0"/></svg></button>
+            <button type="button" aria-label="Profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.5-3.5 4-5 7-5s5.5 1.5 7 5"/></svg></button>
+          </div>
+        </div>
+        <div class="c-row" id="search-c">
+          <div class="field glass">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input id="input-c" type="search" placeholder="Soek preke..." />
+            <button type="button" class="close" id="close-c" aria-label="Sluit">
+              <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="scene">
+          <div class="card"><div class="cover"><div class="play"></div></div><div class="meta"><h3>Redding en Heiligmaking</h3><p>Pieter-Louis Potgieter</p></div></div>
+          <div class="card"><div class="cover b"><div class="play"></div></div><div class="meta"><h3>Verwyder die valse juk</h3><p>Pieter-Louis Potgieter</p></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pick">
+    <strong>Recommendation:</strong> <strong>A · Full-bleed morph</strong> —
+    one glass island scales across the chrome, title/actions fade, no extra vertical chrome height.
+    B keeps actions visible but the title capsule feels cramped.
+    C is clearest structurally but adds a second floating row.
+  </div>
+
+  <script>
+    const hints = {
+      a: "A: idle chrome stays; search island scales out from the right and covers the whole top row.",
+      b: "B: the Preke title capsule morphs into the search field; actions stay visible.",
+      c: "C: a second glass row scales down under the chrome; list padding animates with it.",
+    };
+
+    document.querySelectorAll(".tabs button").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tabs button").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        const show = btn.dataset.show;
+        document.getElementById("hint").textContent = hints[show];
+        document.querySelectorAll(".phone-wrap").forEach((wrap) => {
+          const panel = wrap.dataset.panel;
+          wrap.classList.toggle("hidden", !(panel === "all" || panel === show));
+        });
+      });
+    });
+
+    function wire(openId, closeId, openFn, closeFn) {
+      document.getElementById(openId).addEventListener("click", openFn);
+      document.getElementById(closeId).addEventListener("click", closeFn);
+    }
+
+    wire("open-a", "close-a", () => {
+      document.getElementById("chrome-a").classList.add("searching");
+      document.getElementById("search-a").classList.add("open");
+      setTimeout(() => document.getElementById("input-a").focus(), 280);
+    }, () => {
+      document.getElementById("input-a").value = "";
+      document.getElementById("search-a").classList.remove("open");
+      document.getElementById("chrome-a").classList.remove("searching");
+    });
+
+    wire("open-b", "close-b", () => {
+      document.getElementById("chrome-b").classList.add("searching");
+      setTimeout(() => document.getElementById("input-b").focus(), 280);
+    }, () => {
+      document.getElementById("input-b").value = "";
+      document.getElementById("chrome-b").classList.remove("searching");
+    });
+
+    wire("open-c", "close-c", () => {
+      document.getElementById("phone-c").classList.add("searching");
+      document.getElementById("search-c").classList.add("open");
+      setTimeout(() => document.getElementById("input-c").focus(), 280);
+    }, () => {
+      document.getElementById("input-c").value = "";
+      document.getElementById("search-c").classList.remove("open");
+      document.getElementById("phone-c").classList.remove("searching");
+    });
+  </script>
+</body>
+</html>

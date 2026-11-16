@@ -13,6 +13,7 @@ import 'package:lw_app/Screens/Bible/bible.dart' show highlightColorFromString;
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/share_helper.dart';
 import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
+import 'package:lw_app/Widgets/Glass/lwp_shell_insets.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpListEntrance/lwp_list_entrance.dart';
@@ -324,9 +325,9 @@ class _SavedVersesPageState extends State<SavedVersesPage>
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(
+            padding: EdgeInsets.fromLTRB(
               LwpSpacing.md,
-              LwpSpacing.sm,
+              LwpShellInsets.top(context) + LwpSpacing.sm,
               LwpSpacing.md,
               LwpSpacing.xs,
             ),

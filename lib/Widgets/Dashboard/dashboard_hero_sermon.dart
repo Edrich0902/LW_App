@@ -8,11 +8,13 @@ class DashboardHeroSermon extends StatelessWidget {
   final Sermon sermon;
   final String? thumbnailUrl;
   final VoidCallback onTap;
+  final VoidCallback onViewAll;
 
   const DashboardHeroSermon({
     super.key,
     required this.sermon,
     required this.onTap,
+    required this.onViewAll,
     this.thumbnailUrl,
   });
 
@@ -52,17 +54,19 @@ class DashboardHeroSermon extends StatelessWidget {
                   ColoredBox(
                     color: theme.colorScheme.primary.withValues(alpha: 0.35),
                   ),
-                DecoratedBox(
+                // Always-on cover scrim so white type stays readable on any artwork.
+                const DecoratedBox(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        Colors.transparent,
-                        Colors.black.withValues(alpha: 0.22),
-                        Colors.black.withValues(alpha: 0.88),
+                        Color(0x66000000),
+                        Color(0x33000000),
+                        Color(0xCC000000),
+                        Color(0xE6000000),
                       ],
-                      stops: const [0.2, 0.55, 1.0],
+                      stops: [0.0, 0.35, 0.72, 1.0],
                     ),
                   ),
                 ),
@@ -76,16 +80,33 @@ class DashboardHeroSermon extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Align(
+                        alignment: Alignment.topRight,
+                        child: _CoverChip(
+                          onTap: onViewAll,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                context.l10n.dashboardWatchAllButton,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 0.2,
+                                ),
+                              ),
+                              const SizedBox(width: 2),
+                              const Icon(
+                                Icons.chevron_right,
+                                size: 16,
+                                color: Colors.white,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                       const Spacer(),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: LwpSpacing.sm,
-                          vertical: LwpSpacing.xxs,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.14),
-                          borderRadius: LwpRadii.smAll,
-                        ),
+                      _CoverChip(
                         child: Text(
                           context.l10n.dashboardLatestSermonLabel,
                           style: theme.textTheme.labelSmall?.copyWith(
@@ -103,6 +124,13 @@ class DashboardHeroSermon extends StatelessWidget {
                           fontWeight: FontWeight.w700,
                           letterSpacing: -0.3,
                           height: 1.2,
+                          shadows: const [
+                            Shadow(
+                              color: Color(0x99000000),
+                              blurRadius: 10,
+                              offset: Offset(0, 1),
+                            ),
+                          ],
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -112,7 +140,15 @@ class DashboardHeroSermon extends StatelessWidget {
                         Text(
                           metaParts.join(' · '),
                           style: theme.textTheme.bodySmall?.copyWith(
-                            color: Colors.white.withValues(alpha: 0.75),
+                            color: Colors.white.withValues(alpha: 0.92),
+                            fontWeight: FontWeight.w500,
+                            shadows: const [
+                              Shadow(
+                                color: Color(0x99000000),
+                                blurRadius: 8,
+                                offset: Offset(0, 1),
+                              ),
+                            ],
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -125,6 +161,46 @@ class DashboardHeroSermon extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Dark frosted chip so labels stay readable on bright and dark cover art.
+class _CoverChip extends StatelessWidget {
+  const _CoverChip({
+    required this.child,
+    this.onTap,
+  });
+
+  final Widget child;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final chip = Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: LwpSpacing.sm,
+        vertical: LwpSpacing.xxs + 1,
+      ),
+      decoration: BoxDecoration(
+        color: const Color(0xB3000000),
+        borderRadius: BorderRadius.circular(LwpRadii.pill),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.18),
+        ),
+      ),
+      child: child,
+    );
+
+    if (onTap == null) return chip;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(LwpRadii.pill),
+        child: chip,
       ),
     );
   }

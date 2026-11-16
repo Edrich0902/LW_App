@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/MyFeedback/my_feedback_bloc.dart';
 import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
+import 'package:lw_app/Widgets/Glass/lwp_shell_insets.dart';
 import 'package:lw_app/Extensions/app_localizations_x.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/AppFeedback/app_feedback.dart';
@@ -83,11 +84,17 @@ class _MyFeedbackViewState extends State<_MyFeedbackView> {
         body: BlocBuilder<MyFeedbackBloc, MyFeedbackState>(
           builder: (context, state) {
             if (state is MyFeedbackLoading || state is MyFeedbackInitial) {
-              return LwpSkeletonList.text();
+              return Padding(
+                padding: LwpShellInsets.bodyOf(context),
+                child: LwpSkeletonList.text(),
+              );
             }
 
             if (state is MyFeedbackError) {
-              return LwpError(message: state.error, onRetry: _refresh);
+              return Padding(
+                padding: LwpShellInsets.bodyOf(context),
+                child: LwpError(message: state.error, onRetry: _refresh),
+              );
             }
 
             List<AppFeedback> feedbacks = [];
@@ -105,7 +112,12 @@ class _MyFeedbackViewState extends State<_MyFeedbackView> {
               children: [
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                  padding: EdgeInsets.fromLTRB(
+                    16,
+                    LwpShellInsets.top(context) + 16,
+                    16,
+                    8,
+                  ),
                   child: Row(
                     children: [
                       Padding(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
+import 'package:lw_app/Widgets/Glass/lwp_shell_insets.dart';
 import 'package:lw_app/Blocs/MyGroups/my_groups_bloc.dart';
 import 'package:lw_app/Screens/GroupDetail/group_detail.dart';
 import 'package:lw_app/Widgets/Group/lwp_group_card.dart';
@@ -38,19 +39,28 @@ class _MyGroupsView extends StatelessWidget {
         body: BlocBuilder<MyGroupsBloc, MyGroupsState>(
           builder: (context, state) {
             if (state.status == MyGroupsStatus.loading && !state.isRefreshing) {
-              return LwpSkeletonList.group();
+              return Padding(
+                padding: LwpShellInsets.bodyOf(context),
+                child: LwpSkeletonList.group(),
+              );
             }
 
             if (state.status == MyGroupsStatus.error) {
-              return LwpError(
-                message: state.error ?? context.l10n.myGroupsLoadError,
-                onRetry: () =>
-                    context.read<MyGroupsBloc>().add(const LoadMyGroups()),
+              return Padding(
+                padding: LwpShellInsets.bodyOf(context),
+                child: LwpError(
+                  message: state.error ?? context.l10n.myGroupsLoadError,
+                  onRetry: () =>
+                      context.read<MyGroupsBloc>().add(const LoadMyGroups()),
+                ),
               );
             }
 
             if (!state.hasGroups) {
-              return LwpEmpty(message: context.l10n.myGroupsEmpty);
+              return Padding(
+                padding: LwpShellInsets.bodyOf(context),
+                child: LwpEmpty(message: context.l10n.myGroupsEmpty),
+              );
             }
 
             return LwpListEntranceHost(
@@ -61,7 +71,12 @@ class _MyGroupsView extends StatelessWidget {
                     context.read<MyGroupsBloc>().add(const RefreshMyGroups());
                   },
                   child: ListView(
-                    padding: const EdgeInsets.all(LwpSpacing.md),
+                    padding: LwpShellInsets.scrollOf(
+                      context,
+                      horizontal: LwpSpacing.md,
+                      topExtra: 0,
+                      bottom: LwpSpacing.md,
+                    ),
                     children: [
                       if (state.activeGroups.isNotEmpty) ...[
                         _SectionHeader(

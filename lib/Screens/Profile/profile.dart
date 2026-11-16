@@ -12,6 +12,7 @@ import 'package:lw_app/Screens/ProfileEdit/profile_edit.dart';
 import 'package:lw_app/Screens/Settings/settings.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
+import 'package:lw_app/Widgets/Glass/lwp_shell_insets.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 import 'package:lw_app/Widgets/LwpProfileImage/lwp_profile_image.dart';
@@ -42,11 +43,11 @@ class _ProfilePageState extends State<ProfilePage> {
       title: context.l10n.profileTitle,
       floatingActionButton: const WhatsappContactFAB(),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(
-          LwpSpacing.md,
-          LwpSpacing.sm,
-          LwpSpacing.md,
-          LwpSpacing.lg,
+        padding: LwpShellInsets.scrollOf(
+          context,
+          horizontal: LwpSpacing.md,
+          topExtra: LwpSpacing.sm,
+          bottom: LwpSpacing.lg,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

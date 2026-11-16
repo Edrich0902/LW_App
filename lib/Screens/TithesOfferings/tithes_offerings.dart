@@ -7,6 +7,7 @@ import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/TithesOfferings/tithes_offerings_settings.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
+import 'package:lw_app/Widgets/Glass/lwp_shell_insets.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
@@ -45,13 +46,22 @@ class _TithesOfferingsScreenState extends State<TithesOfferingsScreen> {
         builder: (context, state) {
           if (state is TithesOfferingsLoading ||
               state is TithesOfferingsInitial) {
-            return LwpLoader(message: context.l10n.tithesLoading);
+            return Padding(
+              padding: LwpShellInsets.bodyOf(context),
+              child: LwpLoader(message: context.l10n.tithesLoading),
+            );
           } else if (state is TithesOfferingsSuccess) {
             return _buildContent(context, state.settings);
           } else if (state is TithesOfferingsEmpty) {
-            return LwpEmpty(message: context.l10n.tithesEmpty);
+            return Padding(
+              padding: LwpShellInsets.bodyOf(context),
+              child: LwpEmpty(message: context.l10n.tithesEmpty),
+            );
           } else {
-            return const LwpError();
+            return Padding(
+              padding: LwpShellInsets.bodyOf(context),
+              child: const LwpError(),
+            );
           }
         },
       ),
@@ -62,11 +72,11 @@ class _TithesOfferingsScreenState extends State<TithesOfferingsScreen> {
     final theme = Theme.of(context);
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(
-        LwpSpacing.md,
-        LwpSpacing.sm,
-        LwpSpacing.md,
-        LwpSpacing.xxl,
+      padding: LwpShellInsets.scrollOf(
+        context,
+        horizontal: LwpSpacing.md,
+        topExtra: LwpSpacing.sm,
+        bottom: LwpSpacing.xxl,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

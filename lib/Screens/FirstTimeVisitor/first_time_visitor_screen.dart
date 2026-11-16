@@ -15,6 +15,7 @@ import 'package:lw_app/Utils/date_formatter.dart';
 import 'package:lw_app/Utils/event_occurrence.dart';
 import 'package:lw_app/Utils/maps_helper.dart';
 import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
+import 'package:lw_app/Widgets/Glass/lwp_shell_insets.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -44,11 +45,11 @@ class _FirstTimeVisitorScreenState extends State<FirstTimeVisitorScreen> {
       title: context.l10n.visitorWelcomeTitle,
       showDefaultActions: true,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(
-          LwpSpacing.md,
-          LwpSpacing.md,
-          LwpSpacing.md,
-          LwpSpacing.xl,
+        padding: LwpShellInsets.scrollOf(
+          context,
+          horizontal: LwpSpacing.md,
+          topExtra: LwpSpacing.md,
+          bottom: LwpSpacing.xl,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

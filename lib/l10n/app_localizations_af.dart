@@ -1556,10 +1556,10 @@ class AppLocalizationsAf extends AppLocalizations {
   String get dashboardLatestBlogLabel => 'NUUTSTE BLOG';
 
   @override
-  String get dashboardWatchAllButton => 'Kyk Alle';
+  String get dashboardWatchAllButton => 'Alle preke';
 
   @override
-  String get dashboardReadAllButton => 'Lees Alle';
+  String get dashboardReadAllButton => 'Alle bloginskrywings';
 
   @override
   String get dashboardVotdLabel => 'VERS VAN DIE DAG';

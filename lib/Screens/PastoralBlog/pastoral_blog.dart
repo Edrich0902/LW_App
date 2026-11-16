@@ -9,6 +9,7 @@ import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
 import 'package:lw_app/Utils/quill_helper.dart';
 import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
+import 'package:lw_app/Widgets/Glass/lwp_shell_insets.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpListEntrance/lwp_list_entrance.dart';
@@ -44,14 +45,20 @@ class _PastoralBlogView extends StatelessWidget {
 
   Widget _buildBody(BuildContext context, PastoralBlogState state) {
     if (state.status == PastoralBlogStatus.loading && !state.isRefreshing) {
-      return LwpSkeletonList.media(mediaHeight: 220);
+      return Padding(
+        padding: LwpShellInsets.bodyOf(context),
+        child: LwpSkeletonList.media(mediaHeight: 220),
+      );
     }
 
     if (state.status == PastoralBlogStatus.error) {
-      return LwpError(
-        message: state.message ?? context.l10n.pastoralBlogLoadError,
-        onRetry: () =>
-            context.read<PastoralBlogBloc>().add(const LoadPastoralBlog()),
+      return Padding(
+        padding: LwpShellInsets.bodyOf(context),
+        child: LwpError(
+          message: state.message ?? context.l10n.pastoralBlogLoadError,
+          onRetry: () =>
+              context.read<PastoralBlogBloc>().add(const LoadPastoralBlog()),
+        ),
       );
     }
 
@@ -77,9 +84,9 @@ class _PastoralBlogView extends StatelessWidget {
                 )
               else ...[
                 SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(
+                  padding: EdgeInsets.fromLTRB(
                     LwpSpacing.md,
-                    LwpSpacing.sm,
+                    LwpShellInsets.top(context) + LwpSpacing.sm,
                     LwpSpacing.md,
                     LwpSpacing.xs,
                   ),
@@ -160,13 +167,58 @@ class _PastoralBlogView extends StatelessWidget {
 bool _hasCover(PastoralPost post) =>
     (post.coverImagePublicId ?? '').trim().isNotEmpty;
 
-String _metaLine(BuildContext context, PastoralPost post, {bool short = false}) {
-  final author = short
-      ? post.displayAuthorName.split(' ').first
-      : post.displayAuthorName;
-  final date = DateFormatter.formatDate(post.createdAt ?? '');
-  final amen = '${context.l10n.pastoralReactionAmen} ${post.amenCount}';
-  return '$author · $date · $amen';
+class _PostMetaLine extends StatelessWidget {
+  const _PostMetaLine({
+    required this.post,
+    this.short = false,
+    this.color,
+  });
+
+  final PastoralPost post;
+  final bool short;
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final ink = color ?? theme.hintColor;
+    final author = short
+        ? post.displayAuthorName.split(' ').first
+        : post.displayAuthorName;
+    final date = DateFormatter.formatDate(post.createdAt ?? '');
+    final prefix = [
+      if (author.trim().isNotEmpty) author.trim(),
+      if (date.isNotEmpty) date,
+    ].join(' · ');
+
+    return Row(
+      children: [
+        if (prefix.isNotEmpty)
+          Flexible(
+            child: Text(
+              '$prefix · ',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelSmall?.copyWith(color: ink),
+            ),
+          ),
+        Icon(
+          Icons.thumb_up_alt_outlined,
+          size: 12,
+          color: ink,
+        ),
+        const SizedBox(width: 3),
+        Text(
+          '${post.amenCount}',
+          maxLines: 1,
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: ink,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    );
+  }
 }
 
 class _FeaturedPost extends StatelessWidget {
@@ -243,15 +295,11 @@ class _FeaturedPost extends StatelessWidget {
               ),
               const SizedBox(width: LwpSpacing.xs),
               Expanded(
-                child: Text(
-                  _metaLine(context, post),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: hasCover
-                        ? Colors.white.withValues(alpha: 0.72)
-                        : theme.hintColor,
-                  ),
+                child: _PostMetaLine(
+                  post: post,
+                  color: hasCover
+                      ? Colors.white.withValues(alpha: 0.72)
+                      : theme.hintColor,
                 ),
               ),
             ],
@@ -372,13 +420,10 @@ class _CompactPostRow extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: LwpSpacing.xxs),
-                  Text(
-                    _metaLine(context, post, short: true),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: theme.hintColor,
-                    ),
+                  _PostMetaLine(
+                    post: post,
+                    short: true,
+                    color: theme.hintColor,
                   ),
                 ],
               ),

@@ -1549,10 +1549,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dashboardLatestBlogLabel => 'LATEST BLOG';
 
   @override
-  String get dashboardWatchAllButton => 'Watch All';
+  String get dashboardWatchAllButton => 'All sermons';
 
   @override
-  String get dashboardReadAllButton => 'Read All';
+  String get dashboardReadAllButton => 'All posts';
 
   @override
   String get dashboardVotdLabel => 'VERSE OF THE DAY';

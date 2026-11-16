@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
+import 'package:lw_app/Widgets/Glass/lwp_shell_insets.dart';
 import 'package:lw_app/Widgets/WhatsappContactFAB/whatsapp_contact_fab.dart';
 import 'package:lw_app/Blocs/ConnectGroups/connect_groups_bloc.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
@@ -48,7 +49,10 @@ class _ConnectGroupsPageState extends State<ConnectGroupsPage> {
         body: BlocBuilder<ConnectGroupsBloc, ConnectGroupsState>(
             builder: (context, state) {
               if (state is ConnectGroupsLoading) {
-                return LwpSkeletonList.group();
+                return Padding(
+                  padding: LwpShellInsets.bodyOf(context),
+                  child: LwpSkeletonList.group(),
+                );
               } else if (state is ConnectGroupsSuccess) {
                 if (state.connectGroups.isNotEmpty) {
                   return LwpListEntranceScope(
@@ -59,7 +63,7 @@ class _ConnectGroupsPageState extends State<ConnectGroupsPage> {
                         connectGroupsBloc.add(const LoadConnectGroups());
                       },
                       child: ListView.builder(
-                        padding: const EdgeInsets.all(16.0),
+                        padding: LwpShellInsets.scrollOf(context),
                         itemCount: state.connectGroups.length,
                         itemBuilder: (BuildContext context, int index) {
                           final group = state.connectGroups[index];
@@ -72,12 +76,21 @@ class _ConnectGroupsPageState extends State<ConnectGroupsPage> {
                     ),
                   );
                 } else {
-                  return LwpEmpty(message: context.l10n.connectGroupsEmpty);
+                  return Padding(
+                    padding: LwpShellInsets.bodyOf(context),
+                    child: LwpEmpty(message: context.l10n.connectGroupsEmpty),
+                  );
                 }
               } else if (state is ConnectGroupsError) {
-                return LwpError(message: state.error);
+                return Padding(
+                  padding: LwpShellInsets.bodyOf(context),
+                  child: LwpError(message: state.error),
+                );
               } else {
-                return const LwpError();
+                return Padding(
+                  padding: LwpShellInsets.bodyOf(context),
+                  child: const LwpError(),
+                );
               }
             },
           ),

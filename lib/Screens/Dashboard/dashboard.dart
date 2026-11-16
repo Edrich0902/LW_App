@@ -130,6 +130,14 @@ class _DashPageState extends State<DashPage>
                           );
                         }
                       },
+                      onViewAll: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SermonsPage(),
+                          ),
+                        );
+                      },
                     );
                   } else if (state is SermonsLoading) {
                     return const _DashboardPlaceholder(

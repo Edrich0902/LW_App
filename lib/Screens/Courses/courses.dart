@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
+import 'package:lw_app/Widgets/Glass/lwp_shell_insets.dart';
 import 'package:lw_app/Blocs/Courses/courses_bloc.dart';
 import 'package:lw_app/Models/Event/event_category.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
@@ -50,7 +51,10 @@ class _CoursesPageState extends State<CoursesPage> {
         body: BlocBuilder<CoursesBloc, CoursesState>(
             builder: (context, state) {
               if (state is CoursesLoading) {
-                return LwpSkeletonList.media();
+                return Padding(
+                  padding: LwpShellInsets.bodyOf(context),
+                  child: LwpSkeletonList.media(),
+                );
               } else if (state is CoursesSuccess) {
                 if (state.courses.isNotEmpty) {
                   return LwpListEntranceScope(
@@ -63,8 +67,11 @@ class _CoursesPageState extends State<CoursesPage> {
                         );
                       },
                       child: ListView.separated(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 24.0),
+                        padding: LwpShellInsets.scrollOf(
+                          context,
+                          topExtra: 24,
+                          bottom: 24,
+                        ),
                         itemCount: state.courses.length,
                         separatorBuilder: (context, index) =>
                             const SizedBox(height: LwpSpacing.sm),
@@ -92,10 +99,16 @@ class _CoursesPageState extends State<CoursesPage> {
                     ),
                   );
                 } else {
-                  return LwpEmpty(message: context.l10n.coursesEmpty);
+                  return Padding(
+                    padding: LwpShellInsets.bodyOf(context),
+                    child: LwpEmpty(message: context.l10n.coursesEmpty),
+                  );
                 }
               } else {
-                return const LwpError();
+                return Padding(
+                  padding: LwpShellInsets.bodyOf(context),
+                  child: const LwpError(),
+                );
               }
             },
           ),

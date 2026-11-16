@@ -8,6 +8,7 @@ import 'package:lw_app/Models/UserAnnouncement/user_announcement.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
 import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
+import 'package:lw_app/Widgets/Glass/lwp_shell_insets.dart';
 import 'package:lw_app/Widgets/LwpBottomSheet/lwp_bottom_sheet.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
@@ -56,7 +57,10 @@ class _UserAnnouncementsPageState extends State<UserAnnouncementsPage> {
           builder: (context, state) {
             if (state is UserAnnouncementSuccess) {
               if (state.userAnnouncements.isEmpty) {
-                return LwpEmpty(message: context.l10n.announcementsEmpty);
+                return Padding(
+                  padding: LwpShellInsets.bodyOf(context),
+                  child: LwpEmpty(message: context.l10n.announcementsEmpty),
+                );
               }
 
               final unread = state.userAnnouncements
@@ -69,9 +73,9 @@ class _UserAnnouncementsPageState extends State<UserAnnouncementsPage> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(
+                      padding: EdgeInsets.fromLTRB(
                         LwpSpacing.md,
-                        LwpSpacing.xs,
+                        LwpShellInsets.top(context) + LwpSpacing.xs,
                         LwpSpacing.md,
                         LwpSpacing.xs,
                       ),
@@ -155,10 +159,16 @@ class _UserAnnouncementsPageState extends State<UserAnnouncementsPage> {
             }
 
             if (state is UserAnnouncementError) {
-              return const LwpError();
+              return Padding(
+                padding: LwpShellInsets.bodyOf(context),
+                child: const LwpError(),
+              );
             }
 
-            return LwpSkeletonList.text();
+            return Padding(
+              padding: LwpShellInsets.bodyOf(context),
+              child: LwpSkeletonList.text(),
+            );
           },
         ),
       ),

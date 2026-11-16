@@ -12,6 +12,7 @@ import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
 import 'package:lw_app/Utils/quill_helper.dart';
 import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
+import 'package:lw_app/Widgets/Glass/lwp_shell_insets.dart';
 import 'package:lw_app/Widgets/Glass/lwp_glass_fab.dart';
 import 'package:lw_app/Widgets/Glass/lwp_top_bar.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
@@ -81,18 +82,24 @@ class _GroupFeedViewState extends State<_GroupFeedView> {
               !state.isRefreshing) {
             return LwpChromeScaffold(
               title: context.l10n.groupFeedTitle,
-              body: LwpSkeletonList.text(),
+              body: Padding(
+                padding: LwpShellInsets.bodyOf(context),
+                child: LwpSkeletonList.text(),
+              ),
             );
           }
 
           if (state.status == GroupDetailStatus.error && group == null) {
             return LwpChromeScaffold(
               title: context.l10n.groupFeedTitle,
-              body: LwpError(
-                message: state.error ?? context.l10n.groupFeedLoadError,
-                onRetry: () => context
-                    .read<GroupDetailBloc>()
-                    .add(LoadGroupDetail(widget.groupId)),
+              body: Padding(
+                padding: LwpShellInsets.bodyOf(context),
+                child: LwpError(
+                  message: state.error ?? context.l10n.groupFeedLoadError,
+                  onRetry: () => context
+                      .read<GroupDetailBloc>()
+                      .add(LoadGroupDetail(widget.groupId)),
+                ),
               ),
             );
           }
@@ -100,14 +107,20 @@ class _GroupFeedViewState extends State<_GroupFeedView> {
           if (group == null) {
             return LwpChromeScaffold(
               title: context.l10n.groupFeedTitle,
-              body: LwpEmpty(message: context.l10n.groupFeedGroupNotFound),
+              body: Padding(
+                padding: LwpShellInsets.bodyOf(context),
+                child: LwpEmpty(message: context.l10n.groupFeedGroupNotFound),
+              ),
             );
           }
 
           if (!group.isActiveMember && !group.isLeader) {
             return LwpChromeScaffold(
               title: group.title,
-              body: LwpEmpty(message: context.l10n.groupFeedMembersOnly),
+              body: Padding(
+                padding: LwpShellInsets.bodyOf(context),
+                child: LwpEmpty(message: context.l10n.groupFeedMembersOnly),
+              ),
             );
           }
 

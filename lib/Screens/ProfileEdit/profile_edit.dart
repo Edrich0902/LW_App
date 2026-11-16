@@ -8,6 +8,7 @@ import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/User/user_profile.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
+import 'package:lw_app/Widgets/Glass/lwp_shell_insets.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpLoader/lwp_loader.dart';
 import 'package:lw_app/Widgets/LwpProfileImage/lwp_profile_image.dart';
@@ -84,16 +85,17 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
       },
       child: LwpChromeScaffold(
         title: context.l10n.profileEditTitle,
-        body: SafeArea(
-          top: false,
-          child: BlocBuilder<UserBloc, UserState>(
+        body: BlocBuilder<UserBloc, UserState>(
             builder: (context, state) {
               if (state is UserSuccess) {
                 initForm(state);
               }
 
               if (!_isInitialized && state is UserLoading) {
-                return LwpLoader(message: context.l10n.profileLoading);
+                return Padding(
+                  padding: LwpShellInsets.bodyOf(context),
+                  child: LwpLoader(message: context.l10n.profileLoading),
+                );
               }
 
               if (_isInitialized && _currentUser != null) {
@@ -105,11 +107,11 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                         .trim();
 
                 return SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(
-                    LwpSpacing.md,
-                    LwpSpacing.sm,
-                    LwpSpacing.md,
-                    LwpSpacing.xl,
+                  padding: LwpShellInsets.scrollOf(
+                    context,
+                    horizontal: LwpSpacing.md,
+                    topExtra: LwpSpacing.sm,
+                    bottom: LwpSpacing.xl,
                   ),
                   child: Form(
                     key: _profileEditFormKey,
@@ -236,15 +238,17 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                   ),
                 );
               } else if (state is UserError && !_isInitialized) {
-                return LwpError(
-                  onRetry: () =>
-                      context.read<UserBloc>().add(const LoadUser()),
+                return Padding(
+                  padding: LwpShellInsets.bodyOf(context),
+                  child: LwpError(
+                    onRetry: () =>
+                        context.read<UserBloc>().add(const LoadUser()),
+                  ),
                 );
               }
 
               return const SizedBox.shrink();
             },
-          ),
         ),
       ),
     );

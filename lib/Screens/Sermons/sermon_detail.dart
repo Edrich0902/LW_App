@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
+import 'package:lw_app/Widgets/Glass/lwp_shell_insets.dart';
 import 'package:lw_app/Models/YoutubeVideo/youtube_video.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Widgets/LwpYoutubePlayer/lwp_youtube_player.dart';
@@ -19,6 +20,7 @@ class SermonDetailPage extends StatelessWidget {
     return LwpChromeScaffold(
         title: context.l10n.sermonDetailTitle,
         body: SingleChildScrollView(
+        padding: LwpShellInsets.scrollOf(context, topExtra: 0, bottom: 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

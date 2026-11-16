@@ -18,6 +18,7 @@ import 'package:lw_app/Utils/cloudinary_helper.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
 import 'package:lw_app/Utils/maps_helper.dart';
 import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
+import 'package:lw_app/Widgets/Glass/lwp_shell_insets.dart';
 import 'package:lw_app/Widgets/Glass/lwp_top_bar.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
@@ -87,18 +88,24 @@ class _GroupDetailViewState extends State<_GroupDetailView> {
               !state.isRefreshing) {
             return LwpChromeScaffold(
               title: context.l10n.groupDetailTitle,
-              body: LwpSkeletonList.group(itemCount: 4),
+              body: Padding(
+                padding: LwpShellInsets.bodyOf(context),
+                child: LwpSkeletonList.group(itemCount: 4),
+              ),
             );
           }
 
           if (state.status == GroupDetailStatus.error && group == null) {
             return LwpChromeScaffold(
               title: context.l10n.groupDetailTitle,
-              body: LwpError(
-                message: state.error ?? 'Kon nie groep laai nie.',
-                onRetry: () => context
-                    .read<GroupDetailBloc>()
-                    .add(LoadGroupDetail(widget.groupId)),
+              body: Padding(
+                padding: LwpShellInsets.bodyOf(context),
+                child: LwpError(
+                  message: state.error ?? 'Kon nie groep laai nie.',
+                  onRetry: () => context
+                      .read<GroupDetailBloc>()
+                      .add(LoadGroupDetail(widget.groupId)),
+                ),
               ),
             );
           }
@@ -106,7 +113,10 @@ class _GroupDetailViewState extends State<_GroupDetailView> {
           if (group == null) {
             return LwpChromeScaffold(
               title: context.l10n.groupDetailTitle,
-              body: LwpEmpty(message: context.l10n.groupFeedGroupNotFound),
+              body: Padding(
+                padding: LwpShellInsets.bodyOf(context),
+                child: LwpEmpty(message: context.l10n.groupFeedGroupNotFound),
+              ),
             );
           }
 

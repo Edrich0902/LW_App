@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
+import 'package:lw_app/Widgets/Glass/lwp_shell_insets.dart';
 import 'package:lw_app/Models/YoutubeVideo/youtube_video.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Blocs/Sermons/sermons_bloc.dart';
@@ -21,6 +22,7 @@ class SermonsPage extends StatefulWidget {
 class _SermonsPageState extends State<SermonsPage> {
   final TextEditingController _searchController = TextEditingController();
   final _listEntrance = LwpListEntranceController();
+  String _query = '';
 
   @override
   void initState() {
@@ -36,7 +38,7 @@ class _SermonsPageState extends State<SermonsPage> {
   }
 
   List<YoutubeVideo> _filterSermons(List<YoutubeVideo> videos) {
-    final query = _searchController.text.toLowerCase().trim();
+    final query = _query.toLowerCase().trim();
     if (query.isEmpty) return videos;
     return videos.where((v) {
       final title = (v.customTitle ?? v.title).toLowerCase();
@@ -47,89 +49,75 @@ class _SermonsPageState extends State<SermonsPage> {
 
   @override
   Widget build(BuildContext context) {
-    SermonsBloc sermonsBloc = BlocProvider.of<SermonsBloc>(context);
+    final sermonsBloc = BlocProvider.of<SermonsBloc>(context);
 
     return BlocListener<SermonsBloc, SermonsState>(
       listener: (context, state) {},
       child: LwpChromeScaffold(
         title: context.l10n.sermonsTitle,
         showDefaultActions: true,
+        searchController: _searchController,
+        searchHint: context.l10n.sermonsSearchHint,
+        onSearchChanged: (value) => setState(() => _query = value),
         body: BlocBuilder<SermonsBloc, SermonsState>(
-            builder: (context, state) {
-              if (state is SermonsLoading) {
-                return LwpSkeletonList.media();
-              } else if (state is SermonsSuccess) {
-                if (state.youtubeVideos.isNotEmpty) {
-                  return StatefulBuilder(
-                    builder: (context, setInnerState) {
-                      final filtered = _filterSermons(state.youtubeVideos);
-                      return LwpListEntranceScope(
-                        controller: _listEntrance,
-                        child: RefreshIndicator(
-                          onRefresh: () async {
-                            _listEntrance.bump();
-                            sermonsBloc.add(const LoadSermons());
-                          },
-                          child: ListView.builder(
-                            padding: const EdgeInsets.all(16.0),
-                            itemCount: filtered.length + 1,
-                            itemBuilder: (BuildContext context, int index) {
-                              if (index == 0) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 16.0),
-                                  child: TextField(
-                                    controller: _searchController,
-                                    onChanged: (_) => setInnerState(() {}),
-                                    decoration: InputDecoration(
-                                      hintText: context.l10n.sermonsSearchHint,
-                                      prefixIcon: const Icon(Icons.search),
-                                      suffixIcon:
-                                          _searchController.text.isNotEmpty
-                                              ? IconButton(
-                                                  icon: const Icon(Icons.clear),
-                                                  onPressed: () {
-                                                    _searchController.clear();
-                                                    setInnerState(() {});
-                                                  },
-                                                )
-                                              : null,
-                                      border: OutlineInputBorder(
-                                        borderRadius: LwpRadii.lgAll,
-                                        borderSide: BorderSide.none,
-                                      ),
-                                      filled: true,
-                                    ),
-                                  ),
-                                );
-                              }
-                              final video = filtered[index - 1];
-                              final rowIndex = index - 1;
-                              return LwpListEntrance(
-                                id: video.youtubeLink ?? 'sermon-$rowIndex',
-                                child: _buildVideoCard(video, () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          SermonDetailPage(video: video),
-                                    ),
-                                  );
-                                }),
-                              );
-                            },
-                          ),
-                        ),
+          builder: (context, state) {
+            if (state is SermonsLoading) {
+              return Padding(
+                padding: LwpShellInsets.bodyOf(context),
+                child: LwpSkeletonList.media(),
+              );
+            } else if (state is SermonsSuccess) {
+              if (state.youtubeVideos.isEmpty) {
+                return Padding(
+                  padding: LwpShellInsets.bodyOf(context),
+                  child: LwpEmpty(message: context.l10n.sermonsEmpty),
+                );
+              }
+
+              final filtered = _filterSermons(state.youtubeVideos);
+              if (filtered.isEmpty) {
+                return Padding(
+                  padding: LwpShellInsets.bodyOf(context),
+                  child: LwpEmpty(message: context.l10n.sermonsEmpty),
+                );
+              }
+
+              return LwpListEntranceScope(
+                controller: _listEntrance,
+                child: RefreshIndicator(
+                  onRefresh: () async {
+                    _listEntrance.bump();
+                    sermonsBloc.add(const LoadSermons());
+                  },
+                  child: ListView.builder(
+                    padding: LwpShellInsets.scrollOf(context),
+                    itemCount: filtered.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final video = filtered[index];
+                      return LwpListEntrance(
+                        id: video.youtubeLink ?? 'sermon-$index',
+                        child: _buildVideoCard(video, () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  SermonDetailPage(video: video),
+                            ),
+                          );
+                        }),
                       );
                     },
-                  );
-                } else {
-                  return LwpEmpty(message: context.l10n.sermonsEmpty);
-                }
-              } else {
-                return const LwpError();
-              }
-            },
-          ),
+                  ),
+                ),
+              );
+            } else {
+              return Padding(
+                padding: LwpShellInsets.bodyOf(context),
+                child: const LwpError(),
+              );
+            }
+          },
+        ),
       ),
     );
   }

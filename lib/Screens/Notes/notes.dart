@@ -12,6 +12,7 @@ import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
 import 'package:lw_app/Widgets/LwpEmpty/lwp_empty.dart';
 import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
+import 'package:lw_app/Widgets/Glass/lwp_shell_insets.dart';
 import 'package:lw_app/Widgets/Glass/lwp_glass_fab.dart';
 import 'package:lw_app/Utils/quill_helper.dart';
 import 'package:lw_app/Widgets/LwpListEntrance/lwp_list_entrance.dart';
@@ -79,14 +80,22 @@ class _NotesPageState extends State<NotesPage> {
         body: BlocBuilder<NotesBloc, NotesState>(
             builder: (context, state) {
               if (state is NotesLoading) {
-                return LwpSkeletonList.text();
+                return Padding(
+                  padding: LwpShellInsets.bodyOf(context),
+                  child: LwpSkeletonList.text(),
+                );
               } else if (state is NotesSuccess) {
                 final filtered = _filterNotes(state.data);
 
                 return Column(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                      padding: EdgeInsets.fromLTRB(
+                        16,
+                        LwpShellInsets.top(context) + 12,
+                        16,
+                        8,
+                      ),
                       child: TextField(
                         controller: _searchController,
                         onChanged: (_) => setState(() {}),
@@ -210,7 +219,10 @@ class _NotesPageState extends State<NotesPage> {
                   ],
                 );
               } else {
-                return const LwpError();
+                return Padding(
+                  padding: LwpShellInsets.bodyOf(context),
+                  child: const LwpError(),
+                );
               }
             },
           ),

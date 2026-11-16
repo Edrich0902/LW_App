@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Blocs/Events/events_bloc.dart';
 import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
+import 'package:lw_app/Widgets/Glass/lwp_shell_insets.dart';
 import 'package:lw_app/Blocs/EventRsvp/event_rsvp_bloc.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Models/Event/event_type.dart';
@@ -51,7 +52,10 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
         body: BlocBuilder<EventsBloc, EventsState>(
             builder: (context, state) {
               if (state is EventsLoading) {
-                return LwpSkeletonList.thumb();
+                return Padding(
+                  padding: LwpShellInsets.bodyOf(context),
+                  child: LwpSkeletonList.thumb(),
+                );
               } else if (state is EventsSuccess) {
                 if (state.events.isNotEmpty) {
                   return LwpListEntranceScope(
@@ -67,8 +71,11 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
                         );
                       },
                       child: ListView.separated(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 24.0),
+                        padding: LwpShellInsets.scrollOf(
+                          context,
+                          topExtra: 24,
+                          bottom: 24,
+                        ),
                         itemCount: state.events.length,
                         separatorBuilder: (context, index) =>
                             const SizedBox(height: LwpSpacing.sm),
@@ -101,10 +108,16 @@ class _UpcomingEventsPageState extends State<UpcomingEventsPage> {
                     ),
                   );
                 } else {
-                  return LwpEmpty(message: context.l10n.upcomingEventsEmpty);
+                  return Padding(
+                    padding: LwpShellInsets.bodyOf(context),
+                    child: LwpEmpty(message: context.l10n.upcomingEventsEmpty),
+                  );
                 }
               } else {
-                return const LwpError();
+                return Padding(
+                  padding: LwpShellInsets.bodyOf(context),
+                  child: const LwpError(),
+                );
               }
             },
           ),

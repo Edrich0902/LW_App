@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:lw_app/Widgets/Glass/lwp_shell_insets.dart';
+import 'package:lw_app/Widgets/Glass/lwp_glass_morph_search_bar.dart';
 import 'package:lw_app/Widgets/Glass/lwp_top_bar.dart';
 
 /// Scaffold with floating glass top chrome instead of a solid [AppBar].
 ///
-/// Body is padded under the capsules; use [SafeArea] with `top: false` if
-/// you still need left/right/bottom insets.
+/// Body is full-bleed under the capsules so content can scroll beneath glass
+/// (same as Home). Pad scrollables with [LwpShellInsets.scrollOf] / [bodyOf].
 class LwpChromeScaffold extends StatelessWidget {
   const LwpChromeScaffold({
     super.key,
@@ -21,6 +21,9 @@ class LwpChromeScaffold extends StatelessWidget {
     this.extendBody = true,
     this.resizeToAvoidBottomInset = true,
     this.backgroundColor,
+    this.searchController,
+    this.searchHint,
+    this.onSearchChanged,
   });
 
   final String title;
@@ -40,10 +43,16 @@ class LwpChromeScaffold extends StatelessWidget {
   final bool resizeToAvoidBottomInset;
   final Color? backgroundColor;
 
+  /// When set, the top chrome uses Concept A glass morph search.
+  final TextEditingController? searchController;
+  final String? searchHint;
+  final ValueChanged<String>? onSearchChanged;
+
   @override
   Widget build(BuildContext context) {
     final canPop = ModalRoute.of(context)?.canPop ?? false;
     final back = showBack ?? canPop;
+    final useMorphSearch = searchController != null;
 
     return Scaffold(
       extendBody: extendBody,
@@ -54,24 +63,32 @@ class LwpChromeScaffold extends StatelessWidget {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Positioned.fill(
-            child: Padding(
-              padding: EdgeInsets.only(top: LwpShellInsets.top(context)),
-              child: body,
-            ),
-          ),
+          // Full-bleed body so scrollables can pass under glass chrome
+          // (same pattern as Home). Screens should pad with [LwpShellInsets].
+          Positioned.fill(child: body),
           Positioned(
             top: 0,
             left: 0,
             right: 0,
-            child: LwpTopBar(
-              title: title,
-              showBack: back,
-              onBack: onBack,
-              showActions: showDefaultActions,
-              actions: actions,
-              titleWidget: titleWidget,
-            ),
+            child: useMorphSearch
+                ? LwpGlassMorphSearchBar(
+                    title: title,
+                    controller: searchController!,
+                    searchHint: searchHint ?? '',
+                    showBack: back,
+                    onBack: onBack,
+                    showDefaultActions: showDefaultActions,
+                    actions: actions,
+                    onChanged: onSearchChanged,
+                  )
+                : LwpTopBar(
+                    title: title,
+                    showBack: back,
+                    onBack: onBack,
+                    showActions: showDefaultActions,
+                    actions: actions,
+                    titleWidget: titleWidget,
+                  ),
           ),
         ],
       ),

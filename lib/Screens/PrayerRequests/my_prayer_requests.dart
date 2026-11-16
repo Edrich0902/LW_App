@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lw_app/Extensions/app_localizations_x.dart';
 import 'package:lw_app/Widgets/Glass/lwp_chrome_scaffold.dart';
+import 'package:lw_app/Widgets/Glass/lwp_shell_insets.dart';
 import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Blocs/MyPrayerRequests/my_prayer_requests_bloc.dart';
 import 'package:lw_app/Models/PrayerRequest/prayer_request.dart';
@@ -203,13 +204,19 @@ class _MyPrayerRequestsViewState extends State<_MyPrayerRequestsView> {
           builder: (context, state) {
             if (state is MyPrayerRequestsLoading ||
                 state is MyPrayerRequestsInitial) {
-              return LwpSkeletonList.text();
+              return Padding(
+                padding: LwpShellInsets.bodyOf(context),
+                child: LwpSkeletonList.text(),
+              );
             }
 
             if (state is MyPrayerRequestsError) {
-              return LwpError(
-                message: state.error,
-                onRetry: _refresh,
+              return Padding(
+                padding: LwpShellInsets.bodyOf(context),
+                child: LwpError(
+                  message: state.error,
+                  onRetry: _refresh,
+                ),
               );
             }
 
@@ -224,7 +231,12 @@ class _MyPrayerRequestsViewState extends State<_MyPrayerRequestsView> {
                 children: [
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                    padding: EdgeInsets.fromLTRB(
+                      16,
+                      LwpShellInsets.top(context) + 16,
+                      16,
+                      8,
+                    ),
                     child: Row(
                       children: [
                         Padding(
@@ -260,8 +272,9 @@ class _MyPrayerRequestsViewState extends State<_MyPrayerRequestsView> {
                             onRefresh: _refresh,
                             child: ListView(
                               physics: const AlwaysScrollableScrollPhysics(),
+                              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
                               children: [
-                                SizedBox(height: 80),
+                                const SizedBox(height: 80),
                                 LwpEmpty(
                                   message:
                                       context.l10n.myPrayerRequestsEmptyForStatus,
@@ -274,8 +287,7 @@ class _MyPrayerRequestsViewState extends State<_MyPrayerRequestsView> {
                             child: RefreshIndicator(
                               onRefresh: _refresh,
                               child: ListView.separated(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 8),
+                                padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
                                 itemCount: requests.length,
                                 separatorBuilder: (context, _) => Divider(
                                   height: 1,
