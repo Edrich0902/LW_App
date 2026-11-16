@@ -11,6 +11,7 @@ import 'package:lw_app/Models/Event/event_type.dart';
 import 'package:lw_app/Models/Event/rsvp_status.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
+import 'package:lw_app/Widgets/Glass/lwp_top_bar.dart';
 import 'package:lw_app/Widgets/LwpDateBeaconCard/lwp_date_beacon_card.dart';
 import 'package:lw_app/Widgets/LwpSnackbar/lwp_snackbar.dart';
 
@@ -185,15 +186,15 @@ class UpcomingEventDetailPage extends StatelessWidget {
                 ],
               ),
             ),
-            Positioned(
-              top: MediaQuery.of(context).padding.top + 8,
-              left: 16,
-              child: CircleAvatar(
-                backgroundColor: Colors.black.withValues(alpha: 0.3),
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.white),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
+            const Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: LwpTopBar(
+                title: '',
+                showBack: true,
+                showTitle: false,
+                showActions: false,
               ),
             ),
           ],

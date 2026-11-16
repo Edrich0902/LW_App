@@ -814,6 +814,8 @@ class _BibleGlassTopBar extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final ink = isDark ? Colors.white : LightColors.primary;
+    // Tab root has no back; when pushed (e.g. from Verse of the Day) show glass back.
+    final showBack = ModalRoute.of(context)?.canPop ?? false;
 
     return Material(
       type: MaterialType.transparency,
@@ -826,63 +828,86 @@ class _BibleGlassTopBar extends StatelessWidget {
         ),
         child: Row(
           children: [
-            LwpGlass(
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: onTitleTap,
-                child: Container(
+            if (showBack) ...[
+              LwpGlass(
+                child: SizedBox(
+                  width: LwpTopBar.capsuleHeight,
                   height: LwpTopBar.capsuleHeight,
-                  padding: const EdgeInsets.only(left: 14, right: 10),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxWidth: MediaQuery.sizeOf(context).width * 0.34,
-                        ),
-                        child: Text(
-                          title,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: ink,
-                          ),
-                        ),
-                      ),
-                      if (onTitleTap != null)
-                        Icon(Icons.arrow_drop_down, color: ink),
-                      if ((versionChip ?? '').isNotEmpty) ...[
-                        const SizedBox(width: 6),
-                        GestureDetector(
-                          behavior: HitTestBehavior.opaque,
-                          onTap: onVersionTap ?? onTitleTap,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: theme.primaryColor.withValues(alpha: 0.16),
-                              borderRadius:
-                                  BorderRadius.circular(LwpRadii.pill),
+                  child: IconButton(
+                    visualDensity: VisualDensity.compact,
+                    padding: EdgeInsets.zero,
+                    icon: Icon(Icons.arrow_back_ios_new, size: 18, color: ink),
+                    onPressed: () => Navigator.maybePop(context),
+                  ),
+                ),
+              ),
+              const SizedBox(width: LwpTopBar.islandGap),
+            ],
+            Flexible(
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: LwpGlass(
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: onTitleTap,
+                    child: Container(
+                      height: LwpTopBar.capsuleHeight,
+                      padding: const EdgeInsets.only(left: 14, right: 10),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxWidth: MediaQuery.sizeOf(context).width *
+                                  (showBack ? 0.22 : 0.34),
                             ),
                             child: Text(
-                              versionChip!,
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: theme.primaryColor,
-                                fontWeight: FontWeight.w700,
+                              title,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              softWrap: false,
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: ink,
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    ],
+                          if (onTitleTap != null)
+                            Icon(Icons.arrow_drop_down, color: ink),
+                          if ((versionChip ?? '').isNotEmpty) ...[
+                            const SizedBox(width: 6),
+                            GestureDetector(
+                              behavior: HitTestBehavior.opaque,
+                              onTap: onVersionTap ?? onTitleTap,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: theme.primaryColor
+                                      .withValues(alpha: 0.16),
+                                  borderRadius:
+                                      BorderRadius.circular(LwpRadii.pill),
+                                ),
+                                child: Text(
+                                  versionChip!,
+                                  style: theme.textTheme.labelSmall?.copyWith(
+                                    color: theme.primaryColor,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
-            const Spacer(),
+            const SizedBox(width: LwpTopBar.gap),
             LwpGlass(
               child: SizedBox(
                 height: LwpTopBar.capsuleHeight,
@@ -896,8 +921,11 @@ class _BibleGlassTopBar extends StatelessWidget {
                         tooltip: context.l10n.bibleSavedVersesTooltip,
                         onPressed: onBookmarks,
                       ),
-                      LwpAnnouncementButton(color: ink),
-                      ProfileActionButton(color: ink),
+                      // Keep chrome compact when this page is a pushed route.
+                      if (!showBack) ...[
+                        LwpAnnouncementButton(color: ink),
+                        ProfileActionButton(color: ink),
+                      ],
                     ],
                   ),
                 ),

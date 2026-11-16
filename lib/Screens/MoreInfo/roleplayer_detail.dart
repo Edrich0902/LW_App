@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloudinary_flutter/image/cld_image.dart';
 import 'package:lw_app/Models/Roleplayer/roleplayer.dart';
 import 'package:lw_app/Themes/lwp_tokens.dart';
+import 'package:lw_app/Widgets/Glass/lwp_top_bar.dart';
 
 class RoleplayerDetailScreen extends StatelessWidget {
   const RoleplayerDetailScreen({super.key, required this.roleplayer});
@@ -104,17 +105,15 @@ class RoleplayerDetailScreen extends StatelessWidget {
             ),
           ),
 
-          // Integrated Back Button
-          Positioned(
-            top: MediaQuery.of(context).padding.top + 8,
-            left: 16,
-            child: CircleAvatar(
-              backgroundColor: Colors.black.withValues(alpha: 0.3),
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new,
-                    color: Colors.white, size: 18),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
+          const Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: LwpTopBar(
+              title: '',
+              showBack: true,
+              showTitle: false,
+              showActions: false,
             ),
           ),
         ],

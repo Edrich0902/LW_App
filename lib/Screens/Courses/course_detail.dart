@@ -6,6 +6,7 @@ import 'package:lw_app/Themes/lwp_tokens.dart';
 import 'package:lw_app/Utils/date_formatter.dart';
 import 'package:add_2_calendar/add_2_calendar.dart' as calendar;
 import 'package:cloudinary_flutter/image/cld_image.dart';
+import 'package:lw_app/Widgets/Glass/lwp_top_bar.dart';
 import 'package:lw_app/Widgets/LwpDateBeaconCard/lwp_date_beacon_card.dart';
 
 class CourseDetailPage extends StatelessWidget {
@@ -198,15 +199,15 @@ class CourseDetailPage extends StatelessWidget {
               ],
             ),
           ),
-          Positioned(
-            top: MediaQuery.of(context).padding.top + 8,
-            left: 16,
-            child: CircleAvatar(
-              backgroundColor: Colors.black.withValues(alpha: 0.3),
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
+          const Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: LwpTopBar(
+              title: '',
+              showBack: true,
+              showTitle: false,
+              showActions: false,
             ),
           ),
         ],

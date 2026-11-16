@@ -5,6 +5,7 @@ import 'package:lw_app/Extensions/context_l10n.dart';
 import 'package:lw_app/Blocs/MoreInfo/more_info_bloc.dart';
 import 'package:lw_app/Widgets/LwpError/lwp_error.dart';
 import 'package:lw_app/Widgets/Glass/lwp_shell_insets.dart';
+import 'package:lw_app/Widgets/Glass/lwp_top_bar.dart';
 import 'package:lw_app/Widgets/LwpSkeleton/lwp_skeleton.dart';
 import 'package:collection/collection.dart';
 import 'package:lw_app/Widgets/LwpListEntrance/lwp_list_entrance.dart';
@@ -37,11 +38,15 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    // Tab root has no back; when pushed (e.g. from First Time Visitor) show glass back.
+    final showBack = ModalRoute.of(context)?.canPop ?? false;
 
     return BlocBuilder<MoreInfoBloc, MoreInfoState>(
       builder: (context, state) {
         if (state is MoreInfoLoading) {
-          return Scaffold(
+          return _MoreInfoShell(
+            showBack: showBack,
+            title: context.l10n.navMoreInfo,
             body: Padding(
               padding: LwpShellInsets.paddingOf(context),
               child: LwpSkeletonList.text(itemCount: 6),
@@ -53,7 +58,9 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
           final vision = state.data
               .firstWhereOrNull((v) => v.key == 'vision_statement');
 
-          return Scaffold(
+          return _MoreInfoShell(
+            showBack: showBack,
+            title: context.l10n.navMoreInfo,
             body: LwpListEntranceScope(
               controller: _listEntrance,
               child: ListView(
@@ -142,9 +149,48 @@ class _MoreInfoPageState extends State<MoreInfoPage> {
             ),
           );
         } else {
-          return const Scaffold(body: LwpError());
+          return _MoreInfoShell(
+            showBack: showBack,
+            title: context.l10n.navMoreInfo,
+            body: const LwpError(),
+          );
         }
       },
+    );
+  }
+}
+
+class _MoreInfoShell extends StatelessWidget {
+  const _MoreInfoShell({
+    required this.body,
+    required this.title,
+    required this.showBack,
+  });
+
+  final Widget body;
+  final String title;
+  final bool showBack;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          Positioned.fill(child: body),
+          if (showBack)
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: LwpTopBar(
+                title: title,
+                showBack: true,
+                showActions: false,
+              ),
+            ),
+        ],
+      ),
     );
   }
 }
