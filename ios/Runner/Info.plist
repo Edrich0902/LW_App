@@ -39,6 +39,12 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Used to take photos for profile pictures and verse images</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Used to add church events and courses to your calendar</string>
+	<key>NSCalendarsFullAccessUsageDescription</key>
+	<string>Used to add church events and courses to your calendar</string>
+	<key>NSCalendarsWriteOnlyAccessUsageDescription</key>
+	<string>Used to add church events and courses to your calendar</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Used for calendar integration</string>
 	<key>NSMicrophoneUsageDescription</key>
